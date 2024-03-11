@@ -25,9 +25,8 @@ namespace Accelerate.Projects.App.Pages.Students
         }
 
         [BindProperty]
-        public Student Student { get; set; } = default!;
+        public StudentVM StudentVM { get; set; }
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
@@ -35,9 +34,9 @@ namespace Accelerate.Projects.App.Pages.Students
                 return Page();
             }
 
-            _context.Students.Add(Student);
+            var entry = _context.Add(new Student());
+            entry.CurrentValues.SetValues(StudentVM);
             await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
         }
     }
