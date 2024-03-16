@@ -1,0 +1,137 @@
+/*
+:root {
+    --pico-border-radius: 2rem;
+    --pico-typography-spacing-vertical: 1.5rem;
+    --pico-form-element-spacing-vertical: 1rem;
+    --pico-form-element-spacing-horizontal: 1.25rem;
+  }
+  h1 {
+    --pico-font-family: (Pacifico, cursive);
+    --pico-font-weight: 400;
+    --pico-typography-spacing-vertical: 0.5rem;
+  }
+  button {
+    --pico-font-weight: 700;
+  }
+  */
+  /*Misc*/
+  .transparent {
+    background-color: transparent;
+  }
+  .click {
+    cursor: pointer;
+  }
+  a.disabled {
+    pointer-events: none;
+    cursor: default;
+  }
+  aside.dense li {
+    padding: calc(var(--pico-nav-element-spacing-vertical)* .2) var(--pico-nav-element-spacing-horizontal);
+  }
+  img.circular {
+    border-top-left-radius: 50% 50%;
+    border-top-right-radius: 50% 50%;
+    border-bottom-right-radius: 50% 50%;
+    border-bottom-left-radius: 50% 50%;
+  }
+  button.img  {
+    border-width: 0px;
+    padding: 0px;
+  }
+  .noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+  }
+
+  /*COLOURS*/
+  .primary {
+    background-color: transparent;
+    color: #f7931a;
+  }
+  .secondary { 
+    background-color: transparent;
+    color: #456990;
+  }
+  .contrast { 
+    background-color: transparent;
+    color: #E4FDE1;
+  }
+  .flat {
+    background-color: transparent;
+    border-color: transparent;
+    color: #f7931a;
+  }
+  .flat.secondary { 
+    background-color: transparent;
+    border-color: transparent;
+    color: #456990;
+  }
+  .flat.contrast { 
+    background-color: transparent;
+    border-color: transparent;
+    color: #E4FDE1;
+  }
+
+  /*BUTTONS*/
+  button.round{
+    border-radius: 100%;
+    height: 4rem;
+    width: 4rem;
+  }
+  button.round.small{
+    height: 3rem;
+    width: 3rem;
+  }
+  button.round.xsmall{
+    height: 1.5rem;
+    width: 1.5rem;
+  }
+  button.tab {
+    --pico-background-color: transparent;
+    --pico-color: var(--pico-primary);
+    --pico-border-color: transparent;
+  }
+  button.tab.selected { 
+    border-bottom-color: var(--pico-primary);
+    border-bottom-left-radius: 0em;
+    border-bottom-right-radius: 0em;
+    border-bottom-width: .15rem;
+    box-shadow: transparent;
+  }
+  /*DROPDOWN*/
+  details.dropdown.flat summary::after, details.dropdown.flat>a::after, details.dropdown.flat>button::after {
+    display: none;
+  }
+  /*ICONS*/
+  .icon-click {
+    padding:4px;
+    cursor: pointer;
+  }
+  .icon-click:active{
+    border-radius: 100%;
+    background-color: RGBA(0,0,0, 0.25);
+  }
+  /*CARDS*/
+  article header {
+    background-color: transparent;
+    border-bottom: none;
+  }
+  article footer {
+    background-color: transparent;
+    border-top: none;
+  }
+  article header.dense {
+    margin-top: calc(var(--pico-block-spacing-vertical)* -1);
+    margin-bottom: var(--pico-block-spacing-vertical)* -3;
+    padding: calc(var(--pico-block-spacing-vertical)* .33) var(--pico-block-spacing-horizontal);
+  }
+  article footer.dense {
+    margin-top: var(--pico-block-spacing-vertical);
+    margin-bottom: calc(var(--pico-block-spacing-vertical)* -1.5);
+    padding: calc(var(--pico-block-spacing-vertical)* .33) var(--pico-block-spacing-horizontal);
+  }

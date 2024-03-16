@@ -1,0 +1,40 @@
+<div class="grid">
+  <!-- Feed panel -->
+  <div>
+
+    <nav>
+      <ul>
+        <header>
+          <hgroup>
+            <h1>Your feeds</h1>
+            <p>Create a new feed</p>
+          </hgroup>
+        </header>
+      </ul>
+      <ul>
+      <!--Filters-->
+        <details class="dropdown">
+          <summary role="button" class="outline" x-text="$store.feedFilters.current">
+          </summary>
+            <ul>
+              <template x-for="tab in $store.feedFilters.items" >
+                <button class="flat" @click="$store.feedFilters.setTab(tab)" :class="$store.feedFilters.current == tab ? 'selected' : ''" x-text="tab"></button>
+              </template>
+            </ul>
+        </details>
+        <button class="material-icons flat">add</button>
+      </ul>
+    </nav>
+    <!--Feed-->
+    <div x-data="$store.feedFilters">
+      <div x-data="feed({
+        feed: $store.feedFilters.current
+      })"
+      x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
+    </div>
+  </div>
+  <!-- Other panel -->
+  <div>
+
+  </div>
+</div>

@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>5334ac05-3583-4823-9d44-97410596f81b</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,11 +19,53 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Account\Accelerate.Features.Account.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Feeds\Accelerate.Features.Feeds.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\src\css\app.scss" />
+    <None Include="wwwroot\src\css\components\_amount.scss" />
+    <None Include="wwwroot\src\css\components\_input-amount.scss" />
+    <None Include="wwwroot\src\css\components\_invoice-table.scss" />
+    <None Include="wwwroot\src\css\components\_priority-range.scss" />
+    <None Include="wwwroot\src\css\layout\_body.scss" />
+    <None Include="wwwroot\src\css\postcss.config.js" />
+    <None Include="wwwroot\src\css\theme\_dark.scss" />
+    <None Include="wwwroot\src\css\theme\_light.scss" />
+    <None Include="wwwroot\src\css\theme\_schemes.scss" />
+    <None Include="wwwroot\src\css\theme\_styles.scss" />
+    <None Include="wwwroot\src\js\bindings\button.js" />
+    <None Include="wwwroot\src\js\bindings\index.js" />
+    <None Include="wwwroot\src\js\components\appbar.js" />
+    <None Include="wwwroot\src\js\components\card.js" />
+    <None Include="wwwroot\src\js\components\example.js" />
+    <None Include="wwwroot\src\js\components\header.js" />
+    <None Include="wwwroot\src\js\components\index.js" />
+    <None Include="wwwroot\src\js\components\navbar.js" />
+    <None Include="wwwroot\src\js\data\dropdown.js" />
+    <None Include="wwwroot\src\js\data\formData.js" />
+    <None Include="wwwroot\src\js\data\index.js" />
+    <None Include="wwwroot\src\js\directives\index.js" />
+    <None Include="wwwroot\src\js\directives\log.js" />
+    <None Include="wwwroot\src\js\directives\reactiveLog.js" />
+    <None Include="wwwroot\src\js\directives\render.js" />
+    <None Include="wwwroot\src\js\directives\uppercase.js" />
+    <None Include="wwwroot\src\js\init.js" />
+    <None Include="wwwroot\src\js\magics\index.js" />
+    <None Include="wwwroot\src\js\magics\now.js" />
+    <None Include="wwwroot\src\js\magics\render.js" />
+    <None Include="wwwroot\src\js\minimal-theme-switcher.js" />
+    <None Include="wwwroot\src\js\stores\darkmode.js" />
+    <None Include="wwwroot\src\js\stores\feedtabs.js" />
+    <None Include="wwwroot\src\js\stores\index.js" />
+    <None Include="wwwroot\src\js\stores\tabs.js" />
   </ItemGroup>
 
 </Project>

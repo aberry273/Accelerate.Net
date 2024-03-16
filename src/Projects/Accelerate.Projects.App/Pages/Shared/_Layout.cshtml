@@ -1,59 +1,148 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Contoso University</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/ContosoUniversity.styles.css" asp-append-version="true" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>markdown.web</title>
+    <link rel="icon" type="image/x-icon" href="/favicon/favicon.ico">
+
+    <!-- Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- CSS Libraries -->
+    <!-- Classbased -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.min.css" />
+    <!-- Classless - centered viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.classless.min.css" /> -->
+    <!-- Classless - fluid viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.fluid.classless.min.css" /> -->
+    <!-- CSS Overrides -->
+    <link rel="stylesheet" href="src/css/app.css" />
+    <link rel="stylesheet" href="src/css/overrides.css" />
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json" />
+
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Contoso University</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/About">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Students/Index">Students</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Courses/Index">Courses</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Instructors/Index">Instructors</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Departments/Index">Departments</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
+
+<body class="container">
+    <!-- Header -->
+    <div x-ref="navbar" x-data="_html('navbar', 'src/view/shared/navbar.html')"></div>
+
+    <details class="dropdown">
+        <summary role="button" class="secondary">Theme</summary>
+        <ul>
+            <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+            <li><a href="#" data-theme-switcher="light">Light</a></li>
+            <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+        </ul>
+    </details>
+
+    <script>
+        const tabs = [
+            "feeds",
+            "about",
+            "profile",
+            "login",
+            "register",
+            "error",
+            "sandbox"
+        ]
+    </script> 
+           
+    <div x-data>
+        <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
+            <button @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
+        </template>
+        <main x-transition x-show="'feeds' == $store.tabs.current">
+            <div x-ref="feeds" x-data="_html('feeds', `src/view/pages/feeds.html`)"></div>
+        </main>
+        <main x-transition x-show="'about' == $store.tabs.current">
+            <div x-ref="about" x-data="_html('about', `src/view/pages/about.html`)"></div>
+        </main>
+        <main x-transition x-show="'profile' == $store.tabs.current">
+            <div x-ref="profile" x-data="_html('profile', `src/view/pages/profile.html`)"></div>
+        </main>
+        <main x-transition x-show="'register' == $store.tabs.current">
+            <div x-ref="register" x-data="_html('register', `src/view/pages/register.html`)"></div>
+        </main>
+        <main x-transition x-show="'login' == $store.tabs.current">
+            <div x-ref="login" x-data="_html('login', `src/view/pages/login.html`)"></div>
+        </main>
+        <main x-transition x-show="'error' == $store.tabs.current">
+            <div x-ref="error" x-data="_html('error', `src/view/pages/error.html`)"></div>
+        </main>
+        <main x-transition x-show="'sandbox' == $store.tabs.current">
+            <div x-ref="sandbox" x-data="_html('sandbox', `src/view/pages/sandbox.html`)"></div>
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2021 - Contoso University - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
+    @RenderBody()
+    </main>
+    <!-- ./ Main -->
+    <!-- Footer -->
+    <footer>
+        <small>
+            Built with <a href="https://picocss.com">Pico</a> •
+            <a href="https://github.com/picocss/examples/blob/master/v2-html-classless/index.html">Source code</a>
+        </small>
     </footer>
+    <!-- ./ Footer -->
+    <!-- Modal example -->
+    <dialog id="modalExample">
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" onclick="modalExample.close()"></button>
+                <h3>Confirm your action!</h3>
+            </header>
+            <p>
+                Cras sit amet maximus risus. Pellentesque sodales odio sit amet augue finibus
+                pellentesque. Nullam finibus risus non semper euismod.
+            </p>
+            <footer>
+                <button role="button" onclick="modalExample.close()">
+                    Cancel
+                </button><button autofocus role="button" onclick="modalExample.close()">Confirm</button>
+            </footer>
+        </article>
+    </dialog>
 
-    <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- JS Libraries -->
+    <!-- For componentizing and lazy loading Alpine -->
+    
 
-    @await RenderSectionAsync("Scripts", required: false)
+    <script type="module" src="src/js/init.js"></script>
+
+    <!-- Minimal theme switcher -->
+    <script src="src/js/minimal-theme-switcher.js"></script>
+
+    <!-- DATA -->
+    <script>
+        let navData = {
+            title: 'markdown.web',
+            links: [
+                {
+                    href: '#',
+                    text: 'about'
+                },
+                {
+                    href: '#',
+                    text: 'contact'
+                },
+                {
+                    href: '#',
+                    text: 'blog'
+                }
+            ]
+        }
+        let headerData = {
+            title: 'markdown.web',
+            subtitle: 'A tiny front-end library to build simple sites',
+            text: 'Total project size is < 20kb gzipped'
+        }
+    </script>
 </body>
+</html>
