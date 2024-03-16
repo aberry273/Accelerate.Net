@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Accelerate.Foundations.Utilities.Services
+namespace Accelerate.Foundations.Common.Services
 {
     public static class StaticLoggingService
     {

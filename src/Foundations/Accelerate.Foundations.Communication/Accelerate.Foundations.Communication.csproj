@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\Accelerate.Foundations.Integrations.Twilio\Accelerate.Foundations.Integrations.Twilio.csproj" />
-    <ProjectReference Include="..\Accelerate.Foundations.Utilities\Accelerate.Foundations.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

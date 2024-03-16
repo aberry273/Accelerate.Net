@@ -1,6 +1,8 @@
 ﻿using Accelerate.Features.Account.Attributes;
 using Accelerate.Features.Account.Models.Entities;
 using Accelerate.Features.Account.Models.Views;
+using Accelerate.Foundations.Common.Controllers;
+using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,13 +10,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace Accelerate.Features.Account.Controllers
 {
     //[Authorize]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private SignInManager<AccountUser> _signInManager;
         private UserManager<AccountUser> _userManager;
         public AccountController(
+            SharedContentService contentService,
             SignInManager<AccountUser> signInManager,
             UserManager<AccountUser> userManager)
+            : base(contentService)
         {
             _signInManager = signInManager;
             _userManager = userManager;
