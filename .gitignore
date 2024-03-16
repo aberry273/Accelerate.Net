@@ -12,3 +12,4 @@ bin
 obj
 packages
 src/.vs/ProjectEvaluation/
+src/secrets.json
