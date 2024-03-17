@@ -1,11 +1,9 @@
-﻿using Accelerate.Foundations.Content.Models;
+﻿using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.Database.Services;
-using Accelerate.Projects.App.Models;
-using Accelerate.Projects.App.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Accelerate.Projects.App.Controllers
+namespace Accelerate.Foundations.Common.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -50,7 +48,7 @@ namespace Accelerate.Projects.App.Controllers
 
             return Ok(new
             {
-                message = "Super Hero Created Successfully!!!",
+                message = "Created Successfully",
                 id = id
             });
         }
@@ -69,7 +67,7 @@ namespace Accelerate.Projects.App.Controllers
 
             return Ok(new
             {
-                message = "Super Hero Updated Successfully!!!",
+                message = "Updated Successfully",
                 id = id
             });
         }
@@ -86,7 +84,7 @@ namespace Accelerate.Projects.App.Controllers
 
             return Ok(new
             {
-                message = "Super Hero Deleted Successfully!!!",
+                message = "Deleted Successfully",
                 id = id
             });
         }

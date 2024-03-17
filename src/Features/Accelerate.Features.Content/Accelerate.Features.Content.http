@@ -1,0 +1,6 @@
+@Accelerate.Features.Content_HostAddress = http://localhost:5276
+
+GET {{Accelerate.Features.Content_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

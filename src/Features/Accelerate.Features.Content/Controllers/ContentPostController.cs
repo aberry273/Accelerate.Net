@@ -1,10 +1,9 @@
-﻿using Accelerate.Foundations.Content.Models;
+﻿using Accelerate.Foundations.Common.Controllers;
+using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Database.Services;
-using Accelerate.Projects.App.Models;
-using Accelerate.Projects.App.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Accelerate.Projects.App.Controllers
+namespace Accelerate.Features.Content.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

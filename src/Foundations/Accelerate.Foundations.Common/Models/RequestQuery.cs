@@ -1,4 +1,4 @@
-﻿namespace Accelerate.Projects.App.Models
+﻿namespace Accelerate.Foundations.Common.Models
 {
     public class RequestQuery
     {

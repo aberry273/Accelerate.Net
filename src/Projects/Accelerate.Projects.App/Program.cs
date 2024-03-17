@@ -12,6 +12,19 @@ var builder = WebApplication.CreateBuilder(args);
 //var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
 builder.Configuration.AddUserSecrets<Program>();
 
+// enable CORS
+var localFrontendDevServer = "localFrontendDevServer";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: localFrontendDevServer,
+        policy =>
+        {
+            policy.WithOrigins("*", "https://127.0.0.1:5500")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
+});
 // Add services to the container.
 builder.Services.AddRazorPages();
 
@@ -29,7 +42,7 @@ Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services,
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
-Accelerate.Features.Feeds.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
  
 // Add Database Exception filter
@@ -49,6 +62,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 
 var app = builder.Build();
 
@@ -78,23 +92,12 @@ else
     app.UseMigrationsEndPoint();
 }
 
-
-
-// Create database
-/*
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var context = services.GetRequiredService<SchoolContext>();
-    DbInitializer.Initialize(context);
-}
-*/
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseCors(localFrontendDevServer);
 
 app.UseAuthentication();
 app.UseAuthorization();
