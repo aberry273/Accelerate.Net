@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Pages\Partials\" />
+    <Folder Include="Views\Partials\" />
+    <Folder Include="Views\Shared\" />
   </ItemGroup>
 
 </Project>

@@ -2,9 +2,9 @@
 
 namespace Accelerate.Features.Account.Models.Views
 {
-    public class LoginPage : BasePage
+    public class AccountPage : BasePage
     {
-        public LoginPage(BasePage model) : base(model)
+        public AccountPage(BasePage model) : base(model)
         {
 
         }

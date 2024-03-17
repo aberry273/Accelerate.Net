@@ -9,11 +9,11 @@ namespace Accelerate.Projects.App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public abstract class BaseEntityController<T> : ControllerBase where T : IBaseEntity
+    public abstract class BaseApiController<T> : ControllerBase where T : IBaseEntity
     {
         private readonly IEntityService<T> _service;
 
-        public BaseEntityController(IEntityService<T> service)
+        public BaseApiController(IEntityService<T> service)
         {
             _service = service;
         }

@@ -9,7 +9,7 @@ using static Accelerate.Foundations.Database.Constants.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
+//var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
 builder.Configuration.AddUserSecrets<Program>();
 
 // Add services to the container.
@@ -101,9 +101,11 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();
-
+/*
 app.MapControllerRoute(name: "default",
                pattern: "{controller=Home}/{action=Index}/{id?}");
+*/
+app.MapDefaultControllerRoute();
 app.Run();
 
 

@@ -8,7 +8,7 @@ namespace Accelerate.Projects.App.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostController : BaseEntityController<ContentPostEntity>
+    public class ContentPostController : BaseApiController<ContentPostEntity>
     { 
         public ContentPostController(IEntityService<ContentPostEntity> service) : base(service)
         {

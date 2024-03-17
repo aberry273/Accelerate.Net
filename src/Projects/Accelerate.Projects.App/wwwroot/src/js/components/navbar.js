@@ -1,6 +1,4 @@
 
-//import { generator } from '../_generator.js'
-
 function ahref(href, text) {
   return `<a href="${href}">${text}</a>`
 }

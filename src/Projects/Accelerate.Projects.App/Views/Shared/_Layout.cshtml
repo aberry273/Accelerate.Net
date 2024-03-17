@@ -1,17 +1,24 @@
-﻿@model Accelerate.Foundations.Common.Models.BasePage
+﻿@using Microsoft.AspNetCore.Identity
+@using Accelerate.Foundations.Common.Models
+@using Accelerate.Foundations.Common.Helpers
+@using Accelerate.Features.Account.Models.Entities;
+
+@inject Microsoft.Extensions.Hosting.IHostEnvironment env
+@inject UserManager<AccountUser> UserManager
+@model Accelerate.Foundations.Common.Models.BasePage
 @{
     var lang = Model.Metadata.LanguageCode ?? "en";
 }
 <!DOCTYPE html>
-<html lang="@Model.Metadata.LanguageCode">
+<html lang="@lang">
 <head>
     @{
         if (Model.Metadata != null)
-            await Html.RenderPartialAsync("/PageMetadata.cshtml", Model.Metadata);
+            await Html.RenderPartialAsync("~/Views/Shared/PageMetadata.cshtml", Model.Metadata);
         if (Model.SEO != null)
-            await Html.RenderPartialAsync("/PageSeoMetadata.cshtml", Model.SEO);
+            await Html.RenderPartialAsync("~/Views/Shared/PageSeoMetadata.cshtml", Model.SEO);
         if (Model.SocialMetadata != null)
-            await Html.RenderPartialAsync("/PageSocialMetadata.cshtml", Model.SocialMetadata);
+            await Html.RenderPartialAsync("~/Views/Shared/PageSocialMetadata.cshtml", Model.SocialMetadata);
     }
     <!-- Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -24,8 +31,8 @@
     <!-- Classless - fluid viewport -->
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.fluid.classless.min.css" /> -->
     <!-- CSS Overrides -->
-    <link rel="stylesheet" href="src/css/app.css" />
-    <link rel="stylesheet" href="src/css/overrides.css" />
+    <link rel="stylesheet" href="~/src/css/app.css" />
+    <link rel="stylesheet" href="~/src/css/overrides.css" />
 
     <!-- Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,13 +40,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
     <!-- PWA -->
-    <link rel="manifest" href="src/manifest.json" />
+    <link rel="manifest" href="~/src/manifest.json" />
 </head>
 
 <body class="container">
     <!-- Header -->
-    <div x-ref="navbar" x-data="_html('navbar', 'src/view/shared/navbar.html')"></div>
-
+    <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
     <details class="dropdown">
         <summary role="button" class="secondary">Theme</summary>
         <ul>
@@ -49,46 +55,7 @@
         </ul>
     </details>
 
-    <script>
-        const tabs = [
-            "feeds",
-            "about",
-            "profile",
-            "login",
-            "register",
-            "error",
-            "sandbox"
-        ]
-    </script> 
-           
-    <div x-data>
-        <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
-            <button @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
-        </template>
-        <main x-transition x-show="'feeds' == $store.tabs.current">
-            <div x-ref="feeds" x-data="_html('feeds', `src/view/pages/feeds.html`)"></div>
-        </main>
-        <main x-transition x-show="'about' == $store.tabs.current">
-            <div x-ref="about" x-data="_html('about', `src/view/pages/about.html`)"></div>
-        </main>
-        <main x-transition x-show="'profile' == $store.tabs.current">
-            <div x-ref="profile" x-data="_html('profile', `src/view/pages/profile.html`)"></div>
-        </main>
-        <main x-transition x-show="'register' == $store.tabs.current">
-            <div x-ref="register" x-data="_html('register', `src/view/pages/register.html`)"></div>
-        </main>
-        <main x-transition x-show="'login' == $store.tabs.current">
-            <div x-ref="login" x-data="_html('login', `src/view/pages/login.html`)"></div>
-        </main>
-        <main x-transition x-show="'error' == $store.tabs.current">
-            <div x-ref="error" x-data="_html('error', `src/view/pages/error.html`)"></div>
-        </main>
-        <main x-transition x-show="'sandbox' == $store.tabs.current">
-            <div x-ref="sandbox" x-data="_html('sandbox', `src/view/pages/sandbox.html`)"></div>
-        </main>
-    </div>
-    @RenderBody()
-    </main>
+    @RenderBody() 
     <!-- ./ Main -->
     <!-- Footer -->
     <footer>
@@ -119,12 +86,10 @@
 
     <!-- JS Libraries -->
     <!-- For componentizing and lazy loading Alpine -->
-    
-
-    <script type="module" src="src/js/init.js"></script>
+    <script type="module" src="~/src/js/init.js"></script>
 
     <!-- Minimal theme switcher -->
-    <script src="src/js/minimal-theme-switcher.js"></script>
+    <script src="~/src/js/minimal-theme-switcher.js"></script>
 
     <!-- DATA -->
     <script>

@@ -24,6 +24,9 @@ namespace Accelerate.Features.Account
                 .GetSection("OAuthConfiguration")
                 .Get<OAuthConfiguration>();
 
+            socialConfig.GoogleAppSecret = configuration["GoogleAppSecret"];
+            socialConfig.FacebookAppSecret = configuration["FacebookAppSecret"];
+
             // CONTEXT
             services.AddDbContext<Foundations.Database.Services.BaseContext<AccountProfile>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
             services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)));

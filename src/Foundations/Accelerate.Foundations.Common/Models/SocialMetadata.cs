@@ -9,27 +9,27 @@ namespace Accelerate.Foundations.Common.Models
 {
     public class SocialMetadata
     {
-        public string Sitename { get; set; }
+        public string? Sitename { get; set; }
 
         [JsonProperty("title")]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         [JsonProperty("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [JsonProperty("image")]
-        public string Image { get; set; }
+        public string? Image { get; set; }
 
         [JsonProperty("quote")]
-        public string Quote { get; set; }
+        public string? Quote { get; set; }
 
         [JsonProperty("tags")]
-        public string Tags { get; set; }
+        public string? Tags { get; set; }
 
         [JsonProperty("url")]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         [JsonProperty("creator")]
-        public string Creator { get; set; }
+        public string? Creator { get; set; }
     }
 }

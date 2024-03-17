@@ -19,8 +19,25 @@ namespace Accelerate.Foundations.Common.Services
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(),
-                TopNavigation = new NavigationGroup(),
+                TopNavigation = CreateTopNavigation(),
                 SEO = new SeoMetadata(),
+            };
+        }
+
+        public NavigationGroup CreateTopNavigation()
+        {
+            return new NavigationGroup()
+            {
+                Title = "feed.at",
+                Subtitle = "Opensource",
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Href = "/Account/Login",
+                        Text = "Login",
+                    }
+                }
             };
         }
     }

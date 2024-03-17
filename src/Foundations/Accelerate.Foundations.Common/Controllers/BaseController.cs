@@ -16,10 +16,12 @@ namespace Accelerate.Foundations.Common.Controllers
         {
             _sharedContentService = sharedContentService;
         }
+        /*
         public IActionResult Index()
         {
             var model = _sharedContentService.CreatePageBaseContent();
             return View(model);
         }
+        */
     }
 }

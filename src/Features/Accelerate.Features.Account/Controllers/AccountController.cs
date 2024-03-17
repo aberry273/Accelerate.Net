@@ -14,23 +14,25 @@ namespace Accelerate.Features.Account.Controllers
     {
         private SignInManager<AccountUser> _signInManager;
         private UserManager<AccountUser> _userManager;
+        private ISharedContentService _contentService;
         public AccountController(
-            SharedContentService contentService,
+            ISharedContentService contentService,
             SignInManager<AccountUser> signInManager,
             UserManager<AccountUser> userManager)
             : base(contentService)
         {
+            _contentService = contentService;
             _signInManager = signInManager;
             _userManager = userManager;
         }
 
         private const string _profileUrl = "/Profile/Index";
 
-        // 
-        // GET: /HelloWorld/
-        public string Index()
+        public new IActionResult Index()
         {
-            return "This is my default action...";
+            return RedirectToAction("Login");
+            var model = new AccountPage(_contentService.CreatePageBaseContent());
+            return View(model);
         }
 
         [HttpGet]
@@ -43,7 +45,7 @@ namespace Accelerate.Features.Account.Controllers
 
             //ViewData["ReturnUrl"] = returnUrl;
             //var viewModel = await this.GetLoginViewModel();
-            var viewModel = new LoginPage();
+            var viewModel = new LoginPage(_contentService.CreatePageBaseContent());
             return View(viewModel);
         }
     }
