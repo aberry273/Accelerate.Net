@@ -1,7 +1,7 @@
-﻿using Accelerate.Features.Account.Models.Entities;
+﻿using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Services;
 
-namespace Accelerate.Features.Account.Services
+namespace Accelerate.Foundations.Account.Services
 {
     public class AccountEmailSender : Microsoft.AspNetCore.Identity.IEmailSender<AccountUser>
     {

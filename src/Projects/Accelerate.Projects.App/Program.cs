@@ -1,4 +1,4 @@
-using Accelerate.Features.Account.Models.Entities;
+using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Integrations.Twilio.Models;
 using Accelerate.Projects.App.Data;
@@ -40,6 +40,7 @@ Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builde
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
@@ -70,7 +71,8 @@ app.UseSession();
 
 // Add WebAPI based authentication
 app.MapGroup($"/{Accelerate.Projects.App.Constants.Routes.WebApiAuthentication}")
-    .MapIdentityApi<AccountUser>();
+    .MapIdentityApi<AccountUser>()
+    ;
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

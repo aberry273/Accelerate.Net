@@ -11,8 +11,8 @@ namespace Accelerate.Foundations.Common.Controllers
 {
     public abstract class BaseController : Controller
     {
-        protected ISharedContentService _sharedContentService;
-        public BaseController(ISharedContentService sharedContentService)
+        protected IMetaContentService _sharedContentService;
+        public BaseController(IMetaContentService sharedContentService)
         {
             _sharedContentService = sharedContentService;
         }

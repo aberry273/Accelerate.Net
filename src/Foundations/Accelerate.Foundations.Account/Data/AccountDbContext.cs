@@ -1,11 +1,10 @@
-﻿using Accelerate.Features.Account.Models;
-using Accelerate.Features.Account.Models.Entities;
+﻿using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Database.Services;
-using Accelerator.Foundations.Users.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Accelerate.Features.Account.Data
+namespace Accelerate.Foundations.Account.Data
 {
     public class AccountDbContext : IdentityDbContext<AccountUser,
             AccountRole,
@@ -38,49 +37,49 @@ namespace Accelerate.Features.Account.Data
             // Each User can have many UserClaims
             builder.Entity<AccountUser>()
                 .HasMany(e => e.Claims)
-                .WithOne()
-                //.HasForeignKey(uc => uc.UserId)
+                .WithOne(e => e.User)
+                .HasForeignKey(uc => uc.UserId)
                 .IsRequired();
 
             // Each User can have many UserLogins
             builder.Entity<AccountUser>()
                 .HasMany(e => e.Logins)
-                .WithOne()
-               // .HasForeignKey(ul => ul.UserId)
+                .WithOne(e => e.User)
+                .HasForeignKey(ul => ul.UserId)
                 .IsRequired();
 
             // Each User can have many UserTokens
             builder.Entity<AccountUser>()
                 .HasMany(e => e.Tokens)
-                .WithOne()
-               // .HasForeignKey(ut => ut.UserId)
+                .WithOne(e => e.User)
+                .HasForeignKey(ut => ut.UserId)
                 .IsRequired();
 
             // Each User can have many entries in the UserRole join table
             builder.Entity<AccountUser>()
                 .HasMany(e => e.Roles)
                 .WithOne(e => e.User)
-              //  .HasForeignKey(ur => ur.UserId)
+                .HasForeignKey(ur => ur.UserId)
                 .IsRequired();
 
             // Each user can have one Profile
             builder.Entity<AccountUser>()
                 .HasOne(e => e.AccountProfile)
-                .WithOne()
-                //.HasForeignKey<AccountProfile>(e => e.UserId)
+                .WithOne(e => e.User)
+                .HasForeignKey<AccountProfile>(e => e.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
           
             builder.Entity<AccountRole>()
                 .HasMany(e => e.UserRoles)
                 .WithOne(e => e.Role)
-              //  .HasForeignKey(ur => ur.RoleId)
+                .HasForeignKey(ur => ur.RoleId)
                 .IsRequired();
 
             builder.Entity<AccountRole>()
                 .HasMany(e => e.RoleClaims)
                 .WithOne(e => e.Role)
-               // .HasForeignKey(rc => rc.RoleId)
+                .HasForeignKey(rc => rc.RoleId)
                 .IsRequired();
         }
     }

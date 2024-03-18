@@ -6,7 +6,7 @@ Drop-Database -context ContentDbContext -project "Accelerate.Foundations.Content
 Add-Migration InitialCreate_Content -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 # Authentication
-Drop-Database -context AccountDbContext -project "Accelerate.Features.Account" 
-Add-Migration InitialCreate_Account -context AccountDbContext -project "Accelerate.Features.Account" 
-Update-Database -context AccountDbContext -project "Accelerate.Features.Account" 
+Drop-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
+Add-Migration Initial_Account1 -context AccountDbContext -project "Accelerate.Foundations.Account" 
+Update-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
 

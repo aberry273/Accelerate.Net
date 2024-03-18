@@ -1,4 +1,4 @@
-﻿namespace Accelerate.Features.Account.Helpers
+﻿namespace Accelerate.Foundations.Account.Helpers
 {
     public class AccountHelpers
     {

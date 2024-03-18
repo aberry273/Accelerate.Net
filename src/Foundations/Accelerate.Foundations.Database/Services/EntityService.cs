@@ -127,11 +127,11 @@ namespace Accelerate.Foundations.Database.Services
         {
             try
             {
-                var id = new Guid();
+                var id = Guid.NewGuid();
                 entity.Id = id;
                 await _dbContext.AddAsync<T>(entity);
                 var result = await _dbContext.SaveChangesAsync();
-                return await _dbContext.SaveChangesAsync() > 0 ? id : null;
+                return result > 0 ? id : null;
             }
             catch (Exception ex)
             {

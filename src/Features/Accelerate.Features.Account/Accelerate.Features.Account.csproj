@@ -7,6 +7,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Attributes\**" />
+    <Compile Remove="Claims\**" />
+    <Compile Remove="Data\**" />
+    <Compile Remove="Helpers\**" />
+    <Compile Remove="Models\Entities\**" />
+    <Compile Remove="Services\**" />
+    <Content Remove="Attributes\**" />
+    <Content Remove="Claims\**" />
+    <Content Remove="Data\**" />
+    <Content Remove="Helpers\**" />
+    <Content Remove="Models\Entities\**" />
+    <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Attributes\**" />
+    <EmbeddedResource Remove="Claims\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <EmbeddedResource Remove="Models\Entities\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Attributes\**" />
+    <None Remove="Claims\**" />
+    <None Remove="Data\**" />
+    <None Remove="Helpers\**" />
+    <None Remove="Models\Entities\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\OAuthConfiguration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.3" />
@@ -20,10 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Communication\Accelerate.Foundations.Communication.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
   </ItemGroup>

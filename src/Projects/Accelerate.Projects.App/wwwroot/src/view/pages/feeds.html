@@ -25,11 +25,41 @@
         <button class="material-icons flat">add</button>
       </ul>
     </nav>
+    <div x-data="formAjax({
+      feed: $store.feedFilters.current,
+      postbackUrl: 'https://localhost:7220/api/contentpost',
+      postbackType: 'POST',
+      event: 'post:created',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Whats your update?',
+          autocomplete: null,
+          ariaInvalid: true,
+          helper: ''
+        },
+        {
+          name: 'UserId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          placeholder: 'Whats your update?',
+          autocomplete: null,
+          ariaInvalid: true,
+          helper: '',
+          value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+        },
+        ]
+    })"></div>
     <!--Feed-->
     <div x-data="$store.feedFilters">
       <div x-data="feed({
-        feed: $store.feedFilters.current
+        feed: $store.feedFilters.current,
+        sourceUrl: 'https://localhost:7220/api/contentpost',
+        event: 'post:created',
       })"
+      x-init="await fetchItems()"
       x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
     </div>
   </div>

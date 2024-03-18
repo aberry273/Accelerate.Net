@@ -4,29 +4,46 @@ export default function (data) {
     filterId: '',
     filtered: [],
     loading: false,
-
+    sourceUrl: '#',
     init() {
       this.filterId = data.feed;
-      this.selectFeed(data.feed);
+      this.sourceUrl = data.sourceUrl;
+      //this.selectFeed(data.feed);
       this.setHtml(data)
       const self = this;
-      this.$watch('$store.feedFilters.current', (val) => {
-        this.selectFeed(val)
+      this.$watch('$store.feedFilters.current', async (val) => {
+        await this.filterPosts(val)
       })
     },
-    selectFeed(feed) {
-      this.filterPosts(feed);
-    },
-    filterPosts(feed) {
+    async filterPosts(feed) {
       this.loading = true;
-      this.filtered = this.$store.feeds.items.filter(x => x.feed == feed);
+      await this.fetchItems();
       this.loading = false;
+    },
+    async fetchItems() {
+      const results = await this.$fetch.GET(this.sourceUrl);
+      const items = results.map(x => {
+        return {
+          id: x.id,
+          username: x.userId,
+          profile: 'https://placehold.co/150x150',
+          handle: `@${x.userId}`,
+          updated: '5 minutes ago',
+          content: `<p>${x.content}</p>`,
+          feed: '',
+          liked: false,
+          agree: 0,
+          disagree: 0,
+          footer: 'footer',
+        }
+      })
+      this.filtered = items;
     },
     setHtml(data) {
       // make ajax request
       this.$root.innerHTML = `
-        <div x-data="$data.feed" class="container feed" x-transition>
-          <template x-for="post in filtered" :key="post.id">
+        <div x-data="$data.feed" x-on:post:created.window="await fetchItems" class="container feed" x-transition>
+          <template x-for="(post, i) in filtered" :key="post.id+''+i">
             <div x-data="card(post)"></div>
           </template>
           <template x-if="filtered.length == 0">

@@ -1,0 +1,70 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.RegisterPage
+@{ }
+<div class="grid container">
+    <div class="panel center-vertical">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Register</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed-->
+        <article>
+            @if (!string.IsNullOrEmpty(Model.Form.Response))
+            {
+                <strong><i>@Model.Form.Response</i></strong>
+            }
+            <div x-data="formPostback({
+                feed: $store.feedFilters.current,
+                method: 'POST',
+                fields: [
+                    {
+                    name: 'Username',
+                    type: 'input',
+                    placeholder: 'Username',
+                    label: 'Username',
+                    autocomplete: null,
+                    model: '@Model.Form.Username',
+                    ariaInvalid: false,
+                    helper: 'error'
+                    },
+                    {
+                    name: 'Email',
+                    type: 'email',
+                    placeholder: 'Email',
+                    label: 'Email',
+                    autocomplete: null,
+                    model: '@Model.Form.Username',
+                    ariaInvalid: false,
+                    helper: 'error'
+                    },
+                    {
+                    name: 'Password',
+                    type: 'password',
+                    placeholder: 'Password',
+                    label: 'Password',
+                    model: '@Model.Form.Password',
+                    autocomplete: null
+                    },
+                    {
+                    name: 'ConfirmPassword',
+                    type: 'password',
+                    placeholder: 'Confirm Password',
+                    label: 'Password',
+                    model: '@Model.Form.ConfirmPassword',
+                    autocomplete: null
+                    }
+                ]
+                })"></div>
+        </article>
+    </div>
+    <!-- Other panel -->
+    <div>
+    </div>
+</div>

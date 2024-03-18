@@ -7,6 +7,7 @@ namespace Accelerate.Features.Account.Models.Entities
 {
     public class AccountUser : IdentityUser<Guid>
     {
+        public string Domain { get; set; }
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;

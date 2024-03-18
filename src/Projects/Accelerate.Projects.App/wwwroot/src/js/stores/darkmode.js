@@ -2,12 +2,9 @@ export default () => ({
     init() {
         this.on = window.matchMedia('(prefers-color-scheme: dark)').matches
     },
-    dark: false,
     theme: 'light',
- 
+    get isDark() { return this.theme == 'dark' },
     toggle() {
-        this.dark = ! this.dark
-        this.theme = !this.dark ? 'light' : 'dark'
-        console.log(this.dark)
+        this.theme = !this.theme == 'dark' ? 'light' : 'dark'
     }
 })

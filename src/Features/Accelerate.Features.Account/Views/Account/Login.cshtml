@@ -2,6 +2,51 @@
 @using System.Linq
 @using Microsoft.AspNetCore.Http 
 @model Accelerate.Features.Account.Models.Views.LoginPage
-@{ ViewData["Title"] = "Log in"; }
-
-<div>LOGIN</div>
+@{ }
+<div class="grid container">
+    <div class="panel center-vertical">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Login</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed-->
+        <article>
+            @if (!string.IsNullOrEmpty(Model.Form.Response))
+            {
+                <strong><i>@Model.Form.Response</i></strong>
+            }
+            <div x-data="formPostback({
+                feed: $store.feedFilters.current,
+                method: 'POST',
+                fields: [
+                    {
+                    name: 'Username',
+                    type: 'input',
+                    placeholder: 'Username',
+                    label: 'Username',
+                    autocomplete: null,
+                    model: '@Model.Form.Username',
+                    ariaInvalid: true,
+                    helper: 'error'
+                    },
+                    {
+                    name: 'Password',
+                    type: 'password',
+                    placeholder: 'Password',
+                    label: 'Password',
+                    model: '@Model.Form.Password',
+                    autocomplete: null
+                    }
+                ]
+                })"></div>
+        </article>
+    </div>
+    <!-- Other panel -->
+    <div>
+    </div>
+</div>

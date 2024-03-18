@@ -29,6 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Features\Accelerate.Features.Account\Accelerate.Features.Account.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
   </ItemGroup>

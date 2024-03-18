@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Accelerate.Foundations.Common.Models
 @using Accelerate.Foundations.Common.Helpers
-@using Accelerate.Features.Account.Models.Entities;
+@using Accelerate.Foundations.Account.Models.Entities;
 
 @inject Microsoft.Extensions.Hosting.IHostEnvironment env
 @inject UserManager<AccountUser> UserManager
@@ -43,27 +43,17 @@
     <link rel="manifest" href="~/src/manifest.json" />
 </head>
 
-<body class="container">
-    <!-- Header -->
-    <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
-    <details class="dropdown">
-        <summary role="button" class="secondary">Theme</summary>
-        <ul>
-            <li><a href="#" data-theme-switcher="auto">Auto</a></li>
-            <li><a href="#" data-theme-switcher="light">Light</a></li>
-            <li><a href="#" data-theme-switcher="dark">Dark</a></li>
-        </ul>
-    </details>
-
-    @RenderBody() 
-    <!-- ./ Main -->
-    <!-- Footer -->
-    <footer>
-        <small>
-            Built with <a href="https://picocss.com">Pico</a> •
-            <a href="https://github.com/picocss/examples/blob/master/v2-html-classless/index.html">Source code</a>
-        </small>
-    </footer>
+<body style="background-color: #efefef; min-height: 100%; height: 100vh;">
+    <div class="container">
+        <!-- Header -->
+        <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
+    
+            @RenderBody() 
+   
+        <!-- ./ Main -->
+        <!-- Footer -->
+        <div x-data="footer({text: 'Built with Accelerate.web'})"></div>
+    </div>
     <!-- ./ Footer -->
     <!-- Modal example -->
     <dialog id="modalExample">

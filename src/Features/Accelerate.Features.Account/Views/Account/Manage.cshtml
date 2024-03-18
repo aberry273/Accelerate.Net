@@ -1,0 +1,77 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{ }
+
+<script>
+    const tabs = [
+        "profile",
+        "contact",
+        "settings",
+    ]
+</script>
+<div class="grid container">
+    <div class="panel center-vertical">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Manage profile</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed--> 
+        <div class="grid" x-data>
+            <article x-cloak>
+                <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
+                    <button class="flat" @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
+                </template>
+            </article>
+            <article
+                <main x-transition x-show="'profile' == $store.tabs.current">
+                    <div x-ref="profile">
+                        @if (!string.IsNullOrEmpty(Model.Form.Response))
+                        {
+                            <strong><i>@Model.Form.Response</i></strong>
+                        }
+                        <div x-data="formPostback({
+                            feed: $store.feedFilters.current,
+                            method: 'POST',
+                            fields: [
+                                {
+                                name: 'Username',
+                                type: 'input',
+                                placeholder: 'Username',
+                                label: 'Username',
+                                autocomplete: null,
+                                model: '@Model.Form.Username',
+                                ariaInvalid: true,
+                                helper: 'error'
+                                },
+                                {
+                                name: 'Password',
+                                type: 'password',
+                                placeholder: 'Password',
+                                label: 'Password',
+                                model: '@Model.Form.Password',
+                                autocomplete: null
+                                }
+                            ]
+                            })"></div>
+                    </div>
+                </main>
+                <main x-transition x-show="'contact' == $store.tabs.current">
+                    <div x-ref="contact" x-data="_html('contact', `/src/view/pages/about.html`)"></div>
+                </main
+                 <main x-transition x-show="'settings' == $store.tabs.current">
+                    <div x-ref="settings" x-data="_html('settings', `/src/view/pages/about.html`)"></div>
+                </main>
+            </article>
+        </div>
+    </div>
+    <!-- Other panel -->
+    <div>
+    </div>
+</div>

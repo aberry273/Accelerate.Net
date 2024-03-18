@@ -1,23 +1,35 @@
-﻿using Accelerate.Features.Account.Attributes;
-using Accelerate.Features.Account.Models.Entities;
+﻿using Accelerate.Foundations.Account.Attributes;
+using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Features.Account.Models.Views;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Accelerate.Foundations.Common.Models;
 
 namespace Accelerate.Projects.App.Controllers
 {
     //[Authorize]
     public class HomeController : BaseController
     {
-        ISharedContentService _contentService;
+        UserManager<AccountUser> _userManager;
+        IMetaContentService _contentService;
         public HomeController(
-            ISharedContentService contentService)
+            UserManager<AccountUser> userManager,
+            IMetaContentService contentService)
             : base(contentService)
         {
             _contentService = contentService;
+            _userManager = userManager;
+        }
+        private BasePage CreateBaseContent(AccountUser user)
+        {
+            var profile = user != null ? new UserProfile()
+            {
+                Username = user.UserName,
+            } : null;
+            return _contentService.CreatePageBaseContent(profile);
         }
 
         public IActionResult Index()
@@ -25,9 +37,10 @@ namespace Accelerate.Projects.App.Controllers
             return RedirectToAction("Feed");
         }
 
-        public IActionResult Feed()
+        public async Task<IActionResult> Feed()
         {
-            var model = _contentService.CreatePageBaseContent();
+            var user = await _userManager.GetUserAsync(this.User);
+            var model = CreateBaseContent(user);
             return View(model);
         }
     }

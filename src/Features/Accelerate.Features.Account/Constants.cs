@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 namespace Accelerate.Features.Account
 {
     public struct Constants
-    {
-        public struct Settings
-        {
-            public const string ConnectionStringName = "AccountContext";
-        }
+    { 
     }
 }

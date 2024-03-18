@@ -8,7 +8,7 @@ namespace Accelerate.Foundations.Common
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<ISharedContentService, SharedContentService>();
+            services.AddTransient<IMetaContentService, MetaContentService>();
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using Accelerate.Features.Account.Models.Entities;
+﻿using Accelerate.Foundations.Account.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace Accelerate.Features.Account.Claims
+namespace Accelerate.Foundations.Account.Claims
 {
     public class AdditionalUserClaimsPrincipalFactory :
        UserClaimsPrincipalFactory<AccountUser, AccountRole>

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Common.Services
 {
-    public interface ISharedContentService
+    public interface IMetaContentService
     {
-        BasePage CreatePageBaseContent();
+        BasePage CreatePageBaseContent(UserProfile? profile = null);
     }
 }

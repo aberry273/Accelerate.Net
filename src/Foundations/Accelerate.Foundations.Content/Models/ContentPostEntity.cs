@@ -12,7 +12,7 @@ namespace Accelerate.Foundations.Content.Models
     public class ContentPostEntity : BaseEntity
     {
         [ForeignKey("User")]
-        public required Guid? UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string? Content { get; set; }
     }
 }
