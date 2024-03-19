@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Common.Models;
 
-namespace Accelerate.Features.Content.Models
+namespace Accelerate.Features.Content.Models.Views
 {
     public class ContentPostViewModel : IEntityViewModel
     {

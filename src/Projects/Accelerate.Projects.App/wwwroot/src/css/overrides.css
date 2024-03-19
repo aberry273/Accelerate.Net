@@ -165,7 +165,9 @@
     left: 0;
     margin-left: 50px;
   }
-
+    .fit-content {
+        min-width: max-content;
+    }
 /* RESPONSIVE GRID*/
 @media (min-width: 576px) {
   /*GRID*/

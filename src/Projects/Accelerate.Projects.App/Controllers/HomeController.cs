@@ -34,14 +34,8 @@ namespace Accelerate.Projects.App.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Feed");
+            return RedirectToAction("Feed", "Content");
         }
 
-        public async Task<IActionResult> Feed()
-        {
-            var user = await _userManager.GetUserAsync(this.User);
-            var model = CreateBaseContent(user);
-            return View(model);
-        }
     }
 }

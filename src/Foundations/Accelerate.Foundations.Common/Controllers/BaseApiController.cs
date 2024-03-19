@@ -9,7 +9,7 @@ namespace Accelerate.Foundations.Common.Controllers
     [ApiController]
     public abstract class BaseApiController<T> : ControllerBase where T : IBaseEntity
     {
-        private readonly IEntityService<T> _service;
+        protected readonly IEntityService<T> _service;
 
         public BaseApiController(IEntityService<T> service)
         {
@@ -37,7 +37,7 @@ namespace Accelerate.Foundations.Common.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(T obj)
+        public virtual async Task<IActionResult> Post(T obj)
         {
             var id = await _service.CreateWithGuid(obj);
 

@@ -1,3 +1,4 @@
+using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Integrations.Twilio.Models;
@@ -27,7 +28,6 @@ builder.Services.AddCors(options =>
 });
 // Add services to the container.
 builder.Services.AddRazorPages();
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -41,6 +41,9 @@ Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, buil
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
+Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);

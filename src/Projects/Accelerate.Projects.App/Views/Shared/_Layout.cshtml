@@ -47,32 +47,12 @@
     <div class="container">
         <!-- Header -->
         <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
-    
-            @RenderBody() 
-   
-        <!-- ./ Main -->
+        <!-- Body -->
+        @RenderBody() 
         <!-- Footer -->
-        <div x-data="footer({text: 'Built with Accelerate.web'})"></div>
+        <div x-data="footer(footerData)"></div>
     </div>
     <!-- ./ Footer -->
-    <!-- Modal example -->
-    <dialog id="modalExample">
-        <article>
-            <header>
-                <button aria-label="Close" rel="prev" onclick="modalExample.close()"></button>
-                <h3>Confirm your action!</h3>
-            </header>
-            <p>
-                Cras sit amet maximus risus. Pellentesque sodales odio sit amet augue finibus
-                pellentesque. Nullam finibus risus non semper euismod.
-            </p>
-            <footer>
-                <button role="button" onclick="modalExample.close()">
-                    Cancel
-                </button><button autofocus role="button" onclick="modalExample.close()">Confirm</button>
-            </footer>
-        </article>
-    </dialog>
 
     <!-- JS Libraries -->
     <!-- For componentizing and lazy loading Alpine -->
@@ -83,27 +63,16 @@
 
     <!-- DATA -->
     <script>
-        let navData = {
-            title: 'markdown.web',
-            links: [
-                {
-                    href: '#',
-                    text: 'about'
-                },
-                {
-                    href: '#',
-                    text: 'contact'
-                },
-                {
-                    href: '#',
-                    text: 'blog'
-                }
-            ]
-        }
         let headerData = {
-            title: 'markdown.web',
+            title: 'feed.at',
             subtitle: 'A tiny front-end library to build simple sites',
             text: 'Total project size is < 20kb gzipped'
+        }
+
+        let footerData = {
+            title: 'markdown.web',
+            subtitle: 'A tiny front-end library to build simple sites',
+            text: 'feed.at'
         }
     </script>
 </body>

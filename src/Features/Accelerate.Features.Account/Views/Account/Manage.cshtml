@@ -12,7 +12,7 @@
     ]
 </script>
 <div class="grid container">
-    <div class="panel center-vertical">
+    <div class="center-vertical">
         <nav>
             <ul>
                 <header>
@@ -24,14 +24,14 @@
         </nav>
         <!--Feed--> 
         <div class="grid" x-data>
-            <article x-cloak>
+            <article>
                 <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
                     <button class="flat" @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
                 </template>
             </article>
-            <article
+            <article class="fit-content"> 
                 <main x-transition x-show="'profile' == $store.tabs.current">
-                    <div x-ref="profile">
+                     
                         @if (!string.IsNullOrEmpty(Model.Form.Response))
                         {
                             <strong><i>@Model.Form.Response</i></strong>
@@ -60,14 +60,14 @@
                                 }
                             ]
                             })"></div>
-                    </div>
+                    
                 </main>
                 <main x-transition x-show="'contact' == $store.tabs.current">
                     <div x-ref="contact" x-data="_html('contact', `/src/view/pages/about.html`)"></div>
                 </main
                  <main x-transition x-show="'settings' == $store.tabs.current">
                     <div x-ref="settings" x-data="_html('settings', `/src/view/pages/about.html`)"></div>
-                </main>
+                </main> 
             </article>
         </div>
     </div>

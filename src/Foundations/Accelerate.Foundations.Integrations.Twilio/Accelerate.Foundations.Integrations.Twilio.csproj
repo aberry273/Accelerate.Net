@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Accelerate.Foundations.Utilities\Accelerate.Foundations.Utilities.csproj" />
+    <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
   </ItemGroup>
 
 </Project>
