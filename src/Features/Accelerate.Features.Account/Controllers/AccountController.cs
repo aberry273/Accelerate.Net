@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Common.Models;
+using Accelerate.Foundations.Common.Models.Views;
 
 namespace Accelerate.Features.Account.Controllers
 {

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Models;
+using Accelerate.Foundations.Common.Models.Views;
 
 namespace Accelerate.Projects.App.Controllers
 {

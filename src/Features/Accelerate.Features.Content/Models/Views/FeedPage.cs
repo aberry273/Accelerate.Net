@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Common.Models;
+﻿using Accelerate.Foundations.Common.Models.Views;
 
 namespace Accelerate.Features.Content.Models.Views
 {

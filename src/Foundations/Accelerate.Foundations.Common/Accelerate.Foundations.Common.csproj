@@ -19,4 +19,9 @@
     <ProjectReference Include="..\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handlers\" />
+    <Folder Include="Models\Data\" />
+  </ItemGroup>
+
 </Project>

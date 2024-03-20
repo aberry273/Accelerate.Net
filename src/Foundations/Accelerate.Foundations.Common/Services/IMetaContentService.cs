@@ -1,4 +1,5 @@
 ﻿using Accelerate.Foundations.Common.Models;
+using Accelerate.Foundations.Common.Models.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;

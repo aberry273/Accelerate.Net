@@ -1,11 +1,6 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Accelerate.Foundations.Common.Models
-@using Accelerate.Foundations.Common.Helpers
-@using Accelerate.Foundations.Account.Models.Entities;
-
-@inject Microsoft.Extensions.Hosting.IHostEnvironment env
+﻿@inject Microsoft.Extensions.Hosting.IHostEnvironment env
 @inject UserManager<AccountUser> UserManager
-@model Accelerate.Foundations.Common.Models.BasePage
+@model BasePage
 @{
     var lang = Model.Metadata.LanguageCode ?? "en";
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Common.Models
+namespace Accelerate.Foundations.Common.Models.Views
 {
     public class SocialMetadata
     {

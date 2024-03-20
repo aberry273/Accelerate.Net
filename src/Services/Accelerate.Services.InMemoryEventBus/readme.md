@@ -1,3 +1,4 @@
+# NOT USED - CURRENTLY NOT IN USE
 # Overview
 This is a service to run locally to enable event bus capabilities through MassTransit
 This should be replaced with RabbitMQ in product in a distributed setup
