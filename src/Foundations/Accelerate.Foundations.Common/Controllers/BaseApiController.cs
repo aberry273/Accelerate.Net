@@ -17,7 +17,7 @@ namespace Accelerate.Foundations.Common.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] RequestQuery query)
+        public virtual async Task<IActionResult> Get([FromQuery] RequestQuery<T> query)
         {
             int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
             int skip = take * query.Page;

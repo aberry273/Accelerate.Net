@@ -72,7 +72,7 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
-                        Href = "/Home/Feed",
+                        Href = "/Content/Feed",
                         Text = "Feed",
                     },
                     new NavigationItem()

@@ -1,5 +1,9 @@
 ﻿namespace Accelerate.Foundations.Common.Models
 {
+    public class RequestQuery<T> : RequestQuery
+    {
+        public T? Query { get; set; }
+    }
     public class RequestQuery
     {
         public int Page { get; set; } = 0;

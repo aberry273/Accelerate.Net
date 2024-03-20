@@ -18,17 +18,19 @@ namespace Accelerate.Features.Content
             // SERVICES
             services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
 
-            services.AddSingleton<IContentPostCreatePipeline, ContentPostCreatePipeline>();
+            services.AddSingleton<IContentPostCreatedPipeline, ContentPostCreatedPipeline>();
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>
             {
-                x.AddConsumer<ContentPostConsumer>();
+                x.AddConsumer<ContentPostCreateConsumer>();
+                x.AddConsumer<ContentPostCreateCompleteConsumer>();
 
                 x.UsingInMemory((context, cfg) =>
                 {
                     cfg.ReceiveEndpoint("event-listener", e =>
                     {
-                        e.ConfigureConsumer<ContentPostConsumer>(context);
+                        e.ConfigureConsumer<ContentPostCreateConsumer>(context);
+                        e.ConfigureConsumer<ContentPostCreateCompleteConsumer>(context);
                     });
                 });
             });

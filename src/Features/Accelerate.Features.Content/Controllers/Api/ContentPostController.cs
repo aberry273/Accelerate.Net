@@ -42,13 +42,20 @@ namespace Accelerate.Features.Content.Controllers.Api
             _contentElasticService = contentElasticService;
         }
 
+        [HttpGet]
+        public override async Task<IActionResult> Get([FromQuery] RequestQuery<ContentPostEntity> query)
+        {
+            var results = await _contentElasticService.Find(query);
+            return Ok(results.Documents);
+        }
+
         [HttpPost]
         public override async Task<IActionResult> Post(ContentPostEntity obj)
         {
             var entity = await base.Post(obj);
             
             // Emit event
-            await _publishEndpoint.Value.Publish(new ContentPostContract(obj));
+            await _publishEndpoint.Value.Publish(new ContentPostCreateContract(obj));
             return entity;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Accelerate.Foundations.Common.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -32,6 +33,7 @@ namespace Accelerate.Foundations.Common.Pipelines
         }
         public void Process<T>(IEnumerable<PipelineProcessor<T>> processors, IPipelineArgs<T> args)
         {
+            StaticLoggingService.Log($"PipelineProcess Started");
             foreach (PipelineProcessor<T> p in processors)
             {
                 try
@@ -44,6 +46,7 @@ namespace Accelerate.Foundations.Common.Pipelines
                     Console.WriteLine("Error caught");
                 }
             }
+            StaticLoggingService.Log($"PipelineProcess Finished");
         }
         // Async alternative
         public Task ProcessAsync(IPipelineArgs<T> args)
@@ -58,6 +61,7 @@ namespace Accelerate.Foundations.Common.Pipelines
         }
         public async Task ProcessAsync<T>(IEnumerable<AsyncPipelineProcessor<T>> processors, IPipelineArgs<T> args)
         {
+            StaticLoggingService.Log($"Async PipelineProcess Started");
             await Task.WhenAll(processors.Select(p =>
             {
                 try
@@ -72,6 +76,7 @@ namespace Accelerate.Foundations.Common.Pipelines
                     return Task.FromException(e);
                 }
             }));
+            StaticLoggingService.Log($"Async PipelineProcess Finished");
         }
         public void Run(T obj)
         {

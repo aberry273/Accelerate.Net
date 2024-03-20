@@ -48,12 +48,12 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         {
             return await _client.DeleteAsync(index, id);
         }
-        public async Task<SearchResponse<T>> SearchDocuments<T>(string index, QueryDescriptor<T> query)
+        public async Task<SearchResponse<T>> SearchDocuments<T>(string index, QueryDescriptor<T> query, int from = 0, int take = 10)
         {
             return await _client.SearchAsync<T>(s => s
                 .Index(index)
-                .From(0)
-                .Size(10)
+                .From(from)
+                .Size(take)
                 .Query(query)
                 );
         }

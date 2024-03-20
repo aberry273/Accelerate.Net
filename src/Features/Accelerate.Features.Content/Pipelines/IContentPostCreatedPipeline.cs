@@ -4,7 +4,7 @@ using Accelerate.Foundations.Content.Models;
 
 namespace Accelerate.Features.Content.Pipelines
 {
-    public interface IContentPostCreatePipeline : IPipelineProcessor<ContentPostEntity>
+    public interface IContentPostCreatedPipeline : IPipelineProcessor<ContentPostEntity>
     {
     }
 }

@@ -18,6 +18,6 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<GetResponse<T>> GetDocument<T>(string id, string index);
         Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id, string index);
         Task<DeleteResponse> DeleteDocument<T>(string id, string index);
-        Task<SearchResponse<T>> SearchDocuments<T>(string index, QueryDescriptor<T> query);
+        Task<SearchResponse<T>> SearchDocuments<T>(string index, QueryDescriptor<T> query, int from = 0, int take = 10);
     }
 }
