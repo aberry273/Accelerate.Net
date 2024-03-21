@@ -1,9 +1,12 @@
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Models;
+using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Integrations.Twilio.Models;
+using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Projects.App.Data;
 using Accelerate.Projects.App.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
@@ -26,6 +29,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
         });
 });
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 // Add services to the container.
@@ -41,8 +45,9 @@ Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, buil
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
+Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
@@ -67,6 +72,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -114,6 +120,21 @@ app.MapControllerRoute(name: "default",
                pattern: "{controller=Home}/{action=Index}/{id?}");
 */
 app.MapDefaultControllerRoute();
+
+
+// Map SignalR hubs
+#pragma warning disable ASP0014 // Suggest using top level route registrations
+/*
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<MessageHub>("/messageHub");
+});
+*/
+//IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<ContentPostEntity>> _messageHub;
+app.MapHub<BaseHub<ContentPostEntity>>("/messageHub");
+#pragma warning restore ASP0014 // Suggest using top level route registrations
+
+
 app.Run();
 
 

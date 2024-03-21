@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>
 
   <ItemGroup>

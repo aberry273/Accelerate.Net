@@ -9,11 +9,13 @@ using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Contracts;
 using Accelerate.Foundations.Integrations.Elastic.Services;
+using Accelerate.Foundations.Websockets.Hubs;
 using MassTransit;
 using MassTransit.DependencyInjection;
 using MassTransit.Transports;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 
 namespace Accelerate.Features.Content.Controllers.Api
@@ -21,7 +23,7 @@ namespace Accelerate.Features.Content.Controllers.Api
     [Route("api/[controller]")]
     [ApiController]
     public class ContentPostController : BaseApiController<ContentPostEntity>
-    {
+    { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
@@ -38,7 +40,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
-         //   _searchService = searchService;
+            //_searchService = searchService;
             _contentElasticService = contentElasticService;
         }
 
