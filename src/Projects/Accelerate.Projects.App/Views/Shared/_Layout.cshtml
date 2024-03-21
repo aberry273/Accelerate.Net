@@ -70,47 +70,6 @@
             text: 'feed.at'
         }
     </script>
-
-    <!-- Websockets -->
-    <script>
-        let socket = new WebSocket("wss://localhost:7220/messageHub");
-
-        socket.onopen = function (e) {
-            console.log("[open] Connection established");
-
-            const endChar = String.fromCharCode(30);
-
-            // send the protocol & version
-            socket.send(`{"protocol":"json","version":1}${endChar}`);
-        };
-
-        socket.onmessage = function (event) {
-            console.log(`[message] Data received from server: ${event.data}`);
-
-            // parse server data
-            const serverData = event.data.substring(0, event.data.length - 1);
-
-            // after sending the protocol & version subscribe to your method(s)
-            if (serverData === "{}") {
-                const endChar = String.fromCharCode(30);
-                socket.send(`{"arguments":[],"invocationId":"0","target":"Your-Method","type":1}${endChar}`);
-                return;
-            }
-
-            // handle server messages
-        };
-
-        socket.onclose = function (event) {
-            if (event.wasClean) {
-                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-            } else {
-                console.log('[close] Connection died');
-            }
-        };
-
-        socket.onerror = function (error) {
-            console.log(`[error] ${error.message}`);
-        };
-    </script>
+     
 </body>
 </html>

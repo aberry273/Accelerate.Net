@@ -131,7 +131,7 @@ app.UseEndpoints(endpoints =>
 });
 */
 //IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<ContentPostEntity>> _messageHub;
-app.MapHub<BaseHub<ContentPostEntity>>("/messageHub");
+app.MapHub<BaseHub<ContentPostEntity>>($"/{Accelerate.Features.Content.Constants.Settings.WebSocketHubName}");
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 
