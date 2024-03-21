@@ -1,5 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines;
-using Accelerate.Foundations.Common.Pipelines;
+﻿using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 
 

@@ -1,6 +1,6 @@
-﻿using Accelerate.Features.Content.Pipelines;
-using Accelerate.Foundations.EventPipelines.EventBus;
+﻿using Accelerate.Foundations.EventPipelines.EventBus;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
+using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Contracts;
 using MassTransit;
 using MassTransit.DependencyInjection;

@@ -7,6 +7,7 @@ using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.EventBus;
+using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using MassTransit;
 using System;

@@ -26,7 +26,7 @@ namespace Accelerate.Foundations.Common.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult Get(Guid id)
+        public virtual IActionResult Get(Guid id)
         {
             var obj = _service.Get(id);
             if (obj == null)
@@ -55,7 +55,7 @@ namespace Accelerate.Foundations.Common.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] T obj)
+        public virtual async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] T obj)
         {
             var entity = _service.Get(id);
             if (entity == null)
@@ -74,7 +74,7 @@ namespace Accelerate.Foundations.Common.Controllers
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public virtual async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var obj = _service.Get(id);
             if (await _service.Delete(obj) == 1)

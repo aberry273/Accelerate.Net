@@ -3,9 +3,9 @@ using Accelerate.Foundations.Common.Services;
 
 namespace Accelerate.Foundations.EventPipelines.Pipelines
 {
-    public class ContentPostCreatedPipeline : DataEventPipeline<string>
+    public class ExampleCreatedPipeline : DataEventPipeline<string>
     {
-        public ContentPostCreatedPipeline()
+        public ExampleCreatedPipeline()
         {
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<string>>()

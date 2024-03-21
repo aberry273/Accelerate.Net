@@ -61,5 +61,15 @@ namespace Accelerate.Features.Content.Controllers.Api
             await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>() { Data = obj });
             return entity;
         }
+
+        [HttpPut]
+        public override async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] ContentPostEntity obj)
+        {
+            var entity = await base.Put(id, obj);
+
+            // Emit event
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>() { Data = obj });
+            return entity;
+        }
     }
 }
