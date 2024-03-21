@@ -20,7 +20,7 @@ namespace Accelerate.Features.Content
             // SERVICES
             services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
             
-            services.AddSingleton<IDataEventCreatedPipeline<ContentPostEntity>, NewContentPostCreatedPipeline>();
+            services.AddSingleton<IDataEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>
             {
@@ -36,24 +36,6 @@ namespace Accelerate.Features.Content
                     });
                 });
             });
-            /*
-            services.AddSingleton<IContentPostCreatedPipeline, ContentPostCreatedPipeline>();
-            // CONSUMERS
-            services.AddMassTransit<IContentBus>(x =>
-            {
-                x.AddConsumer<ContentPostCreateConsumer>();
-                x.AddConsumer<ContentPostCreateCompleteConsumer>();
-
-                x.UsingInMemory((context, cfg) =>
-                {
-                    cfg.ReceiveEndpoint("event-listener", e =>
-                    {
-                        e.ConfigureConsumer<ContentPostCreateConsumer>(context);
-                        e.ConfigureConsumer<ContentPostCreateCompleteConsumer>(context);
-                    });
-                });
-            });
-            */
         }
     }
 }

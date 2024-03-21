@@ -3,15 +3,15 @@ using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 
 
-namespace Accelerate.Features.Content.Services
+namespace Accelerate.Foundations.EventPipelines.Pipelines
 {
-    public class DataEventCreatedPipeline<T> : BasePipelineProcessor<T>, IDataEventCreatedPipeline<T>
+    public class DataEventPipeline<T> : BasePipelineProcessor<T>, IDataEventPipeline<T>
     {
-        public DataEventCreatedPipeline()
+        public DataEventPipeline()
         {
 
         }
-        public DataEventCreatedPipeline(
+        public DataEventPipeline(
             IEnumerable<PipelineProcessor<T>> processors,
             IEnumerable<AsyncPipelineProcessor<T>> asyncProcessors)
         {

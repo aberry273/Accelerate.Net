@@ -3,27 +3,25 @@ using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.EventPipelines.Pipelines;
 using Elastic.Clients.Elasticsearch.Ingest;
 
 namespace Accelerate.Features.Content.Pipelines
 {
-    public class NewContentPostCreatedPipeline : DataEventCreatedPipeline<ContentPostEntity>
+    public class ContentPostCreatedPipeline : DataEventPipeline<ContentPostEntity>
     {
         IContentPostElasticService _contentElasticService;
-        public NewContentPostCreatedPipeline(
+        public ContentPostCreatedPipeline(
             IContentPostElasticService contentElasticService)
         {
             _contentElasticService = contentElasticService;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                AddToIndex,
-                SyncExample
+                AddToIndex
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
-                AmendName,
-                Log
             };
         }
         // ASYNC PROCESSORS
@@ -38,28 +36,6 @@ namespace Accelerate.Features.Content.Pipelines
             };
             var indexResponse = await _contentElasticService.Index(indexModel);
         }
-        public Task SyncExample(IPipelineArgs<ContentPostEntity> args)
-        {
-            // Example to wrap sync task in async processor
-            return Task.Run(() =>
-            {
-                var entity = args.Value;
-                if (entity == null) { return; }
-            });
-
-        }
         // SYNC PROCESSORS
-        public void Log(IPipelineArgs<ContentPostEntity> args)
-        {
-            var entity = args.Value;
-            if (entity == null) { return; }
-            StaticLoggingService.Log($"New contact created: {entity.Id}");
-        }
-        public void AmendName(IPipelineArgs<ContentPostEntity> args)
-        {
-            var entity = args.Value;
-            if (entity == null) { return; }
-            entity.Content += "This is an amendment";
-        }
     }
 }
