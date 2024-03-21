@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Models.Contracts;
+﻿using Accelerate.Features.Content.EventBus;
 using Accelerate.Features.Content.Models.Data;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -7,6 +7,7 @@ using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.Contracts;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
@@ -26,13 +27,13 @@ namespace Accelerate.Features.Content.Controllers.Api
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
+        readonly Bind<INewContentBus, IPublishEndpoint> _publishEndpoint;
         //IElasticService<ContentPostEntity> _searchService;
         IContentPostElasticService _contentElasticService;
         public ContentPostController(
             IMetaContentService contentService,
             IEntityService<ContentPostEntity> service,
-            Bind<IContentBus, IPublishEndpoint> publishEndpoint,
+            Bind<INewContentBus, IPublishEndpoint> publishEndpoint,
             //IElasticService<ContentPostEntity> searchService,
             IContentPostElasticService contentElasticService,
             UserManager<AccountUser> userManager) : base(service)
@@ -57,7 +58,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             var entity = await base.Post(obj);
             
             // Emit event
-            await _publishEndpoint.Value.Publish(new ContentPostCreateContract(obj));
+            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>() { Data = obj });
             return entity;
         }
     }

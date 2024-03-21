@@ -1,23 +1,16 @@
 ﻿using Accelerate.Features.Content.Models.Data;
-using Accelerate.Features.Content.Pipelines;
-using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Foundations.Common.Models;
+using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Elastic.Clients.Elasticsearch.Ingest;
 
-namespace Accelerate.Features.Content.Services
+namespace Accelerate.Features.Content.Pipelines
 {
-    public class ContentPostCreatedPipeline : BasePipelineProcessor<ContentPostEntity>, IContentPostCreatedPipeline
+    public class NewContentPostCreatedPipeline : DataEventCreatedPipeline<ContentPostEntity>
     {
         IContentPostElasticService _contentElasticService;
-        public ContentPostCreatedPipeline(
+        public NewContentPostCreatedPipeline(
             IContentPostElasticService contentElasticService)
         {
             _contentElasticService = contentElasticService;
@@ -33,7 +26,6 @@ namespace Accelerate.Features.Content.Services
                 Log
             };
         }
-
         // ASYNC PROCESSORS
         public async Task AddToIndex(IPipelineArgs<ContentPostEntity> args)
         {
