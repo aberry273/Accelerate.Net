@@ -9,30 +9,23 @@ using Elastic.Clients.Elasticsearch.Ingest;
 
 namespace Accelerate.Features.Content.Pipelines
 {
-    public class ContentPostUpdatedPipeline : DataUpdateEventPipeline<ContentPostEntity>
+    public class ContentPostDeletedPipeline : DataDeleteEventPipeline<ContentPostEntity>
     {
         IElasticService<ContentPostEntity> _elasticService;
-        public ContentPostUpdatedPipeline(
+        public ContentPostDeletedPipeline(
             IElasticService<ContentPostEntity> elasticService)
         {
             _elasticService = elasticService;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                UpdateDocument,
+                DeleteDocument,
             };
         }
         // ASYNC PROCESSORS
-        public async Task UpdateDocument(IPipelineArgs<ContentPostEntity> args)
+        public async Task DeleteDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var userId = args.Value.UserId.GetValueOrDefault().ToString();
-            //var user = await _userManager.FindByIdAsync(userId);
-            var indexModel = new ContentPost()
-            {
-                Content = args.Value.Content,
-                User = args.Value.UserId.ToString() ?? "Anonymous"
-            };
-            var indexResponse = await _elasticService.UpdateDocument<ContentPostEntity>(indexModel, args.Value.Id.ToString());
+            var indexResponse = await _elasticService.DeleteDocument<ContentPostEntity>(args.Value.Id.ToString());
         }
     }
 }

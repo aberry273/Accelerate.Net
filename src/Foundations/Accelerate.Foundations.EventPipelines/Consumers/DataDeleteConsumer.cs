@@ -9,31 +9,31 @@ using Microsoft.Extensions.Logging;
 namespace Accelerate.Features.Content.Consumers
 {
 
-    public class DataCreateConsumer<T, B> : IConsumer<CreateDataContract<T>> where B : IDataBus<T>
+    public class DataDeleteConsumer<T, B> : IConsumer<DeleteDataContract<T>> where B : IDataBus<T>
     {
-        readonly ILogger<DataCreateConsumer<T, B>> _logger;
-        IDataCreateEventPipeline<T> _pipeline;
+        readonly ILogger<DataDeleteConsumer<T, B>> _logger;
+        IDataDeleteEventPipeline<T> _pipeline;
         readonly Bind<B, IPublishEndpoint> _publishEndpoint;
-        public DataCreateConsumer(
-            IDataCreateEventPipeline<T> pipeline,
+        public DataDeleteConsumer(
+            IDataDeleteEventPipeline<T> pipeline,
             Bind<B, IPublishEndpoint> publishEndpoint,
-            ILogger<DataCreateConsumer<T, B>> logger)
+            ILogger<DataDeleteConsumer<T, B>> logger)
         {
             _logger = logger;
             _pipeline = pipeline;
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<CreateDataContract<T>> context)
+        public async Task Consume(ConsumeContext<DeleteDataContract<T>> context)
         {
-            Foundations.Common.Services.StaticLoggingService.Log($"DataCreatePipeline [Started]]");
+            Foundations.Common.Services.StaticLoggingService.Log($"DataDeletePipeline [Started]]");
             // Run synchronous pipeline first
             _pipeline.Run(context.Message.Data);
             //Run async pipeline second
             await _pipeline.RunAsync(context.Message.Data);
             // Emit complete event
-            await _publishEndpoint.Value.Publish(new CreateCompleteDataContract<T>() { Data = context.Message.Data });
-            Foundations.Common.Services.StaticLoggingService.Log($"DataCreatePipeline [Finished]]");
+            await _publishEndpoint.Value.Publish(new DeleteCompleteDataContract<T>() { Data = context.Message.Data });
+            Foundations.Common.Services.StaticLoggingService.Log($"DataDeletePipeline [Finished]]");
         }
     }
 }

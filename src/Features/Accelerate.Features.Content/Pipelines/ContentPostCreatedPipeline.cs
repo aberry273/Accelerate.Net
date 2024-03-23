@@ -9,7 +9,7 @@ using Elastic.Clients.Elasticsearch.Ingest;
 
 namespace Accelerate.Features.Content.Pipelines
 {
-    public class ContentPostCreatedPipeline : DataEventPipeline<ContentPostEntity>
+    public class ContentPostCreatedPipeline : DataCreateEventPipeline<ContentPostEntity>
     {
         IElasticService<ContentPostEntity> _elasticService;
         public ContentPostCreatedPipeline(
@@ -19,21 +19,22 @@ namespace Accelerate.Features.Content.Pipelines
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                AddToIndex
+                IndexDocument
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-        public async Task AddToIndex(IPipelineArgs<ContentPostEntity> args)
+        public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var userId = args.Value.UserId.GetValueOrDefault().ToString();
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new ContentPost()
             {
                 Content = args.Value.Content,
-                UserId = args.Value.UserId.ToString(),
+                UserId = args.Value.UserId,
+                Id = args.Value.Id,
                 User = args.Value.UserId.ToString() ?? "Anonymous"
             };
             var indexResponse = await _elasticService.Index(indexModel);

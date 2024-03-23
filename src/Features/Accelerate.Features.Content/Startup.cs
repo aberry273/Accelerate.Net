@@ -22,12 +22,20 @@ namespace Accelerate.Features.Content
             // SERVICES
             services.AddTransient<IElasticService<ContentPostEntity>, ContentElasticService>();
 
-            services.AddSingleton<IDataEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
+            services.AddSingleton<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
+            services.AddSingleton<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();
+            services.AddSingleton<IDataDeleteEventPipeline<ContentPostEntity>, ContentPostDeletedPipeline>();
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>
             {
                 x.AddConsumer<DataCreateConsumer<ContentPostEntity, IContentBus>>();
                 x.AddConsumer<DataCreateCompleteConsumer<ContentPostEntity>>();
+
+                x.AddConsumer<DataUpdateConsumer<ContentPostEntity, IContentBus>>();
+                x.AddConsumer<DataUpdateCompleteConsumer<ContentPostEntity>>();
+
+                x.AddConsumer<DataDeleteConsumer<ContentPostEntity, IContentBus>>();
+                x.AddConsumer<DataDeleteCompleteConsumer<ContentPostEntity>>();
 
                 x.UsingInMemory((context, cfg) =>
                 {
@@ -35,6 +43,12 @@ namespace Accelerate.Features.Content
                     {
                         e.ConfigureConsumer<DataCreateConsumer<ContentPostEntity, IContentBus>>(context);
                         e.ConfigureConsumer<DataCreateCompleteConsumer<ContentPostEntity>>(context);
+
+                        e.ConfigureConsumer<DataUpdateConsumer<ContentPostEntity, IContentBus>>(context);
+                        e.ConfigureConsumer<DataUpdateCompleteConsumer<ContentPostEntity>>(context);
+
+                        e.ConfigureConsumer<DataDeleteConsumer<ContentPostEntity, IContentBus>>(context);
+                        e.ConfigureConsumer<DataDeleteCompleteConsumer<ContentPostEntity>>(context);
                     });
                 });
             });
