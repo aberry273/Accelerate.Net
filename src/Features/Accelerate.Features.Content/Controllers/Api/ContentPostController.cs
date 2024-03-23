@@ -28,27 +28,24 @@ namespace Accelerate.Features.Content.Controllers.Api
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
-        //IElasticService<ContentPostEntity> _searchService;
-        IContentPostElasticService _contentElasticService;
+        IElasticService<ContentPostEntity> _searchService;
         public ContentPostController(
             IMetaContentService contentService,
             IEntityService<ContentPostEntity> service,
             Bind<IContentBus, IPublishEndpoint> publishEndpoint,
-            //IElasticService<ContentPostEntity> searchService,
-            IContentPostElasticService contentElasticService,
+            IElasticService<ContentPostEntity> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
-            //_searchService = searchService;
-            _contentElasticService = contentElasticService;
+            _searchService = searchService;
         }
 
         [HttpGet]
         public override async Task<IActionResult> Get([FromQuery] RequestQuery<ContentPostEntity> query)
         {
-            var results = await _contentElasticService.Find(query);
+            var results = await _searchService.Find(query);
             return Ok(results.Documents);
         }
 

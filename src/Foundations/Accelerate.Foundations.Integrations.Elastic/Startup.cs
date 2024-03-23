@@ -20,7 +20,6 @@ namespace Accelerate.Foundations.Integrations.Elastic
                 options.CloudId = configuration["ElasticCloudId"];
             });
             // SERVICES
-            services.AddSingleton<IElasticService, ElasticService>();
         }
     }
 }

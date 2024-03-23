@@ -18,9 +18,10 @@ namespace Accelerate.Features.Content
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            //IElasticService<ContentPostEntity> searchService
             // SERVICES
-            services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
-            
+            services.AddTransient<IElasticService<ContentPostEntity>, ContentElasticService>();
+
             services.AddSingleton<IDataEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>

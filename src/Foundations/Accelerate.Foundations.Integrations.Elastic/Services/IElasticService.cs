@@ -7,17 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Accelerate.Foundations.Common.Models;
 
 namespace Accelerate.Foundations.Integrations.Elastic.Services
 {
-    public interface IElasticService
+    public interface IElasticService<T>
     {
-        Task<CreateIndexResponse> CreateIndex(string indexName);
-        Task<DeleteIndexResponse> DeleteIndex(string indexName);
-        Task<IndexResponse> IndexDocument<T>(T document, string index);
-        Task<GetResponse<T>> GetDocument<T>(string id, string index);
-        Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id, string index);
-        Task<DeleteResponse> DeleteDocument<T>(string id, string index);
-        Task<SearchResponse<T>> SearchDocuments<T>(string index, QueryDescriptor<T> query, int from = 0, int take = 10);
+        Task<CreateIndexResponse> CreateIndex();
+        Task<DeleteIndexResponse> DeleteIndex();
+        Task<IndexResponse> IndexDocument<T>(T document);
+        Task<GetResponse<T>> GetDocument<T>(string id);
+        Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id);
+        Task<DeleteResponse> DeleteDocument<T>(string id);
+        Task<SearchResponse<T>> SearchDocuments<T>(QueryDescriptor<T> query, int from = 0, int take = 10);
+
+        Task<SearchResponse<T>> Find(RequestQuery<T> query);
+        Task<IndexResponse> Index(T doc);
     }
 }

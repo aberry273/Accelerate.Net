@@ -5,35 +5,34 @@ using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport;
 using Microsoft.Extensions.Options;
 
 namespace Accelerate.Features.Content.Services
 {
-    public class ContentPostElasticService :  IContentPostElasticService
+    public class ContentElasticService :  ElasticService<ContentPostEntity>
     {
-        public IElasticService _service;
-        private string _index = "contentpost_index";
-        
-        public ContentPostElasticService(IElasticService service)
+
+        public ContentElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
-            _service = service;
-        }  
-        public async Task<IndexResponse> Index(ContentPostEntity doc)
-        {
-            //Create if not existing
-            await _service.CreateIndex(_index);
-            //Index
-            return await _service.IndexDocument<ContentPostEntity>(doc, _index);
+            this._indexName = "contentpost_index";
         }
-        public async Task<SearchResponse<ContentPostEntity>> Find(RequestQuery<ContentPostEntity> query)
+        public override async Task<IndexResponse> Index(ContentPostEntity doc)
         {
             //Create if not existing
-            await _service.CreateIndex(_index);
+            await CreateIndex();
+            //Index
+            return await IndexDocument(doc);
+        }
+        public override async Task<SearchResponse<ContentPostEntity>> Find(RequestQuery<ContentPostEntity> query)
+        {
+            //Create if not existing
+            await CreateIndex();
             //Search
             int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
             int skip = take * query.Page;
-            
-            return await _service.SearchDocuments<ContentPostEntity>(_index,
+
+            return await SearchDocuments(
                 CreateQuery(query),
                 skip,
                 take);
