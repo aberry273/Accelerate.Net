@@ -11,6 +11,17 @@
 <div x-data="{ message: 'Hello World!' }">
 <div x-reactiveLog="message"></div>
 
+<button x-data @click="$dispatch('snackbar-success', { target: 'example-modal1' })"
+>success</button>
+<button x-data @click="$dispatch('snackbar-error', { target: 'example-modal1' })"
+>error</button>
+<button x-data @click="$dispatch('snackbar-information', { target: 'example-modal1' })"
+>information</button>
+
+<div x-data="snackbar({event: 'snackbar-success', type: 'success' })" x-on:show:alert.window="show"></div>
+<div x-data="snackbar({event: 'snackbar-error', type: 'error' })" x-on:show:alert.window="show"></div>
+<div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
+
 <button @click="message = 'yolo'">Change</button>
 </div>
     <button x-data x-on:click="$store.darkmode.toggle()">Toggle Dark Mode</button>
@@ -24,9 +35,13 @@
             Content...
         </div>
     </div> 
-    <!-- requires aynsc alpine-->
-    <div ax-load="visible" x-ignore x-data="header(headerData)"></div>
     
+    <!-- Modal-->
+  <div x-data="modal({event: 'example-modal', id: 'example-modal' })"></div>
+
+  <button x-data @click="$events.emit('example-modal', { target: 'example-modal' })"
+    >Open</button>
+    <!-- End Modal -->
     <article x-data data-theme="$store.darkmode.theme">
         <header>
             <ul>

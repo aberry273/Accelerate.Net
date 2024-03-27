@@ -13,8 +13,12 @@ namespace Accelerate.Foundations.Content
         {
             //Context
             services.AddDbContext<BaseContext<ContentPostEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostActivityEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostReviewEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
             //Services
             services.AddTransient<IEntityService<ContentPostEntity>, EntityService<ContentPostEntity>>();
+            services.AddTransient<IEntityService<ContentPostActivityEntity>, EntityService<ContentPostActivityEntity>>();
+            services.AddTransient<IEntityService<ContentPostReviewEntity>, EntityService<ContentPostReviewEntity>>();
             //Parent context for mappings
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
 

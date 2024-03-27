@@ -48,6 +48,11 @@
         <div x-data="footer(footerData)"></div>
     </div>
     <!-- ./ Footer -->
+    
+    <!-- Alerts -->
+    <div x-data="snackbar({event: 'snackbar-success', type: 'success' })" x-on:show:alert.window="show"></div>
+    <div x-data="snackbar({event: 'snackbar-error', type: 'error' })" x-on:show:alert.window="show"></div>
+    <div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
 
     <!-- JS Libraries -->
     <!-- For componentizing and lazy loading Alpine -->

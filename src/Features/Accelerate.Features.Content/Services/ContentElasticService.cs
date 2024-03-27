@@ -10,13 +10,15 @@ using Microsoft.Extensions.Options;
 
 namespace Accelerate.Features.Content.Services
 {
-    public class ContentElasticService :  ElasticService<ContentPostEntity>
+    //Overwrite the core service for custom filtering
+    public class ContentElasticService : ElasticService<ContentPostEntity>
     {
 
         public ContentElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
             this._indexName = "contentpost_index";
         }
+        /*
         public override async Task<IndexResponse> Index(ContentPostEntity doc)
         {
             //Create if not existing
@@ -24,6 +26,7 @@ namespace Accelerate.Features.Content.Services
             //Index
             return await IndexDocument(doc);
         }
+        */ 
         public override async Task<SearchResponse<ContentPostEntity>> Find(RequestQuery<ContentPostEntity> query)
         {
             //Create if not existing
@@ -32,7 +35,7 @@ namespace Accelerate.Features.Content.Services
             int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
             int skip = take * query.Page;
 
-            return await SearchDocuments(
+            return await Search(
                 CreateQuery(query),
                 skip,
                 take);

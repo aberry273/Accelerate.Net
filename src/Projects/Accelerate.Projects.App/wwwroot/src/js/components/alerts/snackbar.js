@@ -1,24 +1,66 @@
 const defaults = {
-  ms: 500,
+  ms: 3000,
+  type: '',
+  icon: '',
   text: '<p><strong>title</strong></p><p>this is a new test of a auto-formatted markdown</p>',
 }
-export default function (data) {
+export default function (data = {}) {
 	return {
       show: false,
+      text: '',
+      ms: data.ms || defaults.ms,
+      type: data.type || defaults.type,
+      icon: data.icon || defaults.icon,
       init() {
         this.show = data.show;
+        if(data.type == 'success') {
+          this.icon = 'check_circle'
+        }
+        if(data.type == 'information') {
+          this.icon = 'warning'
+        }
+        if(data.type == 'error') {
+          this.icon = 'error'
+        }
         this.load(data);
+        const self = this;
+        
+        // Listen for the event.
+        window.addEventListener(data.event || "snackbar:open",
+          (e) => {
+            console.log(e.detail)
+            const data = {
+              text: 'New post created!',
+              success: true
+            }
+            self.load(data)
+            self.show = true;
+            // if a timer is set
+            if (self.ms && self.ms > 0)
+            setTimeout(function () {
+              self.show = false
+            }, self.ms);
+          }, false);
+      },
+      show() {
+        this.show = true;
       },
       load(data) {
         // Turn into object as it returns reactive Proxy
         //const data = JSON.parse(JSON.stringify(payload))
-        this.$root.innerHTML = `
+        const icon = this.icon;
+        const html = `
         <template x-if="show">
-          <article class="is-fixed page-modal snackbar" x-transition>
-            ${data.text}
-            <i class="flat click material-icons" aria-label="Close" @click="show = false" rel="prev">close</i>
-          </article>
+          <article class="is-fixed dense page-modal snackbar" :class="type" x-transition>
+            <nav>
+              <i class="material-icons">${icon}</i>
+              <p>${data.text}</p>
+              <i class="flat click material-icons" aria-label="Close" @click="show = false" rel="prev">close</i>
+          </nav>
         </template>`
+        this.$nextTick(() => { 
+          this.$root.innerHTML = html
+        })
       },
       defaults() {
         this.load(defaults)

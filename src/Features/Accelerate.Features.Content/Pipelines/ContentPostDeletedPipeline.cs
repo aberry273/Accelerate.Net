@@ -26,6 +26,7 @@ namespace Accelerate.Features.Content.Pipelines
         public async Task DeleteDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var indexResponse = await _elasticService.DeleteDocument<ContentPostEntity>(args.Value.Id.ToString());
+            var a = indexResponse;
         }
     }
 }

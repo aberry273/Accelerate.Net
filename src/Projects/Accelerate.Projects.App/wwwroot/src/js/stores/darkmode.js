@@ -1,5 +1,6 @@
 export default () => ({
     init() {
+        console.log('dwdw')
         this.on = window.matchMedia('(prefers-color-scheme: dark)').matches
     },
     theme: 'light',

@@ -6,6 +6,7 @@ using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch.Ingest;
+using Microsoft.AspNetCore.Identity;
 
 namespace Accelerate.Features.Content.Pipelines
 {
@@ -32,12 +33,18 @@ namespace Accelerate.Features.Content.Pipelines
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new ContentPost()
             {
+                Status = args.Value.Status,
                 Content = args.Value.Content,
                 UserId = args.Value.UserId,
+                TargetThread = args.Value.TargetThread,
+                ParentId = args.Value.ParentId,
+                TargetChannel = args.Value.TargetChannel,
+                TagItems = args.Value.TagItems,
+                Category = args.Value.Category,
                 Id = args.Value.Id,
-                User = args.Value.UserId.ToString() ?? "Anonymous"
+                Username = args.Value.UserId.ToString() ?? "Anonymous"
             };
-            var indexResponse = await _elasticService.Index(indexModel);
+            await _elasticService.Index(indexModel);
         }
         // SYNC PROCESSORS
     }

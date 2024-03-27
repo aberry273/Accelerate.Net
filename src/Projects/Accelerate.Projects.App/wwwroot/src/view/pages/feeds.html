@@ -1,31 +1,32 @@
-<div class="grid">
-  <!-- Feed panel -->
-  <div>
+ 
+  <div x-data="modal({event: 'example-modal1', id: 'example-modal1' })"></div>
 
-    <nav>
-      <ul>
-        <header>
-          <hgroup>
-            <h1>Your feeds</h1>
-            <p>Create a new feed</p>
-          </hgroup>
-        </header>
-      </ul>
-      <ul>
-      <!--Filters-->
-        <details class="dropdown">
-          <summary role="button" class="outline" x-text="$store.feedFilters.current">
-          </summary>
-            <ul>
-              <template x-for="tab in $store.feedFilters.items" >
-                <button class="flat" @click="$store.feedFilters.setTab(tab)" :class="$store.feedFilters.current == tab ? 'selected' : ''" x-text="tab"></button>
-              </template>
-            </ul>
-        </details>
-        <button class="material-icons flat">add</button>
-      </ul>
-    </nav>
-    <div x-data="formAjax({
+  <nav>
+    <ul>
+      <header>
+        <hgroup>
+          <h1>Your feeds</h1>
+          <p>Create a new feed</p>
+        </hgroup>
+      </header>
+    </ul>
+    <ul>
+      
+    <!--Filters-->
+      <details class="dropdown">
+        <summary role="button" class="outline" x-text="$store.feedFilters.current">
+        </summary>
+          <ul>
+            <template x-for="tab in $store.feedFilters.items" >
+              <button class="flat" @click="$store.feedFilters.setTab(tab)" :class="$store.feedFilters.current == tab ? 'selected' : ''" x-text="tab"></button>
+            </template>
+          </ul>
+      </details>
+      <button class="material-icons flat">add</button>
+    </ul>
+  </nav>
+  <article>
+    <div style="padding-bottom:12px;" x-data="formAjax({
       feed: $store.feedFilters.current,
       postbackUrl: 'https://localhost:7220/api/contentpost',
       postbackType: 'POST',
@@ -50,21 +51,30 @@
           helper: '',
           value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
         },
-        ]
+      ]
     })"></div>
-    <!--Feed-->
-    <div x-data="$store.feedFilters">
-      <div x-data="feed({
-        feed: $store.feedFilters.current,
-        sourceUrl: 'https://localhost:7220/api/contentpost',
-        event: 'post:created',
-      })"
-      x-init="await fetchItems()"
-      x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
-    </div>
-  </div>
-  <!-- Other panel -->
-  <div>
-
+</article>
+  <!--Feed-->
+  <div x-data="$store.feedFilters" x-cloak>
+    <div x-data="appList({
+      feed: $store.feedFilters.current,
+      sourceUrl: 'https://localhost:7220/api/contentpost',
+      threadUrl: 'https://localhost:7220/content/thread',
+      event: 'post:created',
+      items: $store.content.items,
+      expandable: true,
+    })"
+    x-init="await fetchItems()"
+    x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
   </div>
 </div>
+   
+<!-- Modals -->
+<!-- Edit post -->
+<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123'  })"></div>
+
+<!-- Delete post -->
+<div x-data="modal({target: 'modal-remove-post', title: 'Remove post', text: 'test 123' })"></div>
+
+<!-- Share post -->
+<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>

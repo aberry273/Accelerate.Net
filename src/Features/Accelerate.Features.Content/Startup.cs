@@ -11,20 +11,42 @@ using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using MassTransit;
 using System;
+using System.Reflection;
 
 namespace Accelerate.Features.Content
 {
+    public static class ReflectiveEnumerator
+    {
+        static ReflectiveEnumerator() { }
+
+        public static IEnumerable<T> GetEnumerableOfType<T>(params object[] constructorArgs) where T : class, IComparable<T>
+        {
+            List<T> objects = new List<T>();
+            foreach (Type type in
+                Assembly.GetAssembly(typeof(T)).GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T))))
+            {
+                objects.Add((T)Activator.CreateInstance(type, constructorArgs));
+            }
+            objects.Sort();
+            return objects;
+        }
+    }
     public static class Startup
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            //IElasticService<ContentPostEntity> searchService
             // SERVICES
+            services.AddTransient<IContentViewService, ContentViewService>();
+
             services.AddTransient<IElasticService<ContentPostEntity>, ContentElasticService>();
+            services.AddTransient<IElasticService<ContentPostReviewEntity>, ContentReviewElasticService>();
+            services.AddTransient<IElasticService<ContentPostActivityEntity>, ContentActivityElasticService>();
 
             services.AddSingleton<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
             services.AddSingleton<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();
             services.AddSingleton<IDataDeleteEventPipeline<ContentPostEntity>, ContentPostDeletedPipeline>();
+            
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>
             {
@@ -41,6 +63,7 @@ namespace Accelerate.Features.Content
                 {
                     cfg.ReceiveEndpoint("event-listener", e =>
                     {
+                        // Content Posts
                         e.ConfigureConsumer<DataCreateConsumer<ContentPostEntity, IContentBus>>(context);
                         e.ConfigureConsumer<DataCreateCompleteConsumer<ContentPostEntity>>(context);
 

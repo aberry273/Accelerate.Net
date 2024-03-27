@@ -19,8 +19,9 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<GetResponse<T>> GetDocument<T>(string id);
         Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id);
         Task<DeleteResponse> DeleteDocument<T>(string id);
-        Task<SearchResponse<T>> SearchDocuments<T>(QueryDescriptor<T> query, int from = 0, int take = 10);
-
+        Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
+        Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
+        Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
         Task<SearchResponse<T>> Find(RequestQuery<T> query);
         Task<IndexResponse> Index(T doc);
     }

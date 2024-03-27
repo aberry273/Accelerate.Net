@@ -25,6 +25,18 @@ namespace Accelerator.Foundation.Finance.Database
             base.OnModelCreating(builder);
             builder.Entity<ContentPostEntity>()
                 .HasKey(p => p.Id);
+
+            // Activities 
+            builder.Entity<ContentPostEntity>()
+              .HasMany(e => e.Activities)
+              .WithOne(x => x.ContentPost)
+              .HasForeignKey(x => x.ContentPostId);
+
+            // Reviews
+            builder.Entity<ContentPostEntity>()
+              .HasMany(e => e.Reviews)
+              .WithOne(x => x.ContentPost)
+              .HasForeignKey(x => x.ContentPostId);
         }
     }
 }

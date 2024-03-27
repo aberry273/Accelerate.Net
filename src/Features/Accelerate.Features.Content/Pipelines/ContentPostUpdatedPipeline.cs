@@ -29,10 +29,16 @@ namespace Accelerate.Features.Content.Pipelines
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new ContentPost()
             {
+                Id = args.Value.Id,
+                TargetThread = args.Value.TargetThread,
+                TargetChannel = args.Value.TargetChannel,
+                Category = args.Value.Category,
+                Tags = args.Value.Tags,
+                ParentId = args.Value.ParentId,
                 Content = args.Value.Content,
-                User = args.Value.UserId.ToString() ?? "Anonymous"
+                Username = args.Value.UserId.ToString() ?? "Anonymous"
             };
-            var indexResponse = await _elasticService.UpdateDocument<ContentPostEntity>(indexModel, args.Value.Id.ToString());
+            await _elasticService.UpdateDocument<ContentPostEntity>(indexModel, args.Value.Id.ToString());
         }
     }
 }

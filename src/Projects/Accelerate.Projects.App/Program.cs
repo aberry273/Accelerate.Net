@@ -6,6 +6,7 @@ using Accelerate.Foundations.Integrations.Twilio.Models;
 using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Projects.App.Data;
 using Accelerate.Projects.App.Services;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
@@ -34,7 +35,6 @@ builder.Services.AddCors(options =>
 builder.Services.AddRazorPages();
 // Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -53,7 +53,9 @@ Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builde
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
- 
+  
+
+
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -75,6 +77,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddSignalR();
 
 var app = builder.Build();
+
 
 app.UseSession();
 

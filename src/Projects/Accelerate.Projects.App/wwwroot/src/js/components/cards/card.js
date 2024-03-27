@@ -10,19 +10,34 @@ const defaults = {
 }
 export default function (data) {
 	return {
+      data: null,
       init() {
-        this.load(data)
+        this.data = data;
+        const self = this;
+        this.$nextTick(() => {
+          this.load(self.data)
+        })
+      },
+      quickAction(action) {
+        const ev = `submit-${action}`;
+        this.$events.emit(ev, this.data)
+      },
+      redirectAction(action) {
+        const ev = `redirect-${action}`;
+        this.$events.emit(ev, this.data)
+      },
+      modalAction(action) {
+        const ev = `${action}-post`;
+        this.$events.emit(ev, this.data)
       },
       load(data) {
-        // Turn into object as it returns reactive Proxy
-        //const data = JSON.parse(JSON.stringify(payload))
         this.$root.innerHTML = `
-        <article>
-          <header class="dense">
+        <article class="dense">
+          <header >
             <nav>
               <ul>
                 <li>
-                  <button class="round primary img">
+                  <button class="round small primary img">
                     <img
                     class="circular"
                     src="${data.profile}"
@@ -37,13 +52,14 @@ export default function (data) {
               </ul>
               <ul>
                 <li>
-                  <details class="dropdown flat">
+                  <details class="dropdown flat no-chevron">
                     <summary role="outline">
                       <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                     </summary>
                     <ul dir="rtl">
-                      <li><a class="click" @click="console.log('Edit')")>Edit</a></li>
-                      <li><a class="click" @click="console.log('Remove')")>Remove</a></li>
+                      <li><a class="click" @click="modalAction('share')">Share</a></li>
+                      <li><a class="click" @click="modalAction('edit')">Edit</a></li>
+                      <li><a class="click" @click="modalAction('remove')">Remove</a></li>
                     </ul>
                   </details>
                 </li>
@@ -51,27 +67,25 @@ export default function (data) {
             </nav>
           </header> 
           ${data.content}
-          <footer class="dense">
+          <footer>
             <nav>
               <ul>
                 <li>
                   <!--Agree-->
-                  <i aria-label="Agree" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                  <i aria-label="Agree" @click="quickAction('agree')" class="icon material-icons icon-click" rel="prev">expand_less</i>
                   <sup class="noselect" rel="prev">${data.agree}</sup>
                   <!--Disagree-->
-                  <i aria-label="Disagree" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                  <i aria-label="Disagree" @click="quickAction('disagree')" class="icon material-icons icon-click" rel="prev">expand_more</i>
                   <sup class="noselect" rel="prev">${data.disagree}</sup> 
+
+                  <i aria-label="Reply" @click="redirectAction('reply')" class="icon material-icons icon-click" rel="prev">unfold_more</i>
                 </li> 
               </ul>
               <ul>
                 <li>
-                  <i aria-label="Reply" class="icon material-icons icon-click" rel="prev">reply</i>
                   <!--Liked-->
-                  ${
-                    data.liked 
-                    ? '<i x-if="data.liked" aria-label="Liked" class="primary icon material-icons icon-click" rel="prev">favorite</i>'
-                    : '<i x-if="data.liked" aria-label="Noy liked" class="icon material-icons icon-click" rel="prev">favorite</i>'
-                  }
+                  <i x-show="data.liked" @click="quickAction('like')" aria-label="Liked" class="primary icon material-icons icon-click" rel="prev">favorite</i>
+                  <i x-show="!data.liked" @click="quickAction('unlike')" aria-label="Noy liked" class="icon material-icons icon-click" rel="prev">favorite</i>
                 </li>
               </ul>
             </nav>

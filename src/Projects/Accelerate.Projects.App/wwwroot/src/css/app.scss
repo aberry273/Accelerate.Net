@@ -46,8 +46,11 @@
     // Utilities
     "utilities/accessibility": false,
     "utilities/reduce-motion": false,
+    
+    // Theme
+    "colors/utilities": true,
   )
-);
+); 
 
 // Custom theme
 @use "theme/styles";

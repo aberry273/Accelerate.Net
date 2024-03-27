@@ -11,6 +11,8 @@ using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.Contracts;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using MassTransit;
 using MassTransit.DependencyInjection;
 using MassTransit.Transports;
@@ -45,29 +47,35 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpGet]
         public override async Task<IActionResult> Get([FromQuery] RequestQuery<ContentPostEntity> query)
         {
-            var results = await _searchService.Find(query);
+            var results = await _searchService.Search(GetPostsQuery(), 0, 1000);
+            //var results = await _searchService.Find(query);
             return Ok(results.Documents);
-        }
-
-        [HttpPost]
-        public override async Task<IActionResult> Post(ContentPostEntity obj)
+        } 
+        private QueryDescriptor<ContentPostEntity> GetPostsQuery()
         {
-            var entity = await base.Post(obj);
-            
-            // Emit event
+            var query = new QueryDescriptor<ContentPostEntity>();
+            query.MatchAll();
+            //query.Bool(x => x.Must(y => y.Exists(z => z.Field("threadId"))));
+            query.Bool(x => x.MustNot(y => y.Exists(z => z.Field("targetThread"))));
+            //query.Bool(x => x.Must(y => y.Match(z => z.Field(d => d.ThreadId.Equals("")))));
+            //query.Term(x => x.TargetThread.Suffix("keyword"), "");
+            return query;
+        }
+        protected override async Task PostCreateSteps(ContentPostEntity obj)
+        {
             await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>() { Data = obj });
-            return Ok(entity);
         }
-
-        [HttpPut]
-        [Route("{id}")]
-        public override async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] ContentPostEntity obj)
+        protected override void UpdateValues(ContentPostEntity from, dynamic to)
         {
-            var entity = await base.Put(id, obj);
-
-            // Emit event
+            from.Content = to.Content;
+        }
+        protected override async Task PostUpdateSteps(ContentPostEntity obj)
+        {
             await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>() { Data = obj });
-            return Ok(entity);
+        }
+        protected override async Task PostDeleteSteps(ContentPostEntity obj)
+        {
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostEntity>() { Data = obj });
         }
     }
 }

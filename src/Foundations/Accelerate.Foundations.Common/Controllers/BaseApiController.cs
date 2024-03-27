@@ -19,74 +19,138 @@ namespace Accelerate.Foundations.Common.Controllers
         [HttpGet]
         public virtual async Task<IActionResult> Get([FromQuery] RequestQuery<T> query)
         {
-            int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
-            int skip = take * query.Page;
-            return Ok(_service.Find(x => true, skip, take));
+            try
+            {
+                int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
+                int skip = take * query.Page;
+                return Ok(_service.Find(x => true, skip, take));
+            }
+            catch(Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
         public virtual IActionResult Get(Guid id)
         {
-            var obj = _service.Get(id);
-            if (obj == null)
+            try
             {
-                return NotFound();
+                var obj = _service.Get(id);
+                if (obj == null)
+                {
+                    return NotFound();
+                }
+                return Ok(obj);
             }
-            return Ok(obj);
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
         }
 
         [HttpPost]
         public virtual async Task<IActionResult> Post(T obj)
         {
-            var id = await _service.CreateWithGuid(obj);
-
-            if (id == null)
+            try
             {
+                var id = await _service.CreateWithGuid(obj);
+
+                if (id == null)
+                {
+                    return ValidationProblem();
+                }
+                //To override
+                var entity = _service.Get(id.GetValueOrDefault());
+                await PostCreateSteps(entity);
+
+                return Ok(new
+                {
+                    message = "Created Successfully",
+                    id = id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
                 return BadRequest();
             }
-
-            return Ok(new
-            {
-                message = "Created Successfully",
-                id = id
-            });
         }
+        protected virtual async Task PostCreateSteps(T obj)
+        {
+            await Task.Run(() => { return; });
+        }
+
+        protected abstract void UpdateValues(T from, dynamic to);
 
         [HttpPut]
         [Route("{id}")]
         public virtual async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] T obj)
         {
-            var entity = _service.Get(id);
-            if (entity == null)
+            try
             {
-                return NotFound();
-            }
-            var hero = await _service.Update(obj);
-           
+                var entity = _service.Get(id);
+                if (entity == null)
+                {
+                    return NotFound();
+                }
+                UpdateValues(entity, obj);
+                await _service.Update(entity);
+                //To override
+                var updatedEntity = _service.Get(id);
+                await PostUpdateSteps(updatedEntity);
 
-            return Ok(new
+
+                return Ok(new
+                {
+                    message = "Updated Successfully",
+                    id = id
+                });
+            }
+            catch (Exception ex)
             {
-                message = "Updated Successfully",
-                id = id
-            });
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
+        protected virtual async Task PostUpdateSteps(T obj)
+        {
+            await Task.Run(() => { return; });
         }
 
         [HttpDelete]
         [Route("{id}")]
         public virtual async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var obj = _service.Get(id);
-            if (await _service.Delete(obj) == 1)
+            try
             {
-                return NotFound();
+                var obj = _service.Get(id);
+                if(obj == null)
+                {
+                    return NotFound();
+                }
+                var entity = _service.Get(id);
+                var result = await _service.Delete(obj);
+                await PostDeleteSteps(entity);
+                return Ok(new
+                {
+                    message = "Deleted Successfully",
+                    id = id
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "Deleted Successfully",
-                id = id
-            });
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return StatusCode(500, "There was an error processing your request, please try again.");
+            }
+        }
+
+        protected virtual async Task PostDeleteSteps(T obj)
+        {
+            await Task.Run(() => { return; });
         }
     }
 }
