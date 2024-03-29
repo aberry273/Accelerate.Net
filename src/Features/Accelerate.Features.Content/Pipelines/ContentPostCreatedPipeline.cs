@@ -36,6 +36,7 @@ namespace Accelerate.Features.Content.Pipelines
                 Status = args.Value.Status,
                 Content = args.Value.Content,
                 UserId = args.Value.UserId,
+                CreatedOn = args.Value.CreatedOn,
                 TargetThread = args.Value.TargetThread,
                 ParentId = args.Value.ParentId,
                 TargetChannel = args.Value.TargetChannel,

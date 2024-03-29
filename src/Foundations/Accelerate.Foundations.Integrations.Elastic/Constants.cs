@@ -11,6 +11,7 @@ namespace Accelerate.Foundations.Integrations.Elastic
         public struct Fields
         {
             public const string CreatedOn = "createdOn";
+            public const string UpdatedOn = "updatedOn";
         }
     }
 }

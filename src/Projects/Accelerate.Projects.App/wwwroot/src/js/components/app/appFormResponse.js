@@ -30,8 +30,8 @@ export default function (data) {
       this.loading = false;
     },
     resetValues(fields) {
-      for(var i = 0; i < fields.length; i++) {
-        if (fields[i].clearOnSubmit)
+        for (var i = 0; i < fields.length; i++) {
+        if (fields[i].clearOnSubmit === true)
             fields[i].value = null;
       }
     },
@@ -52,7 +52,7 @@ export default function (data) {
               <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
             </fieldset>
             -->
-            <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
+            <button class="flat" @click="await submit(fields)" :disabled="loading">${label}</button>
           </footer>
         </div>
       `

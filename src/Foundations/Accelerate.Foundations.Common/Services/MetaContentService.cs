@@ -49,8 +49,8 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new NavigationGroup()
             {
-                Title = "feed.at",
-                Subtitle = "Opensource",
+                Title = "parrot",
+                Subtitle = "The new bird in town",
                 Items = new List<NavigationItem>()
                 {
                     new NavigationItem()
@@ -66,8 +66,8 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new NavigationGroup()
             {
-                Title = "feed.at",
-                Subtitle = "Opensource",
+                Title = "parrot",
+                Subtitle = "The new bird in town",
                 Items = new List<NavigationItem>()
                 {
                     new NavigationItem()

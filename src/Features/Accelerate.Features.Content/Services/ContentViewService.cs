@@ -63,6 +63,7 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
+                        ClearOnSubmit = false,
                         Value = user.Id,
                     },
                     new FormField()
@@ -72,7 +73,8 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value =post.ThreadId,
+                        ClearOnSubmit = false,
+                        Value = post.ThreadId,
                     },
                     new FormField()
                     {

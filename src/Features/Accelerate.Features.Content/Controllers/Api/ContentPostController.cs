@@ -19,6 +19,7 @@ using MassTransit.Transports;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 
 namespace Accelerate.Features.Content.Controllers.Api
@@ -47,23 +48,33 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpGet]
         public override async Task<IActionResult> Get([FromQuery] RequestQuery<ContentPostEntity> query)
         {
-            var results = await _searchService.Search(GetPostsQuery(), 0, 1000);
+            var results = await _searchService.Search(GetPostsQuery(query), 0, 1000);
             //var results = await _searchService.Find(query);
             return Ok(results.Documents);
         } 
-        private QueryDescriptor<ContentPostEntity> GetPostsQuery()
+        private QueryDescriptor<ContentPostEntity> GetPostsQuery(RequestQuery<ContentPostEntity> request)
         {
             var query = new QueryDescriptor<ContentPostEntity>();
             query.MatchAll();
-            //query.Bool(x => x.Must(y => y.Exists(z => z.Field("threadId"))));
-            query.Bool(x => x.MustNot(y => y.Exists(z => z.Field("targetThread"))));
-            //query.Bool(x => x.Must(y => y.Match(z => z.Field(d => d.ThreadId.Equals("")))));
-            //query.Term(x => x.TargetThread.Suffix("keyword"), "");
+            if (!string.IsNullOrEmpty(request.Query?.TargetThread))
+            {
+                query.Term(x => x.TargetThread.Suffix("keyword"), request.Query?.TargetThread);
+            }
+            else
+            {
+                query.Bool(x => x.MustNot(y => y.Exists(z => z.Field("targetThread"))));
+            }
             return query;
         }
+        private string GetTarget(ContentPostEntity obj) => obj.TargetThread ?? obj.TargetChannel;
         protected override async Task PostCreateSteps(ContentPostEntity obj)
-        {
-            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>() { Data = obj });
+        { 
+            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.UserId
+            });
         }
         protected override void UpdateValues(ContentPostEntity from, dynamic to)
         {
@@ -71,11 +82,21 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override async Task PostUpdateSteps(ContentPostEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.UserId
+            });
         }
         protected override async Task PostDeleteSteps(ContentPostEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostEntity>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.UserId
+            });
         }
     }
 }

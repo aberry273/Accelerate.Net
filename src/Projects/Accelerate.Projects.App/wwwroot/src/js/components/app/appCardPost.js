@@ -11,7 +11,7 @@ const defaults = {
 export default function (data) {
 	return {
       data: null,
-      threadUrl: null,
+        threadUrl: null,
         init() {
         this.data = data.item;
         this.threadUrl = data.threadUrl;
@@ -20,8 +20,8 @@ export default function (data) {
           this.load(self.data)
         })
       },
-      quickAction(action) {
-        const ev = `action-${action}`;
+        quickAction(action) {
+        const ev = `action-${action}-post`;
         this.$events.emit(ev, this.data)
         this.$events.emit(action, this.data)
       },
@@ -30,16 +30,16 @@ export default function (data) {
         this.$events.emit(ev, this.data)
       },
         modalAction(action) {
-            const ev = `modal-${action}-post`;
-            const payload = {
-                // route to append to postbackUrl 
-                postbackUrlRoute: this.data.id,
-                // postback type
-                postbackType: 'PUT',
-                // content post item
-                item: this.data,
-            }
-            this.$events.emit(ev, payload)
+        const ev = `modal-${action}-post`;
+        const payload = {
+            // route to append to postbackUrl 
+            postbackUrlRoute: this.data.id,
+            // postback type
+            postbackType: 'PUT',
+            // content post item
+            item: this.data,
+        }
+        this.$events.emit(ev, payload)
         },
       getThreadUrl(id) {
         return `${this.threadUrl}/${id}`;

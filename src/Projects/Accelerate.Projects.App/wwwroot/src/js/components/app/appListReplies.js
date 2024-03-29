@@ -7,23 +7,25 @@ export default function (data) {
     loading: false,
     sourceUrl: '#',
     expandable: true,
-    items: [],
-    threadUrl: '/',
+        initialItems: [],
+        threadUrl: '/',
+    targetThread: null,
     init() {
       this.expandable = data.expandable;
       this.filterId = data.feed;
       this.sourceUrl = data.sourceUrl;
-      this.threadUrl = data.threadUrl;
+        this.threadUrl = data.threadUrl;
+        this.targetThread = data.targetThread;
       //this.selectFeed(data.feed);
       this.setHtml(data);
       const self = this;
 
-      //DELETE THIS LATEr
-      this.items = data.items;
-      
+      this.initialItems = data.items;
+      /*
       this.$watch('$store.feedFilters.current', async (val) => {
         await this.filterPosts(val)
       })
+      */
 
       this.$events.on('action-reply', (item) => {
         self.selected = item;
@@ -38,6 +40,7 @@ export default function (data) {
     isSelected(item) {
       return (this.selected != null && this.selected.id == item.id)
     },
+    /*
     async filterPosts(feed) {
       this.loading = true;
       await this.fetchItems();
@@ -52,12 +55,17 @@ export default function (data) {
     testFunction() {
       console.log('test');
     },
+    */
     setHtml(data) {
       // make ajax request
       const html = `
   
-      <div>
-        <template x-for="(post, i) in items" :key="post.id+''+i">
+      <div x-data="_contentPosts({
+             items: initialItems,
+             targetThread: targetThread,
+             sourceUrl: sourceUrl
+        })">
+        <template x-for="(post, i) in posts" :key="post.id+''+i">
           <div>
             <div x-cloak x-data="appCardPostReply(
               {
@@ -80,7 +88,7 @@ export default function (data) {
             </div>
           </template>
        
-        <template x-if="filtered.length == 0">
+        <template x-if="posts.length == 0">
           <article>
             <header><strong>No results!</strong></header>
             No posts could be found

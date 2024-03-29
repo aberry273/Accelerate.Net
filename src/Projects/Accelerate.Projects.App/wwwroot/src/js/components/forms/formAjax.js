@@ -20,16 +20,16 @@ export default function (data) {
     this.localEvent += new Date().toISOString()
 
     this.$events.on(this.localEvent, (data) => {
-        console.log(data)
-        if (data.statusCode == 200) {
-            //w
+        if (data.status == 200) {
+            // Okay, do nothing from FE
         }
-        if (data.statusCode >= 400 && data.statusCode <= 500) {
-            //this.resetValues(fields);
+        if (data.status >= 400 && data.status <= 500) {
+            this.$events.emit('snackbar-information', { code: data.status, text: "Not found" });
         }
-        if (data.statusCode >= 500 && data.statusCode <= 600) {
-            //this.resetValues(fields);
+        if (data.status >= 500 && data.status <= 600) {
+            this.$events.emit('snackbar-error', { code: data.status, text: "Error processing request" });
         }
+        this.resetValues(this.fields);
     })
     },
     // METHODS
@@ -71,9 +71,10 @@ export default function (data) {
       this.loading = false;
     },
     resetValues(fields) {
-      for(var i = 0; i < fields.length; i++) {
-        fields[i].value = null;
-      }
+        for (var i = 0; i < fields.length; i++) {
+            if (fields[i].clearOnSubmit === true)
+                fields[i].value = null;
+        }
     },
     setHtml(data) {
       // make ajax request

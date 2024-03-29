@@ -33,6 +33,8 @@ namespace Accelerate.Features.Content.Pipelines
                 TargetThread = args.Value.TargetThread,
                 TargetChannel = args.Value.TargetChannel,
                 Category = args.Value.Category,
+                CreatedOn = args.Value.CreatedOn,
+                UpdatedOn = args.Value.UpdatedOn,
                 Tags = args.Value.Tags,
                 ParentId = args.Value.ParentId,
                 Content = args.Value.Content,

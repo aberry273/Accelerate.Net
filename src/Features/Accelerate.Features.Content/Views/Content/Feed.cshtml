@@ -41,8 +41,10 @@
                     sourceUrl: 'https://localhost:7220/api/contentpost',
                     threadUrl: 'https://localhost:7220/content/thread',
                     event: 'post:created',
+                    userId: '@Model.UserId',
+                    items: [],
+                    channel: 'all',
                   })"
-                 x-init="await fetchItems()"
                  x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
         </div>
     </div>

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Content Remove="Views\Shared\_Layout.Backup.cshtml" />
+    <Content Remove="wwwroot\src\js\data\contentPosts.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +73,7 @@
     <None Include="wwwroot\src\js\components\navigation\appbar.js" />
     <None Include="wwwroot\src\js\components\navigation\footer.js" />
     <None Include="wwwroot\src\js\components\navigation\navbar.js" />
+    <None Include="wwwroot\src\js\data\contentPosts.js" />
     <None Include="wwwroot\src\js\data\dropdown.js" />
     <None Include="wwwroot\src\js\data\formData.js" />
     <None Include="wwwroot\src\js\data\html.js" />

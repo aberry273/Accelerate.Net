@@ -38,7 +38,7 @@
     <link rel="manifest" href="~/src/manifest.json" />
 </head>
 
-<body style="background-color: #efefef; min-height: 100%; height: 100vh;">
+<body style="background-color: min-height: 100%; height: 100vh;">
     <div class="container">
         <!-- Header -->
         <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
@@ -55,6 +55,17 @@
     <div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
 
     <!-- JS Libraries -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        let wssSettings = {
+            wssContentPosts: {
+                //standard websockets
+                //url: "wss://localhost:7220/ContentPosts",
+                event: 'wss:contentPosts',
+                url: "https://localhost:7220/ContentPosts",
+            }
+        };
+    </script>
     <!-- For componentizing and lazy loading Alpine -->
     <script type="module" src="~/src/js/init.js"></script>
 

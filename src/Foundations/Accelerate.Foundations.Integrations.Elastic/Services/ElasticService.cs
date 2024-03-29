@@ -56,7 +56,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         {
             return await _client.DeleteAsync(_indexName, id);
         }
-        public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.UpdatedOn)
         {
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
@@ -66,7 +66,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .Sort(x => x.Field(new Field(sortByField)))
             );
         }
-        public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.UpdatedOn)
         {
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
@@ -77,7 +77,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             );
         }
 
-        public async Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.UpdatedOn)
         {
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
@@ -87,7 +87,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .Sort(x => x.Field(new Field(sortByField)))
             );
         }
-        public async Task<SearchResponse<T>> Find(QueryDescriptor<T> query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Find(QueryDescriptor<T> query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.UpdatedOn)
         {
             //Create if not existing
             await CreateIndex();

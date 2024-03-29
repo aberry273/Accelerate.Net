@@ -1,20 +1,13 @@
 export default () => ({
     // PROPERTIES
+    userId: 'anonymous',
+    user: {},
     // INIT
-    init() {},
+    init() {
+    },
+    get getUser() { return this.user },
     // METHODS
-    user: defaultUser
+    setUser(user) {
+        this.user = user;
+    },
 })
-
-const defaultUser = 
-    {
-        id: 0,
-        username: 'John deere',
-        profile: 'https://placehold.co/150x150',
-        profile: {
-            firstname: 'John',
-            lastname: 'Deere',
-        },
-        updated: '5 minutes ago',
-    }
-

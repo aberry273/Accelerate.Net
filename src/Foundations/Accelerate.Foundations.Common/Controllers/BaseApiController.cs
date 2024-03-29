@@ -98,6 +98,7 @@ namespace Accelerate.Foundations.Common.Controllers
                     return NotFound();
                 }
                 UpdateValues(entity, obj);
+                entity.UpdatedOn = DateTime.Now;
                 await _service.Update(entity);
                 //To override
                 var updatedEntity = _service.Get(id);

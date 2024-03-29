@@ -10,10 +10,12 @@ Object.keys(sockets).forEach(socket => {
     alpinejs.data(socket, sockets[socket]);
 });
 */
+// Load websockets
 import * as sockets from './websockets/index.js';
 Object.keys(sockets).forEach(socket => {
-    let data = sockets[socket]();
-    alpinejs.store('wss_'+socket, data);
+    let settings = wssSettings[socket] || {}
+    let data = sockets[socket](settings);
+    alpinejs.store(socket, data);
 });
 
 // Load data components, prefix with _
@@ -21,8 +23,6 @@ import * as comps from './data/index.js';
 Object.keys(comps).forEach(component => {
     alpinejs.data('_'+component, comps[component]);
 });
-
-
 
 // Load bindings
 import * as bindings from './bindings/index.js';
@@ -54,6 +54,7 @@ import * as components from './components/index.js';
 Object.keys(components).forEach(component => {
     alpinejs.data(component, components[component]);
 });
+
 
 /*
 // Init AsyncAlpine + Alpine + Components

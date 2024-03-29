@@ -50,100 +50,20 @@
 
     <!-- Response Form -->
     <article>
-        <!--
-        <div x-data="appFormResponse({
-      postbackUrl: 'https://localhost:7220/api/contentpost',
-      postbackType: 'POST',
-      event: 'post:created',
-      fieldPlaceholder: 'Write a reply',
-      label: 'Reply',
-        fields: [
-          {
-            name: 'Content',
-            type: 'textarea',
-            placeholder: 'Write a reply',
-            autocomplete: null,
-            helper: '',
-            clearOnSubmit: true,
-          },
-          {
-            name: 'ParentId',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: item.id,
-          },
-          {
-            name: 'Status',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: 'Hidden',
-          },
-          {
-            name: 'ChannelId',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: item.channelId,
-          },
-          {
-            name: 'ThreadId',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: '@Model.Item.ThreadId',
-          },
-          {
-            name: 'Tags',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: item.tags,
-          },
-          {
-            name: 'Category',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: item.category,
-          },
-          {
-            name: 'UserId',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            autocomplete: null,
-            helper: '',
-            value: item.userId,
-          },
-        ]
-    })"></div>
-    -->
         <div x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
     </article>
 
     <!--Responses-->
     <main x-transition>
         <div x-data="appListReplies({
-      sourceUrl: 'https://localhost:7220/api/contentpost',
-      threadUrl: 'https://localhost:7220/content/thread',
-      event: 'post:created',
-      items: items,
-    })"
-    x-init="await fetchItems()"></div>
+          sourceUrl: 'https://localhost:7220/api/contentpost',
+          threadUrl: 'https://localhost:7220/content/thread',
+          targetThread: '@Model.Item.ThreadId',
+          event: 'post:created',
+          items: items,
+          userId: '@Model.UserId',
+          channel: '@Model.Item.ThreadId',
+    })"></div>
     </main>
 </div>
 
