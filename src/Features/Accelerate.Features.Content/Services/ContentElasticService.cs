@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 namespace Accelerate.Features.Content.Services
 {
     //Overwrite the core service for custom filtering
-    public class ContentElasticService : ElasticService<ContentPostEntity>
+    public class ContentElasticService : ElasticService<ContentPostDocument>
     {
 
         public ContentElasticService(IOptions<ElasticConfiguration> options) : base(options)
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Services
             return await IndexDocument(doc);
         }
         */ 
-        public override async Task<SearchResponse<ContentPostEntity>> Find(RequestQuery<ContentPostEntity> query)
+        public override async Task<SearchResponse<ContentPostDocument>> Find(RequestQuery<ContentPostDocument> query)
         {
             //Create if not existing
             await CreateIndex();
@@ -41,9 +41,9 @@ namespace Accelerate.Features.Content.Services
                 take);
         }
 
-        private QueryDescriptor<ContentPostEntity> CreateQuery(RequestQuery<ContentPostEntity> request)
+        private QueryDescriptor<ContentPostDocument> CreateQuery(RequestQuery<ContentPostDocument> request)
         {
-            var descriptor =  new QueryDescriptor<ContentPostEntity>();
+            var descriptor =  new QueryDescriptor<ContentPostDocument>();
             descriptor.MatchAll();
             if (!string.IsNullOrEmpty(request?.Query?.Content))
                 descriptor.Term(x => x.Content, request?.Query?.Content);

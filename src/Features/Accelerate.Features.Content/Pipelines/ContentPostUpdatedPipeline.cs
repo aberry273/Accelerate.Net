@@ -11,9 +11,9 @@ namespace Accelerate.Features.Content.Pipelines
 {
     public class ContentPostUpdatedPipeline : DataUpdateEventPipeline<ContentPostEntity>
     {
-        IElasticService<ContentPostEntity> _elasticService;
+        IElasticService<ContentPostDocument> _elasticService;
         public ContentPostUpdatedPipeline(
-            IElasticService<ContentPostEntity> elasticService)
+            IElasticService<ContentPostDocument> elasticService)
         {
             _elasticService = elasticService;
             // To update as reflection / auto load based on inheritance classes in library
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Pipelines
         {
             var userId = args.Value.UserId.GetValueOrDefault().ToString();
             //var user = await _userManager.FindByIdAsync(userId);
-            var indexModel = new ContentPost()
+            var indexModel = new ContentPostDocument()
             {
                 Id = args.Value.Id,
                 TargetThread = args.Value.TargetThread,
@@ -35,12 +35,12 @@ namespace Accelerate.Features.Content.Pipelines
                 Category = args.Value.Category,
                 CreatedOn = args.Value.CreatedOn,
                 UpdatedOn = args.Value.UpdatedOn,
-                Tags = args.Value.Tags,
+                Tags = args.Value.TagItems,
                 ParentId = args.Value.ParentId,
                 Content = args.Value.Content,
-                Username = args.Value.UserId.ToString() ?? "Anonymous"
+                User = args.Value.UserId.ToString() ?? "Anonymous"
             };
-            await _elasticService.UpdateDocument<ContentPostEntity>(indexModel, args.Value.Id.ToString());
+            await _elasticService.UpdateDocument<ContentPostDocument>(indexModel, args.Value.Id.ToString());
         }
     }
 }

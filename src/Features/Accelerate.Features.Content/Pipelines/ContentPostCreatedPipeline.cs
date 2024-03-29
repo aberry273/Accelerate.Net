@@ -12,9 +12,9 @@ namespace Accelerate.Features.Content.Pipelines
 {
     public class ContentPostCreatedPipeline : DataCreateEventPipeline<ContentPostEntity>
     {
-        IElasticService<ContentPostEntity> _elasticService;
+        IElasticService<ContentPostDocument> _elasticService;
         public ContentPostCreatedPipeline(
-            IElasticService<ContentPostEntity> elasticService)
+            IElasticService<ContentPostDocument> elasticService)
         {
             _elasticService = elasticService;
             // To update as reflection / auto load based on inheritance classes in library
@@ -31,7 +31,7 @@ namespace Accelerate.Features.Content.Pipelines
         {
             var userId = args.Value.UserId.GetValueOrDefault().ToString();
             //var user = await _userManager.FindByIdAsync(userId);
-            var indexModel = new ContentPost()
+            var indexModel = new ContentPostDocument()
             {
                 Status = args.Value.Status,
                 Content = args.Value.Content,
@@ -40,10 +40,10 @@ namespace Accelerate.Features.Content.Pipelines
                 TargetThread = args.Value.TargetThread,
                 ParentId = args.Value.ParentId,
                 TargetChannel = args.Value.TargetChannel,
-                TagItems = args.Value.TagItems,
+                Tags = args.Value.TagItems,
                 Category = args.Value.Category,
                 Id = args.Value.Id,
-                Username = args.Value.UserId.ToString() ?? "Anonymous"
+                User = args.Value.UserId.ToString() ?? "Anonymous"
             };
             await _elasticService.Index(indexModel);
         }

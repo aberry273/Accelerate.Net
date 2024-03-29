@@ -15,23 +15,23 @@ namespace Accelerate.Foundations.Account.Models.Entities
     {
         #region Required 
         #endregion
-        public string Title { get; set; }
-        public string SecondaryEmail { get; set; }
-        public string SecondaryNumber { get; set; }
-        public string Firstname { get; set; }
-        public string Lastname { get; set; }
-        public string Address { get; set; }
-        public string Suburb { get; set; }
-        public string City { get; set; }
-        public string Postcode { get; set; }
-        public string Country { get; set; }
-        public string Position { get; set; }
+        public string? Title { get; set; }
+        public string? SecondaryEmail { get; set; }
+        public string? SecondaryNumber { get; set; }
+        public string? Firstname { get; set; }
+        public string? Lastname { get; set; }
+        public string? Address { get; set; }
+        public string? Suburb { get; set; }
+        public string? City { get; set; }
+        public string? Postcode { get; set; }
+        public string? Country { get; set; }
+        public string? Position { get; set; }
         public AccountUser User { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
-        public string Description { get; set; }
-        public string Category { get; set; }
-        public string Tags { get; set; }
+        public string? Description { get; set; }
+        public string? Category { get; set; }
+        public string? Tags { get; set; }
         [NotMapped]
         public IEnumerable<string> TagItems
         {

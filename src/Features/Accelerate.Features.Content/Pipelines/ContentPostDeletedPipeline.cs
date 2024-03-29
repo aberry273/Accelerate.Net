@@ -11,9 +11,9 @@ namespace Accelerate.Features.Content.Pipelines
 {
     public class ContentPostDeletedPipeline : DataDeleteEventPipeline<ContentPostEntity>
     {
-        IElasticService<ContentPostEntity> _elasticService;
+        IElasticService<ContentPostDocument> _elasticService;
         public ContentPostDeletedPipeline(
-            IElasticService<ContentPostEntity> elasticService)
+            IElasticService<ContentPostDocument> elasticService)
         {
             _elasticService = elasticService;
             // To update as reflection / auto load based on inheritance classes in library

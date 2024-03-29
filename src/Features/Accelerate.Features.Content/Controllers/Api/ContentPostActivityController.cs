@@ -28,14 +28,14 @@ namespace Accelerate.Features.Content.Controllers.Api
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
-        IElasticService<ContentPostEntity> _searchService;
+        IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
         public ContentPostActivityController(
             IMetaContentService contentService,
             IEntityService<ContentPostActivityEntity> service,
             IEntityService<ContentPostEntity> postService,
             Bind<IContentBus, IPublishEndpoint> publishEndpoint,
-            IElasticService<ContentPostEntity> searchService,
+            IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;

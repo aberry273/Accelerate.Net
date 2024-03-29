@@ -11,12 +11,20 @@ using System.Text.RegularExpressions;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Views;
+using Accelerate.Foundations.Integrations.Elastic.Services;
+using MassTransit.DependencyInjection;
+using MassTransit;
+using Accelerate.Features.Content.EventBus;
+using Accelerate.Foundations.EventPipelines.Models.Contracts;
+using Accelerate.Features.Account.Models;
 
 namespace Accelerate.Features.Account.Controllers
 {
     //[Authorize]
     public class AccountController : BaseController
     {
+        readonly Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
+        IElasticService<AccountUserDocument> _searchService;
         private SignInManager<AccountUser> _signInManager;
         private UserManager<AccountUser> _userManager;
         private IEmailSender<AccountUser> _emailSender;
@@ -27,7 +35,9 @@ namespace Accelerate.Features.Account.Controllers
             SignInManager<AccountUser> signInManager,
             UserManager<AccountUser> userManager,
             IEmailSender<AccountUser> emailSender,
-            IEntityService<AccountProfile> profileService)
+            IEntityService<AccountProfile> profileService,
+            Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
+            IElasticService<AccountUserDocument> searchService)
             : base(contentService)
         {
             _contentService = contentService;
@@ -35,6 +45,8 @@ namespace Accelerate.Features.Account.Controllers
             _userManager = userManager;
             _emailSender = emailSender;
             _profileService = profileService;
+            _publishEndpoint = publishEndpoint;
+            _searchService = searchService;
         }
 
         private const string _authenticatedRedirectUrl = "/";
@@ -84,6 +96,39 @@ namespace Accelerate.Features.Account.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+        #region Pipelines
+
+        private string GetTarget(AccountUser obj) => obj.Id.ToString();
+        //private string GetTarget(AccountUser obj) => obj.TargetThread ?? obj.TargetChannel;
+        protected async Task PostCreateSteps(AccountUser obj)
+        {
+            await _publishEndpoint.Value.Publish(new CreateDataContract<AccountUser>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.Id
+            });
+        }
+        protected async Task PostUpdateSteps(AccountUser obj)
+        {
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.Id
+            });
+        }
+        protected async Task PostDeleteSteps(AccountUser obj)
+        {
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountUser>()
+            {
+                Data = obj,
+                Target = GetTarget(obj),
+                UserId = obj.Id
+            });
+        }
+        #endregion
+
         #region Manage
         [HttpGet]
         [AllowAnonymous]
@@ -215,10 +260,13 @@ namespace Accelerate.Features.Account.Controllers
                         await _profileService.Create(new AccountProfile() { UserId = user.Id });
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
+                        //TODO: Move this to the pipeline
                         var callbackUrl = EmailConfirmationLink(user.UserName, code, Request.Scheme);
                         await _emailSender.SendConfirmationLinkAsync(user, user.Email, callbackUrl);
 
                         await _signInManager.PasswordSignInAsync(user, request.Password, isPersistent: false, lockoutOnFailure: false);
+                        //Run pipeline
+                        await PostCreateSteps(user);
                         StaticLoggingService.Log("User created a new account with password.");
 
                         return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);

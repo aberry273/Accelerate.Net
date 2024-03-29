@@ -32,14 +32,12 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
@@ -69,7 +67,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("ParentId")
@@ -88,7 +85,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UserId")
@@ -112,7 +108,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Disagree")
@@ -122,7 +117,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")

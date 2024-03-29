@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    [Migration("20240326044616_InitialCreate_Content5")]
-    partial class InitialCreate_Content5
+    [Migration("20240329030815_InitialCreate_Content1")]
+    partial class InitialCreate_Content1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,14 +35,12 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
@@ -65,27 +63,31 @@ namespace Accelerate.Foundations.Content.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Channel")
+                    b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("TagItems")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Tags")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Thread")
+                    b.Property<string>("TargetChannel")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TargetThread")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UserId")
@@ -109,7 +111,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Disagree")
@@ -119,7 +120,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("UpdatedOn")
-                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")

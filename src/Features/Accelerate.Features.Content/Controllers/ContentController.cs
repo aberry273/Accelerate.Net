@@ -1,4 +1,5 @@
-﻿using Accelerate.Features.Content.Models.Views;
+﻿using Accelerate.Features.Content.Models.Data;
+using Accelerate.Features.Content.Models.Views;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Attributes;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -23,14 +24,14 @@ namespace Accelerate.Features.Content.Controllers
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        IElasticService<ContentPostEntity> _searchService;
+        IElasticService<ContentPostDocument> _searchService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
         public ContentController(
             IMetaContentService service,
             IContentViewService contentViewService,
             IEntityService<ContentPostEntity> postService,
-            IElasticService<ContentPostEntity> searchService,
+            IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {
             _userManager = userManager;

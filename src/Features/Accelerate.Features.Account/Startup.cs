@@ -1,4 +1,14 @@
-﻿using Accelerate.Foundations.Communication.Services;
+﻿using Accelerate.Features.Account.Models;
+using Accelerate.Features.Account.Pipelines;
+using Accelerate.Features.Account.Services;
+using Accelerate.Features.Content.Consumers;
+using Accelerate.Features.Content.EventBus;
+using Accelerate.Features.Content.Pipelines;
+using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Communication.Services;
+using Accelerate.Foundations.EventPipelines.Pipelines;
+using Accelerate.Foundations.Integrations.Elastic.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +24,40 @@ namespace Accelerate.Features.Account
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IElasticService<AccountUserDocument>, AccountElasticService>();
+           
+            services.AddSingleton<IDataCreateEventPipeline<AccountUser>, AccountUserCreatedPipeline>();
+            services.AddSingleton<IDataUpdateEventPipeline<AccountUser>, AccountUserUpdatedPipeline>();
+            services.AddSingleton<IDataDeleteEventPipeline<AccountUser>, AccountUserDeletedPipeline>();
+
+            // CONSUMERS
+            services.AddMassTransit<IAccountBus>(x =>
+            {
+                x.AddConsumer<DataCreateConsumer<AccountUser, IAccountBus>>();
+                x.AddConsumer<DataCreateCompleteConsumer<AccountUser>>();
+
+                x.AddConsumer<DataUpdateConsumer<AccountUser, IAccountBus>>();
+                x.AddConsumer<DataUpdateCompleteConsumer<AccountUser>>();
+
+                x.AddConsumer<DataDeleteConsumer<AccountUser, IAccountBus>>();
+                x.AddConsumer<DataDeleteCompleteConsumer<AccountUser>>();
+
+                x.UsingInMemory((context, cfg) =>
+                {
+                    cfg.ReceiveEndpoint("event-listener", e =>
+                    {
+                        // Content Posts
+                        e.ConfigureConsumer<DataCreateConsumer<AccountUser, IAccountBus>>(context);
+                        e.ConfigureConsumer<DataCreateCompleteConsumer<AccountUser>>(context);
+
+                        e.ConfigureConsumer<DataUpdateConsumer<AccountUser, IAccountBus>>(context);
+                        e.ConfigureConsumer<DataUpdateCompleteConsumer<AccountUser>>(context);
+
+                        e.ConfigureConsumer<DataDeleteConsumer<AccountUser, IAccountBus>>(context);
+                        e.ConfigureConsumer<DataDeleteCompleteConsumer<AccountUser>>(context);
+                    });
+                });
+            });
         }
     }
 }

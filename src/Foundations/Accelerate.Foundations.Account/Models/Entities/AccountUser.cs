@@ -8,11 +8,8 @@ namespace Accelerate.Foundations.Account.Models.Entities
     {
         public string Domain { get; set; }
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime? UpdatedOn { get; set; }
 
         public Guid AccountProfileId { get; set; }

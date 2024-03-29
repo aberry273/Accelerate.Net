@@ -6,42 +6,39 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Accelerate.Foundations.Content.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate_Content2 : Migration
+    public partial class InitialCreate_Content1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Category",
-                table: "ContentPosts",
-                type: "nvarchar(max)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<Guid>(
-                name: "ParentId",
-                table: "ContentPosts",
-                type: "uniqueidentifier",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "TagItems",
-                table: "ContentPosts",
-                type: "nvarchar(max)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "Tags",
-                table: "ContentPosts",
-                type: "nvarchar(max)",
-                nullable: true);
+            migrationBuilder.CreateTable(
+                name: "ContentPosts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ParentId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetThread = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TargetChannel = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tags = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContentPosts", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "ContentPostActivity",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ContentPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ContentPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -54,7 +51,8 @@ namespace Accelerate.Foundations.Content.Migrations
                         name: "FK_ContentPostActivity_ContentPosts_ContentPostId",
                         column: x => x.ContentPostId,
                         principalTable: "ContentPosts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,7 +61,7 @@ namespace Accelerate.Foundations.Content.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ContentPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Agree = table.Column<bool>(type: "bit", nullable: false),
                     Disagree = table.Column<bool>(type: "bit", nullable: false),
                     Like = table.Column<bool>(type: "bit", nullable: false),
@@ -101,21 +99,8 @@ namespace Accelerate.Foundations.Content.Migrations
             migrationBuilder.DropTable(
                 name: "ContentPostReview");
 
-            migrationBuilder.DropColumn(
-                name: "Category",
-                table: "ContentPosts");
-
-            migrationBuilder.DropColumn(
-                name: "ParentId",
-                table: "ContentPosts");
-
-            migrationBuilder.DropColumn(
-                name: "TagItems",
-                table: "ContentPosts");
-
-            migrationBuilder.DropColumn(
-                name: "Tags",
-                table: "ContentPosts");
+            migrationBuilder.DropTable(
+                name: "ContentPosts");
         }
     }
 }
