@@ -17,6 +17,7 @@ using MassTransit;
 using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Features.Account.Models;
+using Accelerate.Foundations.Account.Models;
 
 namespace Accelerate.Features.Account.Controllers
 {

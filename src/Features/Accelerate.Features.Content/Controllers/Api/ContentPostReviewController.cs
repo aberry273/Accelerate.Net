@@ -1,11 +1,11 @@
 ﻿using Accelerate.Features.Content.EventBus;
-using Accelerate.Features.Content.Models.Data;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.Contracts;

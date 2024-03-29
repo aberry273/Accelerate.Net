@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.Integrations.Elastic.Services;
 
 namespace Accelerate.Foundations.Account
 {
@@ -36,6 +37,7 @@ namespace Accelerate.Foundations.Account
             // SERVICES
             services.AddTransient<IEntityService<AccountProfile>, EntityService<AccountProfile>>();
 
+            services.AddTransient<IElasticService<AccountUserDocument>, AccountElasticService>();
             // services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
 
             // CONFIGURATION

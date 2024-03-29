@@ -1,5 +1,4 @@
-﻿using Accelerate.Features.Content.Models.Data;
-using Accelerate.Features.Content.Models.Views;
+﻿using Accelerate.Features.Content.Models.Views;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Attributes;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -10,6 +9,7 @@ using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;

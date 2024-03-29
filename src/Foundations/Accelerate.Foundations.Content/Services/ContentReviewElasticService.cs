@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Models.Data;
+﻿using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Content.Models;
@@ -8,16 +8,16 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Options;
 
-namespace Accelerate.Features.Content.Services
+namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentActivityElasticService :  ElasticService<ContentPostActivityEntity>
+    public class ContentReviewElasticService :  ElasticService<ContentPostReviewEntity>
     {
 
-        public ContentActivityElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentReviewElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
             this._indexName = "contentpostreview_index";
         }
-        public override async Task<SearchResponse<ContentPostActivityEntity>> Find(RequestQuery<ContentPostActivityEntity> query)
+        public override async Task<SearchResponse<ContentPostReviewEntity>> Find(RequestQuery<ContentPostReviewEntity> query)
         {
             //Create if not existing
             await CreateIndex();
@@ -31,9 +31,9 @@ namespace Accelerate.Features.Content.Services
                 take);
         }
 
-        private QueryDescriptor<ContentPostActivityEntity> CreateQuery(RequestQuery<ContentPostActivityEntity> request)
+        private QueryDescriptor<ContentPostReviewEntity> CreateQuery(RequestQuery<ContentPostReviewEntity> request)
         {
-            var descriptor =  new QueryDescriptor<ContentPostActivityEntity>();
+            var descriptor =  new QueryDescriptor<ContentPostReviewEntity>();
             descriptor.MatchAll();
           
             return descriptor;

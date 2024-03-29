@@ -1,5 +1,4 @@
 ﻿
-using Accelerate.Features.Account.Models;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models;
@@ -9,7 +8,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Options;
 
-namespace Accelerate.Features.Account.Services
+namespace Accelerate.Foundations.Account.Services
 {
     //Overwrite the core service for custom filtering
     public class AccountElasticService : ElasticService<AccountUserDocument>

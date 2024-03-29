@@ -1,8 +1,8 @@
-﻿using Accelerate.Features.Content.Models.Data;
-using Accelerate.Features.Content.Services;
+﻿using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch.Ingest;

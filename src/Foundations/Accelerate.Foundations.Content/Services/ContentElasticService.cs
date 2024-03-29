@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Models.Data;
+﻿using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Content.Models;
@@ -8,7 +8,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Options;
 
-namespace Accelerate.Features.Content.Services
+namespace Accelerate.Foundations.Content.Services
 {
     //Overwrite the core service for custom filtering
     public class ContentElasticService : ElasticService<ContentPostDocument>

@@ -1,6 +1,5 @@
 ﻿using Accelerate.Features.Account.Models;
 using Accelerate.Features.Account.Pipelines;
-using Accelerate.Features.Account.Services;
 using Accelerate.Features.Content.Consumers;
 using Accelerate.Features.Content.EventBus;
 using Accelerate.Features.Content.Pipelines;
@@ -24,8 +23,6 @@ namespace Accelerate.Features.Account
     {
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IElasticService<AccountUserDocument>, AccountElasticService>();
-           
             services.AddSingleton<IDataCreateEventPipeline<AccountUser>, AccountUserCreatedPipeline>();
             services.AddSingleton<IDataUpdateEventPipeline<AccountUser>, AccountUserUpdatedPipeline>();
             services.AddSingleton<IDataDeleteEventPipeline<AccountUser>, AccountUserDeletedPipeline>();

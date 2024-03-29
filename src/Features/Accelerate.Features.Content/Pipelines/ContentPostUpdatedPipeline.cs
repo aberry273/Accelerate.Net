@@ -1,8 +1,11 @@
-﻿using Accelerate.Features.Content.Models.Data;
-using Accelerate.Features.Content.Services;
+﻿using Accelerate.Features.Content.Services;
+using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch.Ingest;
@@ -11,11 +14,14 @@ namespace Accelerate.Features.Content.Pipelines
 {
     public class ContentPostUpdatedPipeline : DataUpdateEventPipeline<ContentPostEntity>
     {
+        IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         public ContentPostUpdatedPipeline(
-            IElasticService<ContentPostDocument> elasticService)
+            IElasticService<ContentPostDocument> elasticService,
+            IElasticService<AccountUserDocument> accountElasticService)
         {
             _elasticService = elasticService;
+            _accountElasticService = accountElasticService;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
@@ -25,21 +31,9 @@ namespace Accelerate.Features.Content.Pipelines
         // ASYNC PROCESSORS
         public async Task UpdateDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var userId = args.Value.UserId.GetValueOrDefault().ToString();
-            //var user = await _userManager.FindByIdAsync(userId);
-            var indexModel = new ContentPostDocument()
-            {
-                Id = args.Value.Id,
-                TargetThread = args.Value.TargetThread,
-                TargetChannel = args.Value.TargetChannel,
-                Category = args.Value.Category,
-                CreatedOn = args.Value.CreatedOn,
-                UpdatedOn = args.Value.UpdatedOn,
-                Tags = args.Value.TagItems,
-                ParentId = args.Value.ParentId,
-                Content = args.Value.Content,
-                User = args.Value.UserId.ToString() ?? "Anonymous"
-            };
+            var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
+            var indexModel = new ContentPostDocument();
+            args.Value.HydrateDocument(indexModel, user?.Source?.Username);
             await _elasticService.UpdateDocument<ContentPostDocument>(indexModel, args.Value.Id.ToString());
         }
     }

@@ -1,4 +1,5 @@
 ﻿using Accelerate.Features.Account.Models;
+using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;

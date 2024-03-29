@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Account.Models.Entities;
 
-namespace Accelerate.Features.Account.Models
+namespace Accelerate.Foundations.Account.Models
 {
     public class AccountUserDocument
     {

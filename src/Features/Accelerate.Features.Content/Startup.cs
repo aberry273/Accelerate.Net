@@ -1,6 +1,5 @@
 ﻿using Accelerate.Features.Content.Consumers;
 using Accelerate.Features.Content.EventBus;
-using Accelerate.Features.Content.Models.Data;
 using Accelerate.Features.Content.Pipelines;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -21,10 +20,6 @@ namespace Accelerate.Features.Content
         {
             // SERVICES
             services.AddTransient<IContentViewService, ContentViewService>();
-
-            services.AddTransient<IElasticService<ContentPostDocument>, ContentElasticService>();
-            services.AddTransient<IElasticService<ContentPostReviewEntity>, ContentReviewElasticService>();
-            services.AddTransient<IElasticService<ContentPostActivityEntity>, ContentActivityElasticService>();
 
             services.AddSingleton<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
             services.AddSingleton<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();

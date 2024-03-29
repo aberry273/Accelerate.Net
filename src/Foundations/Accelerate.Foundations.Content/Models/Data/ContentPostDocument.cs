@@ -3,7 +3,7 @@ using Accelerate.Foundations.Content.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-namespace Accelerate.Features.Content.Models.Data
+namespace Accelerate.Foundations.Content.Models.Data
 {
     public class ContentPostDocument
     {
@@ -21,7 +21,7 @@ namespace Accelerate.Features.Content.Models.Data
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
         // Computed
-        public string User { get; set; }
+        public string Username { get; set; }
         public int Agrees { get; set; }
         public int Disagrees { get; set; }
         public int Likes { get; set; }
