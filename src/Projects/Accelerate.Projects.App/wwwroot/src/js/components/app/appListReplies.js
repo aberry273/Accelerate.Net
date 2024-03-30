@@ -4,8 +4,10 @@ export default function (data) {
         selected: null,
         filterId: '',
         filtered: [],
+        userId: null,
         loading: false,
         sourceUrl: '#',
+        searchUrl: '#',
         expandable: true,
         items: [],
         threadUrl: '/',
@@ -14,7 +16,9 @@ export default function (data) {
         init() {
             this.expandable = data.expandable;
             this.filterId = data.feed;
+            this.userId = data.userId;
             this.sourceUrl = data.sourceUrl;
+            this.searchUrl = data.searchUrl;
             this.threadUrl = data.threadUrl;
             this.targetThread = data.targetThread;
             //this.selectFeed(data.feed);
@@ -51,45 +55,46 @@ export default function (data) {
         setHtml(data) {
             // make ajax request
             const html = `
-              <div x-data="_contentPosts({
-                items: initialItems,
-                targetThread: targetThread,
-                sourceUrl: sourceUrl
-                  })">
-                  <template x-for="(post, i) in posts" :key="post.id+''+i">
-                    <div>
-                      <div x-cloak x-data="appCardPostReply(
-                        {
-                          item: post,
-                          threadUrl: threadUrl,
-                        })"></div>
-                        <template x-if="selected != null && selected.id == post.id">
-                          <article>
-                            <i aria-label="Cancel" @click="selected = null" class="icon material-icons icon-click" rel="prev">close</i>
-                            <div x-data="appFormResponse({
-                              postbackUrl: 'https://localhost:7220/api/contentpost',
-                              postbackType: 'POST',
-                              event: 'reply:created',
-                              fieldPlaceholder: 'Write a reply',
-                              label: 'Reply'
-                            })">
-                            </div>
-                          </article>
-                        </template>
-                      </div>
-                    </template>
+      <div x-data="_contentPosts({
+        items: initialItems,
+        targetThread: targetThread,
+        sourceUrl: sourceUrl,
+        searchUrl: searchUrl,
+          })">
+          <template x-for="(post, i) in posts" :key="post.id+post.updatedOn" >
+            <div>
+              <div x-cloak x-data="appCardPostReply(
+                {
+                  item: post,
+                  threadUrl: threadUrl,
+                })"></div>
+                <template x-if="selected != null && selected.id == post.id">
+                  <article>
+                    <i aria-label="Cancel" @click="selected = null" class="icon material-icons icon-click" rel="prev">close</i>
+                    <div x-data="appFormResponse({
+                      postbackUrl: 'https://localhost:7220/api/contentpost',
+                      postbackType: 'POST',
+                      event: 'reply:created',
+                      fieldPlaceholder: 'Write a reply',
+                      label: 'Reply'
+                    })">
+                    </div>
+                  </article>
+                </template>
+              </div>
+            </template>
           
-                  <template x-if="posts.length == 0">
-                    <article>
-                      <header><strong>No results!</strong></header>
-                      No posts could be found
-                    </article>
-                  </template>
-                  <template x-if="loading">
-                    <article aria-busy="true"></article>
-                  </template>
-                </div>
-              `
+          <template x-if="posts.length == 0">
+            <article>
+              <header><strong>No results!</strong></header>
+              No posts could be found
+            </article>
+          </template>
+          <template x-if="loading">
+            <article aria-busy="true"></article>
+          </template>
+        </div>
+      `
             this.$nextTick(() => {
                 this.$root.innerHTML = html
             });

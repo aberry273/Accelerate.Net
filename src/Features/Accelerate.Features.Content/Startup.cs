@@ -22,9 +22,12 @@ namespace Accelerate.Features.Content
             services.AddTransient<IContentViewService, ContentViewService>();
 
             services.AddSingleton<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
+            services.AddSingleton<IDataCreateCompletedEventPipeline<ContentPostEntity>, ContentPostCreateCompletedPipeline>();
             services.AddSingleton<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();
+            services.AddSingleton<IDataUpdateCompletedEventPipeline<ContentPostEntity>, ContentPostUpdateCompletedPipeline>();
             services.AddSingleton<IDataDeleteEventPipeline<ContentPostEntity>, ContentPostDeletedPipeline>();
-            
+            services.AddSingleton<IDataDeleteCompletedEventPipeline<ContentPostEntity>, ContentPostDeleteCompletedPipeline>();
+
             // CONSUMERS
             services.AddMassTransit<IContentBus>(x =>
             {

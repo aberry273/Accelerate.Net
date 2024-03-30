@@ -4,6 +4,15 @@ using Accelerate.Foundations.Common.Services;
 
 namespace Accelerate.Foundations.EventPipelines.Pipelines
 {
+    public class DataCreateCompletedEventPipeline<T> : DataEventPipeline<T>, IDataCreateCompletedEventPipeline<T>
+    {
+    }
+    public class DataUpdateCompletedEventPipeline<T> : DataEventPipeline<T>, IDataUpdateCompletedEventPipeline<T>
+    {
+    }
+    public class DataDeleteCompletedEventPipeline<T> : DataEventPipeline<T>, IDataDeleteCompletedEventPipeline<T>
+    {
+    }
     public class DataCreateEventPipeline<T> : DataEventPipeline<T>, IDataCreateEventPipeline<T>
     {
     }

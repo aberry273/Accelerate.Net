@@ -82,7 +82,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
                 }
             }
         }
-        public async Task SendMessage(string user, WebsocketMessage<T> data)
+        public virtual async Task SendMessage(string user, WebsocketMessage<T> data)
         {
             //await Clients.All.SendMessage("ReceiveMessage");
 

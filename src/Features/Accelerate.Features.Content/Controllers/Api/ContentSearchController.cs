@@ -27,72 +27,50 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostController : BaseApiController<ContentPostEntity>
-    { 
+    public class ContentSearchController : ControllerBase
+    {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
-        public ContentPostController(
+        public ContentSearchController(
             IMetaContentService contentService,
             IEntityService<ContentPostEntity> service,
             Bind<IContentBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<AccountUser> userManager)
         {
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
             _searchService = searchService;
         }
-
-        //Override with elastic search instead of db query
-        [HttpGet]
-        public override async Task<IActionResult> Get([FromQuery] int Page = 0, [FromQuery] int ItemsPerPage = 10, [FromQuery] string? Text = null)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] RequestQuery Query)
         {
-            int take = ItemsPerPage > 0 ? ItemsPerPage : 10;
-            if (take > 100) take = 100;
-            int skip = take * Page;
-            var results = await _searchService.Search(GetPostsQuery(), skip, take);
+            var elasticQuery = GetPostsQuery(Query);
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * Query.Page;
+            var results = await _searchService.Search(elasticQuery, skip, take);
             return Ok(results.Documents);
         }
-        private QueryDescriptor<ContentPostDocument> GetPostsQuery()
+        private QueryDescriptor<ContentPostDocument> GetPostsQuery(RequestQuery request)
         {
             var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
+            if (request.Filters.ContainsKey(Foundations.Content.Constants.Fields.TargetThread))
+            {
+                query.Term(x => 
+                    x.TargetThread.Suffix("keyword"), 
+                    request.Filters[Foundations.Content.Constants.Fields.TargetThread]?.FirstOrDefault()
+                );
+            }
+            else
+            {
+                query.Bool(x => x.MustNot(y => y.Exists(z => z.Field(Foundations.Content.Constants.Fields.TargetThread))));
+            }
             return query;
-        }
-        private string GetTarget(ContentPostEntity obj) => obj.TargetThread ?? obj.TargetChannel;
-        protected override async Task PostCreateSteps(ContentPostEntity obj)
-        { 
-            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
-        }
-        protected override void UpdateValues(ContentPostEntity from, dynamic to)
-        {
-            from.Content = to.Content;
-        }
-        protected override async Task PostUpdateSteps(ContentPostEntity obj)
-        {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
-        }
-        protected override async Task PostDeleteSteps(ContentPostEntity obj)
-        {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
         }
     }
 }

@@ -1,13 +1,9 @@
 export default () => {
     return {
-        async GET(url) {
-            return await fetch(url)            
+        async GET(url, data) {
+            const urlParams = new URLSearchParams(data);
+            return await fetch(url +'?'+ urlParams)
                 .then((response) => response.json())
-                /*
-                .then((data) => { 
-                    this.users = data;
-                    this.isLoading = false;
-                    */
         },
         async POST(url, data) {
             const response = await fetch(url, {

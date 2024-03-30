@@ -46,13 +46,6 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
 
 
-        [HttpGet]
-        public override async Task<IActionResult> Get([FromQuery] RequestQuery<ContentPostReviewEntity> query)
-        {
-            return Ok(null);
-            //var results = await _searchService.Find(query);
-            //return Ok(results.Documents);
-        }
         protected override async Task PostCreateSteps(ContentPostReviewEntity obj)
         {
             await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostReviewEntity>() { Data = obj });

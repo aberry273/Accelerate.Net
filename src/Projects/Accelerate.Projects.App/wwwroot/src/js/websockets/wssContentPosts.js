@@ -51,12 +51,15 @@ export default function (settings) {
             return `${this.settings.event}:${this.connectedEvent}`;
         },
         async connectUser(userId) {
+            console.log('connectUser ' + userId)
             await this.client.invoke("UserRequest", this.connectionId, userId)
         },
         async connectChannel(userId, channelId) {
+            console.log('connectChannel ' + channelId)
             await this.client.invoke("ChannelRequest", this.connectionId, userId, channelId)
         },
         async connectThread(userId, threadId) {
+            console.log('connectThread ' + threadId)
             await this.client.invoke("ThreadRequest", this.connectionId, userId, threadId)
         },
         /*

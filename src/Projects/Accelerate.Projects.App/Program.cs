@@ -61,7 +61,7 @@ Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // enable MVC
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 
 // enable sessionState

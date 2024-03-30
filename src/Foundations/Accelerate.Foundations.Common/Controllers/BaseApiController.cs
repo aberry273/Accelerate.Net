@@ -1,7 +1,9 @@
 ﻿using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.Database.Services;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Accelerate.Foundations.Common.Controllers
 {
@@ -17,6 +19,22 @@ namespace Accelerate.Foundations.Common.Controllers
         }
 
         [HttpGet]
+        public virtual async Task<IActionResult> Get([FromQuery] int Page = 0, [FromQuery] int ItemsPerPage = 10, [FromQuery] string? Text = null)
+        {
+            try
+            {
+                int take = ItemsPerPage > 0 ? ItemsPerPage : 10;
+                if (take > 100) take = 100;
+                int skip = take * Page;
+                return Ok(_service.Find(x => true, skip, take));
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }/*
+        [HttpGet]
         public virtual async Task<IActionResult> Get([FromQuery] RequestQuery<T> query)
         {
             try
@@ -30,7 +48,7 @@ namespace Accelerate.Foundations.Common.Controllers
                 Foundations.Common.Services.StaticLoggingService.LogError(ex);
                 return BadRequest();
             }
-        }
+        }*/
 
         [HttpGet]
         [Route("{id}")]

@@ -24,8 +24,11 @@ namespace Accelerate.Features.Account
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IDataCreateEventPipeline<AccountUser>, AccountUserCreatedPipeline>();
+            services.AddSingleton<IDataCreateCompletedEventPipeline<AccountUser>, AccountUserCreateCompletedPipeline>();
             services.AddSingleton<IDataUpdateEventPipeline<AccountUser>, AccountUserUpdatedPipeline>();
+            services.AddSingleton<IDataUpdateCompletedEventPipeline<AccountUser>, AccountUserUpdateCompletedPipeline>();
             services.AddSingleton<IDataDeleteEventPipeline<AccountUser>, AccountUserDeletedPipeline>();
+            services.AddSingleton<IDataDeleteCompletedEventPipeline<AccountUser>, AccountUserDeleteCompletedPipeline>();
 
             // CONSUMERS
             services.AddMassTransit<IAccountBus>(x =>
