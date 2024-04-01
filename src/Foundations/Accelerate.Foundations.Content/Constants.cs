@@ -10,7 +10,9 @@ namespace Accelerate.Foundations.Content
     {
         public struct Fields
         {
+            public const string UserId = "userId";
             public const string TargetThread = "targetThread";
+            public const string ContentPostId = "contentPostId";
         }
         public struct Search
         {

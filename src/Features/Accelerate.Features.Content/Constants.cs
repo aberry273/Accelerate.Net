@@ -10,7 +10,8 @@ namespace Accelerate.Features.Content
     {
         public struct Settings
         {
-            public const string WebSocketHubName = "ContentPosts";
+            public const string ContentPostsHubName = "ContentPosts";
+            public const string ContentPostReviewsHubName = "ContentPostReviews";
         }
     }
 }

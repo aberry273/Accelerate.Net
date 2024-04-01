@@ -103,4 +103,11 @@
     <Folder Include="Views\Home\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\src\js\websockets\wssContentPostReviews.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

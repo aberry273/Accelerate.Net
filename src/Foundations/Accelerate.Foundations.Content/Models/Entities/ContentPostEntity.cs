@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Content.Models
+namespace Accelerate.Foundations.Content.Models.Entities
 {
     public enum ContentPostEntityStatus
     {
@@ -18,7 +18,7 @@ namespace Accelerate.Foundations.Content.Models
     public class ContentPostEntity : BaseEntity
     {
         [NotMapped]
-        public string ThreadId => this.Id.ToBase64Clean();
+        public string ThreadId => Id.ToBase64Clean();
 
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
@@ -39,11 +39,11 @@ namespace Accelerate.Foundations.Content.Models
         {
             get
             {
-                return this.Tags?.Split(',')?.Select(x => x.Trim()).ToList();
+                return Tags?.Split(',')?.Select(x => x.Trim()).ToList();
             }
             set
             {
-                if (value != null) this.Tags = string.Join(',', value?.Select(x => x?.Trim()));
+                if (value != null) Tags = string.Join(',', value?.Select(x => x?.Trim()));
             }
         }
         public string? Tags { get; set; }

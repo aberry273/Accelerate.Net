@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Content.Models;
-using Accelerate.Foundations.Content.Models.Data;
+﻿using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -26,8 +26,8 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
 
 
-            services.AddTransient<IElasticService<ContentPostDocument>, ContentElasticService>();
-            services.AddTransient<IElasticService<ContentPostReviewEntity>, ContentReviewElasticService>();
+            services.AddTransient<IElasticService<ContentPostDocument>, ContentPostElasticService>();
+            services.AddTransient<IElasticService<ContentPostReviewDocument>, ContentReviewElasticService>();
             services.AddTransient<IElasticService<ContentPostActivityEntity>, ContentActivityElasticService>();
 
 

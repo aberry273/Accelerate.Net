@@ -62,9 +62,9 @@ namespace Accelerate.Foundations.Content.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ContentPostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Agree = table.Column<bool>(type: "bit", nullable: false),
-                    Disagree = table.Column<bool>(type: "bit", nullable: false),
-                    Like = table.Column<bool>(type: "bit", nullable: false),
+                    Agree = table.Column<bool>(type: "bit", nullable: true),
+                    Disagree = table.Column<bool>(type: "bit", nullable: true),
+                    Like = table.Column<bool>(type: "bit", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },

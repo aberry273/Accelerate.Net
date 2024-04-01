@@ -8,8 +8,8 @@ using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
-using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
@@ -77,13 +77,13 @@ namespace Accelerate.Features.Content.Controllers
             }
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
-            var response = await _searchService.GetDocument<ContentPostEntity>(id.ToString());
+            var response = await _searchService.GetDocument<ContentPostDocument>(id.ToString());
             viewModel.UserId = user.Id;
             viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
             var item = response.Source;
             if(item == null)
             {
-                viewModel.Item = new ContentPostEntity()
+                viewModel.Item = new ContentPostDocument()
                 {
                     Content = "TODO: REPLACE WITH 404 PAGE"
                 };
@@ -100,9 +100,9 @@ namespace Accelerate.Features.Content.Controllers
             viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
             return View(viewModel);
         }
-        private QueryDescriptor<ContentPostEntity> GetRepliesQuery(ContentPostEntity item)
+        private QueryDescriptor<ContentPostDocument> GetRepliesQuery(ContentPostDocument item)
         {
-            var query = new QueryDescriptor<ContentPostEntity>();
+            var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
             query.Term(x => x.TargetThread.Suffix("keyword"), item.ThreadId.ToString());
             return query;

@@ -5,28 +5,7 @@
 @using Microsoft.AspNetCore.Http 
 @model ThreadPage
 
-<div x-data="{
-     item: @JsonSerializerHelper.SerializeObject(Model.Item),
-     items: @JsonSerializerHelper.SerializeObject(Model.Replies),
-     init() {
-     this.$events.on('action-reply', (item)=>
-        {
-            self.selectedId = item.id;
-        })
-            this.$events.on('action-close', (item) => {
-            self.selected = null;
-        })
-            this.$events.on('action-like', (item) => {
-            this.$store.content.likePost(item)
-        })
-            this.$events.on('action-agree', (item) => {
-            this.$store.content.agreePost(item)
-        })
-            this.$events.on('action-disagree', (item) => {
-            this.$store.content.disagreePost(item)
-        })
-        }
-    }">
+<div>
     <nav>
         <ul>
             <li>
@@ -40,11 +19,16 @@
         </ul>
     </nav>
     <!-- Original post -->
-    <div x-data="appCardPost({
-        item: item,
-        expandable: false,
-    })"></div>
-
+    <div x-data="_contentPosts(
+        {
+            userId: '@Model.UserId',
+        })">
+        <div x-data="appCardPost({
+            item: @JsonSerializerHelper.SerializeObject(Model.Item),
+            threadUrl: 'https://localhost:7220/content/thread',
+            expandable: false,
+        })"></div> 
+    </div>
     <!--Feed-->
     <div x-data="appNavFilters({})"></div>
 
@@ -54,18 +38,34 @@
     </article>
 
     <!--Responses-->
-    <main x-transition>
-        <div x-data="appListReplies({
-          sourceUrl: 'https://localhost:7220/api/contentpost',
-          threadUrl: 'https://localhost:7220/content/thread',
-          searchUrl: 'https://localhost:7220/api/contentsearch',
-          targetThread: '@Model.Item.ThreadId',
-          event: 'post:created',
-          items: items,
-          userId: '@Model.UserId',
-          channel: '@Model.Item.ThreadId',
-    })"></div>
-    </main>
+    <main >
+        <div x-data="appList({
+            sourceUrl: 'https://localhost:7220/api/contentpost',
+            reviewUrl: 'https://localhost:7220/api/contentpostreview',
+            fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+            fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+            threadUrl: 'https://localhost:7220/content/thread',
+            event: 'post:created',
+            userId: '@Model.UserId',
+            targetThread: '@Model.Item.ThreadId',
+            items: @JsonSerializerHelper.SerializeObject(Model.Replies),
+            channel: 'all',
+            })"></div>
+        </main>
+        <!--
+            <div x-data="appListReplies({
+              sourceUrl: 'https://localhost:7220/api/contentpost',
+              reviewUrl: 'https://localhost:7220/api/contentpostreview',
+              threadUrl: 'https://localhost:7220/content/thread',
+                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+              targetThread: '@Model.Item.ThreadId',
+              event: 'post:created',
+              items: @JsonSerializerHelper.SerializeObject(Model.Replies),
+              userId: '@Model.UserId',
+              channel: '@Model.Item.ThreadId',
+        })"></div>
+        -->
 </div>
 
 <!-- Modals -->

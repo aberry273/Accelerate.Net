@@ -4,10 +4,11 @@ export default function (data) {
         selected: null,
         filterId: '',
         filtered: [],
-        userId: null,
         loading: false,
         sourceUrl: '#',
-        searchUrl: '#',
+        fetchPostsUrl: '#',
+        fetchReviewsUrl: '#',
+        userId: null,
         expandable: true,
         items: [],
         threadUrl: '/',
@@ -17,9 +18,13 @@ export default function (data) {
             this.expandable = data.expandable;
             this.filterId = data.feed;
             this.userId = data.userId;
+            this.reviewUrl = data.reviewUrl;
             this.sourceUrl = data.sourceUrl;
-            this.searchUrl = data.searchUrl;
+            this.reviewUrl = data.reviewUrl;
             this.threadUrl = data.threadUrl;
+            this.fetchPostsUrl = data.fetchPostsUrl;
+
+            this.fetchReviewsUrl = data.fetchReviewsUrl;
             this.targetThread = data.targetThread;
             //this.selectFeed(data.feed);
             this.initialItems = data.items;
@@ -39,33 +44,22 @@ export default function (data) {
         isSelected(item) {
             return (this.selected != null && this.selected.id == item.id)
         },
-        /*
-        async filterPosts(feed) {
-          this.loading = true;
-          await this.fetchItems();
-          this.loading = false;
-        },
-        async fetchItems() {
-    //      const results = await this.$fetch.GET(this.sourceUrl);
-          const results = this.items
-          
-          this.filtered = results;
-        },
-        */
         setHtml(data) {
             // make ajax request
             const html = `
-      <div x-data="_contentPosts({
-        items: initialItems,
-        targetThread: targetThread,
-        sourceUrl: sourceUrl,
-        searchUrl: searchUrl,
+          <div x-data="_contentPosts({
+            items: initialItems,
+            targetThread: targetThread,
+              fetchPostsUrl: fetchPostsUrl,
+              fetchReviewsUrl: fetchReviewsUrl,
+            userId: userId,
           })">
-          <template x-for="(post, i) in posts" :key="post.id+post.updatedOn" >
+          <template x-for="(post, i) in posts" :key="post.id+':'+post.updatedOn">
             <div>
-              <div x-cloak x-data="appCardPostReply(
+              <div x-data="appCardPostReply(
                 {
                   item: post,
+                  userId: userId,
                   threadUrl: threadUrl,
                 })"></div>
                 <template x-if="selected != null && selected.id == post.id">
@@ -83,16 +77,15 @@ export default function (data) {
                 </template>
               </div>
             </template>
-          
-          <template x-if="posts.length == 0">
-            <article>
-              <header><strong>No results!</strong></header>
-              No posts could be found
-            </article>
-          </template>
-          <template x-if="loading">
-            <article aria-busy="true"></article>
-          </template>
+            <template x-if="posts.length == 0">
+                <article>
+                    <header><strong>No results!</strong></header>
+                    No posts could be found
+                </article>
+            </template>
+             <template x-if="loading">
+                <article aria-busy="true"></article>
+            </template>
         </div>
       `
             this.$nextTick(() => {

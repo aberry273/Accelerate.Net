@@ -8,7 +8,6 @@ namespace Accelerate.Foundations.Websockets.Hubs
 {
     public static class HubClientConnectionsSingleton
     {
-        private const string _globalChannel = "all";
         //Key=userId, value=list of connectionIds
         public static Dictionary<string, List<string>> UserConnections { get; set; } = new Dictionary<string, List<string>>();
         //Key=channelId, value=list of connectionIds

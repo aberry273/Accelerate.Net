@@ -1,5 +1,4 @@
-﻿
-using Accelerate.Foundations.Content.Models;
+﻿using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -24,19 +23,31 @@ namespace Accelerator.Foundation.Finance.Database
         {
             base.OnModelCreating(builder);
             builder.Entity<ContentPostEntity>()
-                .HasKey(p => p.Id);
+                .HasMany(e => e.Activities)
+                  .WithOne(x => x.ContentPost)
+                  .HasForeignKey(x => x.ContentPostId)
+                  .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<ContentPostEntity>()
+                .HasMany(e => e.Reviews)
+                  .WithOne(x => x.ContentPost)
+                  .HasForeignKey(x => x.ContentPostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            /*
             // Activities 
             builder.Entity<ContentPostEntity>()
               .HasMany(e => e.Activities)
               .WithOne(x => x.ContentPost)
-              .HasForeignKey(x => x.ContentPostId);
+              .HasForeignKey(x => x.ContentPostId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             // Reviews
             builder.Entity<ContentPostEntity>()
               .HasMany(e => e.Reviews)
               .WithOne(x => x.ContentPost)
-              .HasForeignKey(x => x.ContentPostId);
+              .HasForeignKey(x => x.ContentPostId)
+              .OnDelete(DeleteBehavior.Cascade);
+            */
         }
     }
 }

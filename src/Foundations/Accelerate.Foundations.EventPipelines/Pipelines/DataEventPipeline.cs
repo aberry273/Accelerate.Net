@@ -26,6 +26,8 @@ namespace Accelerate.Foundations.EventPipelines.Pipelines
     {
         public DataEventPipeline()
         {
+            this._processors = new List<PipelineProcessor<T>>();
+            this._asyncProcessors = new List<AsyncPipelineProcessor<T>>();
 
         }
         public DataEventPipeline(

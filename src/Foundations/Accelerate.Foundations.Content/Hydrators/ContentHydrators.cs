@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Content.Models;
-using Accelerate.Foundations.Content.Models.Data;
+﻿using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Common.Extensions
             document.Content = entity.Content;
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
+            document.ThreadId = entity.ThreadId;
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
             document.TargetChannel = entity.TargetChannel;
@@ -26,6 +27,16 @@ namespace Accelerate.Foundations.Common.Extensions
             document.Category = entity.Category;
             document.Id = entity.Id;
             document.Username = username ?? "Anonymous";
+        }
+        public static void HydrateDocument(this ContentPostReviewEntity entity, ContentPostReviewDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.ContentPostId = entity.ContentPostId;
+            document.Id = entity.Id;
+            document.Agree = entity.Agree;
+            document.Disagree = entity.Disagree;
+            document.Like = entity.Like;
         }
     }
 }

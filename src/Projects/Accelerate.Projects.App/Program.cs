@@ -1,7 +1,7 @@
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Models;
-using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Twilio.Models;
 using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Projects.App.Data;
@@ -127,14 +127,7 @@ app.MapDefaultControllerRoute();
 
 // Map SignalR hubs
 #pragma warning disable ASP0014 // Suggest using top level route registrations
-/*
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapHub<MessageHub>("/messageHub");
-});
-*/
-//IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<ContentPostEntity>> _messageHub;
-app.MapHub<BaseHub<ContentPostEntity>>($"/{Accelerate.Features.Content.Constants.Settings.WebSocketHubName}");
+Accelerate.Features.Content.Startup.ConfigureApp(app);
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 

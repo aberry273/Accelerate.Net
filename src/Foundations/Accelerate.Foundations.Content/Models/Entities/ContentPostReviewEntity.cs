@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Content.Models
+namespace Accelerate.Foundations.Content.Models.Entities
 {
     [Table("ContentPostReview")]
     public class ContentPostReviewEntity : BaseEntity
@@ -21,8 +21,8 @@ namespace Accelerate.Foundations.Content.Models
         /// <summary>
         /// Post replies set this as the root node
         /// </summary>
-        public bool Agree { get; set; }
-        public bool Disagree { get; set; }
-        public bool Like { get; set; }
+        public bool? Agree { get; set; }
+        public bool? Disagree { get; set; }
+        public bool? Like { get; set; }
     }
 }

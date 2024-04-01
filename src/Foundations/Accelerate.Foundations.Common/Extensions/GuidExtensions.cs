@@ -17,9 +17,9 @@ namespace Accelerate.Foundations.Common.Extensions
         {
             return Regex.Replace(guid.ToBase64(), "[/+=]", "");
         }
-        public static Guid FromCleanBase64(this string cleanGuid)
+        public static Guid FromBase64(this string cleanGuid)
         {
-            return new Guid(Convert.FromBase64String(cleanGuid + "=="));
+            return new Guid(Convert.FromBase64String(cleanGuid));
         }
     }
 }

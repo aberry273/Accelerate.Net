@@ -20,7 +20,7 @@ namespace Accelerate.Foundations.Database.Services
         T Get(Guid guid);
         Task<T> GetAsync(Guid id);
         Task<int> Update(T entity);
-        IEnumerable<T> Find(Expression<Func<T, bool>> expression, int? skip, int? take);
+        IEnumerable<T> Find(Expression<Func<T, bool>> expression, int? skip = 0, int? take = 10);
         IEnumerable<T> FindAndInclude<TProperty>(Expression<Func<T, bool>> expression, Expression<Func<T, TProperty>> includeExpression, int? skip, int? take);
     }
 }

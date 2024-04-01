@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Common.Models;
-using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;

@@ -11,10 +11,10 @@ using Microsoft.Extensions.Options;
 namespace Accelerate.Foundations.Content.Services
 {
     //Overwrite the core service for custom filtering
-    public class ContentElasticService : ElasticService<ContentPostDocument>
+    public class ContentPostElasticService : ElasticService<ContentPostDocument>
     {
 
-        public ContentElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentPostElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
             this._indexName = "contentpost_index";
         }

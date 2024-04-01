@@ -1,23 +1,23 @@
 ﻿using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Common.Models;
-using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Options;
+using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentReviewElasticService :  ElasticService<ContentPostReviewEntity>
+    public class ContentReviewElasticService :  ElasticService<ContentPostReviewDocument>
     {
 
         public ContentReviewElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
             this._indexName = "contentpostreview_index";
         }
-        public override async Task<SearchResponse<ContentPostReviewEntity>> Find(RequestQuery<ContentPostReviewEntity> query)
+        public override async Task<SearchResponse<ContentPostReviewDocument>> Find(RequestQuery<ContentPostReviewDocument> query)
         {
             //Create if not existing
             await CreateIndex();
@@ -31,9 +31,9 @@ namespace Accelerate.Foundations.Content.Services
                 take);
         }
 
-        private QueryDescriptor<ContentPostReviewEntity> CreateQuery(RequestQuery<ContentPostReviewEntity> request)
+        private QueryDescriptor<ContentPostReviewDocument> CreateQuery(RequestQuery<ContentPostReviewDocument> request)
         {
-            var descriptor =  new QueryDescriptor<ContentPostReviewEntity>();
+            var descriptor =  new QueryDescriptor<ContentPostReviewDocument>();
             descriptor.MatchAll();
           
             return descriptor;

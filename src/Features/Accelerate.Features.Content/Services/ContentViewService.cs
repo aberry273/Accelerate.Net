@@ -1,6 +1,7 @@
 ﻿using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
-using Accelerate.Foundations.Content.Models;
+using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 
 namespace Accelerate.Features.Content.Services
@@ -38,7 +39,7 @@ namespace Accelerate.Features.Content.Services
             };
             return model;
         }
-        public AjaxForm CreateReplyForm(AccountUser user, ContentPostEntity post)
+        public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post)
         {
             var model = new AjaxForm()
             {
@@ -65,6 +66,16 @@ namespace Accelerate.Features.Content.Services
                         AriaInvalid = false,
                         ClearOnSubmit = false,
                         Value = user.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "ParentId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        ClearOnSubmit = false,
+                        Value = post.Id,
                     },
                     new FormField()
                     {

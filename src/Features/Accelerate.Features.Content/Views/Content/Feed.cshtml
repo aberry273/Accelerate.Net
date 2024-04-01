@@ -35,18 +35,19 @@
             <div x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
         </article>
         <!--Feed-->
-        <div >
+        <div>
             <div x-data="appList({
-                    feed: $store.feedFilters.current,
-                    sourceUrl: 'https://localhost:7220/api/contentpost',
-                    searchUrl: 'https://localhost:7220/api/contentsearch',
-                    threadUrl: 'https://localhost:7220/content/thread',
-                    event: 'post:created',
-                    userId: '@Model.UserId',
-                    items: [],
-                    channel: 'all',
-                  })"
-                 x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
+                feed: $store.feedFilters.current,
+                sourceUrl: 'https://localhost:7220/api/contentpost',
+                reviewUrl: 'https://localhost:7220/api/contentpostreview',
+                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+                threadUrl: 'https://localhost:7220/content/thread',
+                event: 'post:created',
+                userId: '@Model.UserId',
+                items: [],
+                channel: 'all',
+                })"></div>
         </div>
     </div>
 </div>

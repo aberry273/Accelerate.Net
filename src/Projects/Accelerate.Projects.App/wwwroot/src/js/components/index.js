@@ -10,6 +10,7 @@ import formAjax from './forms/formAjax.js'
 import formFields from './forms/formFields.js'
 // ALERTS
 import snackbar from './alerts/snackbar.js'
+import snackbarList from './alerts/snackbarList.js'
 // MODALS
 import modal from './modals/modal.js'
 import modalForm from './modals/modalForm.js'
@@ -27,8 +28,10 @@ export {
     header,
     navbar,
     footer,
+
     snackbar,
-    
+    snackbarList,
+
     modal,
     modalForm,
 

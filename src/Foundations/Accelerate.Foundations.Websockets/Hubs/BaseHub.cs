@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Websockets.Hubs
 {
-    public class BaseHub<T> : Hub<IBaseHubClient<WebsocketMessage<T>>>
+    public abstract class BaseHub<T> : Hub<IBaseHubClient<WebsocketMessage<T>>>
     {
-        public void UserRequest(string connectionId, string userId)
+        public abstract List<string> GetConnections(string user, WebsocketMessage<T> data);
+        public virtual void UserRequest(string connectionId, string userId)
         {
             if(userId == null)
             {
@@ -36,7 +37,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
                 }
             }
         }
-        public void ChannelRequest(string connectionId, string userId, string channelId)
+        public virtual void ChannelRequest(string connectionId, string userId, string channelId)
         {
             if (channelId == null)
             {
@@ -59,7 +60,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
                 }
             }
         }
-        public void ThreadRequest(string connectionId, string userId, string threadId)
+        public virtual void ThreadRequest(string connectionId, string userId, string threadId)
         {
             if (threadId == null)
             {
@@ -85,8 +86,8 @@ namespace Accelerate.Foundations.Websockets.Hubs
         public virtual async Task SendMessage(string user, WebsocketMessage<T> data)
         {
             //await Clients.All.SendMessage("ReceiveMessage");
-
-            await Clients.All.SendMessage(user, data);
+            var connectionIds = this.GetConnections(user, data);
+            await Clients.Clients(connectionIds).SendMessage(user, data);
         }
     }
 }

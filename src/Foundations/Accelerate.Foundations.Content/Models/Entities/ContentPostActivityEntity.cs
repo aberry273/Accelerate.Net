@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Content.Models
+namespace Accelerate.Foundations.Content.Models.Entities
 {
     public enum ContentPostActivityTypes
     {

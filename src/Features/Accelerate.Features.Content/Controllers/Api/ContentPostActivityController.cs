@@ -4,8 +4,8 @@ using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
-using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.Contracts;
@@ -27,14 +27,14 @@ namespace Accelerate.Features.Content.Controllers.Api
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        readonly Bind<IContentBus, IPublishEndpoint> _publishEndpoint;
+        readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
         public ContentPostActivityController(
             IMetaContentService contentService,
             IEntityService<ContentPostActivityEntity> service,
             IEntityService<ContentPostEntity> postService,
-            Bind<IContentBus, IPublishEndpoint> publishEndpoint,
+            Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {

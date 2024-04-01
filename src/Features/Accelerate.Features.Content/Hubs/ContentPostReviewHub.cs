@@ -2,13 +2,11 @@
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Foundations.Websockets.Models;
-using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Twilio.TwiML.Messaging;
 
 namespace Accelerate.Features.Content.Hubs
 {
-    public class ContentPostHub : BaseHub<ContentPostDocument>
+    public class ContentPostReviewHub : BaseHub<ContentPostReviewDocument>
     {
         public override void UserRequest(string connectionId, string userId)
         {
@@ -22,15 +20,15 @@ namespace Accelerate.Features.Content.Hubs
         {
             base.ThreadRequest(connectionId, userId, threadId);
         }
-        public override List<string> GetConnections(string user, WebsocketMessage<ContentPostDocument> message)
+        public override List<string> GetConnections(string user, WebsocketMessage<ContentPostReviewDocument> message)
         { // Message user(s) that own this
             var userConnections = HubClientConnectionsSingleton.GetUserConnections(user);
-            var threadConnections = HubClientConnectionsSingleton.GetThreadConnections(message.Data?.TargetThread);
-            var channelConnections = HubClientConnectionsSingleton.GetChannelConnections(message.Data?.TargetChannel);
+            //var threadConnections = HubClientConnectionsSingleton.GetThreadConnections(message.Data?.TargetThread);
+            //var channelConnections = HubClientConnectionsSingleton.GetChannelConnections(message.Data?.TargetChannel);
             var allConnections = new List<string>();
             allConnections.AddRange(userConnections);
-            allConnections.AddRange(threadConnections);
-            allConnections.AddRange(channelConnections);
+            //allConnections.AddRange(threadConnections);
+            //allConnections.AddRange(channelConnections);
             return allConnections.Distinct().ToList();
         }
     }

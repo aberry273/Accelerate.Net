@@ -180,7 +180,7 @@ namespace Accelerate.Foundations.Database.Services
                 throw;
             }
         } 
-        public IEnumerable<T> Find(Expression<Func<T, bool>> expression, int? skip, int? take)
+        public IEnumerable<T> Find(Expression<Func<T, bool>> expression, int? skip = 0, int? take = 10)
         {
             try
             {
