@@ -16,10 +16,10 @@ export default function (data) {
       this.label = data.label;
       this.event = data.event;
       this.postbackType = data.postbackType
-    this.setHtml(data)
-    this.localEvent += new Date().toISOString()
-
-    this.$events.on(this.localEvent, (data) => {
+      this.setHtml(data)
+      this.localEvent += new Date().toISOString()
+      // Response
+      this.$events.on(this.localEvent, (data) => {
         if (data.status == 200) {
             // Okay, do nothing from FE
         }
@@ -52,16 +52,15 @@ export default function (data) {
           break;
         case 'PUT':
           response = await this.$fetch.PUT(data.postbackUrl, payload);
-          // Expected output: "Mangoes and papayas are $2.79 a pound."
           break;
         case 'GET':
           response = await this.$fetch.GET(data.postbackUrl, payload);
-          // Expected output: "Mangoes and papayas are $2.79 a pound."
           break;
         case 'DELETE':
-          response = await this.$fetch.DELETE(data.postbackUrl, payload);
-          // Expected output: "Mangoes and papayas are $2.79 a pound."
+          response = await this.$fetch.DELETE(data.postbackUrl);
           break;
+        default:
+          response = null;
       }
 
       if(this.event) {
@@ -72,9 +71,9 @@ export default function (data) {
     },
     resetValues(fields) {
         for (var i = 0; i < fields.length; i++) {
-            if (fields[i].clearOnSubmit === true)
-                fields[i].value = null;
-        }
+        if (fields[i].clearOnSubmit === true)
+            fields[i].value = null;
+      }
     },
     setHtml(data) {
       // make ajax request
@@ -88,10 +87,10 @@ export default function (data) {
             <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
           </footer>
         </div>
-        `
-        this.$nextTick(() => {
-            this.$root.innerHTML = html;
-        })
+      `
+      this.$nextTick(() => {
+          this.$root.innerHTML = html;
+      })
     },
   }
 }

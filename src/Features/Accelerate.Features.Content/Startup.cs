@@ -45,17 +45,19 @@ namespace Accelerate.Features.Content
             services.AddTransient<BaseHub<ContentPostReviewDocument>, ContentPostReviewHub>();
             //AddBus<IContentPostBus, ContentPostEntity>(typeof(IContentPostBus), typeof(ContentPostEntity));// (IContentBus, ContentPostEntity);
 
+            /*
+            var assembly = Assembly.GetExecutingAssembly(); // Adjust as needed
+            services.RegisterServicesWithAttributes(assembly);
+
+            */
             // POSTS
 
-            services.AddSingleton<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
-            // Not used
-            services.AddSingleton<IDataCreateCompletedEventPipeline<ContentPostEntity>, ContentPostCreateCompletedPipeline>();
-            services.AddSingleton<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();
-            // Not used
-            services.AddSingleton<IDataUpdateCompletedEventPipeline<ContentPostEntity>, ContentPostUpdateCompletedPipeline>();
-            services.AddSingleton<IDataDeleteEventPipeline<ContentPostEntity>, ContentPostDeletedPipeline>();
-            // Not used
-            services.AddSingleton<IDataDeleteCompletedEventPipeline<ContentPostEntity>, ContentPostDeleteCompletedPipeline>();
+            services.AddTransient<IDataCreateEventPipeline<ContentPostEntity>, ContentPostCreatedPipeline>();
+            services.AddTransient<IDataCreateCompletedEventPipeline<ContentPostEntity>, ContentPostCreateCompletedPipeline>();
+            services.AddTransient<IDataUpdateEventPipeline<ContentPostEntity>, ContentPostUpdatedPipeline>();
+            services.AddTransient<IDataUpdateCompletedEventPipeline<ContentPostEntity>, ContentPostUpdateCompletedPipeline>();
+            services.AddTransient<IDataDeleteEventPipeline<ContentPostEntity>, ContentPostDeletedPipeline>();
+            services.AddTransient<IDataDeleteCompletedEventPipeline<ContentPostEntity>, ContentPostDeleteCompletedPipeline>();
               
             services.AddMassTransit<IContentPostBus>(x =>
             {
@@ -87,12 +89,12 @@ namespace Accelerate.Features.Content
             });
             
             // Reviews
-            services.AddSingleton<IDataCreateEventPipeline<ContentPostReviewEntity>, ContentPostReviewCreatedPipeline>();
-            services.AddSingleton<IDataCreateCompletedEventPipeline<ContentPostReviewEntity>, EmptyCreatedCompletedPipeline<ContentPostReviewEntity>>();
-            services.AddSingleton<IDataUpdateEventPipeline<ContentPostReviewEntity>, ContentPostReviewUpdatedPipeline>();
-            services.AddSingleton<IDataUpdateCompletedEventPipeline<ContentPostReviewEntity>, EmptyUpdatedCompletedPipeline<ContentPostReviewEntity>>();
-            services.AddSingleton<IDataDeleteEventPipeline<ContentPostReviewEntity>, EmptyDeletedPipeline<ContentPostReviewEntity>>();
-            services.AddSingleton<IDataDeleteCompletedEventPipeline<ContentPostReviewEntity>, EmptyDeletedCompletedPipeline<ContentPostReviewEntity>>();
+            services.AddTransient<IDataCreateEventPipeline<ContentPostReviewEntity>, ContentPostReviewCreatedPipeline>();
+            services.AddTransient<IDataCreateCompletedEventPipeline<ContentPostReviewEntity>, EmptyCreatedCompletedPipeline<ContentPostReviewEntity>>();
+            services.AddTransient<IDataUpdateEventPipeline<ContentPostReviewEntity>, ContentPostReviewUpdatedPipeline>();
+            services.AddTransient<IDataUpdateCompletedEventPipeline<ContentPostReviewEntity>, EmptyUpdatedCompletedPipeline<ContentPostReviewEntity>>();
+            services.AddTransient<IDataDeleteEventPipeline<ContentPostReviewEntity>, EmptyDeletedPipeline<ContentPostReviewEntity>>();
+            services.AddTransient<IDataDeleteCompletedEventPipeline<ContentPostReviewEntity>, EmptyDeletedCompletedPipeline<ContentPostReviewEntity>>();
             
             services.AddMassTransit<IContentReviewBus>(x =>
             {

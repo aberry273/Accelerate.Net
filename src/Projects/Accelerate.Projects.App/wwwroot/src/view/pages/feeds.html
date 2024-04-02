@@ -60,18 +60,101 @@
       feed: $store.feedFilters.current,
       sourceUrl: 'https://localhost:7220/api/contentpost',
       threadUrl: 'https://localhost:7220/content/thread',
+      fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+      fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+      reviewUrl: 'https://localhost:7220/api/contentpostreview',
+      userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      channel: 'all',
       event: 'post:created',
       items: $store.content.items,
-      expandable: true,
     })"
-    x-init="await fetchItems()"
     x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
   </div>
 </div>
    
 <!-- Modals -->
 <!-- Edit post -->
-<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123'  })"></div>
+<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123',
+  form: {
+    postbackUrl: 'https://localhost:7220/api/contentpost',
+    postbackType: 'POST',
+    event: 'post:created',
+    fieldPlaceholder: 'Write a reply',
+    label: 'Reply',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Write a reply',
+          autocomplete: null,
+          helper: '',
+          clearOnSubmit: true,
+        },
+        {
+          name: 'ParentId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: $store.content.posts[0].id,
+        },
+        {
+          name: 'Status',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: 'Hidden',
+        },
+        {
+          name: 'ChannelId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: $store.content.posts[0].channelId,
+        },
+        {
+          name: 'ThreadId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: '$store.content.posts[0].threadId',
+        },
+        {
+          name: 'Tags',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: $store.content.posts[0].tags,
+        },
+        {
+          name: 'Category',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: $store.content.posts[0].category,
+        },
+        {
+          name: 'UserId',
+          type: 'input',
+          disabled: true,
+          hidden: true,
+          autocomplete: null,
+          helper: '',
+          value: $store.content.posts[0].userId,
+        },
+      ]
+  }  })"></div>
 
 <!-- Delete post -->
 <div x-data="modal({target: 'modal-remove-post', title: 'Remove post', text: 'test 123' })"></div>

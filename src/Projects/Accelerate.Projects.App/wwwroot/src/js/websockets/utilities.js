@@ -7,7 +7,7 @@ export const connectedEvent = 'connected';
 export const messageEvent = 'onmessage';
 const sendMessageRequest = 'sendMessage';
 
-export async function createClient(url, wssEvent) {
+export async function createClient(url, wssEvent ) {
     try {
         const client = new signalR.HubConnectionBuilder()
             .withUrl(url)
@@ -17,9 +17,9 @@ export async function createClient(url, wssEvent) {
         client.onclose(async () => {
             await client.start();
         });
-
+        
         client.on(sendMessageRequest, (user, message) => {
-            const received = `${user}: ${message}`;
+            const received = `${user}: ${message}`; 
             console.log(received);
             // Handle responses
             const payload = {

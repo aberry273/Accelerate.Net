@@ -1,60 +1,60 @@
 const defaults = {
-    title: 'example post',
-    username: 'user name',
-    handle: '@username',
-    updated: '10 minutes ago',
-    agree: 15,
-    disagree: 12,
-    text: '<p><strong>title</strong></p><p>this is a new test of a auto-formatted markdown</p>',
-    footer: 'footer'
+  title: 'example post',
+  username: 'user name',
+  handle: '@username',
+  updated: '10 minutes ago',
+  agree: 15,
+  disagree: 12,
+  text: '<p><strong>title</strong></p><p>this is a new test of a auto-formatted markdown</p>',
+  footer: 'footer'
 }
 export default function (data) {
-    return {
-        data: null,
-        threadUrl: null,
-        expanded: false,
-        userId: null,
-        init() {
-            this.data = data.item;
-            this.userId = data.userId;
-            this.threadUrl = data.threadUrl;
-            this.expanded = data.expanded;
-            this.expandable = data.expandable;
-            const self = this;
-            this.$nextTick(() => {
-                this.load(self.data)
-            })
-        },
-        action(action) {
-            const ev = `action:post`;
-            const payload = {
-                // postback type
-                action: action,
-                // content post item
-                item: this.data,
-                userId: this.userId,
-            }
-            this.$events.emit(ev, payload)
-        },
-        redirectAction(action) {
-            const ev = `redirect-${action}`;
-            this.$events.emit(ev, this.data)
-        },
-        modalAction(action) {
-            const ev = `modal-${action}-post`;
-            const payload = {
-                // route to append to postbackUrl 
-                postbackUrlRoute: this.data.id,
-                // postback type
-                postbackType: 'PUT',
-                // content post item
-                item: this.data,
-            }
-            this.$events.emit(ev, payload)
-        },
-        load(data) {
-            const html = `
-         <article class="dense" :id="data.threadId">
+	return {
+      data: null,
+      threadUrl: null,
+      expanded: false,
+      userId: null,
+      init() {
+        this.data = data.item;
+        this.userId = data.userId;
+        this.threadUrl = data.threadUrl;
+        this.expanded = data.expanded;
+        this.expandable = data.expandable;
+        const self = this;
+        this.$nextTick(() => {
+          this.load(self.data)
+        })
+      },
+      action(action) {
+        const ev = `action:post`;
+        const payload = {
+          // postback type
+          action: action,
+          // content post item
+          item: this.data,
+          userId: this.userId,
+        }
+        this.$events.emit(ev, payload) 
+      },
+      redirectAction(action) {
+        const ev = `redirect-${action}`;
+        this.$events.emit(ev, this.data)
+      },
+      modalAction(action) {
+        const ev = `modal-${action}-post`;
+        const payload = {
+          // route to append to postbackUrl 
+          postbackUrlRoute: this.data.id,
+          // postback type
+          postbackType: 'PUT',
+          // content post item
+          item: this.data,
+        }
+        this.$events.emit(ev, payload)
+      },
+      load(data) {
+        const html = `
+         <article class="dense" :id="data._id">
            <header>
              <nav>
                <ul>
@@ -97,42 +97,37 @@ export default function (data) {
            ${data.content}
            <footer>
              <nav>
-               <ul>
-                 <li>
-                   <!--Agree-->
-                   <i aria-label="Agree" @click="action('agree')" class="icon material-icons icon-click" rel="prev">expand_less</i>
-                   <sup class="noselect" rel="prev" x-text="data.agrees || 0"></sup>
-                   <!--Disagree-->
-                   <i aria-label="Disagree" @click="action('disagree')" class="icon material-icons icon-click" rel="prev">expand_more</i>
-                   <sup class="noselect" rel="prev" x-text="data.disagrees || 0"></sup> 
- 
-                   <template x-if="expanded">
-                    <i aria-label="Reply" @click="action('close')" class="icon material-icons icon-click" rel="prev">close</i>
-                   </template>
- 
-                   <i aria-label="Reply" @click="action('reply')" class="icon material-icons icon-click" rel="prev">reply_all</i>
-                   <sup class="noselect" rel="prev" x-text="data.replies || 0"></sup> 
-                 
-                 </li> 
-               </ul>
-               <ul>
-                 <li>
-                   <!--Liked-->
-                   <i x-show="data.liked" @click="action('like')" aria-label="Liked" class="primary icon material-icons icon-click" rel="prev">favorite</i>
-                   <i x-show="!data.liked" @click="action('unlike')" aria-label="Unliked" class="icon material-icons icon-click" rel="prev">favorite</i>
-                   <sup class="noselect" rel="prev" x-text="data.likes || 0"></sup> 
+              <ul>
+                <li>
+                  <!--Agree-->
+                  <i aria-label="Agree" @click="action('agree')" :class="agrees(data) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                  <sup class="noselect" rel="prev" x-text="data.agrees || 0"></sup>
+                  <!--Disagree-->
+                  <i aria-label="Disagree" @click="action('disagree')" :class="disagrees(data) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                  <sup class="noselect" rel="prev"x-text="data.disagrees || 0"></sup> 
+              
+                  <a class="" href="${this.getThreadUrl(data.id)}"><i aria-label="Reply" @click="quickAction('comment')" :class="agrees(data) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">forum</i></a>
+                  <sup class="noselect" rel="prev" x-text="data.replies || 0"></sup>      
+                </li> 
+              </ul>
+              <ul>
+                <li>
+                  <!--Liked-->
+                  <i x-show="likes(data)" @click="action('like')" aria-label="Liked" class="primary icon material-icons icon-click" rel="prev">favorite</i>
+                  <i x-show="!likes(data)" @click="action('unlike')" aria-label="Noy liked" class="icon material-icons icon-click" rel="prev">favorite</i>
+                  <sup class="noselect" rel="prev" x-text="data.likes || 0 "></sup> 
                 </li>
-               </ul>
+              </ul>
              </nav>
            </footer>
          </article>
          `
-            this.$nextTick(() => {
-                this.$root.innerHTML = html
-            });
-        },
-        defaults() {
-            this.load(defaults)
-        }
+         this.$nextTick(() => {
+             this.$root.innerHTML = html
+         });
+      },
+      defaults() {
+        this.load(defaults)
+      }
     }
 }

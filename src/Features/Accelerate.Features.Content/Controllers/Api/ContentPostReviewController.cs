@@ -138,6 +138,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override void UpdateValues(ContentPostReviewEntity from, dynamic to)
         {
+            from.UpdatedOn = DateTime.Now;
             from.Like = to.Like != null ? to.Like : null;
             from.Agree = to.Disagree != null ? !to.Disagree : to.Agree;
             from.Disagree = to.Agree != null ? !to.Agree : to.Disagree;

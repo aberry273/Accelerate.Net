@@ -1,5 +1,6 @@
 import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
-const wssEvent = 'wss:contentPostRevews';
+const wssEvent = 'wss:contentPostReviews';
+
 export default function (settings) {
     return {
         socket: null,

@@ -8,7 +8,10 @@ namespace Accelerate.Foundations.Common.Pipelines
 {
     public interface IPipelineArgs<T>
     {
-        public dynamic Values { get; set; } 
+        /// <summary>
+        /// Set whatever values are wanted for further pipeline processes
+        /// </summary>
+        public dynamic Params { get; set; } 
         public T Value { get; set; }
     }
 }

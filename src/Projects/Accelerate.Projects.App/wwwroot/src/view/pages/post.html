@@ -2,7 +2,7 @@
 <!-- Feed panel -->
 
 <div x-data="{
-  item: $store.content.items[0],
+  item: $store.content.posts[0],
   items: $store.content.replies,
   init() {
       this.$events.on('action-reply', (item) => {
@@ -31,7 +31,7 @@
   </nav>
 
   <!-- Original post -->
-  <div x-data="appCardPostReply({
+  <div x-data="appCardPost({
     item,
     expandable: false,
   })"></div>
@@ -55,16 +55,101 @@
     <div x-data="appListReplies({
       sourceUrl: 'https://localhost:7220/api/contentpost',
       threadUrl: 'https://localhost:7220/content/thread',
+      fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+      fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+      reviewUrl: 'https://localhost:7220/api/contentpostreview',
+      userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+      targetThread: $store.content.posts[0].threadId,
       event: 'post:created',
       items: items,
-    })"
-    x-init="await fetchItems()"></div>
+      channel: $store.content.posts[0].threadId,
+    })"></div>
     </main>
 </div>
 
 <!-- Modals -->
 <!-- Edit post -->
-<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123'  })"></div>
+<div x-data="modalForm({target: 'modal-edit-post', title: 'Edit post', text: 'test 123',
+form: {
+  postbackUrl: 'https://localhost:7220/api/contentpost',
+  postbackType: 'POST',
+  event: 'post:created',
+  fieldPlaceholder: 'Write a reply',
+  label: 'Reply',
+    fields: [
+      {
+        name: 'Content',
+        type: 'textarea',
+        placeholder: 'Write a reply',
+        autocomplete: null,
+        helper: '',
+        clearOnSubmit: true,
+      },
+      {
+        name: 'ParentId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].id,
+      },
+      {
+        name: 'Status',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: 'Hidden',
+      },
+      {
+        name: 'ChannelId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].channelId,
+      },
+      {
+        name: 'ThreadId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].threadId,
+      },
+      {
+        name: 'Tags',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].tags,
+      },
+      {
+        name: 'Category',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].category,
+      },
+      {
+        name: 'UserId',
+        type: 'input',
+        disabled: true,
+        hidden: true,
+        autocomplete: null,
+        helper: '',
+        value: $store.content.posts[0].userId,
+      },
+    ]
+}  })"></div>
 
 <!-- Delete post -->
 <div x-data="modal({target: 'modal-remove-post', title: 'Remove post', text: 'test 123' })"></div>

@@ -13,6 +13,7 @@ namespace Accelerate.Foundations.Websockets.Models
     public class WebsocketMessage<T>
     {
         public string Message { get; set; }
+        public bool Alert { get; set; }
         public int Code { get; set; }
         public string Update => Enum.GetName(UpdateType);
         public DataRequestCompleteType UpdateType { get; set; }

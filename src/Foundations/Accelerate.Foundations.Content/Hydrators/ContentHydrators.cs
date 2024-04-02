@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Common.Extensions
             document.Content = entity.Content;
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
             document.ThreadId = entity.ThreadId;
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
@@ -32,6 +33,7 @@ namespace Accelerate.Foundations.Common.Extensions
         {
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
             document.ContentPostId = entity.ContentPostId;
             document.Id = entity.Id;
             document.Agree = entity.Agree;

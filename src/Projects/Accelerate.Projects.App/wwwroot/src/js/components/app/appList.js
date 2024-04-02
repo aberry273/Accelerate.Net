@@ -16,7 +16,7 @@ export default function (data) {
         sourceUrl: '#',
         fetchPostsUrl: '#',
         fetchReviewsUrl: '#',
-        targetThread: '#',
+        targetThread: null,
         expandable: true,
         threadUrl: '/',
         initialItems: [],
@@ -36,7 +36,7 @@ export default function (data) {
             component = data.component || component
             //this.selectFeed(data.feed);
             this.setHtml(data);
-            
+
             // Listen for the event.
             window.addEventListener('expand',
                 (e) => {
@@ -52,29 +52,34 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-              <div x-data="_contentPosts({
-                  items: initialItems,
-                  sourceUrl: sourceUrl,
-                  targetThread: targetThread,
-                  channel: channel,
-                  userId: userId,
-                  fetchPostsUrl: fetchPostsUrl,
-                  fetchReviewsUrl: fetchReviewsUrl,
-                })">
-                <template x-for="(post, i) in posts" :key="post.id+':'+post.updatedOn" >
-                  ${component}
-                </template> 
-                <template x-if="posts == null || posts.length == 0">
-                  <article>
-                    <header><strong>No results!</strong></header>
-                    No posts could be found
-                  </article>
-                </template>
-                <template x-if="loading">
-                  <article aria-busy="true"></article>
-                </template>
-              </div>
-              `
+        <div x-data="_contentPosts({
+            items: initialItems,
+            sourceUrl: sourceUrl,
+            channel: channel,
+            userId: userId,
+            targetThread: targetThread,
+            fetchPostsUrl: fetchPostsUrl,
+            fetchReviewsUrl: fetchReviewsUrl,
+          })">
+          <template x-for="(post, i) in posts" :key="post.id+':'+post.updatedOn" >
+            <div :id="post.id" x-data="appCardPost(
+            {
+                item: post,
+                userId: userId,
+                threadUrl: threadUrl,
+            })"></div>
+          </template> 
+          <template x-if="posts == null || posts.length == 0">
+            <article>
+              <header><strong>No results!</strong></header>
+              No posts could be found
+            </article>
+          </template>
+          <template x-if="loading">
+            <article aria-busy="true"></article>
+          </template>
+        </div>
+        `
             this.$nextTick(() => {
                 this.$root.innerHTML = html
             });

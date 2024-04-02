@@ -14,33 +14,32 @@ export default function (data = {}) {
         limit: data.limit || defaults.limit,
         init() {
             this.limit = data.limit;
-            this.show = data.show;
+          this.show = data.show;
+          
+          this.load(data);
+          const self = this;
+          
+          
+          // Listen for the websocket event.
+          this.$events.on(data.event || "snackbar:add", (payload) => {
+            var icon = getIcon(data)
 
-            this.load(data);
-            const self = this;
+            this.snackbars.push({
+                type: payload.type,
+                text: payload.text,
+                success: true,
+                icon: icon
+            })
 
-
-            // Listen for the websocket event.
-            this.$events.on(data.event || "snackbar:add", (payload) => {
-                console.log(payload);
-                var icon = getIcon(data)
-
-                this.snackbars.push({
-                    type: payload.type,
-                    text: payload.text,
-                    success: true,
-                    icon: icon
-                })
-
-                self.load(data)
-                self.show = true;
-                clearTimeout(timeout);
-                // if a timer is set
-                if (self.ms && self.ms > 0)
-                    timeout = setTimeout(function () {
-                        self.closeAll()
-                    }, self.ms);
-            });
+            self.load(data)
+            self.show = true;
+            clearTimeout(timeout);
+            // if a timer is set
+            if (self.ms && self.ms > 0)
+                timeout = setTimeout(function () {
+                    self.closeAll()
+                }, self.ms);
+          });
         },
         closeAll() {
             this.show = false;
@@ -50,7 +49,7 @@ export default function (data = {}) {
             this.snackbars.splice(i, 1);
         },
         topSnackbars() {
-            return this.snackbars.slice(0).slice(this.limit * -1)
+            return this.snackbars.slice(0).slice(this.limit*-1)
         },
         remainingNotifications() {
             if (this.snackbars.length < this.limit) return '';
@@ -58,10 +57,10 @@ export default function (data = {}) {
             return `${remaining} more alerts`;
         },
         load(data) {
-            // Turn into object as it returns reactive Proxy
-            //const data = JSON.parse(JSON.stringify(payload))
-            const icon = this.icon;
-            const html = `
+          // Turn into object as it returns reactive Proxy
+          //const data = JSON.parse(JSON.stringify(payload))
+          const icon = this.icon;
+          const html = `
           <template x-if="show">
             <article class="is-fixed dense page-modal snackbar-container" >
                 <ul>
@@ -83,12 +82,12 @@ export default function (data = {}) {
                 <ul>
             </article>
           </template>`
-            this.$nextTick(() => {
-                this.$root.innerHTML = html
-            })
+          this.$nextTick(() => { 
+            this.$root.innerHTML = html
+          })
         },
         defaults() {
-            this.load(defaults)
+          this.load(defaults)
         }
     }
 }

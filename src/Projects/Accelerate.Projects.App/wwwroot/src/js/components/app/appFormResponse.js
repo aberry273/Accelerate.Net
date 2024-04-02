@@ -4,25 +4,101 @@ export default function (data) {
     // PROPERTIES
     loading: false,
     fields: [],
+    item: null,
     label: 'Submit',
     // INIT
     init() {
       this.label = data.label;
       this.event = data.event;
+      this.item = data.item;
       this.postbackType = data.postbackType
-      this.fields = data.fields
+      this.fields = data.fields,
       this.setHtml(data)
-    }, 
+    },
+    setFields(inputName, inputPlaceholder) {
+      return [
+          {
+            name: inputName || 'Content',
+            type: 'textarea',
+            placeholder: inputPlaceholder || 'Whats your update?',
+            autocomplete: null,
+            helper: '',
+            clearOnSubmit: true,
+          },
+          {
+            name: 'parentId',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.id,
+          },
+          {
+            name: 'status',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.status,
+          },
+          {
+            name: 'channelId',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.channelId,
+          },
+          {
+            name: 'threadId',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.threadId,
+          },
+          {
+            name: 'tags',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.tags,
+          },
+          {
+            name: 'category',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.category,
+          },
+          {
+            name: 'userId',
+            type: 'input',
+            disabled: true,
+            hidden: true,
+            autocomplete: null,
+            helper: '',
+            value: this.item.userId,
+          },
+        ]
+    },
     
-     async submit(fields) {
+    async submit(fields) {
       this.loading = true;
       const payload = {}
       fields.map(x => {
         payload[x.name] = x.value
         return payload
       })
-        let response = this.$fetch.POST(data.postbackUrl, payload);
-        
+      let response = this.$fetch.POST(data.postbackUrl, payload);
       if(this.event) {
         this.$dispatch(this.event, response)
       }
@@ -30,9 +106,9 @@ export default function (data) {
       this.loading = false;
     },
     resetValues(fields) {
-        for (var i = 0; i < fields.length; i++) {
-        if (fields[i].clearOnSubmit === true)
-            fields[i].value = null;
+      for(var i = 0; i < fields.length; i++) {
+        if(fields[i].clearOnSubmit)
+          fields[i].value = null;
       }
     },
     format(type) {
@@ -52,7 +128,7 @@ export default function (data) {
               <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
             </fieldset>
             -->
-            <button class="flat" @click="await submit(fields)" :disabled="loading">${label}</button>
+            <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
           </footer>
         </div>
       `

@@ -5,77 +5,18 @@ export default () => ({
     reviews: [],
     // INIT
     init() {
-        // Map snackbar alerts
-        
     },
     addPosts(posts) {
-        this.posts = this.posts.concat(posts);
+        this.posts.concat(posts);
     },
     addPost(post) {
         this.posts.push(post);
-    },
-    // METHODS
-    createReview(post) {
-        this.reviews.push({
-            id: 91,
-            parentId: post.id,
-            userId: 0,
-            profile: 'https://placehold.co/150x150',
-            updated: '5 minutes ago',
-            agree: false,
-            disagree: false,
-            like: false,
-        })
-    },
-    createReply(reply){
-        this.replies.push({
-            id: this.items.length+'post',
-            userId: 0,
-            parentId: reply.parentId,
-            username: 'John deere',
-            profile: 'https://placehold.co/150x150',
-            handle: '@jdeerer',
-            updated: '5 minutes ago',
-            content: reply.content,
-            feed: 'Recipes',
-            liked: false,
-            agree: 22,
-            disagree: 1,
-        })
-        console.log(this.replies)
-        console.log('reply created');
-    },
-    createPost(post){
-        this.items.push({
-            id: this.items.length+'post',
-            userId: 0,
-            username: 'John deere',
-            profile: 'https://placehold.co/150x150',
-            handle: '@jdeerer',
-            updated: '5 minutes ago',
-            content: '<p><strong>title</strong></p><p>this is a new test of a auto-formatted markdown</p>',
-            feed: 'Recipes',
-            liked: false,
-            agree: 22,
-            disagree: 1,
-        })
-    },
-    likePost(post){
-        this.createPost(post);
-    },
-    disagreePost(post){
-        console.log('disagree');
-        this.createReply(post);
-    },
-    agreePost(post){
-        console.log('agree');
-        this.createReply(post);
     },
 })
 
 const defaultsPosts = [
     {
-        id: 0,
+        id: "22194d7e-1d46-4d00-9899-5d3ca3186e08",
         userId: 0,
         username: 'John deere',
         profile: 'https://placehold.co/150x150',

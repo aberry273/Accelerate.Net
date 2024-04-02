@@ -21,10 +21,32 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
         // Computed
+        public ContentPostReviewsDocument Reviews { get; set; }
         public string? Username { get; set; }
-        public int? Agrees { get; set; }
-        public int? Disagrees { get; set; }
-        public int? Likes { get; set; }
+        public int? Agrees
+        {
+            get
+            {
+                if (Reviews == null) return 0;
+                return Reviews.Agrees;
+            }
+        }
+        public int? Disagrees
+        {
+            get
+            {
+                if (Reviews == null) return 0;
+                return Reviews.Disagrees;
+            }
+        }
+        public int? Likes
+        {
+            get
+            {
+                if (Reviews == null) return 0;
+                return Reviews.Likes;
+            }
+        }
         public int? Replies { get; set; }
     }
 }

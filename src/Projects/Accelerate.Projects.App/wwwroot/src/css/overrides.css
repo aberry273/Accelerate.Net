@@ -145,13 +145,13 @@
   article blockquote {
     margin-top: calc(var(--pico-block-spacing-vertical)* -.5);
     margin-bottom: calc(var(--pico-block-spacing-vertical)* 0.5);
-    padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
+    padding: calc(var(--pico-block-spacing-vertical)* .33) var(--pico-block-spacing-horizontal);
   
   }
   article.dense header, article header.dense {
     margin-top: calc(var(--pico-block-spacing-vertical)* -1);
     margin-bottom: 0;
-    padding: 0 var(--pico-block-spacing-horizontal);
+    padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
   }
   article.dense p {
     margin-top: 0;
@@ -162,57 +162,50 @@
     margin-bottom: calc(var(--pico-block-spacing-vertical)* -1.5);
     padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
   }
-
-    /* ALERTS */
-    article.snackbar-container {
-        padding: 22px;
-        bottom: 4px; /* 30px from the bottom */
-        display: flex;
-        position: fixed; /* Sit on top of the screen */
-        z-index: 11;
-        margin-bottom: 4;
-        right: 0;
-        margin-right: var(--pico-block-spacing-horizontal);
-    }
-
-    article.snackbar {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-    }
-
-    article.snackbar-container ul, article {
-        margin-left: 0;
-        padding-left: 0;
-        background-color: transparent;
-        border-color: transparent;
-    }
-
-    article.snackbar.standalone {
-        padding: 22px;
-        bottom: 20px; /* 30px from the bottom */
-        display: flex;
-        position: fixed; /* Sit on top of the screen */
-        z-index: 11;
-        margin-bottom: calc(var(--pico-block-spacing-vertical)* .33);
-        right: 0;
-        margin-right: var(--pico-block-spacing-horizontal);
-        transition: opacity 0.6s; /* 600ms to fade out */
-    }
-
-    article.snackbar-container article.snackbar.dense {
-        padding: 6px;
-        margin-bottom: calc(var(--pico-block-spacing-vertical)* .5);
-    }
-
-    article.snackbar.dense {
-        padding: 12px;
-    }
-
-    article.snackbar.left {
-        left: 0;
-        margin-left: var(--pico-block-spacing-horizontal);
-    }
+  /* ALERTS */
+  article.snackbar-container {
+    padding: 22px;
+    bottom: 4px; /* 30px from the bottom */
+    display: flex;
+    position: fixed; /* Sit on top of the screen */
+    z-index:11;
+    margin-bottom: 4;
+    right: 0;
+    margin-right: var(--pico-block-spacing-horizontal);
+  }
+  article.snackbar {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  article.snackbar-container ul,article {
+    margin-left: 0;
+    padding-left: 0;
+    background-color: transparent;
+    border-color: transparent;
+  }
+  article.snackbar.standalone {
+    padding: 22px;
+    bottom: 20px; /* 30px from the bottom */
+    display: flex;
+    position: fixed; /* Sit on top of the screen */
+    z-index:11;
+    margin-bottom: calc(var(--pico-block-spacing-vertical)* .33);
+    right: 0;
+    margin-right: var(--pico-block-spacing-horizontal);
+    transition: opacity 0.6s; /* 600ms to fade out */
+  }
+  article.snackbar-container article.snackbar.dense {
+    padding: 6px;
+    margin-bottom: calc(var(--pico-block-spacing-vertical)* .5);
+  }
+  article.snackbar.dense {
+    padding: 12px;
+  }
+  article.snackbar.left {
+    left: 0;
+    margin-left: var(--pico-block-spacing-horizontal);
+  }
   
   article.snackbar.success {
     background-color: #029764;

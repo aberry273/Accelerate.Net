@@ -17,22 +17,40 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostCreateCompletedPipeline : DataCreateCompletedEventPipeline<ContentPostEntity>
     {
-        IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<WebsocketMessage<ContentPostEntity>>> _messageHub;
+        IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
+        IElasticService<ContentPostDocument> _elasticService;
         public ContentPostCreateCompletedPipeline(
-            IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<WebsocketMessage<ContentPostEntity>>> messageHub)
+            IElasticService<ContentPostDocument> elasticService,
+            IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
+            _elasticService = elasticService;
             _messageHub = messageHub;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                //SendWebsocketUpdate
+                SendWebsocketUpdate
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-        
+
+        // ASYNC PROCESSORS
+        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        {
+            var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            var payload = new WebsocketMessage<ContentPostDocument>()
+            {
+                Message = "Create successful",
+                Code = 200,
+                Data = doc.Source,
+                UpdateType = DataRequestCompleteType.Created,
+                Group = "Post",
+                Alert = true
+            };
+            await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
+        }
         // SYNC PROCESSORS
     }
 }

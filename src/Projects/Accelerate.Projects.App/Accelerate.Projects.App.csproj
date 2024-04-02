@@ -56,27 +56,17 @@
     <None Include="wwwroot\src\js\bindings\button.js" />
     <None Include="wwwroot\src\js\bindings\index.js" />
     <None Include="wwwroot\src\js\components\alerts\snackbar.js" />
-    <None Include="wwwroot\src\js\components\appbar.js" />
-    <None Include="wwwroot\src\js\components\card.js" />
     <None Include="wwwroot\src\js\components\cards\card.js" />
     <None Include="wwwroot\src\js\components\content\header.js" />
-    <None Include="wwwroot\src\js\components\example.js" />
-    <None Include="wwwroot\src\js\components\forms\ajax.js" />
     <None Include="wwwroot\src\js\components\forms\fields\input.js" />
     <None Include="wwwroot\src\js\components\forms\fields\textArea.js" />
-    <None Include="wwwroot\src\js\components\forms\login.js" />
-    <None Include="wwwroot\src\js\components\forms\postback.js" />
-    <None Include="wwwroot\src\js\components\forms\register.js" />
-    <None Include="wwwroot\src\js\components\header.js" />
     <None Include="wwwroot\src\js\components\index.js" />
     <None Include="wwwroot\src\js\components\lists\feed.js" />
-    <None Include="wwwroot\src\js\components\navbar.js" />
     <None Include="wwwroot\src\js\components\navigation\appbar.js" />
     <None Include="wwwroot\src\js\components\navigation\footer.js" />
     <None Include="wwwroot\src\js\components\navigation\navbar.js" />
     <None Include="wwwroot\src\js\data\content\contentPosts.js" />
     <None Include="wwwroot\src\js\data\dropdown.js" />
-    <None Include="wwwroot\src\js\data\formData.js" />
     <None Include="wwwroot\src\js\data\html.js" />
     <None Include="wwwroot\src\js\data\index.js" />
     <None Include="wwwroot\src\js\directives\index.js" />
@@ -85,7 +75,6 @@
     <None Include="wwwroot\src\js\directives\render.js" />
     <None Include="wwwroot\src\js\directives\uppercase.js" />
     <None Include="wwwroot\src\js\init.js" />
-    <None Include="wwwroot\src\js\magics\eventbus.js" />
     <None Include="wwwroot\src\js\magics\fetch.js" />
     <None Include="wwwroot\src\js\magics\index.js" />
     <None Include="wwwroot\src\js\magics\now.js" />
@@ -93,8 +82,6 @@
     <None Include="wwwroot\src\js\minimal-theme-switcher.js" />
     <None Include="wwwroot\src\js\stores\darkmode.js" />
     <None Include="wwwroot\src\js\stores\feedFilters.js" />
-    <None Include="wwwroot\src\js\stores\feeds.js" />
-    <None Include="wwwroot\src\js\stores\feedtabs.js" />
     <None Include="wwwroot\src\js\stores\index.js" />
     <None Include="wwwroot\src\js\stores\tabs.js" />
   </ItemGroup>

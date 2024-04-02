@@ -17,23 +17,42 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostDeleteCompletedPipeline : DataDeleteCompletedEventPipeline<ContentPostEntity>
     {
-        IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<WebsocketMessage<ContentPostEntity>>> _messageHub;
+        IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         public ContentPostDeleteCompletedPipeline(
-            IHubContext<BaseHub<ContentPostEntity>, IBaseHubClient<WebsocketMessage<ContentPostEntity>>> messageHub)
+            IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
             _messageHub = messageHub;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                //SendWebsocketUpdate
+                SendWebsocketUpdate
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-       
-        
+        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        {
+            var userId = args.Value.UserId.ToString();
+            var id = args.Value.Id;
+            //var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            var payload = new WebsocketMessage<ContentPostDocument>()
+            {
+                Message = "Delete successful",
+                Code = 200,
+                Data = new ContentPostDocument()
+                {
+                    Id = id,
+                },
+                UpdateType = DataRequestCompleteType.Deleted,
+                Group = "Post",
+                Alert = true
+            };
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
+            await _messageHub.Clients.Clients(userConnections).SendMessage(userId, payload);
+        }
+
         // SYNC PROCESSORS
     }
 }

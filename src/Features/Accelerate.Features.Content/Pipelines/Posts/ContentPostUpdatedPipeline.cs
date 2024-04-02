@@ -41,23 +41,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var indexModel = new ContentPostDocument();
             args.Value.HydrateDocument(indexModel, user?.Source?.Username);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
-
-            //
-            await SendWebsocketUpdate(args);
-        }
-        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
-        {
-            var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
-            var payload = new WebsocketMessage<ContentPostDocument>()
-            {
-                Message = "Update successful",
-                Code = 200,
-                Data = doc.Source,
-                UpdateType = DataRequestCompleteType.Updated,
-                Group = "Post"
-            };
-            var userConnections = HubClientConnectionsSingleton.GetUserConnections(args.Value.UserId.ToString());
-            await _messageHub.Clients.Clients(userConnections).SendMessage(args.Value.UserId.ToString(), payload);
         }
     }
 }

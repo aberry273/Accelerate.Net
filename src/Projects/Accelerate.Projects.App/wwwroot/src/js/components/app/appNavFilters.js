@@ -65,7 +65,6 @@ export default function (data) {
                   </ul>
                 </details>
               </li>
-              <!--Content-->
               <li>
                 <details class="dropdown">
                   <summary class="flat">
