@@ -55,20 +55,19 @@
     })"></div>
 </article>
   <!--Feed-->
-  <div x-data="$store.feedFilters" x-cloak>
-    <div x-data="appList({
-      feed: $store.feedFilters.current,
-      sourceUrl: 'https://localhost:7220/api/contentpost',
-      threadUrl: 'https://localhost:7220/content/thread',
-      fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-      fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-      reviewUrl: 'https://localhost:7220/api/contentpostreview',
-      userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      channel: 'all',
-      event: 'post:created',
-      items: $store.content.items,
-    })"
-    x-watch="this.$watch(this.$store.feedFilters.current, value => console.log(value))"></div>
+  <div x-data="_contentPostsManager({
+    feed: $store.feedFilters.current,
+    sourceUrl: 'https://localhost:7220/api/contentpost',
+    threadUrl: 'https://localhost:7220/content/thread',
+    fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+    fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+    reviewUrl: 'https://localhost:7220/api/contentpostreview',
+    userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    channel: 'all',
+    event: 'post:created',
+    items: $store.content.items,
+  })">
+    <div x-data="appListPost"></div>
   </div>
 </div>
    
@@ -97,7 +96,7 @@
           hidden: true,
           autocomplete: null,
           helper: '',
-          value: $store.content.posts[0].id,
+          value: '$store.content.posts[0].id',
         },
         {
           name: 'Status',
@@ -115,7 +114,7 @@
           hidden: true,
           autocomplete: null,
           helper: '',
-          value: $store.content.posts[0].channelId,
+          value: '$store.content.posts[0].channelId',
         },
         {
           name: 'ThreadId',
@@ -133,7 +132,7 @@
           hidden: true,
           autocomplete: null,
           helper: '',
-          value: $store.content.posts[0].tags,
+          value: '$store.content.posts[0].tags',
         },
         {
           name: 'Category',
@@ -142,7 +141,7 @@
           hidden: true,
           autocomplete: null,
           helper: '',
-          value: $store.content.posts[0].category,
+          value: '$store.content.posts[0].category',
         },
         {
           name: 'UserId',
@@ -151,7 +150,7 @@
           hidden: true,
           autocomplete: null,
           helper: '',
-          value: $store.content.posts[0].userId,
+          value: '$store.content.posts[0].userId',
         },
       ]
   }  })"></div>

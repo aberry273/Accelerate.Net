@@ -26,6 +26,7 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
 
 
+            services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
             services.AddTransient<IElasticService<ContentPostDocument>, ContentPostElasticService>();
             services.AddTransient<IElasticService<ContentPostReviewDocument>, ContentReviewElasticService>();
             services.AddTransient<IElasticService<ContentPostActivityEntity>, ContentActivityElasticService>();

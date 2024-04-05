@@ -55,11 +55,34 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
             var indexModel = new ContentPostDocument();
             args.Value.HydrateDocument(indexModel, user?.Source?.Username);
-           
-            await _elasticService.Index(indexModel);
+            
             // If a reply
-            if (args.Value.ParentId == null) return;
-            await ContentPostUtilities.UpdateParentReplies(_elasticService, _entityService, _messageHub, args);
+            if (args.Value.ParentId != null)
+            {
+                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+                var parentDoc = parentResponse.Source;
+                await UpdateParentDocument(parentDoc, indexModel, args);
+                if(parentDoc.UserId == indexModel.UserId)
+                {
+                    indexModel.SelfReply = true;
+                }
+            }
+            await _elasticService.Index(indexModel);
+        }
+
+        private async Task UpdateParentDocument(ContentPostDocument parentDoc, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
+        {
+            if (parentDoc == null) return;
+            // Update reply count
+            var reviewsDoc = ContentPostUtilities.GetReplies(_entityService, args);
+            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
+            // Update threads
+            if (parentDoc.UserId == args.Value.UserId)
+            {
+                if (parentDoc.Threads == null) parentDoc.Threads = new List<ContentPostDocument>();
+                parentDoc.Threads.Add(childDoc);
+            }
+            await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
         }
     }
 }

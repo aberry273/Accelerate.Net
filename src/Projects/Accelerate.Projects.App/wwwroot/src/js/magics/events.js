@@ -10,7 +10,7 @@ export default () => {
             // Listen for the event.
             window.addEventListener(
                 ev,
-                ((e) => cb(e.detail))
+                (async (e) => await cb(e.detail))
             );
         },
     }

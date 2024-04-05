@@ -6,22 +6,26 @@ using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.Contracts;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Core.TermVectors;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using MassTransit;
 using MassTransit.DependencyInjection;
 using MassTransit.Transports;
+using MessagePack;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -32,11 +36,11 @@ namespace Accelerate.Features.Content.Controllers.Api
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
-        IElasticService<ContentPostDocument> _searchPostService;
+        IContentPostElasticService _searchService;
         IElasticService<ContentPostReviewDocument> _searchReviewService;
         public ContentSearchController(
             IMetaContentService contentService,
-            IEntityService<ContentPostEntity> service,
+            IContentPostElasticService service,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchPostService,
             IElasticService<ContentPostReviewDocument> searchReviewService,
@@ -45,69 +49,29 @@ namespace Accelerate.Features.Content.Controllers.Api
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
-            _searchPostService = searchPostService;
+            _searchService = service;
             _searchReviewService = searchReviewService;
         }
         [Route("Reviews")]
         [HttpPost]
-        public async Task<IActionResult> SearchUserReviews([FromBody] RequestQuery Query)
+        public async Task<IActionResult> SearchUserReviews([FromBody] RequestQuery query)
         {
-            var elasticQuery = GetUserReviewsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
-            int skip = take * Query.Page;
-            var results = await _searchReviewService.Search(elasticQuery, skip, take);
-            if (!results.IsValidResponse || !results.IsSuccess())
-            {
-                return Ok(new List<ContentPostReviewDocument>());
-            }
-            return Ok(results.Documents);
-        }
-        private QueryDescriptor<ContentPostReviewDocument> GetUserReviewsQuery(RequestQuery request)
-        {
-            var query = new QueryDescriptor<ContentPostReviewDocument>();
-            if (request.Filters != null && request.Filters.Any())
-            {
-                query.MatchAll();
-                query.Term(x =>
-                    x.UserId.Suffix("keyword"),
-                    request.Filters[Foundations.Content.Constants.Fields.UserId]?.FirstOrDefault()
-                );
-            }
-            return query;
+            var docs = await _searchService.SearchUserReviews(query);
+            return Ok(docs);
         }
         [Route("Posts")]
         [HttpPost]
-        public async Task<IActionResult> SearchPosts([FromBody] RequestQuery Query)
+        public async Task<IActionResult> SearchPosts([FromBody] RequestQuery query)
         {
-            var elasticQuery = GetPostsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
-            int skip = take * Query.Page;
-            var results = await _searchPostService.Search(elasticQuery, skip, take);
-            if (!results.IsValidResponse && !results.IsSuccess())
-            {
-                return Ok(new List<ContentPostDocument>());
-            }
-            return Ok(results.Documents);
+            var docs = await _searchService.SearchPosts(query);
+            return Ok(docs);
         }
-
-        private QueryDescriptor<ContentPostDocument> GetPostsQuery(RequestQuery request)
+        [Route("Index")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteIndex()
         {
-            var query = new QueryDescriptor<ContentPostDocument>();
-            query.MatchAll();
-            if (request.Filters.ContainsKey(Foundations.Content.Constants.Fields.TargetThread))
-            {
-                query.Term(x => 
-                    x.TargetThread.Suffix("keyword"), 
-                    request.Filters[Foundations.Content.Constants.Fields.TargetThread]?.FirstOrDefault()
-                );
-            }
-            else
-            {
-                query.Bool(x => x.MustNot(y => y.Exists(z => z.Field(Foundations.Content.Constants.Fields.TargetThread))));
-            }
-            return query;
+            var docs = await _searchService.DeleteIndex();
+            return Ok(docs);
         }
     }
 }

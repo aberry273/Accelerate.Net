@@ -35,8 +35,7 @@
             <div x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
         </article>
         <!--Feed-->
-        <div>
-            <div x-data="appList({
+        <div x-data="_contentPostsManager({
                 feed: $store.feedFilters.current,
                 sourceUrl: 'https://localhost:7220/api/contentpost',
                 reviewUrl: 'https://localhost:7220/api/contentpostreview',
@@ -47,7 +46,8 @@
                 userId: '@Model.UserId',
                 items: [],
                 channel: 'all',
-                })"></div>
+                })">
+            <div x-data="appListPost"></div>
         </div>
     </div>
 </div>

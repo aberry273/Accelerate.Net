@@ -22,6 +22,10 @@ namespace Accelerate.Foundations.Content.Models.Data
         public IEnumerable<string>? Tags { get; set; }
         // Computed
         public ContentPostReviewsDocument Reviews { get; set; }
+        public bool SelfReply { get; set; }
+        //TODO: Replace with mapping 
+        public List<Guid> ThreadIds { get; set; }
+        public List<ContentPostDocument> Threads { get; set; }
         public string? Username { get; set; }
         public int? Agrees
         {

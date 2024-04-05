@@ -1,10 +1,116 @@
+
+const exampleThread = {
+    "id": "3016f819-7c6c-4667-9875-59f27981a4c9",
+    "createdOn": "2024-04-01T21:09:29.9859812Z",
+    "updatedOn": "2024-04-03T16:05:24.5456026+13:00",
+    "threadId": "GfgWMGx8Z0aYdVnyeYGkyQ",
+    "userId": "b2edca69-6743-4f71-969c-08dc4f9da45c",
+    "parentId": null,
+    "status": 0,
+    "content": "wdqqwdqwd",
+    "targetThread": "",
+    "targetChannel": "",
+    "category": "",
+    "tags": null,
+    "reviews": {
+      "agrees": 3,
+      "disagrees": 7,
+      "likes": 0,
+      "replies": null
+    },
+    "threadIds": null,
+    "threads": [
+      {
+        "id": "3cd8e2fd-6d3b-4cd8-a898-7e4e38c11522",
+        "createdOn": "2024-04-03T18:20:28.1871323Z",
+        "updatedOn": null,
+        "threadId": "eLYPDtt2EyomH5OOMEVIg",
+        "userId": "b2edca69-6743-4f71-969c-08dc4f9da45c",
+        "parentId": "3016f819-7c6c-4667-9875-59f27981a4c9",
+        "status": 1,
+        "content": "ddwdw",
+        "targetThread": "GfgWMGx8Z0aYdVnyeYGkyQ",
+        "targetChannel": "",
+        "category": "",
+        "tags": null,
+        "reviews": null,
+        "threadIds": null,
+        "threads": null,
+        "username": "tester",
+        "agrees": 0,
+        "disagrees": 0,
+        "likes": 0,
+        "replies": null
+      },
+      {
+        "id": "902758a1-6b5d-4d66-b499-629fed8ac91c",
+        "createdOn": "2024-04-03T18:22:11.3074061Z",
+        "updatedOn": null,
+        "threadId": "oVgnkF1rZk20mWKf7YrJHA",
+        "userId": "b2edca69-6743-4f71-969c-08dc4f9da45c",
+        "parentId": "3016f819-7c6c-4667-9875-59f27981a4c9",
+        "status": 1,
+        "content": "wdqwdqdqw",
+        "targetThread": "GfgWMGx8Z0aYdVnyeYGkyQ",
+        "targetChannel": "",
+        "category": "",
+        "tags": null,
+        "reviews": null,
+        "threadIds": null,
+        "threads": null,
+        "username": "tester",
+        "agrees": 0,
+        "disagrees": 0,
+        "likes": 0,
+        "replies": null
+      },
+      {
+        "id": "eb74d8c0-38c1-42dd-9973-0f8fa769a823",
+        "createdOn": "2024-04-03T18:22:29.3753639Z",
+        "updatedOn": null,
+        "threadId": "wNh068E43UKZcwPp2moIw",
+        "userId": "b2edca69-6743-4f71-969c-08dc4f9da45c",
+        "parentId": "3016f819-7c6c-4667-9875-59f27981a4c9",
+        "status": 1,
+        "content": "qwdwdq",
+        "targetThread": "GfgWMGx8Z0aYdVnyeYGkyQ",
+        "targetChannel": "",
+        "category": "",
+        "tags": null,
+        "reviews": null,
+        "threadIds": null,
+        "threads": null,
+        "username": "tester",
+        "agrees": 0,
+        "disagrees": 0,
+        "likes": 0,
+        "replies": null
+      }
+    ],
+    "username": "tester",
+    "agrees": 3,
+    "disagrees": 7,
+    "likes": 0,
+    "replies": 3
+  }
+
 export default () => ({
     // PROPERTIES
+    thread: {},
     posts: [],
     replies: [],
     reviews: [],
     // INIT
     init() {
+    },
+    getDummyThread() {
+        return exampleThread
+    },
+    setThread(post) {
+        this.thread = post;
+    },
+    setPosts(posts) {
+        this.posts = posts;
     },
     addPosts(posts) {
         this.posts.concat(posts);
@@ -12,166 +118,53 @@ export default () => ({
     addPost(post) {
         this.posts.push(post);
     },
+    setReviews(reviews) {
+        this.reviews = reviews;
+    },
+    addReviews(reviews) {
+        this.reviews.concat(reviews);
+    },
+    addReview(review) {
+        this.posts.push(review);
+    },
+    addReply(posts) {
+        this.posts.concat(posts);
+    },
+    addPost(post) {
+        this.posts.push(post);
+    },
+    updatePosts(wssMessage) {
+        const item = wssMessage.data;
+        if (this.posts == null) this.posts = [];
+        if (wssMessage.update == 'Created') {
+            const index = this.posts.map(x => x.id).indexOf(item.id);
+            if (index == -1) this.posts.push(item);
+            else this.posts[index] = item
+        }
+        if (wssMessage.update == 'Updated') {
+            const index = this.posts.map(x => x.id).indexOf(item.id);
+            this.posts[index] = item
+        }
+        if (wssMessage.update == 'Deleted') {
+            const index = this.posts.map(x => x.id).indexOf(item.id);
+            this.posts.splice(index, 1);
+        }
+    },
+    updateReviews(wssMessage) {
+        const item = wssMessage.data;
+        if (this.reviews == null) this.reviews = [];
+        if (wssMessage.update == 'Created') {
+            const index = this.reviews.map(x => x.id).indexOf(item.id);
+            if (index == -1) this.reviews.push(item);
+            else this.reviews[index] = item
+        }
+        if (wssMessage.update == 'Updated') {
+            const index = this.reviews.map(x => x.id).indexOf(item.id);
+            this.reviews[index] = item
+        }
+        if (wssMessage.update == 'Deleted') {
+            const index = this.reviews.map(x => x.id).indexOf(item.id);
+            this.reviews.splice(index, 1);
+        }
+    },
 })
-
-const defaultsPosts = [
-    {
-        id: "22194d7e-1d46-4d00-9899-5d3ca3186e08",
-        userId: 0,
-        username: 'John deere',
-        profile: 'https://placehold.co/150x150',
-        handle: '@jdeerer',
-        updated: '5 minutes ago',
-        content: '<p><strong>title</strong></p><p>this is a new test of a auto-formatted markdown</p>',
-        feed: 'Recipes',
-        liked: false,
-        agree: 22,
-        disagree: 1,
-    },
-    {
-        id: 1,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'don doon',
-        handle: '@dundoon',
-        updated: '12 minutes ago',
-        content: '<p>If any text contains no line breaks then we get everything in a full block of text</p>',
-        agree: 16,
-        disagree: 15,
-        liked: true,
-        feed: 'AI updates',
-        favourited: true,
-    },
-    {
-        id: 3,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'jokarr',
-        handle: '@johndoker',
-        updated: '15 minutes ago',
-        content: '<p><strong>what is the latest with ai</strong></p><p>here is a bunch of text to format</p>',
-        feed: 'AI updates',
-        liked: true,
-        agree: 16,
-        disagree: 15,
-    },
-    {
-        id: 4,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'tommy1989',
-        handle: '@tommy1989',
-        updated: '3 days ago',
-        content: '<img src="https://placehold.co/2000x2000" alt="username_profile" />',
-        feed: 'AI updates',
-        liked: false,
-        agree: 16,
-        disagree: 15,
-    },
-];
-
-
-const defaultsReplies = [
-    {
-        id: 10,
-        userId: 0,
-        username: 'John deere',
-        profile: 'https://placehold.co/150x150',
-        handle: '@jdeerer',
-        updated: '5 minutes ago',
-        content: 'My review is just a big problem',
-        feed: 'Recipes',
-        liked: false,
-        agree: 22,
-        disagree: 1,
-    },
-    {
-        id: 11,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'don doon',
-        handle: '@dundoon',
-        updated: '12 minutes ago',
-        content: 'I need to think more about the content I write',
-        agree: 16,
-        disagree: 15,
-        liked: true,
-        favourited: true,
-    },
-    {
-        id: 13,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'jokarr',
-        handle: '@johndoker',
-        updated: '15 minutes ago',
-        content: 'What do we do when we want to write more than to do what',
-        liked: true,
-        agree: 16,
-        disagree: 15,
-    },
-    {
-        id: 553,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'jokarr',
-        handle: '@johndoker',
-        updated: '15 minutes ago',
-        content: 'What do we do when we want to write more than to do what',
-        liked: true,
-        agree: 16,
-        disagree: 15,
-    },
-    {
-        id: 122,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        username: 'jokarr',
-        handle: '@johndoker',
-        updated: '15 minutes ago',
-        content: 'What do we do when we want to write more than to do what',
-        liked: true,
-        agree: 16,
-        disagree: 15,
-    },
-];
-
-
-const defaultsReviews = [
-    {
-        id: 91,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        updated: '5 minutes ago',
-        agree: false,
-        disagree: false,
-        like: false,
-    },
-    {
-        id: 92,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        updated: '5 minutes ago',
-        agree: true,
-        disagree: false,
-        like: false,
-    },
-    {
-        id: 93,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        updated: '5 minutes ago',
-        agree: true,
-        disagree: false,
-        like: false,
-    },
-    {
-        id: 94,
-        userId: 0,
-        profile: 'https://placehold.co/150x150',
-        updated: '5 minutes ago',
-        agree: true,
-        disagree: false,
-        like: false,
-    },
-];

@@ -8,7 +8,57 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\src\js\components\lists\**" />
+    <Content Remove="wwwroot\src\js\components\lists\**" />
+    <EmbeddedResource Remove="wwwroot\src\js\components\lists\**" />
+    <None Remove="wwwroot\src\js\components\lists\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\Shared\_Layout.Backup.cshtml" />
+    <Content Remove="wwwroot\src - Copy (2)\css\app.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_amount.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_input-amount.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_invoice-table.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\components\_priority-range.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\layout\_body.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\postcss.config.js" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_dark.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_light.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_schemes.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\css\theme\_styles.scss" />
+    <Content Remove="wwwroot\src - Copy (2)\favicon\site.webmanifest" />
+    <Content Remove="wwwroot\src - Copy (2)\js\bindings\button.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\bindings\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\alerts\snackbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\cards\card.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\content\header.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\input.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\textArea.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\lists\feed.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\appbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\footer.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\navbar.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\content\contentPostsManager.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\dropdown.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\html.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\data\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\log.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\reactiveLog.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\render.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\directives\uppercase.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\init.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\fetch.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\now.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\magics\render.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\minimal-theme-switcher.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\darkmode.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\index.js" />
+    <Content Remove="wwwroot\src - Copy (2)\js\stores\tabs.js" />
     <Content Remove="wwwroot\src\js\data\contentPosts.js" />
   </ItemGroup>
 
@@ -41,60 +91,57 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\src\css\app.scss" />
-    <None Include="wwwroot\src\css\components\_amount.scss" />
-    <None Include="wwwroot\src\css\components\_input-amount.scss" />
-    <None Include="wwwroot\src\css\components\_invoice-table.scss" />
-    <None Include="wwwroot\src\css\components\_priority-range.scss" />
-    <None Include="wwwroot\src\css\layout\_body.scss" />
-    <None Include="wwwroot\src\css\postcss.config.js" />
-    <None Include="wwwroot\src\css\theme\_dark.scss" />
-    <None Include="wwwroot\src\css\theme\_light.scss" />
-    <None Include="wwwroot\src\css\theme\_schemes.scss" />
-    <None Include="wwwroot\src\css\theme\_styles.scss" />
-    <None Include="wwwroot\src\favicon\site.webmanifest" />
-    <None Include="wwwroot\src\js\bindings\button.js" />
-    <None Include="wwwroot\src\js\bindings\index.js" />
-    <None Include="wwwroot\src\js\components\alerts\snackbar.js" />
-    <None Include="wwwroot\src\js\components\cards\card.js" />
-    <None Include="wwwroot\src\js\components\content\header.js" />
-    <None Include="wwwroot\src\js\components\forms\fields\input.js" />
-    <None Include="wwwroot\src\js\components\forms\fields\textArea.js" />
-    <None Include="wwwroot\src\js\components\index.js" />
-    <None Include="wwwroot\src\js\components\lists\feed.js" />
-    <None Include="wwwroot\src\js\components\navigation\appbar.js" />
-    <None Include="wwwroot\src\js\components\navigation\footer.js" />
-    <None Include="wwwroot\src\js\components\navigation\navbar.js" />
-    <None Include="wwwroot\src\js\data\content\contentPosts.js" />
-    <None Include="wwwroot\src\js\data\dropdown.js" />
-    <None Include="wwwroot\src\js\data\html.js" />
-    <None Include="wwwroot\src\js\data\index.js" />
-    <None Include="wwwroot\src\js\directives\index.js" />
-    <None Include="wwwroot\src\js\directives\log.js" />
-    <None Include="wwwroot\src\js\directives\reactiveLog.js" />
-    <None Include="wwwroot\src\js\directives\render.js" />
-    <None Include="wwwroot\src\js\directives\uppercase.js" />
-    <None Include="wwwroot\src\js\init.js" />
-    <None Include="wwwroot\src\js\magics\fetch.js" />
-    <None Include="wwwroot\src\js\magics\index.js" />
-    <None Include="wwwroot\src\js\magics\now.js" />
-    <None Include="wwwroot\src\js\magics\render.js" />
-    <None Include="wwwroot\src\js\minimal-theme-switcher.js" />
-    <None Include="wwwroot\src\js\stores\darkmode.js" />
-    <None Include="wwwroot\src\js\stores\feedFilters.js" />
-    <None Include="wwwroot\src\js\stores\index.js" />
-    <None Include="wwwroot\src\js\stores\tabs.js" />
+    <None Include="wwwroot\src - Copy (2)\css\app.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\components\_amount.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\components\_input-amount.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\components\_invoice-table.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\components\_priority-range.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\layout\_body.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\postcss.config.js" />
+    <None Include="wwwroot\src - Copy (2)\css\theme\_dark.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\theme\_light.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\theme\_schemes.scss" />
+    <None Include="wwwroot\src - Copy (2)\css\theme\_styles.scss" />
+    <None Include="wwwroot\src - Copy (2)\favicon\site.webmanifest" />
+    <None Include="wwwroot\src - Copy (2)\js\bindings\button.js" />
+    <None Include="wwwroot\src - Copy (2)\js\bindings\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\alerts\snackbar.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\cards\card.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\content\header.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\forms\fields\input.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\forms\fields\textArea.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\lists\feed.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\navigation\appbar.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\navigation\footer.js" />
+    <None Include="wwwroot\src - Copy (2)\js\components\navigation\navbar.js" />
+    <None Include="wwwroot\src - Copy (2)\js\data\content\contentPostsManager.js" />
+    <None Include="wwwroot\src - Copy (2)\js\data\dropdown.js" />
+    <None Include="wwwroot\src - Copy (2)\js\data\html.js" />
+    <None Include="wwwroot\src - Copy (2)\js\data\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\directives\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\directives\log.js" />
+    <None Include="wwwroot\src - Copy (2)\js\directives\reactiveLog.js" />
+    <None Include="wwwroot\src - Copy (2)\js\directives\render.js" />
+    <None Include="wwwroot\src - Copy (2)\js\directives\uppercase.js" />
+    <None Include="wwwroot\src - Copy (2)\js\init.js" />
+    <None Include="wwwroot\src - Copy (2)\js\magics\fetch.js" />
+    <None Include="wwwroot\src - Copy (2)\js\magics\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\magics\now.js" />
+    <None Include="wwwroot\src - Copy (2)\js\magics\render.js" />
+    <None Include="wwwroot\src - Copy (2)\js\minimal-theme-switcher.js" />
+    <None Include="wwwroot\src - Copy (2)\js\stores\darkmode.js" />
+    <None Include="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
+    <None Include="wwwroot\src - Copy (2)\js\stores\index.js" />
+    <None Include="wwwroot\src - Copy (2)\js\stores\tabs.js" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="Services\" />
     <Folder Include="Views\Home\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\src\js\websockets\wssContentPostReviews.js">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <Folder Include="wwwroot\src\js\components\forms\" />
+    <Folder Include="wwwroot\src\js\data\" />
   </ItemGroup>
 
 </Project>

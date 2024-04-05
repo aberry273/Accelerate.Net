@@ -32,6 +32,11 @@ namespace Accelerate.Foundations.Account.Services
                 take);
         }
 
+        public override Task<SearchResponse<AccountUserDocument>> GetAggregates(RequestQuery<AccountUserDocument> query)
+        {
+            throw new NotImplementedException();
+        }
+
         private QueryDescriptor<AccountUserDocument> CreateQuery(RequestQuery<AccountUserDocument> request)
         {
             var descriptor =  new QueryDescriptor<AccountUserDocument>();

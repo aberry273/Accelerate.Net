@@ -30,6 +30,11 @@ namespace Accelerate.Foundations.Content.Services
                 take);
         }
 
+        public override Task<SearchResponse<ContentPostActivityEntity>> GetAggregates(RequestQuery<ContentPostActivityEntity> query)
+        {
+            throw new NotImplementedException();
+        }
+
         private QueryDescriptor<ContentPostActivityEntity> CreateQuery(RequestQuery<ContentPostActivityEntity> request)
         {
             var descriptor =  new QueryDescriptor<ContentPostActivityEntity>();

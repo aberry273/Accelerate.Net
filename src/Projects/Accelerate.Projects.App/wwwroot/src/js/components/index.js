@@ -17,11 +17,10 @@ import modalForm from './modals/modalForm.js'
 // LISTS
 // APP
 import appFormResponse from './app/appFormResponse.js'
-import appCardPost from './app/appCardPost.js'
-import appCardPostReply from './app/appCardPostReply.js'
-import appList from './app/appList.js'
-import appListReplies from './app/appListReplies.js'
+import appListPost from './app/appListPost.js'
 import appNavFilters from './app/appNavFilters.js'
+
+import appCardPost from './app/content/appCardPost.js'
 
 export {
     card,
@@ -39,10 +38,8 @@ export {
     formPostback,
     formAjax,
 
-    appList,
-    appListReplies,
+    appListPost,
     appNavFilters,
     appCardPost,
-    appCardPostReply,
     appFormResponse,
 }

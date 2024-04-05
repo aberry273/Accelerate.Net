@@ -16,6 +16,6 @@ namespace Accelerate.Foundations.Database.Models
 
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-        public DateTime? UpdatedOn { get; set; }
+        public DateTime? UpdatedOn { get; set; } = DateTime.UtcNow;
     }
 }

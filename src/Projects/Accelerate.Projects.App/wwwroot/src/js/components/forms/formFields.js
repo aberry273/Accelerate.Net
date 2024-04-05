@@ -23,7 +23,7 @@ export default function (data) {
       this.fields = data.fields || []
       this.$root.innerHTML = ` 
         <template x-for="(field, i) in fields" :key="field.name+i"> 
-          <label x-html="renderField(field)" :for="field.name" x-show="!field.hidden"></label>
+          <label x-html="renderField(field, i)" :for="field.name" x-show="!field.hidden"></label>
         </template> 
       `
     },

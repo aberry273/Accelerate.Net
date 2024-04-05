@@ -26,9 +26,24 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
         Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
         Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
-        Task<SearchResponse<T>> Find(RequestQuery<T> query);
         Task<IndexResponse> Index(T doc);
-
         Task<CountResponse> Count<T>(Action<CountRequestDescriptor<T>> request);
+
+        Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query);
+        Task<SearchResponse<T>> Find(RequestQuery<T> query);
+
+        // Custom
+        FieldValue GetFieldValue(QueryFilter filter, object? value);
+        FieldValue GetFieldValue(QueryFilter filter);
+        Query CreateTermsQuery(QueryFilter filter);
+        Query CreateTermQuery(QueryFilter filter);
+        Query CreatExistsQuery(QueryFilter filter);
+        Query CreateTerm(QueryFilter filter);
+        Query[] GetQueries(RequestQuery request, ElasticCondition condition);
+        QueryDescriptor<T> CreateQuery(RequestQuery request);
+        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op);
+        QueryFilter Filter(string field, object? value);
+        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value);
+        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, List<object>? values);
     }
 }

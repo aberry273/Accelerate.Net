@@ -46,7 +46,7 @@ namespace Accelerate.Features.Content.Services
                 PostbackUrl = "https://localhost:7220/api/contentpost",
                 Type = PostbackType.POST,
                 Event = "post:created",
-                Label = "Comment",
+                Label = "Reply",
                 Fields = new List<FormField>()
                 {
                     new FormField()

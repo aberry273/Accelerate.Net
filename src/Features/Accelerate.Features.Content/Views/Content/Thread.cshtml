@@ -19,54 +19,39 @@
         </ul>
     </nav>
     <!-- Original post -->
-    <!--
-    <div x-data="_contentPosts(
-        {
-            userId: '@Model.UserId',
+    <div x-data="_contentPostsManager({
+        sourceUrl: 'https://localhost:7220/api/contentpost',
+        reviewUrl: 'https://localhost:7220/api/contentpostreview',
+        fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+        fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+        threadUrl: 'https://localhost:7220/content/thread',
+        event: 'post:created',
+        userId: '@Model.UserId',
+        targetThread: '@Model.Item.ThreadId',
+        items: @JsonSerializerHelper.SerializeObject(Model.Replies),
+        channel: 'all',
         })">
+
         <div x-data="appCardPost({
             item: @JsonSerializerHelper.SerializeObject(Model.Item),
             threadUrl: 'https://localhost:7220/content/thread',
             expandable: false,
-        })"></div> 
-    </div>-->
-    <!--Feed-->
-    <div x-data="appNavFilters({})"></div>
-
-    <!-- Response Form -->
-    <article>
-        <div x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    </article>
-
-    <!--Responses-->
-    <main >
-        <div x-data="appList({
-            sourceUrl: 'https://localhost:7220/api/contentpost',
-            reviewUrl: 'https://localhost:7220/api/contentpostreview',
-            fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-            fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-            threadUrl: 'https://localhost:7220/content/thread',
-            event: 'post:created',
-            userId: '@Model.UserId',
-            targetThread: '@Model.Item.ThreadId',
-            items: @JsonSerializerHelper.SerializeObject(Model.Replies),
-            channel: 'all',
-            })"></div>
-        </main>
-        <!--
-            <div x-data="appListReplies({
-              sourceUrl: 'https://localhost:7220/api/contentpost',
-              reviewUrl: 'https://localhost:7220/api/contentpostreview',
-              threadUrl: 'https://localhost:7220/content/thread',
-                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-              targetThread: '@Model.Item.ThreadId',
-              event: 'post:created',
-              items: @JsonSerializerHelper.SerializeObject(Model.Replies),
-              userId: '@Model.UserId',
-              channel: '@Model.Item.ThreadId',
         })"></div>
-        -->
+        <!--Feed-->
+        <div x-data="appNavFilters({
+            filters: @JsonSerializerHelper.SerializeObject(Model.Filters)
+        })"></div>
+       
+        <!-- Response Form -->
+        <article>
+            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+        </article>
+
+        <!--Responses-->
+        <main >
+            <div x-data="appListPost"></div>
+        </main> 
+    </div>
 </div>
 
 <!-- Modals -->

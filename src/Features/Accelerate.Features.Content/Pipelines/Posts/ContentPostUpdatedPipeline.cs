@@ -1,4 +1,5 @@
-﻿using Accelerate.Features.Content.Services;
+﻿using Accelerate.Features.Content.Pipelines.Reviews;
+using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.Common.Extensions;
@@ -41,6 +42,35 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var indexModel = new ContentPostDocument();
             args.Value.HydrateDocument(indexModel, user?.Source?.Username);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
+            // If a reply
+            if (args.Value.ParentId == null) return;
+            await UpdateParentDocument(indexModel, args);
+        }
+
+        private async Task UpdateParentDocument(ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
+        {
+            try
+            {
+                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+                var parentDoc = parentResponse.Source;
+                if (!parentResponse.IsValidResponse || parentDoc == null) return;
+
+                // Update threads
+                if (parentDoc.UserId == args.Value.UserId)
+                {
+                    if (parentDoc.Threads == null) parentDoc.Threads = new List<ContentPostDocument>();
+                    var index = parentDoc.Threads.IndexOf(childDoc);
+                    if (index > -1)
+                        parentDoc.Threads[index] = childDoc;
+                    else
+                        parentDoc.Threads.Add(childDoc);
+                }
+                await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
+            }
+            catch(Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+            }
         }
     }
 }

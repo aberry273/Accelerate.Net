@@ -37,12 +37,28 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         public async Task DeleteDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var response = await _elasticService.DeleteDocument<ContentPostEntity>(args.Value.Id.ToString());
-            if(response.IsValidResponse)
+            if (!response.IsValidResponse) return;
+
+            // If a reply
+            if (args.Value.ParentId == null) return;
+            await UpdateParentDocument(args);
+        }
+        private async Task UpdateParentDocument(IPipelineArgs<ContentPostEntity> args)
+        {
+            var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+            var parentDoc = parentResponse.Source;
+            if (!parentResponse.IsValidResponse || parentDoc == null) return;
+            // Update reply count
+            var reviewsDoc = ContentPostUtilities.GetReplies(_entityService, args);
+            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
+            // Update threads
+            if (parentDoc.UserId == args.Value.UserId)
             {
-                // If a reply
-                if (args.Value.ParentId == null) return;
-                await ContentPostUtilities.UpdateParentReplies(_elasticService, _entityService, _messageHub, args);
+                if (parentDoc.Threads == null) return;
+                var index = parentDoc.Threads.FindIndex(x => x.Id == args.Value.Id);
+                parentDoc.Threads.RemoveAt(index);
             }
+            await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
         }
     }
 }

@@ -39,12 +39,20 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         // ASYNC PROCESSORS
         public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
         {
-            var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            ContentPostDocument doc;
+            var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            doc = response.Source;
+            // If its a reply to own thread by the user, send the parent as the update instead
+            if (doc.SelfReply)
+            {
+                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
+                doc = parentResponse.Source;
+            }
             var payload = new WebsocketMessage<ContentPostDocument>()
             {
                 Message = "Create successful",
                 Code = 200,
-                Data = doc.Source,
+                Data = doc,
                 UpdateType = DataRequestCompleteType.Created,
                 Group = "Post",
                 Alert = true

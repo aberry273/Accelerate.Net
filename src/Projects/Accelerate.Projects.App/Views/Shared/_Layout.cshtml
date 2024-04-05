@@ -41,7 +41,7 @@
 <body style="background-color: min-height: 100%; height: 100vh;">
     <div class="container">
         <!-- Header -->
-        <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model.TopNavigation))"></div>
+        @{await Html.RenderPartialAsync("~/Views/Partials/TopNavigation.cshtml", Model.TopNavigation);}
         <!-- Body -->
         @RenderBody() 
         <!-- Footer -->
@@ -68,15 +68,15 @@
     <!-- DATA -->
     <script>
         let headerData = {
-            title: 'feed.at',
-            subtitle: 'A tiny front-end library to build simple sites',
+            title: 'parrot.app',
+            subtitle: 'The new bird in town',
             text: 'Total project size is < 20kb gzipped'
         }
 
         let footerData = {
-            title: 'markdown.web',
-            subtitle: 'A tiny front-end library to build simple sites',
-            text: 'feed.at'
+            title: 'parrot.app',
+            subtitle: 'The new bird in town',
+            text: 'parrot.app'
         }
     </script>
 

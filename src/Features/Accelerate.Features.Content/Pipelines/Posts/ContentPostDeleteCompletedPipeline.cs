@@ -17,10 +17,13 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostDeleteCompletedPipeline : DataDeleteCompletedEventPipeline<ContentPostEntity>
     {
+        IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         public ContentPostDeleteCompletedPipeline(
+            IElasticService<ContentPostDocument> elasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
+            _elasticService = elasticService;
             _messageHub = messageHub;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
@@ -36,7 +39,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var userId = args.Value.UserId.ToString();
             var id = args.Value.Id;
-            //var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+
+            // Get doc, sned parent ID if its a self rpely
             var payload = new WebsocketMessage<ContentPostDocument>()
             {
                 Message = "Delete successful",

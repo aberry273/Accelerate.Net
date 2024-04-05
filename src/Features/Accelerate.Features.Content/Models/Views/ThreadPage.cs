@@ -10,6 +10,7 @@ namespace Accelerate.Features.Content.Models.Views
         public Guid UserId { get; set; }
         public ContentPostDocument Item { get; set; }
         public List<ContentPostDocument> Replies { get; set; } = new List<ContentPostDocument>();
+        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();
         public string PreviousUrl { get; set; }
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditReply { get; set; }

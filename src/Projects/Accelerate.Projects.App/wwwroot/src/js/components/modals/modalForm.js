@@ -79,7 +79,7 @@ export default function (data = {}) {
             })
             this.$events.on(this.form.event, (data) => {
                 if (data.statusCode == 200) {
-
+                    
                 }
                 self.toggle();
             })

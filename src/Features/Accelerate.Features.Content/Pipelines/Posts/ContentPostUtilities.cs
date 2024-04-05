@@ -1,4 +1,5 @@
-﻿using Accelerate.Foundations.Common.Pipelines;
+﻿using Accelerate.Foundations.Common.Extensions;
+using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
@@ -11,16 +12,16 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
 {
     public static class ContentPostUtilities
     {
-        public static ContentPostReviewsDocument GetReviews(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
+        public static ContentPostReviewsDocument? GetReplies(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
         {
             return entityService
-               .Find(x => x.ParentId == args.Value.ParentId)
+               .Find(x => x.ParentId == args.Value.ParentId && x.UserId != args.Value.UserId)
                .GroupBy(g => 1)
                .Select(x =>
                    new ContentPostReviewsDocument
                    {
                        Replies = x.Count(),
-                   }).Single();
+                   })?.SingleOrDefault();
         } 
         public static async Task SendWebsocketPostUpdate(IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, string userId, ContentPostDocument doc, DataRequestCompleteType type)
         {
@@ -36,16 +37,16 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
             var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
             await messageHubPosts.Clients.Clients(userConnections).SendMessage(userId, payload);
         }
-        public static async Task UpdateParentReplies(IElasticService<ContentPostDocument> elasticService, IEntityService<ContentPostEntity> entityService, IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, IPipelineArgs<ContentPostEntity> args)
+        public static async Task IndexOwnReplies(IElasticService<ContentPostDocument> elasticService, IEntityService<ContentPostEntity> entityService, IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, IPipelineArgs<ContentPostEntity> args)
         {
             // Get total replies
             var parentResponse = await elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
             if (!parentResponse.IsValidResponse) return;
             var parentDoc = parentResponse.Source;
-            var reviewsDoc = ContentPostUtilities.GetReviews(entityService, args);
-            parentDoc.Replies = reviewsDoc.Replies;
+            var reviewsDoc = ContentPostUtilities.GetReplies(entityService, args);
+            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
             await elasticService.UpdateDocument<ContentPostDocument>(parentDoc, parentDoc.Id.ToString());
             //SendWebsocketPostUpdate(messageHubPosts, parentDoc.UserId.ToString(), parentDoc, DataRequestCompleteType.Updated);
-        }
+        } 
     }
 }

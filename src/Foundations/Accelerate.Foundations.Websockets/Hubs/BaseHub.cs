@@ -1,6 +1,7 @@
 ﻿using Accelerate.Foundations.Websockets.Models;
 using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
 
             if (!HubClientConnectionsSingleton.UserConnections.ContainsKey(userId))
             {
-                HubClientConnectionsSingleton.UserConnections.Add(userId, new List<string>()
+                HubClientConnectionsSingleton.UserConnections.TryAdd(userId, new List<string>()
                 {
                     connectionId
                 });
@@ -47,7 +48,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
 
             if (!HubClientConnectionsSingleton.ChannelConnections.ContainsKey(channelId))
             {
-                HubClientConnectionsSingleton.ChannelConnections.Add(channelId, new List<string>()
+                HubClientConnectionsSingleton.ChannelConnections.TryAdd(channelId, new List<string>()
                 {
                     connectionId
                 });
@@ -70,7 +71,7 @@ namespace Accelerate.Foundations.Websockets.Hubs
 
             if (!HubClientConnectionsSingleton.ThreadConnections.ContainsKey(threadId))
             {
-                HubClientConnectionsSingleton.ThreadConnections.Add(threadId, new List<string>()
+                HubClientConnectionsSingleton.ThreadConnections.TryAdd(threadId, new List<string>()
                 {
                     connectionId
                 });
