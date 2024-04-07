@@ -43,6 +43,7 @@
         public int ItemsPerPage { get; set; } = 10;
         //public Dictionary<string, List<string>>? Filters { get; set; }
         public List<QueryFilter>? Filters { get; set; }
+        public List<string>? Aggregates { get; set; }
         public string? Text { get; set; }
     }
 }

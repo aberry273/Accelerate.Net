@@ -191,10 +191,8 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         // Overrides
         public abstract Task<SearchResponse<T>> Find(RequestQuery<T> query);
-        //public abstract Task<SearchResponse<T>> GetAggregates(QueryDescriptor<T> query);
-        public abstract Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query);
-        /*
-        public async Task<SearchResponse<T>> GetAggregatesBase(RequestQuery<T> request)
+        
+        public async virtual Task<SearchResponse<T>> GetAggregates(RequestQuery<T> request)
         {
             //Create if not existing
             await CreateIndex();
@@ -202,59 +200,24 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             int skip = take * request.Page;
             var query = this.CreateQuery(request);
             //
-            Dictionary<string, IAggregate> aggregateDictionary = 
-                request.Filters.
-                ToDictionary(x => x.Name,
-                    x => {
-                        var agg = new AggregationDescriptor<T>();
-                        agg.Terms(x.Name, t => t
-                                .Field($"{x.Name}.keyword")
-                                .Size(10000)
-                            );
-
-                        var a = new TermsAggregate<T>()
-                        {
-                            Buckets = new List<TermsBucket<T>>(agg.Terms)
-                        };
-                        return a;
-                    }
-                );
-            var aggregates =
-                request.Filters.
-                Select(x => {
-                    var agg = new AggregationDescriptor<T>();
-                    agg.Terms(x.Name, t => t
-                            .Field($"{x.Name}.keyword")
+            var aggregates = request.Aggregates ?? new List<string>();
+            Action<AggregationDescriptor<T>> disciptors = (AggregationDescriptor<T> a) =>
+            {
+                foreach (var field in aggregates)
+                {
+                    a.Terms(field, t => t
+                            .Field($"{field}.keyword")
                             .Size(10000)
                         );
-                    return agg;
-                })
-                .ToArray();
-
-
-            var aggregateTerms =
-                request.Filters.
-                Select(x => {
-                    var agg = new TermsAggregationDescriptor<T>();
-                    agg.Field($"{x.Name}.keyword");
-                    agg.Size(10000);
-                    return agg;
-                })
-                .ToArray();
-            var agg = new TermsAggregationDescriptor<T>();
-            var aggregate = new AggregationDictionary();
-             
-               
-             
+                }
+            };
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
                 .Query(query)
-                .Aggregations(aggregateDictionary)
-                
+                .Aggregations(disciptors)
             );
         }
-        */
-
+        
         // Custom 
         public FieldValue GetFieldValue(QueryFilter filter, object? value)
         {

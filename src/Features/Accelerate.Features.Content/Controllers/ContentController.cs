@@ -102,7 +102,12 @@ namespace Accelerate.Features.Content.Controllers
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, item.Id)
             };
-            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
+            var aggregates = new List<string>()
+            {
+                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
              
             var aggResponse = await _postSearchService.GetAggregates(requestFilters);
             viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
@@ -152,7 +157,13 @@ namespace Accelerate.Features.Content.Controllers
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, item.Id)
             };
-            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
+
+            var aggregates = new List<string>()
+            {
+                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
 
             var aggResponse = await _postSearchService.GetAggregates(requestFilters);
             viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);

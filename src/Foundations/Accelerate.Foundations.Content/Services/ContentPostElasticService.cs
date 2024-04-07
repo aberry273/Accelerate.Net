@@ -36,61 +36,10 @@ namespace Accelerate.Foundations.Content.Services
         {
             var mapping = new TypeMapping();
             return mapping;
-        }
-        /*
-        public override async Task<IndexResponse> Index(ContentPostEntity doc)
-        {
-            //Create if not existing
-            await CreateIndex();
-            //Index
-            return await IndexDocument(doc);
-        }
-        */
-        /*
-        public override async Task<ContentPostDocument> CreateIndex()
-        {
-            var response = await _client.Indices.CreateAsync<ContentPostDocument>(_indexName, c => c
-               .Mappings(map => map
-                   .Properties(p => p
-                   .Text(t => t.ThreadIds)
-                   .Object(o => o.EmployeeInfo, objConfig => objConfig
-                       .Properties(p => p
-                           .Text(t => t.EmployeeInfo.EmployeeName)
-                           .Object(n => n.EmployeeInfo.JobRoles, objConfig => objConfig
-                               .Properties(p => p
-                                   .Text(t => t.EmployeeInfo.JobRoles.First().RoleName)
-                               )
-                           )
-                       )
-                   )
-               )
-           ));
-            return response;
-        }
-        */
+        } 
         public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request)
         {
-            //Create if not existing
-            await CreateIndex();
-            int take = request.ItemsPerPage > 0 ? request.ItemsPerPage : 10;
-            int skip = take * request.Page;
-            var query = this.BuildSearchQuery(request);
-            //
-             
-            return await _client.SearchAsync<ContentPostDocument>(s => s
-                .Index(_indexName)
-                .Query(query)
-                .Aggregations(a => a
-                    .Terms("tags", t => t
-                        .Field(f => f.Tags.Suffix("keyword"))
-                        .Size(10000)
-                    )
-                    .Terms("threadIds", t => t
-                        .Field(f => f.ThreadId.Suffix("keyword"))
-                        .Size(10000)
-                    )
-                )
-            );
+            return await base.GetAggregates(request);
         }
         public override async Task<SearchResponse<ContentPostDocument>> Find(RequestQuery<ContentPostDocument> query)
         {
