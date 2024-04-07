@@ -4,6 +4,7 @@ export default () => {
             const event = new CustomEvent(ev, {
                 detail: payload
             });
+            console.log(event);
             window.dispatchEvent(event);
         },
         on(ev, cb) {

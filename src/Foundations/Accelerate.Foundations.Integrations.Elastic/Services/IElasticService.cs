@@ -29,7 +29,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<IndexResponse> Index(T doc);
         Task<CountResponse> Count<T>(Action<CountRequestDescriptor<T>> request);
 
-        Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query);
+        Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query); 
         Task<SearchResponse<T>> Find(RequestQuery<T> query);
 
         // Custom
@@ -43,7 +43,10 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         QueryDescriptor<T> CreateQuery(RequestQuery request);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op);
         QueryFilter Filter(string field, object? value);
+        QueryFilter Filter(string field, ElasticCondition cond, object? value);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, List<object>? values);
+        abstract QueryDescriptor<T> BuildSearchQuery(RequestQuery Query);
+        Task<List<T>> Search(RequestQuery Query);
     }
 }

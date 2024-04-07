@@ -1,9 +1,11 @@
 // CARDS
 import card from './cards/card.js'
-// NAVIGATION
+// CONTENT
 import header from './content/header.js'
+// NAVIGATION
 import navbar from './navigation/navbar.js'
 import footer from './navigation/footer.js'
+import dropdown from './navigation/dropdown.js'
 // FORMS
 import formPostback from './forms/formPostback.js'
 import formAjax from './forms/formAjax.js'
@@ -24,9 +26,12 @@ import appCardPost from './app/content/appCardPost.js'
 
 export {
     card,
+
     header,
+
     navbar,
     footer,
+    dropdown,
 
     snackbar,
     snackbarList,

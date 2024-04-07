@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Views;
+using Accelerate.Features.Content.Controllers;
 
 namespace Accelerate.Projects.App.Controllers
 {
@@ -35,7 +36,7 @@ namespace Accelerate.Projects.App.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("Feed", "Content");
+            return RedirectToAction(nameof(ContentController.Channels), "Content");
         }
 
     }

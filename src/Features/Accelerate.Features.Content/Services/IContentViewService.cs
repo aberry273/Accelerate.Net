@@ -7,8 +7,10 @@ namespace Accelerate.Features.Content.Services
 {
     public interface IContentViewService
     {
-        public AjaxForm CreatePostForm(AccountUser user);
+        public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null);
         public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post);
+        public AjaxForm CreateChannelForm(AccountUser user);
+        public ModalForm CreateModalChannelForm(AccountUser user);
         public ModalForm CreateModalEditReplyForm(AccountUser user);
         public AjaxForm CreateFormEditReply(AccountUser user);
         public ModalForm CreateModalDeleteReplyForm(AccountUser user);

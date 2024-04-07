@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Features.Content.Pipelines.Reviews;
+using Accelerate.Foundations.Content.Hydrators;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
@@ -54,7 +55,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
             var indexModel = new ContentPostDocument();
-            args.Value.HydrateDocument(indexModel, user?.Source?.Username);
+            args.Value.Hydrate(indexModel, user?.Source?.Username);
             
             // If a reply
             if (args.Value.ParentId != null)

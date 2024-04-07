@@ -29,9 +29,13 @@ namespace Accelerate.Foundations.Content.Services
             {
                 //NumberOfReplicas = 0,
             };
-            this._mapping = new TypeMapping()
-            { 
-            };
+            this._mapping = CreateContentPostMapping();
+        }
+
+        private TypeMapping CreateContentPostMapping()
+        {
+            var mapping = new TypeMapping();
+            return mapping;
         }
         /*
         public override async Task<IndexResponse> Index(ContentPostEntity doc)
@@ -64,17 +68,18 @@ namespace Accelerate.Foundations.Content.Services
             return response;
         }
         */
-        public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> query)
+        public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request)
         {
-
             //Create if not existing
             await CreateIndex();
-            int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
-            int skip = take * query.Page;
+            int take = request.ItemsPerPage > 0 ? request.ItemsPerPage : 10;
+            int skip = take * request.Page;
+            var query = this.BuildSearchQuery(request);
             //
+             
             return await _client.SearchAsync<ContentPostDocument>(s => s
                 .Index(_indexName)
-                .Query(CreateQuery(query))
+                .Query(query)
                 .Aggregations(a => a
                     .Terms("tags", t => t
                         .Field(f => f.Tags.Suffix("keyword"))
@@ -143,52 +148,12 @@ namespace Accelerate.Foundations.Content.Services
                 Operator = QueryOperator.Exist,
                 //ValueType = Common.Models.ValueType.False
             };
-        }
+        } 
         public async Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query)
         {
-            if (Query == null) Query = new RequestQuery();
-
-            //Query.Filters.Add(PublicPosts());
-            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, QueryOperator.Equals, "Public"));
-
-            if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.TargetThread))
-            {
-                Query.Filters.Add(Filter(Constants.Fields.SelfReply, true));
-            }
-            else
-            {
-                Query.Filters.Add(Filter(Constants.Fields.TargetThread, ElasticCondition.MustNot, QueryOperator.Exist));
-            }
-
-            Query.Filters = new List<QueryFilter>();
-            Query.Filters.Add(Filter(Constants.Fields.TargetThread, ElasticCondition.Must, QueryOperator.Exist));
-
-            Query.Filters.Add(new QueryFilter()
-            {
-                Name = Constants.Fields.TargetThread,
-                Value = "PAnb4Lw6NEi63Mlrw6Wz2g",
-                Keyword = true
-            });
-
-
-            var elasticQuery = CreateQuery(Query);
-      
-            elasticQuery = new QueryDescriptor<ContentPostDocument>();
-           
-            elasticQuery.MatchAll();
-         
-            elasticQuery.Terms(t => t
-                   .Field(Foundations.Content.Constants.Fields.threadId)
-                   .Terms(new TermsQueryField(new FieldValue[] { FieldValue.String("PAnb4Lw6NEi63Mlrw6Wz2g") })).Suffix("keyword")
-               );
-         
-            elasticQuery.Bool(x => x.Must(y => y.Exists(z => z.Field(Foundations.Content.Constants.Fields.TargetThread))));
-           
+            var elasticQuery = BuildSearchQuery(Query);
             //TODO: remove
             Query.ItemsPerPage = 100;
-
-
-
 
             int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
             if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
@@ -202,112 +167,10 @@ namespace Accelerate.Foundations.Content.Services
             return results.Documents.ToList();
         }
         
+        #endregion
+        #region Reviews
 
-        /*
-
-        // Tags
-        if (request.Filters.ContainsKey(Foundations.Content.Constants.Fields.Tags))
-        {
-            var tagValues = request
-               .Filters[Foundations.Content.Constants.Fields.Tags]
-               .Select(FieldValue.String).ToArray();
-            query
-               .Bool(b => b 
-                   .Filter(f => f
-                       .Bool(bb => bb
-                           .Must(m => m
-                               .Terms(t => t
-                                   .Field(Foundations.Content.Constants.Fields.Tags.ToLower())
-                                   .Terms(new TermsQueryField(tagValues))
-                               )
-                           )
-                       )
-                    )
-                );
-        }
-
-        if (request.Filters.ContainsKey(Foundations.Content.Constants.Fields.Threads))
-        {
-            var tagValues = request
-               .Filters[Foundations.Content.Constants.Fields.Threads]
-               .Select(FieldValue.String).ToArray();
-            query
-               .Bool(b => b
-                   .Filter(f => f
-                       .Bool(bb => bb
-                           .Must(m => m
-                               .Terms(t => t
-                                   .Field(Foundations.Content.Constants.Fields.TargetThread)
-                                   .Terms(new TermsQueryField(tagValues)).Suffix("keyword")
-                               )
-                           )
-                       )
-                    )
-                );
-        }
-
-        if (request.Filters.ContainsKey(Foundations.Content.Constants.Fields.TargetThread))
-        {
-            var threadValues = request
-                .Filters[Foundations.Content.Constants.Fields.TargetThread]
-                .Select(FieldValue.String).ToArray();
-
-            query
-                .Bool(b => b
-                /*
-                   .Filter(f => f
-                       .Bool(bb => bb
-                           .Must(m => m
-                               .Terms(t => t
-                                   .Field(Foundations.Content.Constants.Fields.TargetThread)
-                                   .Terms(new TermsQueryField(threadValues)).Suffix("keyword")
-                               )
-                               .Term(t => t
-                                   .Field(Foundations.Content.Constants.Fields.SelfReply)
-                                   .Value(0)
-                               )
-                           )
-                        )
-                    )
-               */
-            /*
-               .Should(f => f
-                   .Term(t => t
-                       .Field(Foundations.Content.Constants.Fields.SelfReply)
-                       .Value(FieldValue.Boolean(false))
-                   )
-                   .Terms(t => t
-                       .Field(Foundations.Content.Constants.Fields.TargetThread)
-                       .Terms(new TermsQueryField(threadValues)).Suffix("keyword")
-                   ) 
-               )
-
-            .Must(m => m
-                .Terms(t => t
-                    .Field(Foundations.Content.Constants.Fields.TargetThread)
-                    .Terms(new TermsQueryField(threadValues)).Suffix("keyword")
-                )
-                .Term(t => t
-                    .Field(Foundations.Content.Constants.Fields.SelfReply)
-                    .Value(FieldValue.Boolean(false))
-                )
-            )
-
-            .Term(x => 
-                x.SelfReply,
-                FieldValue.Boolean(false)
-            ) 
-            )
-            }
-            else
-            {
-                //query.Bool(x => x.MustNot(y => y.Exists(z => z.Field(Foundations.Content.Constants.Fields.TargetThread))));
-            }
-                    */
-            #endregion
-            #region Reviews
-
-            public async Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query)
+        public async Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query)
         {
             var elasticQuery = GetUserReviewsQuery(Query);
             int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
@@ -333,6 +196,68 @@ namespace Accelerate.Foundations.Content.Services
             }
             return query;
         }
+        #endregion
+
+        #region Channels
+
+        public async Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query)
+        {
+            var elasticQuery = GetChannelsQuery(Query);
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * Query.Page;
+            var results = await Search(elasticQuery, skip, take);
+            if (!results.IsValidResponse || !results.IsSuccess())
+            {
+                return new List<ContentChannelDocument>();
+            }
+            return results.Documents.ToList();
+        }
+        private QueryDescriptor<ContentChannelDocument> GetChannelsQuery(RequestQuery request)
+        {
+            var query = new QueryDescriptor<ContentChannelDocument>();
+            if (request.Filters != null && request.Filters.Any())
+            {
+                query.MatchAll();
+                query.Term(x =>
+                    x.UserId.Suffix("keyword"),
+                    request.Filters.FirstOrDefault(x => x.Name == Foundations.Content.Constants.Fields.UserId)
+                );
+            }
+            return query;
+        }
+
+        public override QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query)
+        {
+
+            if (Query == null) Query = new RequestQuery();
+
+            //Query.Filters.Add(PublicPosts());
+            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            // If searching for threads
+            if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.TargetThread))
+            {
+                //Filter any post where the poster is replying to themselves from the results
+                Query.Filters.Add(Filter(Constants.Fields.SelfReply, false));
+            }
+            else
+            {
+                Query.Filters.Add(Filter(Constants.Fields.TargetThread, ElasticCondition.MustNot, QueryOperator.Exist));
+            }
+
+            // For any multi-select, apply the filter condition to each field
+            if (Query.Filters.Any(x => x.Values != null && x.Values.Count > 0))
+            {
+                foreach (var filter in Query.Filters.Where(x => x.Values != null && x.Values.Count > 0))
+                {
+                    filter.Condition = ElasticCondition.Filter;
+                }
+            }
+            return CreateQuery(Query);
+        }
+
+
         #endregion
     }
 }

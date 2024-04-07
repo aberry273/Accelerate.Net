@@ -66,6 +66,13 @@ namespace Accelerate.Features.Content.Controllers.Api
             var docs = await _searchService.SearchPosts(query);
             return Ok(docs);
         }
+        [Route("Channels")]
+        [HttpPost]
+        public async Task<IActionResult> SearchChannels([FromBody] RequestQuery query)
+        {
+            var docs = await _searchService.SearchPosts(query);
+            return Ok(docs);
+        }
         [Route("Index")]
         [HttpDelete]
         public async Task<IActionResult> DeleteIndex()

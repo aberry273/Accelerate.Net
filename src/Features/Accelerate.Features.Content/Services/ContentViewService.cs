@@ -8,7 +8,7 @@ namespace Accelerate.Features.Content.Services
 {
     public class ContentViewService : IContentViewService
     {
-        public AjaxForm CreatePostForm(AccountUser user)
+        public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null)
         {
             var model = new AjaxForm()
             {
@@ -37,6 +37,19 @@ namespace Accelerate.Features.Content.Services
                     }
                 }
             };
+            if(channel != null )
+            {
+                model.Fields.Add(
+                    new FormField()
+                    {
+                        Name = "TargetChannel",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = channel.Id,
+                    });
+            }
             return model;
         }
         public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post)
@@ -98,7 +111,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "Tags",
+                        Name = "TagItems",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
@@ -128,6 +141,52 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
 
+        public ModalForm CreateModalChannelForm(AccountUser user)
+        {
+            var model = new ModalForm();
+            model.Title = "Create channel";
+            model.Text = "Test form text";
+            model.Target = "modal-create-channel";
+            model.Form = CreateChannelForm(user);
+            return model;
+        }
+        public AjaxForm CreateChannelForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = "https://localhost:7220/api/contentchannel",
+                Type = PostbackType.POST,
+                Event = "channel:create:modal",
+                Label = "Create",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Name",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Channel name",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Description",
+                        FieldType = FormFieldTypes.textarea,
+                        Placeholder = "Describe what content this channel is for",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
+                    }
+                }
+            };
+            return model;
+        }
         public ModalForm CreateModalEditReplyForm(AccountUser user)
         {
             var model = new ModalForm();

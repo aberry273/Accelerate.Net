@@ -1,6 +1,8 @@
 ﻿using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.Core.MSearch;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
@@ -11,6 +13,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks; 
 
@@ -45,7 +48,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         
         public async Task<CreateIndexResponse> CreateIndex()
         {
-            return await _client.Indices.CreateAsync(
+            return await _client.Indices.CreateAsync<T>(
                 _indexName
                 ,x => x.Mappings(_mapping).Settings(_settings)
           );
@@ -188,7 +191,69 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         // Overrides
         public abstract Task<SearchResponse<T>> Find(RequestQuery<T> query);
+        //public abstract Task<SearchResponse<T>> GetAggregates(QueryDescriptor<T> query);
         public abstract Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query);
+        /*
+        public async Task<SearchResponse<T>> GetAggregatesBase(RequestQuery<T> request)
+        {
+            //Create if not existing
+            await CreateIndex();
+            int take = request.ItemsPerPage > 0 ? request.ItemsPerPage : 10;
+            int skip = take * request.Page;
+            var query = this.CreateQuery(request);
+            //
+            Dictionary<string, IAggregate> aggregateDictionary = 
+                request.Filters.
+                ToDictionary(x => x.Name,
+                    x => {
+                        var agg = new AggregationDescriptor<T>();
+                        agg.Terms(x.Name, t => t
+                                .Field($"{x.Name}.keyword")
+                                .Size(10000)
+                            );
+
+                        var a = new TermsAggregate<T>()
+                        {
+                            Buckets = new List<TermsBucket<T>>(agg.Terms)
+                        };
+                        return a;
+                    }
+                );
+            var aggregates =
+                request.Filters.
+                Select(x => {
+                    var agg = new AggregationDescriptor<T>();
+                    agg.Terms(x.Name, t => t
+                            .Field($"{x.Name}.keyword")
+                            .Size(10000)
+                        );
+                    return agg;
+                })
+                .ToArray();
+
+
+            var aggregateTerms =
+                request.Filters.
+                Select(x => {
+                    var agg = new TermsAggregationDescriptor<T>();
+                    agg.Field($"{x.Name}.keyword");
+                    agg.Size(10000);
+                    return agg;
+                })
+                .ToArray();
+            var agg = new TermsAggregationDescriptor<T>();
+            var aggregate = new AggregationDictionary();
+             
+               
+             
+            return await _client.SearchAsync<T>(s => s
+                .Index(_indexName)
+                .Query(query)
+                .Aggregations(aggregateDictionary)
+                
+            );
+        }
+        */
 
         // Custom 
         public FieldValue GetFieldValue(QueryFilter filter, object? value)
@@ -216,43 +281,31 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             return GetFieldValue(filter, filter.Value);
         }
 
-        public Query CreateTermsQuery(QueryFilter filter)
+        public Query? CreateTermsQuery(QueryFilter filter)
         {
-            var name = filter.Name;
+            if (filter.Values.Count == 0) return null;
+            var name = filter.Name.ToCamelCase();
+            if (filter.Keyword) { name += ".keyword"; }
             var values = filter.Values
                     .Select(x => GetFieldValue(filter, x))
                     .ToArray();
-            /*
-            var tq = new TermQueryDescriptor<ContentPostDocument>(doc =>
-                values.Contains(doc.TargetThread));
-            */
 
-            //                    .Name(name).Value(new TermsQueryField(threadValues)).Suffix("keyword"));
-            /*
-
-                .Field(Foundations.Content.Constants.Fields.TargetThread)
-                .Terms(new TermsQueryField(threadValues)).Suffix("keyword")
-            */
             var q = new TermsQuery()
             {
                 Field = new Field(name),
                 Terms = new TermsQueryField(values),
             };
-            if (filter.Keyword)
-            {
-                q.Terms.Suffix("keyword");
-            }
             return q;
         }
-        public Query CreateTermQuery(QueryFilter filter)
+        public Query? CreateTermQuery(QueryFilter filter)
         {
-            var name = filter.Name;
+            var name = filter.Name.ToCamelCase();
+            //Udpate mappings to include keyword analyzer instead
+            if (filter.Keyword) { name += ".keyword"; }
+
             var field = new Field(name);
-          
-            field.Suffix("keyword");
             var tq = new TermQuery(field)
             {
-                Field = new Field(name),
                 Value = GetFieldValue(filter),
                 CaseInsensitive = false
             };
@@ -262,9 +315,9 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             }
             return tq;
         }
-        public Query CreatExistsQuery(QueryFilter filter)
+        public Query? CreatExistsQuery(QueryFilter filter)
         {
-            var name = filter.Name;
+            var name = filter.Name.ToCamelCase();
             var field = new Field(name);
             var q = new ExistsQuery();
             q.Field = field;
@@ -276,6 +329,15 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             return new QueryFilter()
             {
                 Name = field,
+                Value = value
+            };
+        }
+        public QueryFilter Filter(string field, ElasticCondition cond, object? value)
+        {
+            return new QueryFilter()
+            {
+                Name = field,
+                Condition = cond,
                 Value = value
             };
         }
@@ -352,52 +414,38 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
             var filter = GetQueries(request, ElasticCondition.Filter);
             if (filter.Any()) query.Bool(x => x.Filter(filter));
-
-            /*
-            var threadValues = request
-                .Filters.FirstOrDefault(x => x.Name==Foundations.Content.Constants.Fields.TargetThread)             
-                .Values.Select(y=> FieldValue.String(y.ToString())).ToArray();
-
-            query.Bool(b => b 
-                .Must(m => m
-                    .Terms(t => t
-
-                    .Field(Foundations.Content.Constants.Fields.TargetThread)
-                    .Terms(new TermsQueryField(threadValues)).Suffix("keyword")
-)
-               ));
-            */
-            /*
-            foreach(var filter in request.Filters)
-            {
-                var name = filter.Name;
-                if (filter.Value != null)
-                {
-                    var value = FieldValue.String(filter.Value.ToString());
-
-                    query.Term(t => t
-                        .Field(name)
-                        .Value(value)
-                        //.Suffix("keyword")
-                    );
-                }
-                else if (filter.Values != null && filter.Values.Count > 0)
-                {
-                    var values = filter.Values.Select(x => FieldValue.String(x.ToString())).ToArray();
-
-                    query.Terms(t => t
-                        .Field(name)
-                        .Terms(new TermsQueryField(values))
-                        //.Suffix("keyword")
-                    );
-                }
-                else if (filter.Operator == QueryOperator.Null)
-                {
-                    query.Bool(x => x.MustNot(y => y.Exists(z => z.Field(name).Suffix("keyword"))));
-                }
-            }
-            */
+             
             return query;
         }
+
+        public virtual QueryDescriptor<T> BuildSearchQuery(RequestQuery Query)
+        {
+            if (Query == null) Query = new RequestQuery();
+
+            return CreateQuery(Query);
+        }
+        /// <summary>
+        /// Main search query that uses the BuildSearchQuery function to apply document logic search for ElasticSearch
+        /// </summary>
+        /// <param name="Query"></param>
+        /// <returns></returns>
+        public async Task<List<T>> Search(RequestQuery Query)
+        {
+            var elasticQuery = BuildSearchQuery(Query);
+            //TODO: remove
+            Query.ItemsPerPage = 100;
+
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Constants.Search.DefaultPerPage;
+            if (take > Constants.Search.MaxQueryable) take = Constants.Search.MaxQueryable;
+            int skip = take * Query.Page;
+
+            var results = await Search(elasticQuery, skip, take);
+            if (!results.IsValidResponse && !results.IsSuccess())
+            {
+                return new List<T>();
+            }
+            return results.Documents.ToList();
+        }
+
     }
 }

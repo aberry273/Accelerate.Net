@@ -1,0 +1,57 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model ChannelsPage
+
+<div class="grid" x-data>
+    <!-- Channels panel -->
+    <div>
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Browse all</h1>
+                    </hgroup>
+                </header>
+            </ul>
+            <ul>
+                <div x-data="dropdown(@JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown))"></div>
+                <!--Filters-->
+                <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
+            </ul>
+        </nav>
+        <article>
+            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+        </article>
+        <!--Feed-->
+        <div x-data="_contentPostsManager({
+                feed: $store.feedFilters.current,
+                sourceUrl: 'https://localhost:7220/api/contentpost',
+                reviewUrl: 'https://localhost:7220/api/contentpostreview',
+                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
+                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
+                threadUrl: 'https://localhost:7220/content/thread',
+                event: 'post:created',
+                userId: '@Model.UserId',
+                items: [],
+                channel: 'all',
+                })">
+            <div x-data="appListPost"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Create channel -->
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
+
+<!-- Edit post -->
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+
+<!-- Delete post -->
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+
+<!-- Share post -->
+<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>

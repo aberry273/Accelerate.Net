@@ -24,7 +24,6 @@
         }
         public QueryFilter()
         {
-
         }
         public ElasticCondition Condition { get; set; } = ElasticCondition.Must;
         public required string Name { get; set; }
@@ -32,7 +31,7 @@
         public QueryOperator Operator { get; set; } = QueryOperator.Equals;
         public List<object>? Values { get; set; }
         public object? Value { get; set; }
-        public bool Keyword { get; set; } = false;
+        public bool Keyword { get; set; } = true;
     }
     public class RequestQuery<T> : RequestQuery
     {

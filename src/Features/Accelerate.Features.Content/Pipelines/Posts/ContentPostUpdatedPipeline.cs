@@ -12,6 +12,7 @@ using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Foundations.Websockets.Models;
 using Elastic.Clients.Elasticsearch.Ingest;
+using Accelerate.Foundations.Content.Hydrators;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
@@ -40,7 +41,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
             var indexModel = new ContentPostDocument();
-            args.Value.HydrateDocument(indexModel, user?.Source?.Username);
+            args.Value.Hydrate(indexModel, user?.Source?.Username);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
             // If a reply
             if (args.Value.ParentId == null) return;

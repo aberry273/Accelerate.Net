@@ -30,7 +30,7 @@ namespace Accelerate.Foundations.Account.Services
                 CreateQuery(query),
                 skip,
                 take);
-        }
+        } 
 
         public override Task<SearchResponse<AccountUserDocument>> GetAggregates(RequestQuery<AccountUserDocument> query)
         {

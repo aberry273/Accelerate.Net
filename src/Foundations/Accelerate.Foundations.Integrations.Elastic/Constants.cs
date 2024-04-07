@@ -8,6 +8,11 @@ namespace Accelerate.Foundations.Integrations.Elastic
 {
     public struct Constants
     {
+        public struct Search
+        {
+            public const int MaxQueryable = 100;
+            public const int DefaultPerPage = 10;
+        }
         public struct Fields
         {
             public const string CreatedOn = "createdOn";

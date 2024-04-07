@@ -12,6 +12,7 @@ namespace Accelerate.Features.Content
         {
             public const string ContentPostsHubName = "ContentPosts";
             public const string ContentPostReviewsHubName = "ContentPostReviews";
+            public const string ContentChannelsHubName = "ContentChannels";
         }
     }
 }

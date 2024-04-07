@@ -71,6 +71,7 @@ export default function (data = {}) {
                 if (self.form == null || self.form.fields == null) return;
                 for (var i = 0; i < self.form.fields.length; i++) {
                     const field = self.form.fields[i].name.toLowerCase();
+                    if (data.item == null) continue;
                     if (data.item[field] != null) {
                         self.form.fields[i].value = data.item[field]
                     }

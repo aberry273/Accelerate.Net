@@ -16,6 +16,7 @@ using Elastic.Clients.Elasticsearch.Ingest;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Accelerate.Foundations.Content.Hydrators;
 using System;
 
 namespace Accelerate.Features.Content.Pipelines.Reviews
@@ -53,7 +54,7 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
         public async Task IndexDocument(IPipelineArgs<ContentPostReviewEntity> args)
         {
             var indexModel = new ContentPostReviewDocument();
-            args.Value.HydrateDocument(indexModel);
+            args.Value.Hydrate(indexModel);
             await _elasticService.Index(indexModel);
 
             var docArgs = new PipelineArgs<ContentPostReviewDocument>()

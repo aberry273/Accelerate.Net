@@ -13,11 +13,14 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 namespace Accelerate.Foundations.Content.Services
 {
     public interface IContentPostElasticService
-    { 
+    {
+        Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query);
         Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query);
+        Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query);
+
+        QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query);
         Query CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
         Task<DeleteIndexResponse> DeleteIndex();
-        Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query);
     }
 }

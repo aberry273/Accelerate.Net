@@ -3,37 +3,34 @@
 @using Accelerate.Features.Content.Models.Views
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
-@model FeedPage
+@model ChannelPage
 
-<div class="grid">
-    <!-- Feed panel -->
+<div class="grid" x-data>
+    <!-- Channels panel -->
     <div>
         <nav>
             <ul>
                 <header>
                     <hgroup>
-                        <h1>Your feeds</h1>
-                        <p>Create a new feed</p>
+                        <h1>@Model.Item.Name</h1>
                     </hgroup>
                 </header>
             </ul>
             <ul>
+                <div x-data="dropdown(@JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown))"></div>
                 <!--Filters-->
-                <details class="dropdown">
-                    <summary role="button" class="outline" x-text="$store.feedFilters.current">
-                    </summary>
-                    <ul>
-                        <template x-for="tab in $store.feedFilters.items">
-                            <button class="flat" @@click="$store.feedFilters.setTab(tab)" :class="$store.feedFilters.current == tab ? 'selected' : ''" x-text="tab"></button>
-                        </template>
-                    </ul>
-                </details>
-                <button class="material-icons flat">add</button>
+                <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
             </ul>
         </nav>
         <article>
-            <div x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
         </article>
+
+        <!--Filter-->
+        <div x-data="appNavFilters({
+            filters: @JsonSerializerHelper.SerializeObject(Model.Filters)
+        })"></div>
+
         <!--Feed-->
         <div x-data="_contentPostsManager({
                 feed: $store.feedFilters.current,
@@ -42,6 +39,7 @@
                 fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
                 fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
                 threadUrl: 'https://localhost:7220/content/thread',
+                targetChannel: '@Model.Item.Id',
                 event: 'post:created',
                 userId: '@Model.UserId',
                 items: [],
@@ -53,8 +51,10 @@
 </div>
 
 <!-- Modals -->
+<!-- Create channel -->
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
+
 <!-- Edit post -->
-<!-- Delete post -->
 <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
 
 <!-- Delete post -->

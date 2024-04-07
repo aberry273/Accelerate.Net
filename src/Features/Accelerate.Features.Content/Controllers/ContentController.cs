@@ -25,7 +25,8 @@ namespace Accelerate.Features.Content.Controllers
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        IElasticService<ContentPostDocument> _searchService;
+        IElasticService<ContentPostDocument> _postSearchService;
+        IElasticService<ContentChannelDocument> _channelSearchService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
         public ContentController(
@@ -33,12 +34,14 @@ namespace Accelerate.Features.Content.Controllers
             IContentViewService contentViewService,
             IEntityService<ContentPostEntity> postService,
             IElasticService<ContentPostDocument> searchService,
+            IElasticService<ContentChannelDocument> channelService,
             UserManager<AccountUser> userManager) : base(service)
         {
             _userManager = userManager;
             _contentViewService = contentViewService;
             _contentService = service;
-            _searchService = searchService;
+            _postSearchService = searchService;
+            _channelSearchService = channelService;
         }
         private BasePage CreateBaseContent(AccountUser user)
         {
@@ -50,7 +53,7 @@ namespace Accelerate.Features.Content.Controllers
         }
 
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Feed()
+        public async Task<IActionResult> Channels()
         {
             var user = await _userManager.GetUserAsync(this.User);
             if(user == null)
@@ -58,12 +61,119 @@ namespace Accelerate.Features.Content.Controllers
                 return RedirectToAction("Index", "Account");
             }
             var model = CreateBaseContent(user);
-            var viewModel = new FeedPage(model);
+            var viewModel = new ChannelsPage(model);
+            viewModel.ChannelsDropdown = new NavigationGroup()
+            {
+                Title = "All channels",
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Text = "All",
+                        Href = this.Url.ActionLink("Channels")
+                    }
+                }
+            };
+            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            if(channels != null && channels.IsValidResponse)
+            {
+                var channelItems = channels.Documents.Select(x => new NavigationItem()
+                {
+                    Text = x.Name,
+                    Href = "/Content/Channel/" + x.Id
+                });
+                viewModel.ChannelsDropdown.Items.AddRange(channelItems);
+            }
+
             viewModel.UserId = user.Id;
             viewModel.FormCreateReply = _contentViewService.CreatePostForm(user);
+            viewModel.ModalCreateChannel = _contentViewService.CreateModalChannelForm(user);
             viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
             return View(viewModel);
+        }
+
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Channel([FromRoute] Guid id)
+        {
+            var user = await _userManager.GetUserAsync(this.User);
+            if (user == null)
+            {
+                return RedirectToAction("Index", "Account");
+            }
+            var model = CreateBaseContent(user);
+
+            var response = await _channelSearchService.GetDocument<ContentChannelDocument>(id.ToString());
+            var item = response.Source;
+
+            var viewModel = new ChannelPage(model);
+            viewModel.ChannelsDropdown = new NavigationGroup()
+            {
+                Title = item.Name,
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Text = "All"
+                    }
+                }
+            };
+            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            if (channels != null && channels.IsValidResponse)
+            {
+                var channelItems = channels.Documents.Select(x => new NavigationItem()
+                {
+                    Text = x.Name,
+                    Href = "/Content/Channels/" + x.Id
+                });
+                viewModel.ChannelsDropdown.Items.AddRange(channelItems);
+            }
+            if (item == null)
+            {
+                viewModel.Item = new ContentChannelDocument()
+                {
+                    Name = "TODO: REPLACE WITH 404 PAGE"
+                };
+            }
+            else
+            {
+                viewModel.Item = item;
+            }
+
+            // Add filters
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, item.Id)
+            };
+            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
+             
+            var aggResponse = await _postSearchService.GetAggregates(requestFilters);
+            var tags = new List<string>();
+            var threads = new List<string>();
+            if (aggResponse.IsValidResponse)
+            {
+                //tags
+                tags = GetValuesFromAggregate(aggResponse.Aggregations, "tags");
+                //threads
+                threads = GetValuesFromAggregate(aggResponse.Aggregations, "threadIds");
+            }
+
+            viewModel.Filters = CreateNavigationFilters(tags, threads);
+
+
+            viewModel.UserId = user.Id;
+            viewModel.FormCreateReply = _contentViewService.CreatePostForm(user, item);
+            viewModel.ModalCreateChannel = _contentViewService.CreateModalChannelForm(user);
+            viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
+            viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
+            return View(viewModel);
+        }
+        private QueryDescriptor<ContentChannelDocument> GetUserChannelsQuery(AccountUser user)
+        {
+            var query = new QueryDescriptor<ContentChannelDocument>();
+            query.MatchAll();
+            query.Term(x => x.UserId.Suffix("keyword"), user.Id.ToString());
+            return query;
         }
 
         [HttpGet]
@@ -78,7 +188,7 @@ namespace Accelerate.Features.Content.Controllers
             }
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
-            var response = await _searchService.GetDocument<ContentPostDocument>(id.ToString());
+            var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
             viewModel.UserId = user.Id;
             viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
             var item = response.Source;
@@ -94,14 +204,20 @@ namespace Accelerate.Features.Content.Controllers
                 viewModel.Item = item;
             }
             // Get replies
-            var replies = await _searchService.Search(GetRepliesQuery(item), 0, 1000);
+            var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
             viewModel.Replies = replies.Documents.ToList();
             viewModel.FormCreateReply = _contentViewService.CreateReplyForm(user, item);
             viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
 
-            var aggQuery = new RequestQuery<ContentPostDocument>();
-            var aggResponse = await _searchService.GetAggregates(aggQuery);
+            // Add filters
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, item.Id)
+            };
+            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
+
+            var aggResponse = await _postSearchService.GetAggregates(requestFilters);
             var tags = new List<string>();
             var threads = new List<string>();
             if (aggResponse.IsValidResponse)

@@ -45,7 +45,6 @@ export default function (data) {
         setHtml(data) {
             // make ajax request
             const html = `
-          <!--Feed-->
           <nav>
             <!--Filters-->
             <ul>

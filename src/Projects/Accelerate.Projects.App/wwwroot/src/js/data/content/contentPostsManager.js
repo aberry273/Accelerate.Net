@@ -36,16 +36,15 @@ export default function (data) {
             await this.setupPostWebsockets();
             await this.setupReviewWebsockets();
 
-            var postData = (data.targetThread)
-                ? { targetThread: [data.targetThread] }
-                : {};
-            const postQuery = this.createQueryRequest(postData);
+            let queryData = {}
+            if (data.targetThread) queryData.targetThread = [data.targetThread]
+            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+            const postQuery = this.createQueryRequest(queryData);
             if (postQuery != null)
                 await this.fetchPosts(postQuery);
 
             if (data.userId) {
-                var reviewData = { userId: [data.userId] };
-                const reviewQuery = this.createQueryRequest(reviewData);
+                const reviewQuery = this.createQueryRequest({ userId: [data.userId] });
                 if (reviewQuery != null)
                     await this.fetchReviews(reviewQuery);
             }
@@ -154,7 +153,8 @@ export default function (data) {
                     name: key,
                     //Equals, NotEquals, Null, NotNull, GreaterThan, LessThan
                     Operator: 'Equals',
-                    Values: data[key]
+                    Values: data[key],
+                    Condition: 'Filter',
                 }
                 filters.push(filter)
             }

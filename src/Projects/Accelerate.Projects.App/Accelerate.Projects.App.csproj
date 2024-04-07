@@ -8,9 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\src - Copy %282%29\**" />
+    <Compile Remove="wwwroot\src - Copy\**" />
     <Compile Remove="wwwroot\src\js\components\lists\**" />
+    <Content Remove="wwwroot\src - Copy %282%29\**" />
+    <Content Remove="wwwroot\src - Copy\**" />
     <Content Remove="wwwroot\src\js\components\lists\**" />
+    <EmbeddedResource Remove="wwwroot\src - Copy %282%29\**" />
+    <EmbeddedResource Remove="wwwroot\src - Copy\**" />
     <EmbeddedResource Remove="wwwroot\src\js\components\lists\**" />
+    <None Remove="wwwroot\src - Copy %282%29\**" />
+    <None Remove="wwwroot\src - Copy\**" />
     <None Remove="wwwroot\src\js\components\lists\**" />
   </ItemGroup>
 
@@ -88,52 +96,6 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\src - Copy (2)\css\app.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\components\_amount.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\components\_input-amount.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\components\_invoice-table.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\components\_priority-range.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\layout\_body.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\postcss.config.js" />
-    <None Include="wwwroot\src - Copy (2)\css\theme\_dark.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\theme\_light.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\theme\_schemes.scss" />
-    <None Include="wwwroot\src - Copy (2)\css\theme\_styles.scss" />
-    <None Include="wwwroot\src - Copy (2)\favicon\site.webmanifest" />
-    <None Include="wwwroot\src - Copy (2)\js\bindings\button.js" />
-    <None Include="wwwroot\src - Copy (2)\js\bindings\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\alerts\snackbar.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\cards\card.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\content\header.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\forms\fields\input.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\forms\fields\textArea.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\lists\feed.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\navigation\appbar.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\navigation\footer.js" />
-    <None Include="wwwroot\src - Copy (2)\js\components\navigation\navbar.js" />
-    <None Include="wwwroot\src - Copy (2)\js\data\content\contentPostsManager.js" />
-    <None Include="wwwroot\src - Copy (2)\js\data\dropdown.js" />
-    <None Include="wwwroot\src - Copy (2)\js\data\html.js" />
-    <None Include="wwwroot\src - Copy (2)\js\data\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\directives\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\directives\log.js" />
-    <None Include="wwwroot\src - Copy (2)\js\directives\reactiveLog.js" />
-    <None Include="wwwroot\src - Copy (2)\js\directives\render.js" />
-    <None Include="wwwroot\src - Copy (2)\js\directives\uppercase.js" />
-    <None Include="wwwroot\src - Copy (2)\js\init.js" />
-    <None Include="wwwroot\src - Copy (2)\js\magics\fetch.js" />
-    <None Include="wwwroot\src - Copy (2)\js\magics\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\magics\now.js" />
-    <None Include="wwwroot\src - Copy (2)\js\magics\render.js" />
-    <None Include="wwwroot\src - Copy (2)\js\minimal-theme-switcher.js" />
-    <None Include="wwwroot\src - Copy (2)\js\stores\darkmode.js" />
-    <None Include="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
-    <None Include="wwwroot\src - Copy (2)\js\stores\index.js" />
-    <None Include="wwwroot\src - Copy (2)\js\stores\tabs.js" />
   </ItemGroup>
 
   <ItemGroup>

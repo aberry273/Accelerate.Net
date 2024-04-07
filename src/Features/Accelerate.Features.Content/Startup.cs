@@ -1,6 +1,7 @@
 ﻿using Accelerate.Features.Content.Consumers;
 using Accelerate.Features.Content.EventBus;
 using Accelerate.Features.Content.Hubs;
+using Accelerate.Features.Content.Pipelines.Channels;
 using Accelerate.Features.Content.Pipelines.Posts;
 using Accelerate.Features.Content.Pipelines.Reviews;
 using Accelerate.Features.Content.Services;
@@ -35,6 +36,7 @@ namespace Accelerate.Features.Content
         {
             app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostReviewDocument>>($"/{Constants.Settings.ContentPostReviewsHubName}");
+            app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
@@ -43,6 +45,7 @@ namespace Accelerate.Features.Content
 
             services.AddTransient<BaseHub<ContentPostDocument>, ContentPostHub>();
             services.AddTransient<BaseHub<ContentPostReviewDocument>, ContentPostReviewHub>();
+            services.AddTransient<BaseHub<ContentChannelDocument>, ContentChannelHub>();
             //AddBus<IContentPostBus, ContentPostEntity>(typeof(IContentPostBus), typeof(ContentPostEntity));// (IContentBus, ContentPostEntity);
 
             /*
@@ -121,6 +124,44 @@ namespace Accelerate.Features.Content
 
                         e.ConfigureConsumer<DataDeleteConsumer<ContentPostReviewEntity, IContentReviewBus>>(context);
                         e.ConfigureConsumer<DataDeleteCompleteConsumer<ContentPostReviewEntity>>(context);
+                    });
+                });
+            });
+
+
+            // Channels
+            services.AddTransient<IDataCreateEventPipeline<ContentChannelEntity>, ContentChannelCreatedPipeline>();
+            services.AddTransient<IDataCreateCompletedEventPipeline<ContentChannelEntity>, ContentChannelCreateCompletedPipeline>();
+            services.AddTransient<IDataUpdateEventPipeline<ContentChannelEntity>, ContentChannelUpdatedPipeline>();
+            services.AddTransient<IDataUpdateCompletedEventPipeline<ContentChannelEntity>, ContentChannelUpdatedCompletedPipeline>();
+            services.AddTransient<IDataDeleteEventPipeline<ContentChannelEntity>, ContentChannelDeletedPipeline>();
+            services.AddTransient<IDataDeleteCompletedEventPipeline<ContentChannelEntity>, ContentChannelDeleteCompletedPipeline>();
+
+            services.AddMassTransit<IContentChannelBus>(x =>
+            {
+                // Posts
+                x.AddConsumer<DataCreateConsumer<ContentChannelEntity, IContentChannelBus>>();
+                x.AddConsumer<DataCreateCompleteConsumer<ContentChannelEntity>>();
+                x.AddConsumer<DataUpdateConsumer<ContentChannelEntity, IContentChannelBus>>();
+                x.AddConsumer<DataUpdateCompleteConsumer<ContentChannelEntity>>();
+                x.AddConsumer<DataDeleteConsumer<ContentChannelEntity, IContentChannelBus>>();
+                x.AddConsumer<DataDeleteCompleteConsumer<ContentChannelEntity>>();
+                // Entities
+
+
+                x.UsingInMemory((context, cfg) =>
+                {
+                    cfg.ReceiveEndpoint("event-listener", e =>
+                    {
+                        // Content Posts
+                        e.ConfigureConsumer<DataCreateConsumer<ContentChannelEntity, IContentChannelBus>>(context);
+                        e.ConfigureConsumer<DataCreateCompleteConsumer<ContentChannelEntity>>(context);
+
+                        e.ConfigureConsumer<DataUpdateConsumer<ContentChannelEntity, IContentChannelBus>>(context);
+                        e.ConfigureConsumer<DataUpdateCompleteConsumer<ContentChannelEntity>>(context);
+
+                        e.ConfigureConsumer<DataDeleteConsumer<ContentChannelEntity, IContentChannelBus>>(context);
+                        e.ConfigureConsumer<DataDeleteCompleteConsumer<ContentChannelEntity>>(context);
                     });
                 });
             });

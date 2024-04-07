@@ -21,6 +21,7 @@ using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.Content.Hydrators;
 
 namespace Accelerate.Features.Content.Pipelines.Reviews
 {
@@ -61,7 +62,7 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
         public async Task IndexDocument(IPipelineArgs<ContentPostReviewEntity> args)
         {
             var indexModel = new ContentPostReviewDocument();
-            args.Value.HydrateDocument(indexModel);
+            args.Value.Hydrate(indexModel);
             var result = await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
             // Run directly in same function as reviews are simple types and will not be extended via pipelines
             if(result.IsValidResponse)
