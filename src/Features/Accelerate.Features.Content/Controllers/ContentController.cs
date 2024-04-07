@@ -56,24 +56,11 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> Channels()
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if(user == null)
-            {
-                return RedirectToAction("Index", "Account");
-            }
+            if (user == null) return RedirectToAction("Index", "Account");
             var model = CreateBaseContent(user);
             var viewModel = new ChannelsPage(model);
-            viewModel.ChannelsDropdown = new NavigationGroup()
-            {
-                Title = "All channels",
-                Items = new List<NavigationItem>()
-                {
-                    new NavigationItem()
-                    {
-                        Text = "All",
-                        Href = this.Url.ActionLink("Channels")
-                    }
-                }
-            };
+            viewModel.ChannelsDropdown = _contentViewService.GetChannelsDropdown(this.Url.ActionLink("Channels"));
+
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
             if(channels != null && channels.IsValidResponse)
             {
@@ -97,69 +84,28 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> Channel([FromRoute] Guid id)
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if (user == null)
-            {
-                return RedirectToAction("Index", "Account");
-            }
+            if (user == null) return RedirectToAction("Index", "Account");
             var model = CreateBaseContent(user);
 
+            var viewModel = new ChannelPage(model);
             var response = await _channelSearchService.GetDocument<ContentChannelDocument>(id.ToString());
             var item = response.Source;
-
-            var viewModel = new ChannelPage(model);
-            viewModel.ChannelsDropdown = new NavigationGroup()
-            {
-                Title = item.Name,
-                Items = new List<NavigationItem>()
-                {
-                    new NavigationItem()
-                    {
-                        Text = "All"
-                    }
-                }
-            };
-            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
-            if (channels != null && channels.IsValidResponse)
-            {
-                var channelItems = channels.Documents.Select(x => new NavigationItem()
-                {
-                    Text = x.Name,
-                    Href = "/Content/Channels/" + x.Id
-                });
-                viewModel.ChannelsDropdown.Items.AddRange(channelItems);
-            }
-            if (item == null)
-            {
-                viewModel.Item = new ContentChannelDocument()
-                {
-                    Name = "TODO: REPLACE WITH 404 PAGE"
-                };
-            }
-            else
-            {
-                viewModel.Item = item;
-            }
-
+            
+            if (item == null) return RedirectToAction(nameof(ChannelNotFound)); 
+            else viewModel.Item = item; 
+            
+            var channelsResponse = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            viewModel.ChannelsDropdown = _contentViewService.GetChannelsDropdown(this.Url.ActionLink("Channels"), channelsResponse, item.Name);
+            
             // Add filters
             var filters = new List<QueryFilter>()
             {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, item.Id)
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, item.Id)
             };
             var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
              
             var aggResponse = await _postSearchService.GetAggregates(requestFilters);
-            var tags = new List<string>();
-            var threads = new List<string>();
-            if (aggResponse.IsValidResponse)
-            {
-                //tags
-                tags = GetValuesFromAggregate(aggResponse.Aggregations, "tags");
-                //threads
-                threads = GetValuesFromAggregate(aggResponse.Aggregations, "threadIds");
-            }
-
-            viewModel.Filters = CreateNavigationFilters(tags, threads);
-
+            viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
 
             viewModel.UserId = user.Id;
             viewModel.FormCreateReply = _contentViewService.CreatePostForm(user, item);
@@ -182,27 +128,18 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> Thread([FromRoute] Guid id)
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if (user == null)
-            {
-                return RedirectToAction("Index", "Account");
-            }
+            if (user == null) return RedirectToAction("Index", "Account");
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
+            
+            var item = response.Source;
+
+            if (item == null) return RedirectToAction(nameof(PostNotFound));
+            else viewModel.Item = item;
+
             viewModel.UserId = user.Id;
             viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
-            var item = response.Source;
-            if(item == null)
-            {
-                viewModel.Item = new ContentPostDocument()
-                {
-                    Content = "TODO: REPLACE WITH 404 PAGE"
-                };
-            }
-            else
-            {
-                viewModel.Item = item;
-            }
             // Get replies
             var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
             viewModel.Replies = replies.Documents.ToList();
@@ -218,75 +155,44 @@ namespace Accelerate.Features.Content.Controllers
             var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters };
 
             var aggResponse = await _postSearchService.GetAggregates(requestFilters);
-            var tags = new List<string>();
-            var threads = new List<string>();
-            if (aggResponse.IsValidResponse)
-            {
-                //tags
-                tags = GetValuesFromAggregate(aggResponse.Aggregations, "tags");
-                //threads
-                threads = GetValuesFromAggregate(aggResponse.Aggregations, "threadIds");
-            }
-
-            viewModel.Filters = CreateNavigationFilters(tags, threads);
+            viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
 
             return View(viewModel);
-        }
-
-        private List<string> GetValuesFromAggregate(AggregateDictionary aggregates, string key)
-        {
-            var agg = aggregates.FirstOrDefault(x => x.Key == key);
-            StringTermsAggregate vals = agg.Value as StringTermsAggregate;
-            var results = vals.Buckets.Select(x => x.Key.Value.ToString()).ToList();
-            return results;
-        }
-
-        private List<NavigationFilter> CreateNavigationFilters(List<string> tags, List<string> threads)
-        {
-            return new List<NavigationFilter>()
-            {
-                new NavigationFilter() {
-                    Name = "Reviews",
-                    FilterType = NavigationFilterType.Select,
-                    Values = new List<string>
-                    {
-                        "All", "Agrees", "Disagrees"
-                    }
-                },
-                new NavigationFilter() {
-                    Name = "Threads",
-                    FilterType = NavigationFilterType.Checkbox,
-                    Values = threads
-                },
-                new NavigationFilter() {
-                    Name = "Tags",
-                    FilterType = NavigationFilterType.Checkbox,
-                    Values = tags
-                },
-                new NavigationFilter() {
-                    Name = "Content",
-                    FilterType = NavigationFilterType.Checkbox,
-                    Values = new List<string>
-                    {
-                        "All", "Agrees", "Disagrees"
-                    }
-                },
-                new NavigationFilter() {
-                    Name = "Sort",
-                    FilterType = NavigationFilterType.Radio,
-                    Values = new List<string>
-                    {
-                        "All", "Agrees", "Disagrees"
-                    }
-                }
-            };
-        }
+        } 
+         
         private QueryDescriptor<ContentPostDocument> GetRepliesQuery(ContentPostDocument item)
         {
             var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
             query.Term(x => x.TargetThread.Suffix("keyword"), item.ThreadId.ToString());
             return query;
+        }
+        [HttpGet]
+        public async Task<IActionResult> ChannelNotFound()
+        {
+            var user = await _userManager.GetUserAsync(this.User);
+            if (user == null) return RedirectToAction("Index", "Account");
+            var model = CreateBaseContent(user);
+            var viewModel = new NotFoundPage(model);
+            viewModel.Title = "Channel not found";
+            viewModel.Description = "We are unable to retrieve this channel, this may have been deleted or made private.";
+            return NotFound(viewModel);
+        }
+        [HttpGet]
+        public async Task<IActionResult> PostNotFound()
+        {
+            var user = await _userManager.GetUserAsync(this.User);
+            if (user == null) return RedirectToAction("Index", "Account");
+            var model = CreateBaseContent(user);
+            var viewModel = new NotFoundPage(model);
+            viewModel.Title = "Post not found";
+            viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
+            return NotFound(viewModel);
+        }
+        [HttpGet]
+        public IActionResult NotFound(NotFoundPage viewModel)
+        {
+            return View("~/Views/Content/NotFound.cshtml", viewModel);
         }
 
     }

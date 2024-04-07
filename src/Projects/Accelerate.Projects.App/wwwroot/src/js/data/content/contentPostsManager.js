@@ -36,9 +36,7 @@ export default function (data) {
             await this.setupPostWebsockets();
             await this.setupReviewWebsockets();
 
-            let queryData = {}
-            if (data.targetThread) queryData.targetThread = [data.targetThread]
-            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+            let queryData = this.getPageQueryFilters(data);
             const postQuery = this.createQueryRequest(queryData);
             if (postQuery != null)
                 await this.fetchPosts(postQuery);
@@ -54,11 +52,24 @@ export default function (data) {
                 await this.handleAction(e);
             })
             this.$events.on('filter:posts', async (e) => {
-                const postQuery = this.createQueryRequest(e);
+                const filterKeys = Object.keys(e);
+                let queryData = this.getPageQueryFilters(data);
+                for (var i = 0; i < filterKeys.length; i++) {
+                    const key = filterKeys[i];
+                    queryData[key] = e[key];
+                }
+                const postQuery = this.createQueryRequest(queryData);
                 if (postQuery != null)
                     await this.fetchPosts(postQuery);
             })
         },
+        getPageQueryFilters(data) {
+            let queryData = {}
+            if (data.targetThread) queryData.targetThread = [data.targetThread]
+            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+            return queryData;
+        },
+
         // Getters
         get posts() { return this.$store.content.posts },
         get reviews() { return this.$store.content.reviews },

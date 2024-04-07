@@ -1,8 +1,14 @@
 ﻿using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using System.Threading.Channels;
+using static Accelerate.Features.Content.Constants;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -276,6 +282,137 @@ namespace Accelerate.Features.Content.Services
                 }
             };
             return model;
+        }
+        
+        public List<string> GetFilterOptions()
+        {
+            return new List<string>
+            {
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+                Foundations.Content.Constants.Fields.ThreadId.ToCamelCase()
+            };
+        }
+
+
+        // NAVIGATION
+        public List<NavigationFilter> CreateSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var filterValues = new Dictionary<string, List<string>>();
+            if (aggregateResponse.IsValidResponse)
+            {
+                var filterOptions = GetFilterOptions();
+                filterValues = filterOptions.ToDictionary(x => x, x => GetValuesFromAggregate(aggregateResponse.Aggregations, x));
+            }
+            return CreateNavigationFilters(filterValues);
+        }
+        private List<string> GetValuesFromAggregate(AggregateDictionary aggregates, string key)
+        {
+            var agg = aggregates.FirstOrDefault(x => x.Key == key);
+            StringTermsAggregate vals = agg.Value as StringTermsAggregate;
+            if (vals == null || vals.Buckets == null || vals.Buckets.Count == 0) return new List<string>();
+
+            var results = vals.Buckets.
+                Select(x => x.Key.Value.ToString()).
+                Where(x => !string.IsNullOrEmpty(x)).
+                ToList();
+            return results;
+        }
+        private List<string> GetFilterKey(IDictionary<string, List<string>> filters, string key)
+        {
+            key = key.ToCamelCase();
+            return filters.ContainsKey(key) ? filters[key] : new List<string>();
+        }
+        private List<NavigationFilter> CreateNavigationFilters(IDictionary<string, List<string>> filters)
+        { 
+            if(filters == null) filters = new Dictionary<string, List<string>>();
+            var filter = new List<NavigationFilter>();
+
+            var reviews = GetFilterKey(filters, Constants.Filters.Reviews);
+            if(reviews.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Reviews,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterKey(filters, Constants.Filters.Reviews)
+                });
+            }
+            var threads = GetFilterKey(filters, Constants.Filters.Threads);
+            if (threads.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Threads,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = GetFilterKey(filters, Constants.Filters.Threads)
+                });
+            }
+
+            var tags = GetFilterKey(filters, Constants.Filters.Tags);
+            if (tags.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Tags,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = GetFilterKey(filters, Constants.Filters.Tags)
+                });
+            }
+
+            var content = GetFilterKey(filters, Constants.Filters.Content);
+            if (content.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Content,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterKey(filters, Constants.Filters.Content)
+                });
+            }
+
+            var sort = GetFilterKey(filters, Constants.Filters.Sort);
+            if (sort.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Sort,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterKey(filters, Constants.Filters.Sort)
+                });
+            }
+
+            return filter;
+        }
+
+        public NavigationGroup GetChannelsDropdown(string allChannelsUrl, SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
+        {
+            var model = new NavigationGroup()
+            {
+                Title = selectedName ?? "All",
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Text = "All",
+                        Href = allChannelsUrl
+                    }
+                }
+            };
+            if (searchResponse != null && searchResponse.IsValidResponse)
+            {
+                var channelItems = searchResponse.Documents.Select(GetChannelLink);
+                model.Items.AddRange(channelItems);
+            }
+            return model;
+        }
+        
+        public NavigationItem GetChannelLink(ContentChannelDocument x)
+        {
+            return new NavigationItem()
+            {
+                Text = x.Name,
+                Href = "/Content/Channels/" + x.Id
+            };
         }
 
     }
