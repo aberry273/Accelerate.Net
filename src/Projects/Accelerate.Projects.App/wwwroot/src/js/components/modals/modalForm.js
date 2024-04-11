@@ -59,6 +59,7 @@ export default function (data = {}) {
             // If the modal event is triggered, and data is passed in { key: val }
             // Update the form.fields[].value to equal the associated data property
             this.$events.on(this.event, (data) => {
+                console.log(data);
                 const postbackType = data.postbackType;
                 if (postbackType != null) {
                     self.form.postbackType = postbackType;
@@ -71,7 +72,7 @@ export default function (data = {}) {
                 if (self.form == null || self.form.fields == null) return;
                 for (var i = 0; i < self.form.fields.length; i++) {
                     const field = self.form.fields[i].name.toLowerCase();
-                    if (data.item == null) continue;
+                    if(data.item == null) continue;
                     if (data.item[field] != null) {
                         self.form.fields[i].value = data.item[field]
                     }

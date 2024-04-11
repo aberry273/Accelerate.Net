@@ -5,24 +5,21 @@
     <ul>
       <header>
         <hgroup>
-          <h1>Your feeds</h1>
-          <p>Create a new feed</p>
+          <h1>All channels</h1>
         </hgroup>
       </header>
     </ul>
     <ul>
-      
-    <!--Filters-->
       <details class="dropdown">
-        <summary role="button" class="outline" x-text="$store.feedFilters.current">
-        </summary>
-          <ul>
-            <template x-for="tab in $store.feedFilters.items" >
-              <button class="flat" @click="$store.feedFilters.setTab(tab)" :class="$store.feedFilters.current == tab ? 'selected' : ''" x-text="tab"></button>
-            </template>
-          </ul>
-      </details>
-      <button class="material-icons flat">add</button>
+        <summary>Channels</summary>
+        <ul>
+            <li><a href="#">All</a></li>
+            <li><a href="#">TV & Cinema</a></li>
+            <li><a href="#">Something else</a></li>
+            <li><a href="#">Games</a></li>
+        </ul>
+    </details>
+      <button class="material-icon flat primary" @click="$events.emit('modal-create-channel', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
     </ul>
   </nav>
   <article>
@@ -67,7 +64,9 @@
     event: 'post:created',
     items: $store.content.items,
   })">
-    <div x-data="appListPost"></div>
+    <div x-data="appListPost({
+      items: posts
+    })"></div>
   </div>
 </div>
    
@@ -160,3 +159,25 @@
 
 <!-- Share post -->
 <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+
+
+<!-- Modals -->
+<!-- Edit post -->
+<div x-data="modalForm({target: 'modal-create-channel', title: 'create channel', text: 'test 123',
+  form: {
+    postbackUrl: 'https://localhost:7220/api/contentpost',
+    postbackType: 'POST',
+    event: 'post:created',
+    fieldPlaceholder: 'Write a reply',
+    label: 'Reply',
+      fields: [
+        {
+          name: 'Content',
+          type: 'textarea',
+          placeholder: 'Write a reply',
+          autocomplete: null,
+          helper: '',
+          clearOnSubmit: true,
+        },
+      ]
+  }  })"></div>

@@ -12,7 +12,7 @@ namespace Accelerate.Foundations.Content
         {
             public const string Description = "description";
             public const string UserId = "userId";
-            public const string SelfReply = "selfReply";
+            public const string PostType = "postType";
             public const string ThreadId = "threadId";
             public const string ParentId = "parentId";
             public const string TargetThread = "targetThread";

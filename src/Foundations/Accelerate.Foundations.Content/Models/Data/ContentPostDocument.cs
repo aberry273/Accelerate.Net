@@ -5,6 +5,10 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
+    public enum ContentPostType
+    {
+        Post, Reply, Thread
+    }
     public class ContentPostDocument
     {
         // Core properties
@@ -22,7 +26,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public IEnumerable<string>? Tags { get; set; }
         // Computed
         public ContentPostReviewsDocument Reviews { get; set; }
-        public bool SelfReply { get; set; }
+        public ContentPostType PostType { get; set; } = ContentPostType.Post;
         //TODO: Replace with mapping 
         public List<Guid> ThreadIds { get; set; }
         public List<ContentPostDocument> Threads { get; set; }

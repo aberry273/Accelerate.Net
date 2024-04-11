@@ -1,5 +1,6 @@
 import input from './fields/input.js'
 import textarea from './fields/textarea.js'
+import file from './fields/file.js'
 
 export default function (data) {
 	return {
@@ -15,6 +16,7 @@ export default function (data) {
     // METHODS
     renderField(field) {
       if(field.type == 'textarea') return textarea(field)
+      if(field.type == 'file') return file(field)
       return input(field)
     },
     setHtml(data) {

@@ -11,7 +11,9 @@ const exampleThread = {
     "targetThread": "",
     "targetChannel": "",
     "category": "",
-    "tags": null,
+    "tags": [
+        "test123", "dqw2e12dwqdqwwd", "qddwdwq"
+    ],
     "reviews": {
       "agrees": 3,
       "disagrees": 7,

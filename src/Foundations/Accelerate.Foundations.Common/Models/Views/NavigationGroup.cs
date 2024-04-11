@@ -18,5 +18,6 @@ namespace Accelerate.Foundations.Common.Models.Views
 
         [JsonProperty("items")]
         public List<NavigationItem> Items { get; set; }
+
     }
 }

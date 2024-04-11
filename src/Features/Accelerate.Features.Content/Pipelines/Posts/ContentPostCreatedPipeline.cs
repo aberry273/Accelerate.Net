@@ -65,7 +65,11 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 await UpdateParentDocument(parentDoc, indexModel, args);
                 if(parentDoc.UserId == indexModel.UserId)
                 {
-                    indexModel.SelfReply = true;
+                    indexModel.PostType = ContentPostType.Thread;
+                }
+                else
+                {
+                    indexModel.PostType = ContentPostType.Reply;
                 }
             }
             await _elasticService.Index(indexModel);

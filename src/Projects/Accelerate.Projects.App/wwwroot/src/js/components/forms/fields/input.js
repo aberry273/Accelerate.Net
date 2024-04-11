@@ -19,6 +19,5 @@ export default function (data) {
             <small 
                 x-show="field.helper != null && field.helper.length > 0"
                 :id="field.id || field.name+i" x-text="field.helper"></small>
-       
         `
 }

@@ -18,6 +18,10 @@ using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Features.Account.Models;
 using Accelerate.Foundations.Account.Models;
+using Accelerate.Features.Account.Services;
+using Elastic.Clients.Elasticsearch;
+using Accelerate.Features.Account.Models.Data;
+using System.Security.Claims;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -28,6 +32,7 @@ namespace Accelerate.Features.Account.Controllers
         IElasticService<AccountUserDocument> _searchService;
         private SignInManager<AccountUser> _signInManager;
         private UserManager<AccountUser> _userManager;
+        private IAccountViewService _accountViewService;
         private IEmailSender<AccountUser> _emailSender;
         private IMetaContentService _contentService;
         private IEntityService<AccountProfile> _profileService;
@@ -36,6 +41,7 @@ namespace Accelerate.Features.Account.Controllers
             SignInManager<AccountUser> signInManager,
             UserManager<AccountUser> userManager,
             IEmailSender<AccountUser> emailSender,
+            IAccountViewService accountViewService,
             IEntityService<AccountProfile> profileService,
             Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
             IElasticService<AccountUserDocument> searchService)
@@ -48,21 +54,21 @@ namespace Accelerate.Features.Account.Controllers
             _profileService = profileService;
             _publishEndpoint = publishEndpoint;
             _searchService = searchService;
+            _accountViewService = accountViewService;
         }
 
         private const string _authenticatedRedirectUrl = "/";
         private const string _unauthenticatedRedirectUrl = "/Account/login";
-
-
-        private BasePage CreateBaseContent(AccountUser user)
+        private const string _accountFormRazorFile = "~/Views/Account/AccountFormPage.cshtml";
+        
+        private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
-            var profile = user != null ? new UserProfile()
-            {
-                Username = user.UserName,
-            } : null;
-            return _contentService.CreatePageBaseContent(profile);
+            var user = await _userManager.GetUserAsync(principle);
+            if (user == null) return null;
+            var profile = _profileService.Get(user.AccountProfileId);
+            user.AccountProfile = profile;
+            return user;
         }
-
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(this.User);
@@ -89,7 +95,17 @@ namespace Accelerate.Features.Account.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-
+        #region Manage
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Manage(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            var viewModel = _accountViewService.GetManagePage(user);
+            return View(viewModel);
+        }
+        #endregion
 
         [HttpGet]
         public async Task<IActionResult> Logout()
@@ -130,32 +146,34 @@ namespace Accelerate.Features.Account.Controllers
         }
         #endregion
 
-        #region Manage
-        [HttpGet]
-        [AllowAnonymous]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Manage(string returnUrl = null)
-        {
-            var user = await _userManager.GetUserAsync(this.User);
-            var pageModel = CreateBaseContent(user);
-            var viewModel = new ManagePage(pageModel);
-            return View(viewModel);
-        }
-        #endregion
-
-        #region Login
+        #region ForgotPassword
         [HttpGet]
         [AllowAnonymous]
         [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
-        public async Task<IActionResult> Login(string returnUrl = null)
+        public async Task<IActionResult> ForgotPassword(string? username, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             //ViewData["ReturnUrl"] = returnUrl;
             //var viewModel = await this.GetLoginViewModel();
-            var viewModel = new LoginPage(_contentService.CreatePageBaseContent());
-            return View(viewModel);
+            var viewModel = _accountViewService.GetForgotPasswordPage(username);
+           
+            return View(_accountFormRazorFile, viewModel);
+        }
+        #endregion
+        #region Login
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> Login(string? username = null, string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            ViewData["ReturnUrl"] = returnUrl; 
+            var viewModel = _accountViewService.GetLoginPage(username);
+             
+            return View(_accountFormRazorFile, viewModel);
         }
 
         [HttpPost]
@@ -165,7 +183,7 @@ namespace Accelerate.Features.Account.Controllers
         public async Task<IActionResult> Login(LoginForm request, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            var viewModel = new LoginPage(_contentService.CreatePageBaseContent());
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
             if (ModelState.IsValid)
             {
                 // This does not count login failures towards account lockout
@@ -179,7 +197,7 @@ namespace Accelerate.Features.Account.Controllers
                 if (result == null)
                 {
                     viewModel.Form.Response = "No account with that email/username could be found";
-                    return View(viewModel);
+                    return View(_accountFormRazorFile, viewModel);
                 }
                 if (result.Succeeded)
                 {
@@ -192,18 +210,16 @@ namespace Accelerate.Features.Account.Controllers
                 if (result.IsLockedOut)
                 {
                     viewModel.Form.Response = "User account locked out";
-                    viewModel.Form.Username = request.Username;
                     return RedirectToAction(nameof(Lockout));
                 }
                 else
                 {
                     viewModel.Form.Response = "Invalid login attempt";
-                    viewModel.Form.Username = request.Username;
-                    return View(viewModel);
+                    return View(_accountFormRazorFile, viewModel);
                 }
             }
             // If execution got this far, something failed, redisplay the form.
-            return View(viewModel);
+            return View(_accountFormRazorFile, viewModel);
         }
 
 
@@ -220,7 +236,7 @@ namespace Accelerate.Features.Account.Controllers
                 throw new ApplicationException($"Unable to load two-factor authentication user.");
             }
 
-            var viewModel = new LoginPage(_contentService.CreatePageBaseContent());
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
             ViewData["ReturnUrl"] = returnUrl;
 
             return View(viewModel);
@@ -231,15 +247,16 @@ namespace Accelerate.Features.Account.Controllers
         [HttpGet]
         [AllowAnonymous]
         [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
-        public async Task<IActionResult> Register(string returnUrl = null)
+        public async Task<IActionResult> Register(string? username, string? email, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             //ViewData["ReturnUrl"] = returnUrl;
             //var viewModel = await this.GetLoginViewModel();
-            var viewModel = new RegisterPage(_contentService.CreatePageBaseContent());
-            return View(viewModel);
+            var viewModel = _accountViewService.GetRegisterPage(username, email);
+
+            return View(_accountFormRazorFile, viewModel);
         }
         [HttpPost]
         [AllowAnonymous]
@@ -247,7 +264,7 @@ namespace Accelerate.Features.Account.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterForm request, string returnUrl = null)
         {
-            var viewModel = new RegisterPage(_contentService.CreatePageBaseContent());
+            var viewModel = _accountViewService.GetRegisterPage(request.Username, request.Email);
             try
             {
                 ViewData["ReturnUrl"] = returnUrl;
@@ -258,7 +275,12 @@ namespace Accelerate.Features.Account.Controllers
                     if (result.Succeeded)
                     {
                         // Create profile
-                        await _profileService.Create(new AccountProfile() { UserId = user.Id });
+                        var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
+                        // Get user and update with profile id
+                        var accountUser = await _userManager.FindByNameAsync(request.Username);
+                        accountUser.AccountProfileId = profileId.GetValueOrDefault();
+                        await _userManager.UpdateAsync(accountUser);
+
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                         //TODO: Move this to the pipeline
@@ -290,7 +312,7 @@ namespace Accelerate.Features.Account.Controllers
                 };
                 */
                 // If execution got this far, something failed, redisplay the form.
-                return View(viewModel);
+                return View(_accountFormRazorFile, viewModel);
             }
             catch (Exception ex)
             {
@@ -304,7 +326,7 @@ namespace Accelerate.Features.Account.Controllers
                 };
                 */
                 viewModel.Form.Response = "There was an error processing your request";
-                return View(viewModel);
+                return View(_accountFormRazorFile, viewModel);
             }
 
         }
@@ -346,7 +368,7 @@ namespace Accelerate.Features.Account.Controllers
         [AllowAnonymous]
         public IActionResult Lockout()
         {
-            var viewModel = new LoginPage(_contentService.CreatePageBaseContent());
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
             return View(viewModel);
         }
     }

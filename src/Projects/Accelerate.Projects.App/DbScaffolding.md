@@ -7,6 +7,6 @@ Add-Migration InitialCreate_Content3 -context ContentDbContext -project "Acceler
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 # Authentication
 Drop-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
-Add-Migration Initial_Account1 -context AccountDbContext -project "Accelerate.Foundations.Account" 
+Add-Migration Initial_Account2 -context AccountDbContext -project "Accelerate.Foundations.Account" 
 Update-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
 

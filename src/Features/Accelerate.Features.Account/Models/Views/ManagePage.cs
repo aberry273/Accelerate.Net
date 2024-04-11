@@ -1,10 +1,12 @@
-﻿using Accelerate.Foundations.Common.Models.Views;
+﻿using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.Views;
 
 namespace Accelerate.Features.Account.Models.Views
 {
     public class ManagePage : BasePage
     {
-        public ProfileForm Form { get; set; } = new ProfileForm();
+        public AjaxForm ProfileImageForm { get; set; }
+        public AjaxForm ProfileForm { get; set; }
         public ManagePage(BasePage model) : base(model)
         {
 

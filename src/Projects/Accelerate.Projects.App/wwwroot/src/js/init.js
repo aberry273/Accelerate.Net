@@ -40,6 +40,12 @@ Object.keys(comps).forEach(component => {
     alpinejs.data('_'+component, comps[component]);
 });
 
+// Load mixins, prefix with
+import * as mixins from './mixins/index.js';
+Object.keys(mixins).forEach(mixin => {
+    alpinejs.data(mixin, mixins[mixin]);
+});
+
 // Load rendering components
 import * as components from './components/index.js';
 Object.keys(components).forEach(component => {

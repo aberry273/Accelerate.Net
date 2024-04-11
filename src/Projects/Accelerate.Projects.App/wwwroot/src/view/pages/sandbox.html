@@ -28,14 +28,7 @@
     <div x-data="$store.darkmode">
         <div x-text="$store.darkmode.dark"></div>
     </div>
-
-    <div x-data="_dropdown">
-        <button @click="toggle">Toggle</button>
-        <div x-show="isOpen">
-            Content...
-        </div>
-    </div> 
-    
+ 
     <!-- Modal-->
   <div x-data="modal({event: 'example-modal', id: 'example-modal' })"></div>
 

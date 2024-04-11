@@ -92,10 +92,9 @@ namespace Accelerate.Foundations.Content.Services
         {
             return new QueryFilter()
             {
-                Name = Foundations.Content.Constants.Fields.SelfReply,
-                Condition = ElasticCondition.Must,
-                Operator = QueryOperator.Exist,
-                //ValueType = Common.Models.ValueType.False
+                Name = Foundations.Content.Constants.Fields.PostType,
+                Condition = ElasticCondition.Must, 
+                Value = ContentPostType.Thread
             };
         } 
         public async Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query)
@@ -132,7 +131,7 @@ namespace Accelerate.Foundations.Content.Services
             }
             return results.Documents.ToList();
         }
-        private QueryDescriptor<ContentPostReviewDocument> GetUserReviewsQuery(RequestQuery request)
+        public QueryDescriptor<ContentPostReviewDocument> GetUserReviewsQuery(RequestQuery request)
         {
             var query = new QueryDescriptor<ContentPostReviewDocument>();
             if (request.Filters != null && request.Filters.Any())
@@ -185,14 +184,15 @@ namespace Accelerate.Foundations.Content.Services
             Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             // If searching for threads
-            if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.TargetThread))
+            if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.ParentId))
             {
                 //Filter any post where the poster is replying to themselves from the results
-                Query.Filters.Add(Filter(Constants.Fields.SelfReply, false));
+                var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
+                Query.Filters.Add(filter);
             }
             else
             {
-                Query.Filters.Add(Filter(Constants.Fields.TargetThread, ElasticCondition.MustNot, QueryOperator.Exist));
+                Query.Filters.Add(Filter(Constants.Fields.ParentId, ElasticCondition.MustNot, QueryOperator.Exist));
             }
 
             // For any multi-select, apply the filter condition to each field
@@ -206,6 +206,23 @@ namespace Accelerate.Foundations.Content.Services
             return CreateQuery(Query);
         }
 
+        public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId)
+        {
+            var Query = new RequestQuery()
+            {
+                Filters = new List<QueryFilter>()
+            };
+
+            //Query.Filters.Add(PublicPosts());
+            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+            Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.MustNot, ContentPostType.Thread));
+           
+            Query.Filters.Add(Filter(Constants.Fields.ParentId, threadId));
+           
+            return CreateQuery(Query);
+        }
 
         #endregion
     }

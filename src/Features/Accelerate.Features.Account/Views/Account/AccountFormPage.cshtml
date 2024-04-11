@@ -1,0 +1,38 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.AccountFormPage
+@{ }
+<div class="container center-vertical">
+    <div class="form">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>@Model.Title</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Form-->
+        <article>
+            @if (!string.IsNullOrEmpty(Model.Form.Response))
+            {
+                <strong><i>@Model.Form.Response</i></strong>
+            }
+            <div x-data="formPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+        </article>
+    </div>
+    <!-- Other links -->
+    <article class="form">
+        <div class="margin-spacing">
+            @foreach(var link in Model.Links)
+            {
+                <a href="@link.Href" style="text-decoration: none;">
+                    <div role="button" class="@link.Class" tabindex="2">@link.Text</div>
+                </a>
+            }
+        </div>
+    </article>
+</div>

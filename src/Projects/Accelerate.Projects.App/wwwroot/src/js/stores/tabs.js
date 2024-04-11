@@ -6,5 +6,8 @@ export default () => ({
 
     setTab(tab) {
         this.current = tab;
+    },
+    isSelected(tab) {
+        return this.current === tab;
     }
 })

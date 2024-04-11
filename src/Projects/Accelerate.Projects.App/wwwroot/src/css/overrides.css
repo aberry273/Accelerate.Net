@@ -32,6 +32,32 @@ aside.dense li {
     padding: calc(var(--pico-nav-element-spacing-vertical)* .2) var(--pico-nav-element-spacing-horizontal);
 }
 
+.margin-spacing * {
+    margin-bottom: var(--pico-spacing);
+}
+
+a.avatar, button.avatar, .dropdown.avatar {
+    border-top-left-radius: 50% 50%;
+    border-top-right-radius: 50% 50%;
+    border-bottom-right-radius: 50% 50%;
+    border-bottom-left-radius: 50% 50%;
+    padding: 0;
+    border: transparent;
+}
+
+nav details.dropdown.avatar summary::after {
+    display: none;
+}
+
+a.avatar img, button.avatar img, nav details.dropdown.avatar img {
+    border-top-left-radius: 50% 50%;
+    border-top-right-radius: 50% 50%;
+    border-bottom-right-radius: 50% 50%;
+    border-bottom-left-radius: 50% 50%;
+    max-height: 50px;
+    max-width: 50px;
+}
+
 img.circular {
     border-top-left-radius: 50% 50%;
     border-top-right-radius: 50% 50%;
@@ -58,32 +84,19 @@ button.img {
     min-width: max-content;
 }
 
-/*GRID*/
-.grid .panel {
+.form {
     margin-inline: auto;
     margin-right: auto;
     margin-left: auto;
+    width: 576px;
+    max-width: 576px;
 }
-
-.grid .center-vertical {
+/*GRID*/
+.grid.center-vertical {
     vertical-align: middle;
 }
 
 /*COLOURS*/
-.primary {
-    background-color: transparent;
-    color: #f7931a;
-}
-
-.secondary {
-    background-color: transparent;
-    color: #456990;
-}
-
-.contrast {
-    background-color: transparent;
-    color: #E4FDE1;
-}
 
 .flat {
     background-color: transparent;
@@ -103,6 +116,7 @@ button.img {
     }
 
 /*BUTTONS*/
+
 button.round {
     border-radius: 100%;
     height: 4rem;
@@ -386,6 +400,41 @@ input[name="Thread"] {
     color: var(--pico-primary);
 }
 
+}
+
+.file-field {
+    width: 250px;
+    height: auto
+}
+
+    .file-field img {
+        width: 250px;
+        height: auto
+    }
+
+    .file-field i {
+        font-size: 32px;
+    }
+
+    .file-field article {
+        text-align: center;
+    }
+
+.file-picker {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+input.file-field:is([type="file"]) {
+    /*display: none;*/
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
 }
 
 /* RESPONSIVE GRID*/

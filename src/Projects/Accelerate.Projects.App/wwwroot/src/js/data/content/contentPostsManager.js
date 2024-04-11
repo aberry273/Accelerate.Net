@@ -8,6 +8,7 @@ export default function (data) {
         fetchPostsUrl: '#',
         fetchReviewsUrl: '#',
         targetThread: null,
+        parentId: null,
         expandable: true,
         threadUrl: '/',
         initialItems: [],
@@ -22,14 +23,15 @@ export default function (data) {
             this.reviewUrl = data.reviewUrl;
             this.threadUrl = data.threadUrl;
             this.targetThread = data.targetThread;
+            this.parentId = data.parentId;
             this.fetchPostsUrl = data.fetchPostsUrl;
             this.fetchReviewsUrl = data.fetchReviewsUrl;
             this.initialItems = data.items;
-
+            
 
             const initPosts = data != null ? data.postItems : [];
             const initReviews = data != null ? data.reviewItems : [];
-
+            
             this.$store.content.setPosts(initPosts);
             this.$store.content.setReviews(initReviews);
 
@@ -40,13 +42,13 @@ export default function (data) {
             const postQuery = this.createQueryRequest(queryData);
             if (postQuery != null)
                 await this.fetchPosts(postQuery);
-
-            if (data.userId) {
+            
+            if(data.userId) {
                 const reviewQuery = this.createQueryRequest({ userId: [data.userId] });
                 if (reviewQuery != null)
                     await this.fetchReviews(reviewQuery);
             }
-
+           
             // On updates from UI > contentPost/contentPostReply
             this.$events.on('action:post', async (e) => {
                 await this.handleAction(e);
@@ -63,13 +65,6 @@ export default function (data) {
                     await this.fetchPosts(postQuery);
             })
         },
-        getPageQueryFilters(data) {
-            let queryData = {}
-            if (data.targetThread) queryData.targetThread = [data.targetThread]
-            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
-            return queryData;
-        },
-
         // Getters
         get posts() { return this.$store.content.posts },
         get reviews() { return this.$store.content.reviews },
@@ -128,6 +123,7 @@ export default function (data) {
         async fetchPosts(query) {
             if (!this.fetchPostsUrl || !query) return;
             const results = await this.$fetch.POST(this.fetchPostsUrl, query);
+            console.log(results);
             this.$store.content.setPosts(results);
         },
         async fetchReviews(query) {
@@ -135,7 +131,7 @@ export default function (data) {
             const results = await this.$fetch.POST(this.fetchReviewsUrl, query);
             this.$store.content.setReviews(results);
         },
-
+        
         async postAgree(request) {
             const payload = this.getOrCreatePayload(request);
             await this.$fetch.POST(this.reviewUrl + '/agree', payload);
@@ -151,14 +147,20 @@ export default function (data) {
             else
                 await this.$fetch.POST(this.reviewUrl + '/like', payload);
         },
-
+        
         // API Data methods
+        getPageQueryFilters(data) {
+            let queryData = {}
+            if (data.parentId) queryData.parentId = [data.parentId]
+            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+            return queryData;
+        },
         createQueryRequest(data) {
             if (!data) return;
             let filters = [];
-
+        
             const keys = Object.keys(data);
-            for (let i = 0; i < keys.length; i++) {
+            for(let i = 0; i < keys.length; i++) {
                 const key = keys[i];
                 const filter = {
                     name: key,
@@ -176,7 +178,7 @@ export default function (data) {
                 filters: filters,
             }
             return payload;
-        },
+        }, 
 
         // UI Logic
         agrees(post) {
@@ -228,6 +230,6 @@ export default function (data) {
                 like: null,
             }
         },
-
+    
     }
 }

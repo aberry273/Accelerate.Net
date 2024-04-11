@@ -1,50 +1,51 @@
 export default function (data) {
-    return {
-        // PROPERTIES
-
-        tabs: ['all', 'agrees', 'disagrees'],
-        selectedTab: '',
-        selectedId: {},
-        filters: [],
-        state: [],
-        event: 'filter:posts',
-        open: false,
-        init() {
-            //Events
-            this.event = data.event || 'filter:posts';
-            this.filters = data.filters || [];
-            this.setHtml(data);
-        },
-        isSelectedMany(val, filter) {
-            if (this.state == null || this.state[filter.name] == null) return false;
-            return this.state[filter.name].indexOf(val) > -1;
-        },
-        isSelected(val, filter) {
-            return (this.state[filter.name] == val);
-        },
-        selectMany(val, filter) {
-            if (this.state[filter.name] == null) this.state[filter.name] = [];
-
-            const index = this.state[filter.name].indexOf(val);
-            if (index == -1) {
-                this.state[filter.name].push(val);
-            }
-            else {
-                this.state[filter.name].splice(index, 1);
-            }
-            this.emitChange()
-        },
-        select(val, filter) {
-            filter.open = false;
-            this.state[filter.name] = val;
-            this.emitChange()
-        },
-        emitChange() {
-            this.$events.emit(this.event, this.state)
-        },
-        setHtml(data) {
-            // make ajax request
-            const html = `
+	return {
+    // PROPERTIES
+ 
+    tabs: [ 'all', 'agrees', 'disagrees'],
+    selectedTab: '',
+    selectedId: {},
+    filters: [],
+    state: [],
+    event: 'filter:posts',
+    open: false,
+    init() {
+      //Events
+      this.event = data.event || 'filter:posts';
+      this.filters = data.filters || [];
+      this.setHtml(data);
+    },
+    isSelectedMany(val, filter) {
+      if (this.state == null || this.state[filter.name] == null) return false;
+      return this.state[filter.name].indexOf(val) > -1;
+    },
+    isSelected(val, filter) {
+      return (this.state[filter.name] == val);
+    },
+    selectMany(val, filter) { 
+      if (this.state[filter.name] == null) this.state[filter.name] = [];
+      
+      const index = this.state[filter.name].indexOf(val);
+      if (index == -1) {
+        this.state[filter.name].push(val);
+      }
+      else {
+        this.state[filter.name].splice(index, 1);
+      }
+      this.emitChange()
+    },
+    select(val, filter) { 
+      filter.open = false;
+      this.state[filter.name] = val;
+      this.emitChange()
+    },
+    emitChange() {
+      this.$events.emit(this.event, this.state)
+    },
+    setHtml(data) {
+      // make ajax request
+      const html = `
+          <!--Feed-->
           <nav>
             <!--Filters-->
             <ul>
@@ -100,9 +101,9 @@ export default function (data) {
             </ul>
           </nav>
       `
-            this.$nextTick(() => {
-                this.$root.innerHTML = html
-            })
-        },
-    }
+      this.$nextTick(() => { 
+        this.$root.innerHTML = html
+      })
+    },
+  }
 }

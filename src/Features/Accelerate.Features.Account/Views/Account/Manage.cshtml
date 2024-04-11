@@ -1,5 +1,6 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
+@using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
 @model Accelerate.Features.Account.Models.Views.ManagePage
 @{ }
@@ -11,7 +12,7 @@
         "settings",
     ]
 </script>
-<div class="grid container">
+<div class=" container">
     <div class="center-vertical">
         <nav>
             <ul>
@@ -23,55 +24,33 @@
             </ul>
         </nav>
         <!--Feed--> 
-        <div class="grid" x-data>
-            <article>
-                <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
-                    <button class="flat" @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
-                </template>
-            </article>
-            <article class="fit-content"> 
-                <main x-transition x-show="'profile' == $store.tabs.current">
-                     
-                        @if (!string.IsNullOrEmpty(Model.Form.Response))
-                        {
-                            <strong><i>@Model.Form.Response</i></strong>
-                        }
-                        <div x-data="formPostback({
-                            feed: $store.feedFilters.current,
-                            method: 'POST',
-                            fields: [
-                                {
-                                name: 'Username',
-                                type: 'input',
-                                placeholder: 'Username',
-                                label: 'Username',
-                                autocomplete: null,
-                                model: '@Model.Form.Username',
-                                ariaInvalid: true,
-                                helper: 'error'
-                                },
-                                {
-                                name: 'Password',
-                                type: 'password',
-                                placeholder: 'Password',
-                                label: 'Password',
-                                model: '@Model.Form.Password',
-                                autocomplete: null
-                                }
-                            ]
-                            })"></div>
-                    
-                </main>
-                <main x-transition x-show="'contact' == $store.tabs.current">
-                    <div x-ref="contact" x-data="_html('contact', `/src/view/pages/about.html`)"></div>
-                </main
-                 <main x-transition x-show="'settings' == $store.tabs.current">
-                    <div x-ref="settings" x-data="_html('settings', `/src/view/pages/about.html`)"></div>
-                </main> 
+        <div x-data>
+            <nav>
+                <ul>
+                    <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
+                        <button style="width: 100%" class="flat primary tab" :class="tab == $store.tabs.current ? 'selected': ''" @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
+                    </template>
+                </ul>
+            </nav>
+            <article class="fit-content" x-transition >  
+                <section x-show="$store.tabs.isSelected('profile')">
+                    <div class="grids">
+                        <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
+                        <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
+                    </div>
+                </section>
+                <section x-show="$store.tabs.isSelected('contact')">
+                    <div >
+                        contact form
+                    </div>
+                </section>
+                <section x-show="$store.tabs.isSelected('settings')">
+                    <div>
+                        settings form
+                    </div>
+                </section> 
             </article>
         </div>
     </div>
     <!-- Other panel -->
-    <div>
-    </div>
 </div>

@@ -15,6 +15,8 @@ namespace Accelerate.Foundations.Account.Models.Entities
     {
         #region Required 
         #endregion
+        public string? Image { get; set; }
+        public string? BannerImage { get; set; }
         public string? Title { get; set; }
         public string? SecondaryEmail { get; set; }
         public string? SecondaryNumber { get; set; }
@@ -26,14 +28,14 @@ namespace Accelerate.Foundations.Account.Models.Entities
         public string? Postcode { get; set; }
         public string? Country { get; set; }
         public string? Position { get; set; }
-        public AccountUser User { get; set; }
+        public AccountUser? User { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
         public string? Description { get; set; }
         public string? Category { get; set; }
         public string? Tags { get; set; }
         [NotMapped]
-        public IEnumerable<string> TagItems
+        public IEnumerable<string>? TagItems
         {
             get
             {

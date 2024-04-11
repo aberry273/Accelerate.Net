@@ -1,4 +1,11 @@
-﻿@model Accelerate.Foundations.Common.Models.Views.NavigationGroup
+﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
 
 <!-- Header -->
-<div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+@if (Model.Authenticated)
+{
+    <div x-data="usernavbar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+}
+else
+{
+    <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+}

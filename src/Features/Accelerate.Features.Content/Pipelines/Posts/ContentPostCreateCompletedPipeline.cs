@@ -43,7 +43,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
             doc = response.Source;
             // If its a reply to own thread by the user, send the parent as the update instead
-            if (doc.SelfReply)
+            if (doc.PostType == ContentPostType.Thread)
             {
                 var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
                 doc = parentResponse.Source;

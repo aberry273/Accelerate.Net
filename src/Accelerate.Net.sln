@@ -78,6 +78,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventPipelines", "EventPipe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Foundations.EventPipelines", "Foundations\Accelerate.Foundations.EventPipelines\Accelerate.Foundations.EventPipelines.csproj", "{9C2A73B0-9EF1-4474-8A37-F8ECEE0851B1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations.AzureStorage", "Integrations.AzureStorage", "{5737D552-AE8E-486E-9C85-0058B02F9D7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Foundations.Integrations.AzureStorage", "Foundations\Accelerate.Foundations.Integrations.AzureStorage\Accelerate.Foundations.Integrations.AzureStorage.csproj", "{419692AD-B95A-420D-8D4C-E2B8D0052E79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{A15B0D66-6116-488E-82F6-99675255A9F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accelerate.Foundations.Media", "Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj", "{197B6C12-769F-4C7F-9C75-B33BADCCAE1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,6 +148,14 @@ Global
 		{9C2A73B0-9EF1-4474-8A37-F8ECEE0851B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C2A73B0-9EF1-4474-8A37-F8ECEE0851B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C2A73B0-9EF1-4474-8A37-F8ECEE0851B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{419692AD-B95A-420D-8D4C-E2B8D0052E79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{419692AD-B95A-420D-8D4C-E2B8D0052E79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{419692AD-B95A-420D-8D4C-E2B8D0052E79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{419692AD-B95A-420D-8D4C-E2B8D0052E79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +189,10 @@ Global
 		{D884C571-236C-48A6-A608-2B16C9283D26} = {3CA8DF20-E39B-4908-9B77-773C42DEAEF6}
 		{5CB008B5-FA2E-401B-99DB-44738687A845} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
 		{9C2A73B0-9EF1-4474-8A37-F8ECEE0851B1} = {5CB008B5-FA2E-401B-99DB-44738687A845}
+		{5737D552-AE8E-486E-9C85-0058B02F9D7B} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
+		{419692AD-B95A-420D-8D4C-E2B8D0052E79} = {5737D552-AE8E-486E-9C85-0058B02F9D7B}
+		{A15B0D66-6116-488E-82F6-99675255A9F6} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
+		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F} = {A15B0D66-6116-488E-82F6-99675255A9F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3584F311-FD8B-4D8A-9984-BE84EB37D3EE}

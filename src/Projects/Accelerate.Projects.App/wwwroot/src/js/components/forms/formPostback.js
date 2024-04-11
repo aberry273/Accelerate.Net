@@ -5,7 +5,7 @@ export default function (data) {
     // PROPERTIES
     loading: false,
     fields: [],
-    method: data.method,
+    method: data.method || 'POST',
     // INIT
     init() {
       this.setHtml(data)

@@ -31,6 +31,9 @@ namespace Accelerate.Foundations.Account.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("BannerImage")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Category")
                         .HasColumnType("nvarchar(max)");
 
@@ -47,6 +50,9 @@ namespace Accelerate.Foundations.Account.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Firstname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Lastname")

@@ -9,7 +9,6 @@ let component = `
 export default function (data) {
   return {
     // PROPERTIES
-    _items: [],
     async init() {
       const self = this;
       data = data != null ? data : {}
@@ -20,6 +19,7 @@ export default function (data) {
       // make ajax request 
       const html = `
         <div x-transition>
+        <!-- :key="post.id+':'+post.updatedOn"-->
             <template x-for="(post, i) in posts" :key="post.id" >
               ${component}
             </template>

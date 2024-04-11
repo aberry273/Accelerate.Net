@@ -10,6 +10,7 @@ using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
@@ -18,6 +19,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.TwiML.Voice;
 
 namespace Accelerate.Features.Content.Controllers
 {
@@ -25,6 +27,7 @@ namespace Accelerate.Features.Content.Controllers
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
+        IContentPostElasticService _postElasticSearchService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<ContentChannelDocument> _channelSearchService;
         IContentViewService _contentViewService;
@@ -32,6 +35,7 @@ namespace Accelerate.Features.Content.Controllers
         public ContentController(
             IMetaContentService service,
             IContentViewService contentViewService,
+            IContentPostElasticService postElasticSearchService,
             IEntityService<ContentPostEntity> postService,
             IElasticService<ContentPostDocument> searchService,
             IElasticService<ContentChannelDocument> channelService,
@@ -41,6 +45,7 @@ namespace Accelerate.Features.Content.Controllers
             _contentViewService = contentViewService;
             _contentService = service;
             _postSearchService = searchService;
+            _postElasticSearchService = postElasticSearchService;
             _channelSearchService = channelService;
         }
         private BasePage CreateBaseContent(AccountUser user)
@@ -146,7 +151,12 @@ namespace Accelerate.Features.Content.Controllers
             viewModel.UserId = user.Id;
             viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
             // Get replies
-            var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
+
+
+            var query = this._postElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString());
+            var replies = await _postSearchService.Search(query, 0, 100);
+
+            //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
             viewModel.Replies = replies.Documents.ToList();
             viewModel.FormCreateReply = _contentViewService.CreateReplyForm(user, item);
             viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
@@ -155,7 +165,7 @@ namespace Accelerate.Features.Content.Controllers
             // Add filters
             var filters = new List<QueryFilter>()
             {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, item.Id)
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, item.Id)
             };
 
             var aggregates = new List<string>()

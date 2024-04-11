@@ -265,17 +265,12 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             var name = filter.Name.ToCamelCase();
             //Udpate mappings to include keyword analyzer instead
             if (filter.Keyword) { name += ".keyword"; }
-
             var field = new Field(name);
             var tq = new TermQuery(field)
             {
                 Value = GetFieldValue(filter),
                 CaseInsensitive = false
             };
-            if(filter.Keyword)
-            {
-             //  tq.Suffix("keyword");
-            }
             return tq;
         }
         public Query? CreatExistsQuery(QueryFilter filter)

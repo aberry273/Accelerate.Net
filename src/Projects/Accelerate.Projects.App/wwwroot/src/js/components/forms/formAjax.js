@@ -7,7 +7,6 @@ export default function (data) {
     loading: false,
     fields: [],
     label: 'Submit',
-    loading: false,
     event: null,
     postbackType: 'POST',
     localEvent: '__formAjax:completed',
@@ -15,6 +14,7 @@ export default function (data) {
     init() {
       this.label = data.label;
       this.event = data.event;
+      this.loading = false;
       this.postbackType = data.postbackType
       this.setHtml(data)
       this.localEvent += new Date().toISOString()

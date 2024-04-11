@@ -8,7 +8,7 @@ namespace Accelerate.Foundations.Common.Models.Views
 {
     public class BasePage
     {
-        public NavigationGroup TopNavigation { get; set; } = new NavigationGroup();
+        public NavigationBar TopNavigation { get; set; } = new NavigationBar();
 
         public Footer Footer { get; set; } = new Footer();
 

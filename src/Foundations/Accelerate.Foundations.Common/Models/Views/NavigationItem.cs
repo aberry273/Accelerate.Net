@@ -9,6 +9,9 @@ namespace Accelerate.Foundations.Common.Models.Views
 {
     public class NavigationItem
     {
+        [JsonProperty("class")]
+        public string Class { get; set; }
+
         [JsonProperty("href")]
         public string Href { get; set; }
 

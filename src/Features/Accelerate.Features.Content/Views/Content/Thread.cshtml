@@ -28,6 +28,7 @@
         event: 'post:created',
         userId: '@Model.UserId',
         targetThread: '@Model.Item.ThreadId',
+        parentId: '@Model.Item.Id',
         items: @JsonSerializerHelper.SerializeObject(Model.Replies),
         channel: 'all',
         })">

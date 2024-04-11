@@ -7,15 +7,34 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.Metadata.Ecma335;
 using Accelerate.Foundations.Common.Models.Views;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Accelerate.Foundations.Common.Services
 {
     public class MetaContentService : IMetaContentService
     {
+        protected IUrlHelper _urlHelper;
+        public MetaContentService(
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor)
+        {
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+        }
+
+        public string GetActionUrl(string action, string controller, object values = null, string protocol = null)
+        {
+            return _urlHelper.Action(
+                action: action,
+                controller: controller,
+                values: values,
+                protocol: (protocol ?? this._urlHelper.ActionContext.HttpContext.Request.Scheme));
+        }
         public BasePage CreatePageBaseContent(UserProfile? profile = null)
         {
             return (profile != null)
-                ? this.CreateAuthenticatedContent()
+                ? this.CreateAuthenticatedContent(profile)
                 : this.CreateUnauthenticatedContent(); 
         }
         public BasePage CreateUnauthenticatedContent()
@@ -31,7 +50,7 @@ namespace Accelerate.Foundations.Common.Services
                 SEO = new SeoMetadata(),
             };
         }
-        public BasePage CreateAuthenticatedContent()
+        public BasePage CreateAuthenticatedContent(UserProfile? profile)
         {
             return new BasePage()
             {
@@ -40,14 +59,14 @@ namespace Accelerate.Foundations.Common.Services
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(),
-                TopNavigation = CreateAuthenticatedTopNavigation(),
+                TopNavigation = CreateAuthenticatedTopNavigation(profile),
                 SEO = new SeoMetadata(),
             };
         }
 
-        public NavigationGroup CreateTopNavigation()
+        public NavigationBar CreateTopNavigation()
         {
-            return new NavigationGroup()
+            return new NavigationBar()
             {
                 Title = "parrot",
                 Subtitle = "The new bird in town",
@@ -62,28 +81,36 @@ namespace Accelerate.Foundations.Common.Services
             };
         }
 
-        public NavigationGroup CreateAuthenticatedTopNavigation()
+        public NavigationBar CreateAuthenticatedTopNavigation(UserProfile? profile)
         {
-            return new NavigationGroup()
+            return new NavigationBar()
             {
+                Authenticated = true,
                 Title = "parrot",
                 Subtitle = "The new bird in town",
+                Dropdown = profile == null ? null : new NavigationAvatarDropdown()
+                {
+                    Image = profile?.Image,
+                    Items = new List<NavigationItem>()
+                    {
+                        new NavigationItem()
+                        {
+                            Href = "/Account/Manage",
+                            Text = "Account",
+                        },
+                        new NavigationItem()
+                        {
+                            Href = "/Account/Logout",
+                            Text = "Logout",
+                        },
+                    }
+                },
                 Items = new List<NavigationItem>()
                 {
                     new NavigationItem()
                     {
                         Href = "/Content/Channels",
                         Text = "Channels",
-                    },
-                    new NavigationItem()
-                    {
-                        Href = "/Account/Manage",
-                        Text = "Account",
-                    },
-                    new NavigationItem()
-                    {
-                        Href = "/Account/Logout",
-                        Text = "Logout",
                     },
                 }
             };

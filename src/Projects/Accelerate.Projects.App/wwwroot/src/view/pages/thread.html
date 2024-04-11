@@ -1,11 +1,46 @@
 
 <!-- Feed panel -->
 
+
+
 <div x-data="{
     item: $store.content.getDummyThread(),
     items: $store.content.replies,
     targetThreadId: $store.content.getDummyThread().threadId,
+    parentId: $store.content.getDummyThread().id,
     threadItem: $store.content.getDummyThread(),
+    filterData: [
+    {
+      name: 'Reviews',
+      values: ['All', 'Agrees', 'Disagrees'],
+      selected: 'All',
+      type: 'Select',
+    },
+    {
+      name: 'Threads',
+      values: ['All', 'Agrees', 'Disagrees'],
+      selected: 'All',
+      type: 'Checkbox',
+    },
+    {
+      name: 'Tags',
+      values: ['C#'],
+      selected: 'C#',
+      type: 'Checkbox',
+    },
+    {
+      name: 'Content',
+      values: ['All', 'Agrees', 'Disagrees'],
+      selected: 'All',
+      type: 'Checkbox',
+    },
+    {
+      name: 'Sort',
+      values: ['Created', 'Updated', 'Ratings'],
+      selected: 'All',
+      type: 'Radio',
+    }
+  ]
   }">
   <nav>
     <ul>
@@ -23,6 +58,7 @@
       reviewUrl: 'https://localhost:7220/api/contentpostreview',
       userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
       targetThread: targetThreadId,
+      parentId: targetThreadId,
       event: 'post:created',
       items: [],
       channel: null,
@@ -34,7 +70,9 @@
     </div>
 
     <!--Feed-->
-    <div x-data="appNavFilters({})"></div>
+    <div x-data="appNavFilters({
+      filters: filterData
+    })"></div>
     
     <!-- Response Form -->
     <article>

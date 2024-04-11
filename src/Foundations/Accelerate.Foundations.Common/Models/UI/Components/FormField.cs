@@ -10,10 +10,11 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public enum FormFieldTypes
     {
-        input, textarea, number
+        input, email, textarea, number, password, file
     }
     public class FormField
     {
+        public string Label { get; set; }
         public string Name { get; set; }
         public string Type => Enum.GetName(FieldType);
         [JsonIgnore]
@@ -24,6 +25,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public bool? Autocomplete { get; set; }
         public bool? AriaInvalid { get; set; }
         public bool? ClearOnSubmit { get; set; }
+        public string? Accept { get; set; }
         public string Helper { get; set; }
         public object Value { get; set; }
     }

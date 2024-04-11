@@ -21,7 +21,7 @@ export default function navbar(data) {
         const header = `<ul>${li(`<strong>${data.title}</strong>`)}</ul>`;
         let links = list(data.items)
         this.$root.innerHTML = `
-         <footer>
+          <footer>
             <nav>
               <ul>
                 ${data.text}
