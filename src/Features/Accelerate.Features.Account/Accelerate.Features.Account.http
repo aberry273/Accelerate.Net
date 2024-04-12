@@ -1,6 +1,0 @@
-@Accelerate.Foundations.Account = http://localhost:5074
-
-GET {{Accelerate.Foundations.Account}}/weatherforecast/
-Accept: application/json
-
-###

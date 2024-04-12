@@ -18,7 +18,12 @@ namespace Accelerate.Foundations.Common.Models.Views
     }
     public class NavigationBar : NavigationGroup
     {
+
+        [JsonProperty("href")]
+        public string Href { get; set; }
+
         public NavigationAvatarDropdown Dropdown { get; set; }
+
         public bool Authenticated { get; set; }
     }
 }

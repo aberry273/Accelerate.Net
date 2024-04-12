@@ -36,7 +36,7 @@ namespace Accelerate.Projects.App.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction(nameof(ContentController.Channels), "Content");
+            return RedirectToAction(nameof(ContentController.Browse), "Content");
         }
 
     }

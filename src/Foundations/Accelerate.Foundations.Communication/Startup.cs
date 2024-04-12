@@ -6,6 +6,7 @@ using Accelerate.Foundations.Integrations.Twilio.Services;
 using Twilio.Rest.Api.V2010.Account;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Accelerate.Foundations.Common.Models;
 namespace Accelerate.Foundations.Communication
 {
     public static class Startup
@@ -13,20 +14,19 @@ namespace Accelerate.Foundations.Communication
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // Add configs
-               /*
-            var emailConfig = configuration
-                .GetSection(Accelerate.Foundations.Communication.Constants.Settings.EmailConfiguration)
-                .Get<EmailConfiguration>();         
-            var smsConfig = configuration
-                .GetSection(Accelerate.Foundations.Communication.Constants.Settings.SmsConfiguration)
-                .Get<TwilioConfiguration>();
+            services.Configure<EmailConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Settings.EmailConfiguration).Bind(options);
 
-            services.AddSingleton(emailConfig);
-            services.Configure< TwilioConfiguration>((smsConfig));
-            */
-            services.Configure<IOptions<EmailConfiguration>>(configuration.GetSection(Foundations.Communication.Constants.Settings.EmailConfiguration));
-            services.Configure<IOptions<TwilioConfiguration>>(configuration.GetSection(Foundations.Communication.Constants.Settings.SmsConfiguration));
+                options.Password = configuration[Constants.SendGrid.SecretPassword];
+            });
+            services.Configure<TwilioConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Settings.SmsConfiguration).Bind(options);
 
+                options.AccountSID = configuration[Constants.Twilio.AccountSID];
+                options.AuthToken = configuration[Constants.Twilio.AuthToken];
+            });
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddTransient<IMessageServices, MessageServices>();
             services.AddTransient<ISmsSender<MessageResource>, SmsSender>();

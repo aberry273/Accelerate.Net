@@ -10,17 +10,21 @@ using Accelerate.Foundations.Common.Models.Views;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Accelerate.Foundations.Common.Services
 {
     public class MetaContentService : IMetaContentService
     {
         protected IUrlHelper _urlHelper;
+        SiteConfiguration _siteConfig;
         public MetaContentService(
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor)
+            IActionContextAccessor actionContextAccessor,
+            IOptions<SiteConfiguration> siteConfig)
         {
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _siteConfig = siteConfig.Value;
         }
 
         public string GetActionUrl(string action, string controller, object values = null, string protocol = null)
@@ -68,7 +72,8 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new NavigationBar()
             {
-                Title = "parrot",
+                Title = _siteConfig.Name,
+                Href = _siteConfig.Domain,
                 Subtitle = "The new bird in town",
                 Items = new List<NavigationItem>()
                 {
@@ -86,13 +91,19 @@ namespace Accelerate.Foundations.Common.Services
             return new NavigationBar()
             {
                 Authenticated = true,
-                Title = "parrot",
+                Title = _siteConfig.Name,
+                Href = _siteConfig.Domain,
                 Subtitle = "The new bird in town",
                 Dropdown = profile == null ? null : new NavigationAvatarDropdown()
                 {
                     Image = profile?.Image,
                     Items = new List<NavigationItem>()
                     {
+                        new NavigationItem()
+                        {
+                            Disabled = true,
+                            Text = profile?.Username,
+                        },
                         new NavigationItem()
                         {
                             Href = "/Account/Manage",
@@ -109,8 +120,8 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
-                        Href = "/Content/Channels",
-                        Text = "Channels",
+                        Href = "/Content/Browse",
+                        Text = "Browse",
                     },
                 }
             };

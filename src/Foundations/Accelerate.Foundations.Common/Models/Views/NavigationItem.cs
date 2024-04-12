@@ -9,6 +9,8 @@ namespace Accelerate.Foundations.Common.Models.Views
 {
     public class NavigationItem
     {
+        public bool? Disabled { get; set; }
+
         [JsonProperty("class")]
         public string Class { get; set; }
 

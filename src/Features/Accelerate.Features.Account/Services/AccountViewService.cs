@@ -61,7 +61,7 @@ namespace Accelerate.Features.Account.Services
                         Label = "File",
                         Name = "File",
                         FieldType = FormFieldTypes.file,
-                        Accept = ".png",
+                        Accept = ".png|.jpg",
                         Placeholder = "File",
                         Value = user?.AccountProfile?.Image,
                     },
@@ -248,6 +248,22 @@ namespace Accelerate.Features.Account.Services
         }
         #endregion
         #region ForgotPassword
+        public AccountFormPage GetForgotPasswordConfirmationPage()
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Forgot password";
+            viewModel.Form = this.CreateForgotPasswordConfirmationForm();
+            viewModel.Links = this.CreateForgotPasswordLinks();
+            return viewModel;
+        }
+        public Form CreateForgotPasswordConfirmationForm()
+        {
+            var model = new Form()
+            {
+                Label = "Confirm Account",
+            };
+            return model;
+        }
         public AccountFormPage GetForgotPasswordPage(string? usernameOrEmail)
         {
             var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
@@ -276,6 +292,90 @@ namespace Accelerate.Features.Account.Services
             return model;
         }
         private List<NavigationItem> CreateForgotPasswordLinks()
+        {
+            return new List<NavigationItem>()
+            {
+                new NavigationItem()
+                {
+                    Href = _contentService.GetActionUrl(nameof(AccountController.Login), ControllerHelper.NameOf<AccountController>()),
+                    Text = nameof(AccountController.Login),
+                    Class = "secondary"
+                },
+                new NavigationItem()
+                {
+                    Href = _contentService.GetActionUrl(nameof(AccountController.Register), ControllerHelper.NameOf<AccountController>()),
+                    Text = nameof(AccountController.Register),
+                    Class = "contrast",
+                },
+            };
+        }
+        #endregion
+        #region ConfirmAccount
+        public AccountFormPage GetConfirmAccountPage(string? userId)
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Confirm your account";
+            viewModel.Form = this.CreateConfirmAccountForm(userId);
+            viewModel.Links = this.CreateResetPasswordLinks();
+            return viewModel;
+        }
+        public Form CreateConfirmAccountForm(string? userId)
+        {
+            var model = new Form()
+            {
+                Label = "Confirm Account",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username or email",
+                        AriaInvalid = false,
+                        Value = userId
+                    },
+                }
+            };
+            return model;
+        }
+        #endregion
+        #region ResetPassword
+        public AccountFormPage GetResetPasswordPage(string? userId, string? code)
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Reset password";
+            viewModel.Form = this.CreateResetPasswordForm(userId, code);
+            viewModel.Links = this.CreateResetPasswordLinks();
+            return viewModel;
+        }
+        public Form CreateResetPasswordForm(string? userId, string? code)
+        {
+            var model = new Form()
+            {
+                Label = "Forgot Password",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username or email",
+                        AriaInvalid = false,
+                        Value = userId
+                    },
+                    new FormField()
+                    {
+                        Name = "Code",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Code",
+                        AriaInvalid = false,
+                        Value = code
+                    },
+                }
+            };
+            return model;
+        }
+        private List<NavigationItem> CreateResetPasswordLinks()
         {
             return new List<NavigationItem>()
             {

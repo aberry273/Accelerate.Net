@@ -14,6 +14,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Elastic.Clients.Elasticsearch.IndexManagement;
+using Accelerate.Foundations.Common.Extensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Accelerate.Foundations.Content.Services
@@ -114,7 +115,22 @@ namespace Accelerate.Foundations.Content.Services
             }
             return results.Documents.ToList();
         }
-        
+
+        public RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId)
+        {
+
+            var filters = new List<QueryFilter>()
+            {
+                Filter(Foundations.Content.Constants.Fields.ParentId, threadId)
+            };
+
+            var aggregates = new List<string>()
+            {
+                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
+        }
         #endregion
         #region Reviews
 
@@ -192,7 +208,7 @@ namespace Accelerate.Foundations.Content.Services
             }
             else
             {
-                Query.Filters.Add(Filter(Constants.Fields.ParentId, ElasticCondition.MustNot, QueryOperator.Exist));
+                Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
             }
 
             // For any multi-select, apply the filter condition to each field
@@ -223,7 +239,23 @@ namespace Accelerate.Foundations.Content.Services
            
             return CreateQuery(Query);
         }
+        public RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId)
+        {
+
+            var filters = new List<QueryFilter>()
+            {
+                this.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, channelId)
+            };
+            var aggregates = new List<string>()
+            {
+                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
+        }
+
 
         #endregion
+
     }
 }

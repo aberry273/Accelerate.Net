@@ -10,5 +10,8 @@ namespace Accelerate.Features.Account.Services
         AccountFormPage GetLoginPage(string? username);
         AccountFormPage GetRegisterPage(string? username, string? email);
         AccountFormPage GetForgotPasswordPage(string? usernameOrEmail);
+        AccountFormPage GetConfirmAccountPage(string? userId);
+        AccountFormPage GetResetPasswordPage(string? userId, string? code);
+        AccountFormPage GetForgotPasswordConfirmationPage();
     }
 }

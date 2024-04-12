@@ -54,7 +54,7 @@ namespace Accelerate.Foundations.Communication.Services
         private MimeMessage CreateEmailMessage(EmailMessage message)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("TODO:name", _emailConfig.From));
+            emailMessage.From.Add(new MailboxAddress(message.Subject, _emailConfig.From));
             emailMessage.To.AddRange(message.To); 
             emailMessage.Subject = message.Subject;
             var multipart = new Multipart("mixed");

@@ -1,4 +1,5 @@
-﻿using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Features.Content.Models.Views;
+using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Content.Models.Data;
@@ -9,6 +10,11 @@ namespace Accelerate.Features.Content.Services
 {
     public interface IContentViewService
     {
+        NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);
+        ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels);
+        ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
+        ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies);
+
         public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null);
         public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post);
         public AjaxForm CreateChannelForm(AccountUser user);
@@ -19,7 +25,7 @@ namespace Accelerate.Features.Content.Services
         public AjaxForm CreateFormDeleteReply(AccountUser user);
         List<NavigationFilter> CreateSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
         List<string> GetFilterOptions();
-        public NavigationGroup GetChannelsDropdown(string allChannelsUrl, SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null);
+        public NavigationGroup GetChannelsDropdown(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null);
         NavigationItem GetChannelLink(ContentChannelDocument x);
     }
 }

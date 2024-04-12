@@ -21,7 +21,10 @@
             {
                 <strong><i>@Model.Form.Response</i></strong>
             }
-            <div x-data="formPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+            @if(Model.Form != null && Model.Form.Fields != null)
+            {
+                <div x-data="formPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+            }
         </article>
     </div>
     <!-- Other links -->

@@ -22,6 +22,7 @@ using Accelerate.Features.Account.Services;
 using Elastic.Clients.Elasticsearch;
 using Accelerate.Features.Account.Models.Data;
 using System.Security.Claims;
+using Accelerate.Foundations.Common.Helpers;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -145,7 +146,7 @@ namespace Accelerate.Features.Account.Controllers
             });
         }
         #endregion
-
+         
         #region ForgotPassword
         [HttpGet]
         [AllowAnonymous]
@@ -160,6 +161,78 @@ namespace Accelerate.Features.Account.Controllers
             var viewModel = _accountViewService.GetForgotPasswordPage(username);
            
             return View(_accountFormRazorFile, viewModel);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordForm model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByNameAsync(model.Username) ?? await _userManager.FindByEmailAsync(model.Username);
+                
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return RedirectToAction(nameof(ConfirmAccount));
+                }
+
+                // For more information on how to enable account confirmation and password reset please
+                // visit https://go.microsoft.com/fwlink/?LinkID=532713
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
+                await _emailSender.SendConfirmationLinkAsync(user, "Reset Password",
+                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            // If execution got this far, something failed, redisplay the form.
+            return View(model);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ForgotPasswordConfirmation(string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            //ViewData["ReturnUrl"] = returnUrl;
+            //var viewModel = await this.GetLoginViewModel();
+            var viewModel = _accountViewService.GetForgotPasswordConfirmationPage();
+            viewModel.Form.Response = "Please check your email to reset your password";
+            return View(_accountFormRazorFile, viewModel);
+        }
+        #endregion
+
+        #region ResetPassword
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword(string userId = null, string code = null)
+        {
+            var viewModel = _accountViewService.GetResetPasswordPage(userId, code);
+
+            if (userId == null)
+            {
+                viewModel.Form.Response = "There was an error with the link that was supplied. ";
+            }
+
+            if (code == null)
+            {
+                viewModel.Form.Response += "A code must be supplied for password reset.";
+            }
+
+            return View(_accountFormRazorFile, viewModel);
+        }
+        public string ResetPasswordCallbackLink(string userId, string code, string scheme)
+        {
+            return this.Url.Action(
+                action: nameof(ResetPassword),
+                controller: ControllerHelper.NameOf<AccountController>(),
+                values: new { userId, code },
+                protocol: scheme);
         }
         #endregion
         #region Login
@@ -336,22 +409,40 @@ namespace Accelerate.Features.Account.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmAccount(string userId = null, string code = null)
+        public async Task<IActionResult> ConfirmAccount(string username = null, string? response = null)
         {
-            var viewModel = new ConfirmPage(_contentService.CreatePageBaseContent());
-            viewModel.Form.UserId = userId;
-            viewModel.Form.Code = code;
-            if (userId == null)
+            var viewModel = _accountViewService.GetConfirmAccountPage(username);
+            viewModel.Form.Response = response;
+            return View(_accountFormRazorFile, viewModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmAccount(ForgotPasswordForm model)
+        {
+            if (ModelState.IsValid)
             {
-                viewModel.Form.Response = "There was an error with the link that was supplied.";
-                return View(viewModel);
+                var user = await _userManager.FindByNameAsync(model.Username) ?? await _userManager.FindByEmailAsync(model.Username);
+
+                if (user == null)
+                {
+                    var viewModel = _accountViewService.GetConfirmAccountPage(model.Username);
+                    var response = "No user matching this username or email can be found";
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return RedirectToAction(nameof(ConfirmAccount), new { model.Username, response });
+                }
+
+                // For more information on how to enable account confirmation and password reset please
+                // visit https://go.microsoft.com/fwlink/?LinkID=532713
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
+                await _emailSender.SendConfirmationLinkAsync(user, "Confirm Account",
+                   $"Please confirm your account by clicking here: <a href='{callbackUrl}'>link</a>");
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
-            if (code == null)
-            {
-                viewModel.Form.Response = "A code must be supplied for password reset.";
-                return View(viewModel);
-            }
-            return View(viewModel);
+
+            // If execution got this far, something failed, redisplay the form.
+            return View(model);
         }
         #endregion
 

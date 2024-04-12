@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Controllers
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        IContentPostElasticService _postElasticSearchService;
+        IContentPostElasticService _contentElasticSearchService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<ContentChannelDocument> _channelSearchService;
         IContentViewService _contentViewService;
@@ -45,43 +45,25 @@ namespace Accelerate.Features.Content.Controllers
             _contentViewService = contentViewService;
             _contentService = service;
             _postSearchService = searchService;
-            _postElasticSearchService = postElasticSearchService;
+            _contentElasticSearchService = postElasticSearchService;
             _channelSearchService = channelService;
         }
-        private BasePage CreateBaseContent(AccountUser user)
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            var profile = user != null ? new UserProfile()
-            {
-                Username = user.UserName,
-            } : null;
-            return _contentService.CreatePageBaseContent(profile);
+            return RedirectToAction("Browse");
         }
 
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Channels()
+        public async Task<IActionResult> Browse()
         {
             var user = await _userManager.GetUserAsync(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
-            var model = CreateBaseContent(user);
-            var viewModel = new ChannelsPage(model);
-            viewModel.ChannelsDropdown = _contentViewService.GetChannelsDropdown(this.Url.ActionLink("Channels"));
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
-            if(channels != null && channels.IsValidResponse)
-            {
-                var channelItems = channels.Documents.Select(x => new NavigationItem()
-                {
-                    Text = x.Name,
-                    Href = "/Content/Channel/" + x.Id
-                });
-                viewModel.ChannelsDropdown.Items.AddRange(channelItems);
-            }
 
-            viewModel.UserId = user.Id;
-            viewModel.FormCreateReply = _contentViewService.CreatePostForm(user);
-            viewModel.ModalCreateChannel = _contentViewService.CreateModalChannelForm(user);
-            viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
-            viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
+            var viewModel = _contentViewService.CreateChannelsPage(user, channels);
+
             return View(viewModel);
         }
 
@@ -90,38 +72,16 @@ namespace Accelerate.Features.Content.Controllers
         {
             var user = await _userManager.GetUserAsync(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
-            var model = CreateBaseContent(user);
 
-            var viewModel = new ChannelPage(model);
             var response = await _channelSearchService.GetDocument<ContentChannelDocument>(id.ToString());
             var item = response.Source;
-            
-            if (item == null) return RedirectToAction(nameof(ChannelNotFound)); 
-            else viewModel.Item = item; 
-            
-            var channelsResponse = await _channelSearchService.Search(GetUserChannelsQuery(user));
-            viewModel.ChannelsDropdown = _contentViewService.GetChannelsDropdown(this.Url.ActionLink("Channels"), channelsResponse, item.Name);
-            
-            // Add filters
-            var filters = new List<QueryFilter>()
-            {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, item.Id)
-            };
-            var aggregates = new List<string>()
-            {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-            };
-            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
-             
-            var aggResponse = await _postSearchService.GetAggregates(requestFilters);
-            viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
 
-            viewModel.UserId = user.Id;
-            viewModel.FormCreateReply = _contentViewService.CreatePostForm(user, item);
-            viewModel.ModalCreateChannel = _contentViewService.CreateModalChannelForm(user);
-            viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
-            viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
+            if (item == null) return RedirectToAction(nameof(ChannelNotFound));
+
+            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
+
+            var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
             return View(viewModel);
         }
         private QueryDescriptor<ContentChannelDocument> GetUserChannelsQuery(AccountUser user)
@@ -138,22 +98,24 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> Thread([FromRoute] Guid id)
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if (user == null) return RedirectToAction("Index", "Account");
-            var model = CreateBaseContent(user);
-            var viewModel = new ThreadPage(model);
+            if (user == null) return RedirectToAction("Index", "Account");  
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
             
             var item = response.Source;
 
             if (item == null) return RedirectToAction(nameof(PostNotFound));
-            else viewModel.Item = item;
+
+            var replies = await _channelSearchService.Search(this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString()), 0, 100);
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
+            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies);
+            /*
 
             viewModel.UserId = user.Id;
             viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
             // Get replies
 
 
-            var query = this._postElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString());
+            var query = this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString());
             var replies = await _postSearchService.Search(query, 0, 100);
 
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
@@ -177,7 +139,7 @@ namespace Accelerate.Features.Content.Controllers
 
             var aggResponse = await _postSearchService.GetAggregates(requestFilters);
             viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
-
+            */
             return View(viewModel);
         } 
          
@@ -192,28 +154,24 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> ChannelNotFound()
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if (user == null) return RedirectToAction("Index", "Account");
-            var model = CreateBaseContent(user);
-            var viewModel = new NotFoundPage(model);
-            viewModel.Title = "Channel not found";
-            viewModel.Description = "We are unable to retrieve this channel, this may have been deleted or made private.";
+            var title = "Channel not found";
+            var description = "We are unable to retrieve this channel, this may have been deleted or made private.";
+            var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
             return NotFound(viewModel);
         }
         [HttpGet]
         public async Task<IActionResult> PostNotFound()
         {
             var user = await _userManager.GetUserAsync(this.User);
-            if (user == null) return RedirectToAction("Index", "Account");
-            var model = CreateBaseContent(user);
-            var viewModel = new NotFoundPage(model);
-            viewModel.Title = "Post not found";
-            viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
+            var title = "Post not found";
+            var description = "We are unable to retrieve this post, this may have been deleted or made private.";
+            var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
             return NotFound(viewModel);
         }
         [HttpGet]
         public IActionResult NotFound(NotFoundPage viewModel)
         {
-            return View("~/Views/Content/NotFound.cshtml", viewModel);
+            return View(viewModel);
         }
 
     }

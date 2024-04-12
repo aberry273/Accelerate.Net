@@ -5,6 +5,7 @@ using Accelerate.Features.Content.Consumers;
 using Accelerate.Features.Content.EventBus;
 using Accelerate.Features.Content.Pipelines;
 using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.Communication.Services;
 using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;

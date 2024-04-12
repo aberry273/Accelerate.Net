@@ -1,7 +1,12 @@
-﻿using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Features.Content.Controllers;
+using Accelerate.Features.Content.Models.Views;
+using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
+using Accelerate.Foundations.Common.Helpers;
+using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
+using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
@@ -14,6 +19,91 @@ namespace Accelerate.Features.Content.Services
 {
     public class ContentViewService : IContentViewService
     {
+        IMetaContentService _metaContentService;
+        public ContentViewService(IMetaContentService metaContent)
+        {
+            _metaContentService = metaContent;
+        }
+
+        private BasePage CreateBaseContent(AccountUser user)
+        {
+            var profile = user != null ? new UserProfile()
+            {
+                Username = user.UserName,
+                Image = user?.AccountProfile?.Image
+            } : null;
+            return _metaContentService.CreatePageBaseContent(profile);
+        }
+        public ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels)
+        {
+            var model = CreateBaseContent(user);
+            var viewModel = new ChannelsPage(model);
+            viewModel.ChannelsDropdown = GetChannelsDropdown();
+
+            if (channels != null && channels.IsValidResponse)
+            {
+                var channelItems = channels.Documents.Select(x => new NavigationItem()
+                {
+                    Text = x.Name,
+                    Href = this._metaContentService.GetActionUrl(nameof(ContentController.Channel), ControllerHelper.NameOf<ContentController>(), new { id = x.Id })
+                });
+                viewModel.ChannelsDropdown.Items.AddRange(channelItems);
+            }
+
+            viewModel.UserId = user.Id;
+            viewModel.FormCreateReply = CreatePostForm(user);
+            viewModel.ModalCreateChannel = CreateModalChannelForm(user);
+            viewModel.ModalEditReply = CreateModalEditReplyForm(user);
+            viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            return viewModel;
+        }
+        public ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var model = CreateBaseContent(user);
+            var viewModel = new ChannelPage(model);
+
+            viewModel.Item = item;
+
+            viewModel.ChannelsDropdown = GetChannelsDropdown(channels, item.Name);
+
+            // Add filters
+            viewModel.Filters = CreateSearchFilters(aggregateResponse);
+
+            viewModel.UserId = user.Id;
+            viewModel.FormCreateReply = CreatePostForm(user, item);
+            viewModel.ModalCreateChannel = CreateModalChannelForm(user);
+            viewModel.ModalEditReply = CreateModalEditReplyForm(user);
+            viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            return viewModel;
+        }
+        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies)
+        {
+            var model = CreateBaseContent(user);
+            var viewModel = new ThreadPage(model);
+            viewModel.Item = item;
+
+            viewModel.UserId = user.Id;
+            viewModel.PreviousUrl = "#";
+            // Get replies
+            //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
+            viewModel.Replies = replies.Documents.ToList();
+            viewModel.FormCreateReply = CreateReplyForm(user, item);
+            viewModel.ModalEditReply = CreateModalEditReplyForm(user);
+            viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+
+            // Add filters
+            viewModel.Filters = CreateSearchFilters(aggregateResponse);
+
+            return viewModel;
+        }
+        public NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description)
+        {
+            var model = CreateBaseContent(user);
+            var viewModel = new NotFoundPage(model);
+            viewModel.Title = "Post not found";
+            viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
+            return viewModel;
+        }
         public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null)
         {
             var model = new AjaxForm()
@@ -384,7 +474,7 @@ namespace Accelerate.Features.Content.Services
             return filter;
         }
 
-        public NavigationGroup GetChannelsDropdown(string allChannelsUrl, SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
+        public NavigationGroup GetChannelsDropdown(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
         {
             var model = new NavigationGroup()
             {
@@ -394,7 +484,7 @@ namespace Accelerate.Features.Content.Services
                     new NavigationItem()
                     {
                         Text = "All",
-                        Href = allChannelsUrl
+                        Href = this._metaContentService.GetActionUrl(nameof(ContentController.Browse), ControllerHelper.NameOf<ContentController>())
                     }
                 }
             };
@@ -411,7 +501,7 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = x.Name,
-                Href = "/Content/Channels/" + x.Id
+                Href = this._metaContentService.GetActionUrl(nameof(ContentController.Channel), ControllerHelper.NameOf<ContentController>(), new {id = x.Id })
             };
         }
 
