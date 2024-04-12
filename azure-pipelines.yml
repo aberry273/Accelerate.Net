@@ -1,10 +1,10 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- develop
+- dev
 
 pool:
   vmImage: 'windows-latest'
@@ -13,143 +13,22 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  artifactPortalZipName: 'Accelerator.Projects.Portal.zip'
-  artifactPublicZipName: 'Accelerator.Projects.Public.zip'
-  artifactName: 'apiCoreDrop'
-  projectBuildPath: '\src\Projects\Accelerator.Projects.Portal\'
-  build.artifactPortalDeployDirectory: 'C:\Sites\Trady180.Portal'
-  build.artifactPublicDeployDirectory: 'C:\Sites\Trady180.Public'
-  assetFolderName: 'assets'
-  VMName: 'Trady180-MVP'
-  build.arguments: '-c Release -r win-x64 --self-contained true /p:EnvironmentName=Release'
 
-stages:
-- stage: BuildBackend
-  jobs:
-  - job: BuildSite
-    steps:
-    - task: NuGetAuthenticate@0
-      inputs:
-        nuGetServiceConnections: 'Rocketbase.Azure.Nuget'
-    - task: NuGetToolInstaller@1
+steps:
+- task: NuGetToolInstaller@1
 
-    - task: NuGetCommand@2
-      inputs:
-        command: 'restore'
-        restoreSolution: '**/*.sln'
-        feedsToUse: 'select'
-        vstsFeed: '97ed4ecc-d9c3-49e2-b1a0-cff6ebfb0b23'
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'build'
-        projects: '$(solution)'
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet publish'
-      inputs:
-        command: 'publish'
-        publishWebProjects: true
-        projects: '**/*.csproj'
-        arguments: '-o $(Build.ArtifactStagingDirectory)/$(Build.BuildNumber) $(build.arguments)'
-        zipAfterPublish: true
-        modifyOutputPath: true
-      
-    - task: VSTest@2
-      inputs:
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish files'
-      inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: $(artifactName)
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
 
-
-- stage: DeployBackoffice
-  dependsOn: BuildBackend
-  jobs:
-  - job: DeploySiteToVM
-  - deployment: VMDeploy
-    displayName: portal
-    environment:
-      name: $(VMName)
-      resourceType: VirtualMachine
-      tags: portal
-    strategy:
-        runOnce:
-          deploy:
-            steps: 
-            - task: FileTransform@1
-              inputs:
-                folderPath: '$(Build.ArtifactStagingDirectory)/../$(artifactName)/$(Build.BuildNumber)/$(artifactPortalZipName)'
-                fileType: 'json'
-            - task: IISWebAppManagementOnMachineGroup@0
-              inputs:
-                IISDeploymentType: 'IISWebsite'
-                ActionIISWebsite: 'StopWebsite'
-                StartStopWebsiteName: 'Portal.Trady180'
-            
-            - task: DeleteFiles@1
-              displayName: 'Cleaning auth folder: $(Build.artifactPortalDeployDirectory)'
-              continueOnError: true
-              inputs:
-                SourceFolder: '$(Build.artifactPortalDeployDirectory)'
-                Contents: '**/*.*'
-            
-            - task: ExtractFiles@1
-              inputs:
-                archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/../$(artifactName)/$(Build.BuildNumber)/$(artifactPortalZipName)'
-                destinationFolder: $(Build.artifactPortalDeployDirectory)
-                overwriteExistingFiles: true
-                cleanDestinationFolder: false
-            
-            - task: IISWebAppManagementOnMachineGroup@0
-              inputs:
-                IISDeploymentType: 'IISWebsite'
-                ActionIISWebsite: 'StartWebsite'
-                StartStopWebsiteName: 'Portal.Trady180'
-  
-- stage: DeployPublic
-  dependsOn: DeployBackoffice
-  jobs:
-  - job: DeploySiteToVM
-  - deployment: VMDeploy
-    displayName: portal
-    environment:
-      name: $(VMName)
-      resourceType: VirtualMachine
-      tags: portal
-    strategy:
-        runOnce:
-          deploy:
-            steps: 
-            - task: FileTransform@1
-              inputs:
-                folderPath: '$(Build.ArtifactStagingDirectory)/../$(artifactName)/$(Build.BuildNumber)/$(artifactPublicZipName)'
-                fileType: 'json'
-            - task: IISWebAppManagementOnMachineGroup@0
-              inputs:
-                IISDeploymentType: 'IISWebsite'
-                ActionIISWebsite: 'StopWebsite'
-                StartStopWebsiteName: 'Public.Trady180'
-            
-            - task: DeleteFiles@1
-              displayName: 'Cleaning auth folder: $(Build.artifactPublicDeployDirectory)'
-              continueOnError: true
-              inputs:
-                SourceFolder: '$(Build.artifactPublicDeployDirectory)'
-                Contents: '**/*.*'
-            
-            - task: ExtractFiles@1
-              inputs:
-                archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/../$(artifactName)/$(Build.BuildNumber)/$(artifactPublicZipName)'
-                destinationFolder: $(Build.artifactPublicDeployDirectory)
-                overwriteExistingFiles: true
-                cleanDestinationFolder: false
-            
-            - task: IISWebAppManagementOnMachineGroup@0
-              inputs:
-                IISDeploymentType: 'IISWebsite'
-                ActionIISWebsite: 'StartWebsite'
-                StartStopWebsiteName: 'Public.Trady180'
-  
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
