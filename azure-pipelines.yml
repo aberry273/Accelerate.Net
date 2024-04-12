@@ -32,3 +32,10 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'Personal PAYG(070794bf-2979-487e-a00a-f7c72c5576f7)'
+    appType: 'webApp'
+    appName: 'parrotapp'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    deploymentMethod: 'auto'
