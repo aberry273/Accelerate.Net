@@ -12,11 +12,12 @@ namespace Accelerate.Foundations.Content.Models.Data
     public class ContentPostDocument
     {
         // Core properties
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime? CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public string? ThreadId { get; set; }
         public Guid? UserId { get; set; }
+        public List<Guid> ParentIds { get; set; }
         public Guid? ParentId { get; set; }
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }

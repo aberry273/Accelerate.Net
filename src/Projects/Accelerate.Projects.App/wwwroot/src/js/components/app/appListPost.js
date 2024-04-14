@@ -20,9 +20,9 @@ export default function (data) {
       const html = `
         <div x-transition>
         <!-- :key="post.id+':'+post.updatedOn"-->
-            <template x-for="(post, i) in posts" :key="post.id" >
-              ${component}
-            </template>
+          <template x-for="(post, i) in posts" :key="post.id" >
+            ${component}
+          </template>
           <template x-if="posts == null || posts.length == 0">
             <article>
               <header><strong>No results!</strong></header>

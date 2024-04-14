@@ -8,7 +8,7 @@ using MassTransit.DependencyInjection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace Accelerate.Features.Content.Consumers
+namespace Accelerate.Foundations.EventPipelines.Consumers
 {
 
     public class DataDeleteCompleteConsumer<T> : IConsumer<DeleteCompleteDataContract<T>>

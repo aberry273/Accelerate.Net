@@ -25,16 +25,9 @@ export default function (data = {}) {
 
         this.load(data);
         const self = this;
-        /*
-        this.$events.on(data.event, (payload) =>{
-          console.log('event payload');
-          console.log(payload);
-        })
-        */
         // Listen for the event.
         window.addEventListener(this.event,
           (ev) => {
-            console.log(ev)
             self.toggle()
           }, false,
         );

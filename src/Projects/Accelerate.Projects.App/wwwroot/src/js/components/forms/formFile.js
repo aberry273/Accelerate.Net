@@ -37,7 +37,7 @@ export default function (data) {
       field.value = value;
     },
     getFilePreview(file) {
-        return typeof file == 'string' ? file : URL.createObjectURL(file)
+      return typeof file == 'string' ? file : URL.createObjectURL(file)
     },
     // METHODS
     renderField(field) {

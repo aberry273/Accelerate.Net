@@ -9,9 +9,8 @@ using MassTransit.DependencyInjection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace Accelerate.Features.Content.Consumers
-{
-
+namespace Accelerate.Foundations.EventPipelines.Consumers
+{ 
     public class DataCreateConsumer<T, B> : IConsumer<CreateDataContract<T>> where B : IDataBus<T>
     {
         readonly ILogger<DataCreateConsumer<T, B>> _logger;

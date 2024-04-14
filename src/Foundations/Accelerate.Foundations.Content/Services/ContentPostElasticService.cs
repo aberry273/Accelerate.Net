@@ -211,7 +211,7 @@ namespace Accelerate.Foundations.Content.Services
                 Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
             }
 
-            // For any multi-select, apply the filter condition to each field
+            // For any multi-select, force the filter condition to each field to be Filter
             if (Query.Filters.Any(x => x.Values != null && x.Values.Count > 0))
             {
                 foreach (var filter in Query.Filters.Where(x => x.Values != null && x.Values.Count > 0))
@@ -221,7 +221,7 @@ namespace Accelerate.Foundations.Content.Services
             }
             return CreateQuery(Query);
         }
-
+         
         public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId)
         {
             var Query = new RequestQuery()

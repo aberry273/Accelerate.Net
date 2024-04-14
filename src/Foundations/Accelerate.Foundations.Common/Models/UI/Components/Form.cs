@@ -12,6 +12,6 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public string Method { get; set; } = "POST";
         public string Response { get; set; }
         public List<FormField> Fields { get; set; }
-        public required string Label { get; set; }
+        public string Label { get; set; }
     }
 }

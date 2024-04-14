@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using Accelerate.Foundations.Common.Extensions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +12,11 @@ namespace Accelerate.Foundations.Content.Models.Entities
 {
     public enum ContentPostActivityTypes
     {
-        //Many times to many channels
+        Like,
+        Agree,
+        Disagree,
+        Vote,
         Share,
-        //Value once to post
-        Vote
     }
     [Table("ContentPostActivity")]
     public class ContentPostActivityEntity : BaseEntity
@@ -25,10 +27,18 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public Guid ContentPostId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
+        [NotMapped]
+        public string Action {
+            get
+            {
+                return Enum.GetName(this.Type);
+            }
+            set
+            {
+                this.Type = Enum.Parse<ContentPostActivityTypes>(StringExtensions.Capitalize(value));
+            }
+        }
         public ContentPostActivityTypes Type { get; set; }
-        /// <summary>
-        /// Post replies set this as the root node
-        /// </summary>
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 }

@@ -63,7 +63,12 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
                 var parentDoc = parentResponse.Source;
                 await UpdateParentDocument(parentDoc, indexModel, args);
-                if(parentDoc.UserId == indexModel.UserId)
+
+                var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
+                parentIdThread.Add(parentDoc.Id);
+                indexModel.ParentIds = parentIdThread;
+
+                if (parentDoc.UserId == indexModel.UserId)
                 {
                     indexModel.PostType = ContentPostType.Thread;
                 }

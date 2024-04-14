@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Http 
 @model ChannelsPage
 
-<div class="grid" x-data>
+<div class="grid">
     <!-- Channels panel -->
     <div>
         <nav>
@@ -26,20 +26,16 @@
             <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
         </article>
         <!--Feed-->
-        <div x-data="_contentPostsManager({
-                feed: $store.feedFilters.current,
-                sourceUrl: 'https://localhost:7220/api/contentpost',
-                reviewUrl: 'https://localhost:7220/api/contentpostreview',
-                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-                threadUrl: 'https://localhost:7220/content/thread',
-                event: 'post:created',
-                userId: '@Model.UserId',
-                items: [],
-                channel: 'all',
-                })">
-            <div x-data="appListPost"></div>
+        <div x-data="listCards( {
+            actionUrl: 'https://localhost:7220/api/contentpostactivity',
+            searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+            filterEvent: null,
+            userId: '@Model.UserId',
+            actionEvent: 'action:post',
+            itemEvent: $store.wssContentPosts.getMessageEvent(),
+          })">
         </div>
+
     </div>
 </div>
 

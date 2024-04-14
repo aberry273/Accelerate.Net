@@ -31,7 +31,7 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
             services.AddTransient<IElasticService<ContentPostDocument>, ContentPostElasticService>();
             services.AddTransient<IElasticService<ContentPostReviewDocument>, ContentReviewElasticService>();
-            services.AddTransient<IElasticService<ContentPostActivityEntity>, ContentActivityElasticService>();
+            services.AddTransient<IElasticService<ContentPostActivityDocument>, ContentActivityElasticService>();
             services.AddTransient<IElasticService<ContentChannelDocument>, ContentChannelElasticService>();
         }
         public static void InitializePipeline(BaseContext<ContentPostEntity> context)

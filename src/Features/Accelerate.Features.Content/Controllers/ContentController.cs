@@ -19,6 +19,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Twilio.TwiML.Voice;
 
 namespace Accelerate.Features.Content.Controllers
@@ -30,13 +31,16 @@ namespace Accelerate.Features.Content.Controllers
         IContentPostElasticService _contentElasticSearchService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<ContentChannelDocument> _channelSearchService;
+        IEntityService<AccountProfile> _profileService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
+        private const string _notFoundRazorFile = "~/Views/Content/NotFound.cshtml";
         public ContentController(
             IMetaContentService service,
             IContentViewService contentViewService,
             IContentPostElasticService postElasticSearchService,
             IEntityService<ContentPostEntity> postService,
+            IEntityService<AccountProfile> profileService,
             IElasticService<ContentPostDocument> searchService,
             IElasticService<ContentChannelDocument> channelService,
             UserManager<AccountUser> userManager) : base(service)
@@ -45,6 +49,7 @@ namespace Accelerate.Features.Content.Controllers
             _contentViewService = contentViewService;
             _contentService = service;
             _postSearchService = searchService;
+            _profileService = profileService;
             _contentElasticSearchService = postElasticSearchService;
             _channelSearchService = channelService;
         }
@@ -54,10 +59,18 @@ namespace Accelerate.Features.Content.Controllers
             return RedirectToAction("Browse");
         }
 
+        private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        {
+            var user = await _userManager.GetUserAsync(principle);
+            if (user == null) return null;
+            var profile = _profileService.Get(user.AccountProfileId);
+            user.AccountProfile = profile;
+            return user;
+        }
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Browse()
         {
-            var user = await _userManager.GetUserAsync(this.User);
+            var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
@@ -70,7 +83,7 @@ namespace Accelerate.Features.Content.Controllers
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Channel([FromRoute] Guid id)
         {
-            var user = await _userManager.GetUserAsync(this.User);
+            var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
 
             var response = await _channelSearchService.GetDocument<ContentChannelDocument>(id.ToString());
@@ -97,7 +110,7 @@ namespace Accelerate.Features.Content.Controllers
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Thread([FromRoute] Guid id)
         {
-            var user = await _userManager.GetUserAsync(this.User);
+            var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction("Index", "Account");  
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
             
@@ -108,38 +121,9 @@ namespace Accelerate.Features.Content.Controllers
             var replies = await _channelSearchService.Search(this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString()), 0, 100);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
             var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies);
-            /*
-
-            viewModel.UserId = user.Id;
-            viewModel.PreviousUrl = Request.Headers["Referer"].ToString();
-            // Get replies
-
-
-            var query = this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString());
-            var replies = await _postSearchService.Search(query, 0, 100);
-
-            //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
-            viewModel.Replies = replies.Documents.ToList();
-            viewModel.FormCreateReply = _contentViewService.CreateReplyForm(user, item);
-            viewModel.ModalEditReply = _contentViewService.CreateModalEditReplyForm(user);
-            viewModel.ModalDeleteReply = _contentViewService.CreateModalDeleteReplyForm(user);
-
-            // Add filters
-            var filters = new List<QueryFilter>()
-            {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, item.Id)
-            };
-
-            var aggregates = new List<string>()
-            {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-            };
-            var requestFilters = new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
-
-            var aggResponse = await _postSearchService.GetAggregates(requestFilters);
-            viewModel.Filters = _contentViewService.CreateSearchFilters(aggResponse);
-            */
+            //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
+            //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare
+            viewModel.Parents = new List<ContentPostDocument>();
             return View(viewModel);
         } 
          
@@ -153,20 +137,20 @@ namespace Accelerate.Features.Content.Controllers
         [HttpGet]
         public async Task<IActionResult> ChannelNotFound()
         {
-            var user = await _userManager.GetUserAsync(this.User);
+            var user = await GetUserWithProfile(this.User);
             var title = "Channel not found";
             var description = "We are unable to retrieve this channel, this may have been deleted or made private.";
             var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
-            return NotFound(viewModel);
+            return View(_notFoundRazorFile, viewModel);
         }
         [HttpGet]
         public async Task<IActionResult> PostNotFound()
         {
-            var user = await _userManager.GetUserAsync(this.User);
+            var user = await GetUserWithProfile(this.User);
             var title = "Post not found";
             var description = "We are unable to retrieve this post, this may have been deleted or made private.";
             var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
-            return NotFound(viewModel);
+            return View(_notFoundRazorFile, viewModel);
         }
         [HttpGet]
         public IActionResult NotFound(NotFoundPage viewModel)

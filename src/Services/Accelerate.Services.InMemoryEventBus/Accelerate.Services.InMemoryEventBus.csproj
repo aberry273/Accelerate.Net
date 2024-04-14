@@ -12,6 +12,7 @@
 	<PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<PlatformTarget>x64</PlatformTarget>
+	<Configurations>Debug;Release;Staging</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

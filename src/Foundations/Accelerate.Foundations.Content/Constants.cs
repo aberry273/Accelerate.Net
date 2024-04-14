@@ -15,9 +15,11 @@ namespace Accelerate.Foundations.Content
             public const string PostType = "postType";
             public const string ThreadId = "threadId";
             public const string ParentId = "parentId";
+            public const string ParentIds = "parentIds";
             public const string TargetThread = "targetThread";
             public const string TargetChannel = "targetChannel";
             public const string ContentPostId = "contentPostId";
+            public const string Id = "id";
 
             public const string Tags = "tags";
             public const string Status = "status";

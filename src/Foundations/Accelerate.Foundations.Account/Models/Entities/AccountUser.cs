@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Accelerate.Foundations.Database.Models;
 
 namespace Accelerate.Foundations.Account.Models.Entities
 {
-    public class AccountUser : IdentityUser<Guid>
+    public class AccountUser : IdentityUser<Guid>, IBaseEntity
     {
         public string Domain { get; set; }
         [Required]

@@ -5,21 +5,18 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>5334ac05-3583-4823-9d44-97410596f81b</UserSecretsId>
+    <Configurations>Debug;Release;Staging</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="wwwroot\src - Copy %282%29\**" />
     <Compile Remove="wwwroot\src - Copy\**" />
-    <Compile Remove="wwwroot\src\js\components\lists\**" />
     <Content Remove="wwwroot\src - Copy %282%29\**" />
     <Content Remove="wwwroot\src - Copy\**" />
-    <Content Remove="wwwroot\src\js\components\lists\**" />
     <EmbeddedResource Remove="wwwroot\src - Copy %282%29\**" />
     <EmbeddedResource Remove="wwwroot\src - Copy\**" />
-    <EmbeddedResource Remove="wwwroot\src\js\components\lists\**" />
     <None Remove="wwwroot\src - Copy %282%29\**" />
     <None Remove="wwwroot\src - Copy\**" />
-    <None Remove="wwwroot\src\js\components\lists\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -105,6 +102,10 @@
     <Folder Include="Views\Home\" />
     <Folder Include="wwwroot\src\js\components\forms\" />
     <Folder Include="wwwroot\src\js\data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\src\js\components\lists\listCards.js" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

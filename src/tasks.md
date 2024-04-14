@@ -5,4 +5,4 @@
 3. Provision new Azure SQL database for Content
 4. Complete the .NET with EF
 https://learn.microsoft.com/en-us/azure/azure-sql/database/azure-sql-dotnet-entity-framework-core-quickstart?view=azuresql&tabs=visual-studio%2Cservice-connector%2Cportal
-5.  
+5.Step > Connect the App Service to Azure SQL Database

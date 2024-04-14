@@ -40,33 +40,38 @@ export default function (data) {
     },
     async submit(fields) {
       this.loading = true;
-      const payload = {}
-      fields.map(x => {
-        payload[x.name] = x.value
-        return payload
-      })
-      let response = null;
-      switch (this.postbackType) {
-        case 'POST':
-          response = await this.$fetch.POST(data.postbackUrl, payload);
-          break;
-        case 'PUT':
-          response = await this.$fetch.PUT(data.postbackUrl, payload);
-          break;
-        case 'GET':
-          response = await this.$fetch.GET(data.postbackUrl, payload);
-          break;
-        case 'DELETE':
-          response = await this.$fetch.DELETE(data.postbackUrl);
-          break;
-        default:
-          response = null;
-      }
+      try {
+        const payload = {}
+        fields.map(x => {
+          payload[x.name] = x.value
+          return payload
+        })
+        let response = null;
+        switch (this.postbackType) {
+          case 'POST':
+            response = await this.$fetch.POST(data.postbackUrl, payload);
+            break;
+          case 'PUT':
+            response = await this.$fetch.PUT(data.postbackUrl, payload);
+            break;
+          case 'GET':
+            response = await this.$fetch.GET(data.postbackUrl, payload);
+            break;
+          case 'DELETE':
+            response = await this.$fetch.DELETE(data.postbackUrl);
+            break;
+          default:
+            response = null;
+        }
 
-      if(this.event) {
-        this.$dispatch(this.event, response)
+        if(this.event) {
+          this.$dispatch(this.event, response)
+        }
+        this.$dispatch(this.localEvent, response)
+        
+      } catch(e) {
+
       }
-      this.$dispatch(this.localEvent, response)
       this.loading = false;
     },
     resetValues(fields) {

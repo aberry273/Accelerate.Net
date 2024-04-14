@@ -10,14 +10,14 @@ export default function (settings) {
         async init() {
             this.settings = settings;
             const self = this;
-            this.client = await createClient(this.settings.url, wssEvent)
             // Start the connection.
             try {
+                this.client = await createClient(this.settings.url, wssEvent)
                 await this.client.start();
                 this.connectionId = this.client.connection.connectionId;
                 emit(wssEvent, connectedEvent, this.client.connection.connectionId);
             } catch (err) {
-                console.log(err);
+                console.error(err);
                 //setTimeout(createClient, 5000);
             }
         },

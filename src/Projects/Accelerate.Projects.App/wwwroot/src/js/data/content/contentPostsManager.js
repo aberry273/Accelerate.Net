@@ -123,7 +123,6 @@ export default function (data) {
         async fetchPosts(query) {
             if (!this.fetchPostsUrl || !query) return;
             const results = await this.$fetch.POST(this.fetchPostsUrl, query);
-            console.log(results);
             this.$store.content.setPosts(results);
         },
         async fetchReviews(query) {

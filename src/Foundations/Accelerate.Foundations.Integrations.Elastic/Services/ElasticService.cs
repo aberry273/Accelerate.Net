@@ -118,6 +118,16 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             return await _client.MultiSearchAsync<T>(request);
         }
 
+        public async Task<MultiGetResponse<T>> GetDocuments<T>(List<Guid> ids)
+        {
+            var multiget = new MultiGetRequest(IndexName)
+            {
+                Ids = new Ids(ids.Select(x => x.ToString()))
+            };
+            var response = await _client.MultiGetAsync<T>(multiget);
+            var result = response.Docs.FirstOrDefault();
+            return response;
+        }
         public async Task<GetResponse<T>> GetDocument<T>(string id)
         {
             return await _client.GetAsync<T>(id, idx => idx.Index(_indexName));

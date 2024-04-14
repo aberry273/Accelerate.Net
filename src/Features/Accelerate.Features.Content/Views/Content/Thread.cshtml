@@ -6,53 +6,44 @@
 @model ThreadPage
 
 <div>
-    <nav>
-        <ul>
-            <li>
-                <a href="@Model.PreviousUrl">
-                    <i aria-label="Agree" class="icon material-icons icon-click" rel="prev">chevron_left</i>
-                </a>
-            </li>
-            <li>
-                <strong>@Model.Item.ThreadId</strong>
-            </li>
-        </ul>
-    </nav>
-    <!-- Original post -->
-    <div x-data="_contentPostsManager({
-        sourceUrl: 'https://localhost:7220/api/contentpost',
-        reviewUrl: 'https://localhost:7220/api/contentpostreview',
-        fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-        fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-        threadUrl: 'https://localhost:7220/content/thread',
-        event: 'post:created',
-        userId: '@Model.UserId',
+    <div x-data="listAccordionCard({ items: @JsonSerializerHelper.SerializeObject(Model.Parents) })"></div>
+    
+    <!-- Original Post -->
+    <div class="blockquote dense">
+        <i class="material-icons">arrow_forward</i>
+        <strong>@Model.Item.ThreadId</strong>
+        <!-- Original Post -->
+        <div x-data="cardPost({
+            item:  @JsonSerializerHelper.SerializeObject(Model.Item),
+            userId: '@Model.UserId',
+          })"></div>
+    </div>
+
+    <!-- Response Form -->
+    <article>
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    </article>
+
+     <!-- Filters -->
+    <div x-data="appNavFilters({
+        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        event: '@Model.FilterEvent'
+    })"></div>
+
+    <!-- Replies -->
+    <div x-data="listCards( {
+        actionUrl: 'https://localhost:7220/api/contentpostactivity',
+        searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+        filterEvent: '@Model.FilterEvent',
+        actionEvent: 'action:post',
+        itemEvent: $store.wssContentPosts.getMessageEvent(),
         targetThread: '@Model.Item.ThreadId',
         parentId: '@Model.Item.Id',
-        items: @JsonSerializerHelper.SerializeObject(Model.Replies),
-        channel: 'all',
-        })">
-
-        <div x-data="appCardPost({
-            item: @JsonSerializerHelper.SerializeObject(Model.Item),
-            threadUrl: 'https://localhost:7220/content/thread',
-            expandable: false,
-        })"></div>
-        <!--Feed-->
-        <div x-data="appNavFilters({
-            filters: @JsonSerializerHelper.SerializeObject(Model.Filters)
-        })"></div>
-       
-        <!-- Response Form -->
-        <article>
-            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-        </article>
-
-        <!--Responses-->
-        <main >
-            <div x-data="appListPost"></div>
-        </main> 
+        userId: '@Model.UserId',
+        items: @JsonSerializerHelper.SerializeObject(Model.Replies)
+    })">
     </div>
+
 </div>
 
 <!-- Modals -->

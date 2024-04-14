@@ -9,7 +9,7 @@ using MassTransit.Transports;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace Accelerate.Features.Content.Consumers
+namespace Accelerate.Foundations.EventPipelines.Consumers
 {
 
     public class DataCreateCompleteConsumer<T> : IConsumer<CreateCompleteDataContract<T>>

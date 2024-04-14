@@ -43,5 +43,13 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.Description = entity.Description;
             document.Id = entity.Id;
         }
+        public static void Hydrate(this ContentPostActivityEntity entity, ContentPostActivityDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.Action = entity.Action;
+            document.Id = entity.Id;
+        }
     }
 }

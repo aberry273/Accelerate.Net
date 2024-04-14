@@ -1,38 +1,4 @@
 import { open, close, toggle, isOpenClass, openingClass, closingClass, scrollbarWidthCssVar, animationDuration } from './utilities.js'
-const form = {
-    postbackUrl: 'https://localhost:7220/api/contentpost',
-    postbackType: 'PUT',
-    event: 'post:updated',
-    fields: [
-        {
-            name: 'Content',
-            type: 'textarea',
-            placeholder: 'Whats your update?',
-            autocomplete: null,
-            ariaInvalid: false,
-            helper: ''
-        },
-        {
-            name: 'Id',
-            type: 'input',
-            placeholder: 'Whats your update?',
-            autocomplete: null,
-            disabled: true,
-            hidden: true,
-        },
-        {
-            name: 'UserId',
-            type: 'input',
-            disabled: true,
-            hidden: true,
-            placeholder: 'Whats your update?',
-            autocomplete: null,
-            ariaInvalid: false,
-            helper: '',
-            value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-        },
-    ]
-};
 
 export default function (data = {}) {
     return {
@@ -59,7 +25,6 @@ export default function (data = {}) {
             // If the modal event is triggered, and data is passed in { key: val }
             // Update the form.fields[].value to equal the associated data property
             this.$events.on(this.event, (data) => {
-                console.log(data);
                 const postbackType = data.postbackType;
                 if (postbackType != null) {
                     self.form.postbackType = postbackType;

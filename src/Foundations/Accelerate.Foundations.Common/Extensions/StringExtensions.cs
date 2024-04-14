@@ -7,19 +7,21 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Common.Extensions
 {
-    public static class GuidExtensions
+    public static class StringExtensions
     {
-        public static string ToBase64(this Guid guid)
+        public static string Capitalize(string input)
         {
-            return Convert.ToBase64String(guid.ToByteArray());
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty;
+            }
+            return $"{char.ToUpper(input[0])}{input[1..]}";
         }
-        public static string ToBase64Clean(this Guid guid)
+        public static string ToCamelCase(this string str)
         {
-            return Regex.Replace(guid.ToBase64(), "[/+=]", "");
-        }
-        public static Guid FromBase64(this string cleanGuid)
-        {
-            return new Guid(Convert.FromBase64String(cleanGuid));
+            if (str == null || str.Length == 0) return string.Empty;
+            return Char.ToLowerInvariant(str[0]) + str.Substring(1);
+
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<DeleteIndexResponse> DeleteIndex();
         Task<IndexResponse> IndexDocument<T>(T document);
         Task<GetResponse<T>> GetDocument<T>(string id);
+        Task<MultiGetResponse<T>> GetDocuments<T>(List<Guid> ids);
         Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id);
         Task<UpdateResponse<T>> UpdateOrCreateDocument<T>(T document, string id);
         Task<DeleteResponse> DeleteDocument<T>(string id);
