@@ -5,25 +5,40 @@
 @using Microsoft.AspNetCore.Http 
 @model ThreadPage
 
-<div>
+<div x-data="{
+    filterEvent: 'onFilterChange',
+    actionEvent: 'action:post',
+    quoteEvent: 'quote:post',
+    init() {}
+  }">
     <div x-data="listAccordionCard({ items: @JsonSerializerHelper.SerializeObject(Model.Parents) })"></div>
-    
+
+    @if(Model.ParentLink != null)
+    {
+        <div class="dense blockquote">
+            <summary class="primary">
+                <a href="@Model.ParentLink.Href" style="text-decoration:none;">
+                    <i class="material-icons">chevron_left</i>
+                    <sup class="primary">
+                    
+                    <strong>
+                        @Model.ParentLink.Text
+                    </strong>
+                    </sup>
+                </a>
+            </summary>
+        </div>
+    }
+
     <!-- Original Post -->
-    <div class="blockquote dense">
-        <i class="material-icons">arrow_forward</i>
-        <strong>@Model.Item.ThreadId</strong>
-        <!-- Original Post -->
-        <div x-data="cardPost({
-            item:  @JsonSerializerHelper.SerializeObject(Model.Item),
-            userId: '@Model.UserId',
-          })"></div>
-    </div>
+    <div x-data="cardPost({
+        item:  @JsonSerializerHelper.SerializeObject(Model.Item),
+        userId: '@Model.UserId',
+        })"></div>
 
     <!-- Response Form -->
-    <article>
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    </article>
-
+    <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+     
      <!-- Filters -->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -35,7 +50,7 @@
         actionUrl: 'https://localhost:7220/api/contentpostactivity',
         searchUrl: 'https://localhost:7220/api/contentsearch/posts',
         filterEvent: '@Model.FilterEvent',
-        actionEvent: 'action:post',
+        actionEvent: '@Model.ActionEvent',
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         targetThread: '@Model.Item.ThreadId',
         parentId: '@Model.Item.Id',
@@ -43,6 +58,7 @@
         items: @JsonSerializerHelper.SerializeObject(Model.Replies)
     })">
     </div>
+  
 
 </div>
 

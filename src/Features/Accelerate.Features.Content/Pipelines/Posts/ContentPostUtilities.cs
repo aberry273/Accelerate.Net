@@ -15,7 +15,7 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
         public static ContentPostReviewsDocument? GetReplies(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
         {
             return entityService
-               .Find(x => x.ParentId == args.Value.ParentId && x.UserId != args.Value.UserId)
+               .Find(x => x.ParentId == args.Value.ParentId && x.Type != ContentPostType.Page)
                .GroupBy(g => 1)
                .Select(x =>
                    new ContentPostReviewsDocument

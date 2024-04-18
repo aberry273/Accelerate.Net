@@ -19,11 +19,13 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostActivityEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostReviewEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostQuoteEntity>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
             //Services
             services.AddTransient<IEntityService<ContentChannelEntity>, EntityService<ContentChannelEntity>>();
             services.AddTransient<IEntityService<ContentPostEntity>, EntityService<ContentPostEntity>>();
             services.AddTransient<IEntityService<ContentPostActivityEntity>, EntityService<ContentPostActivityEntity>>();
             services.AddTransient<IEntityService<ContentPostReviewEntity>, EntityService<ContentPostReviewEntity>>();
+            services.AddTransient<IEntityService<ContentPostQuoteEntity>, EntityService<ContentPostQuoteEntity>>();
             //Parent context for mappings
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
 
@@ -33,6 +35,8 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IElasticService<ContentPostReviewDocument>, ContentReviewElasticService>();
             services.AddTransient<IElasticService<ContentPostActivityDocument>, ContentActivityElasticService>();
             services.AddTransient<IElasticService<ContentChannelDocument>, ContentChannelElasticService>();
+            
+            services.AddTransient<IElasticService<ContentPostQuoteDocument>, ContentPostQuoteElasticService>();
         }
         public static void InitializePipeline(BaseContext<ContentPostEntity> context)
         {

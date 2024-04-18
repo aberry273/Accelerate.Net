@@ -4,6 +4,7 @@ using Accelerate.Features.Content.Hubs;
 using Accelerate.Features.Content.Pipelines.Activities;
 using Accelerate.Features.Content.Pipelines.Channels;
 using Accelerate.Features.Content.Pipelines.Posts;
+using Accelerate.Features.Content.Pipelines.Quotes;
 using Accelerate.Features.Content.Pipelines.Reviews;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -39,7 +40,9 @@ namespace Accelerate.Features.Content
         {
             app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostReviewDocument>>($"/{Constants.Settings.ContentPostReviewsHubName}");
+            app.MapHub<BaseHub<ContentPostQuoteDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
+
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
@@ -49,7 +52,8 @@ namespace Accelerate.Features.Content
             services.AddTransient<BaseHub<ContentPostDocument>, ContentPostHub>();
             services.AddTransient<BaseHub<ContentPostReviewDocument>, ContentPostReviewHub>();
             services.AddTransient<BaseHub<ContentChannelDocument>, ContentChannelHub>();
-            services.AddTransient<BaseHub<ContentPostActivityDocument>, ContentActivityHub>();
+            services.AddTransient<BaseHub<ContentPostActivityDocument>, ContentPostActivityHub>();
+            services.AddTransient<BaseHub<ContentPostQuoteDocument>, ContentPostQuoteHub>();
 
             // POSTS
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostEntity, ContentPostCreatedPipeline, ContentPostUpdatedPipeline, ContentPostDeletedPipeline>(services);
@@ -64,13 +68,17 @@ namespace Accelerate.Features.Content
             // Activities
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActivityEntity, ContentPostActivityCreatedPipeline, ContentPostActivityUpdatedPipeline, ContentPostActivityDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActivityEntity>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentActivityBus>(services);
-
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentPostActivityBus>(services);
 
             // Channels
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentChannelEntity, ContentChannelCreatedPipeline, ContentChannelUpdatedPipeline, ContentChannelDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentChannelEntity, ContentChannelCreateCompletedPipeline, ContentChannelUpdatedCompletedPipeline, ContentChannelDeleteCompletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);
+            
+            // Quotes
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostQuoteEntity, ContentPostQuoteCreatedPipeline, ContentPostQuoteUpdatedPipeline, ContentPostQuoteDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostQuoteEntity, IContentPostQuoteBus>(services);
 
         }
     }

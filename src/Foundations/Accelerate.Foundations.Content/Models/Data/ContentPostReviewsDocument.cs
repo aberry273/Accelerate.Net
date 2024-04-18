@@ -11,5 +11,6 @@ namespace Accelerate.Foundations.Content.Models.Data
         public int? Disagrees { get; set; }
         public int? Likes { get; set; }
         public int? Replies { get; set; }
+        public int? Quotes { get; set; }
     }
 }

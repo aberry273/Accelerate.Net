@@ -1,4 +1,5 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
+using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Database.Models;
 using System;
 using System.Collections.Generic;
@@ -18,13 +19,13 @@ namespace Accelerate.Foundations.Content.Models.Entities
     public class ContentPostEntity : BaseEntity
     {
         [NotMapped]
-        public string ThreadId => Id.ToBase64Clean();
+        public string ThreadId => Id.ToBase64();
 
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
         // Replying to another thread
-        public Guid? ParentId { get; set; }
-
+        public Guid? ParentId { get; set; } 
+        public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Hidden;
         public string? Content { get; set; }
@@ -47,7 +48,11 @@ namespace Accelerate.Foundations.Content.Models.Entities
             }
         }
         public string? Tags { get; set; }
+        [NotMapped]
+        public virtual ICollection<ContentPostQuoteEntity>? Quotes { get; set; }
+        [NotMapped]
         public virtual ICollection<ContentPostActivityEntity>? Activities { get; set; }
+        [NotMapped]
         public virtual ICollection<ContentPostReviewEntity>? Reviews { get; set; }
     }
 }

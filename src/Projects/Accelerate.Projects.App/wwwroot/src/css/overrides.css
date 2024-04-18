@@ -15,6 +15,58 @@
   }
   */
   /*Misc*/
+  html {
+    scroll-behavior: smooth;
+  }
+    .sticky {
+    position: sticky;
+    }
+  .ma-0 {
+    margin: 0
+  }
+  .pa-0 { 
+    padding: 0
+  }
+  .my-0 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .mx-0 {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .my-0 {
+    margin-top: 0;
+  }
+  .mb-0 {
+    margin-bottom: 0;
+  }
+  .ml-0 {
+    margin-left: 0;
+  }
+  .mr-0 {
+    margin-right: 0;
+  }
+  .py-0 {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .px-0 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .pt-0 {
+    padding-top: 0;
+  }
+  .pb-0 {
+    padding-bottom: 0;
+  }
+  .pl-0 {
+    padding-left: 0;
+  }
+  .pr-0 {
+    padding-right: 0;
+  }
   .transparent {
     background-color: transparent;
   }
@@ -115,7 +167,7 @@
   }
   .blockquote.dense {
     margin: 0 0;
-    padding: var(--pico-spacing);
+    padding: calc(var(--pico-spacing)*0.5);
   }
   .blockquote.selected {
     border-color: var(--pico-primary);
@@ -212,6 +264,9 @@
     margin-bottom: calc(var(--pico-block-spacing-vertical)* 0.5);
     padding: calc(var(--pico-block-spacing-vertical)* .33) var(--pico-block-spacing-horizontal);
   
+  }
+  article.dense { 
+    margin-bottom: calc(var(--pico-block-spacing-vertical)* .5);
   }
   article.dense header, article header.dense {
     margin-top: calc(var(--pico-block-spacing-vertical)* -1);
@@ -346,6 +401,14 @@
   }
   fieldset {
     margin-bottom: 0;
+  }
+
+  fieldset.form-input {
+      margin-top: var(--pico-form-element-spacing-horizontal);
+      padding-left: var(--pico-form-element-spacing-horizontal);
+  }
+  fieldset.form-input.chips {
+    border-color: transparent;
   }
 
   

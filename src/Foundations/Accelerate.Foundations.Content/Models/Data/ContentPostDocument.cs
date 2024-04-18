@@ -7,7 +7,7 @@ namespace Accelerate.Foundations.Content.Models.Data
 {
     public enum ContentPostType
     {
-        Post, Reply, Thread
+        Post, Reply, Page
     }
     public class ContentPostDocument
     {
@@ -15,6 +15,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public Guid Id { get; set; }
         public DateTime? CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
+        public string? ShortThreadId { get; set; }
         public string? ThreadId { get; set; }
         public Guid? UserId { get; set; }
         public List<Guid> ParentIds { get; set; }
@@ -25,13 +26,22 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? TargetChannel { get; set; }
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
+        public IEnumerable<string>? QuoteIds { get; set; }
         // Computed
         public ContentPostReviewsDocument Reviews { get; set; }
         public ContentPostType PostType { get; set; } = ContentPostType.Post;
         //TODO: Replace with mapping 
         public List<Guid> ThreadIds { get; set; }
-        public List<ContentPostDocument> Threads { get; set; }
+        public List<ContentPostDocument> Pages { get; set; }
         public string? Username { get; set; }
+        public int? Quotes
+        {
+            get
+            {
+                if (Reviews == null) return 0;
+                return Reviews.Quotes;
+            }
+        }
         public int? Agrees
         {
             get

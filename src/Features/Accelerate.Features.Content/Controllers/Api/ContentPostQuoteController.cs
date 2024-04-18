@@ -23,16 +23,16 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostActivityController : BaseApiController<ContentPostActivityEntity>
+    public class ContentPostQuoteController : BaseApiController<ContentPostQuoteEntity>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentPostActivityBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
-        public ContentPostActivityController(
+        public ContentPostQuoteController(
             IMetaContentService contentService,
-            IEntityService<ContentPostActivityEntity> service,
+            IEntityService<ContentPostQuoteEntity> service,
             IEntityService<ContentPostEntity> postService,
             Bind<IContentPostActivityBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
@@ -46,21 +46,21 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
 
 
-        protected override async Task PostCreateSteps(ContentPostActivityEntity obj)
+        protected override async Task PostCreateSteps(ContentPostQuoteEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostActivityEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostQuoteEntity>() { Data = obj });
         }
-        protected override void UpdateValues(ContentPostActivityEntity from, dynamic to)
+        protected override void UpdateValues(ContentPostQuoteEntity from, dynamic to)
         {
             from.Value = to.Value;
         }
-        protected override async Task PostUpdateSteps(ContentPostActivityEntity obj)
+        protected override async Task PostUpdateSteps(ContentPostQuoteEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostActivityEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostQuoteEntity>() { Data = obj });
         }
-        protected override async Task PostDeleteSteps(ContentPostActivityEntity obj)
+        protected override async Task PostDeleteSteps(ContentPostQuoteEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostActivityEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostQuoteEntity>() { Data = obj });
         }
     }
 }

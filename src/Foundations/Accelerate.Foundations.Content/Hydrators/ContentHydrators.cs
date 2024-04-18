@@ -13,6 +13,8 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
             document.ThreadId = entity.ThreadId;
+            document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
+            document.PostType = entity.Type;
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
             document.TargetChannel = entity.TargetChannel;
@@ -49,6 +51,16 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
             document.Action = entity.Action;
+            document.Id = entity.Id;
+        }
+        public static void Hydrate(this ContentPostQuoteEntity entity, ContentPostQuoteDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.QuoterContentPostId = entity.QuoterContentPostId;
+            document.QuotedContentPostId = entity.QuotedContentPostId;
+            document.Value = entity.Value;
             document.Id = entity.Id;
         }
     }

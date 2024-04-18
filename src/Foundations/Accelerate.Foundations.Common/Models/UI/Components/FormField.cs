@@ -10,7 +10,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public enum FormFieldTypes
     {
-        input, email, textarea, number, password, file
+        input, email, textarea, number, password, file, list, select, chips
     }
     public class FormField
     {
@@ -21,6 +21,8 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public FormFieldTypes FieldType { get; set; }
         public bool? Disabled { get; set; }
         public bool? Hidden { get; set; }
+        public bool? IsArray { get; set; }
+        public string? Class { get; set; }
         public string Placeholder { get; set; }
         public bool? Autocomplete { get; set; }
         public bool? AriaInvalid { get; set; }
@@ -28,5 +30,6 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public string? Accept { get; set; }
         public string Helper { get; set; }
         public object Value { get; set; }
+        public List<string> Items { get; set; }
     }
 }

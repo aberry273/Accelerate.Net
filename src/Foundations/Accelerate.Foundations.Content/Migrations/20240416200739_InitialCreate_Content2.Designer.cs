@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    [Migration("20240401010840_InitialCreate_Content1")]
-    partial class InitialCreate_Content1
+    [Migration("20240416200739_InitialCreate_Content2")]
+    partial class InitialCreate_Content2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,42 @@ namespace Accelerate.Foundations.Content.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentChannelEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentChannels");
+                });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActivityEntity", b =>
                 {
@@ -47,7 +83,6 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -98,6 +133,41 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.ToTable("ContentPosts");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostQuoteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("QuotedContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("QuoterContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuoterContentPostId");
+
+                    b.ToTable("ContentPostQuotes");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostReviewEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -143,6 +213,17 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Navigation("ContentPost");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostQuoteEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "QuoterContentPost")
+                        .WithMany("Quotes")
+                        .HasForeignKey("QuoterContentPostId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("QuoterContentPost");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostReviewEntity", b =>
                 {
                     b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
@@ -157,6 +238,8 @@ namespace Accelerate.Foundations.Content.Migrations
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", b =>
                 {
                     b.Navigation("Activities");
+
+                    b.Navigation("Quotes");
 
                     b.Navigation("Reviews");
                 });

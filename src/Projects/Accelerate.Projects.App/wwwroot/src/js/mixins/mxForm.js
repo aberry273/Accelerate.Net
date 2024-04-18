@@ -104,6 +104,56 @@ export default function (data){
 				default:
 					return null;
 			}
+		},
+
+		_mxForm_SetField(fields, updatedField) {
+			for (var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+				if(field.name == updatedField.name) {
+					fields[i] = updatedField;
+				}
+			}
+		},
+		_mxForm_GetField(fields, fieldName) {
+			for (var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+				if(field.name == fieldName) {
+					return field;
+				}
+			}
+		},
+		_mxForm_SetFieldVisibility(fields, fieldName, val) {
+			for (var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+				if(field.name == fieldName) {
+					field.hidden = val;
+				}
+			}
+		},
+		_mxForm_GetFieldValue(fields, fieldName) {
+			for (var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+				if(field.name == fieldName) {
+				  return field.value;
+				}
+			}
+		},
+		_mxForm_SetFieldValue(fields, fieldName, val) {
+			for(var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+				if(field.name == fieldName) {
+				  field.value = val;
+				}
+			}
+		},
+		_mxForm_SetFieldItems(fields, fieldName, items) {
+			for(var i = 0; i < fields.length; i++) {
+				const field = fields[i];
+ 				if(field.name == fieldName) {
+					if(field.items == null) field.items = [];
+					field.items = items;
+				}
+			}
 		}
         
     }

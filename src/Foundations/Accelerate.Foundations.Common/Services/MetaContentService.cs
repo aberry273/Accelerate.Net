@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
+using Azure.Core;
 
 namespace Accelerate.Foundations.Common.Services
 {
@@ -27,6 +28,12 @@ namespace Accelerate.Foundations.Common.Services
             _siteConfig = siteConfig.Value;
         }
 
+        public string GetCurrentUrl()
+        {
+            var Request = _urlHelper.ActionContext.HttpContext.Request;
+            return $"{Request.Scheme}://{Request.Host}{Request.Path}{Request.QueryString}";
+
+        }
         public string GetActionUrl(string action, string controller, object values = null, string protocol = null)
         {
             return _urlHelper.Action(

@@ -1,4 +1,5 @@
-﻿using Accelerate.Foundations.Common.Models.UI.Components;
+﻿using Accelerate.Features.Content.Models.UI;
+using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
@@ -12,8 +13,9 @@ namespace Accelerate.Features.Content.Models.Views
         public List<ContentPostDocument> Parents { get; set; } = new List<ContentPostDocument>();
         public List<ContentPostDocument> Replies { get; set; } = new List<ContentPostDocument>();
         public string FilterEvent { get; set; } = "filter:update";
-        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();
-        public string PreviousUrl { get; set; }
+        public string ActionEvent { get; set; } = "action:post";
+        public NavigationItem ParentLink { get; set; }
+        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>(); 
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }

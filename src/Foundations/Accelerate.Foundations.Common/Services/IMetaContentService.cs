@@ -10,6 +10,7 @@ namespace Accelerate.Foundations.Common.Services
 {
     public interface IMetaContentService
     {
+        string GetCurrentUrl();
         string GetActionUrl(string action, string controller, object values = null, string protocol = null);
         BasePage CreatePageBaseContent(UserProfile? profile = null);
     }

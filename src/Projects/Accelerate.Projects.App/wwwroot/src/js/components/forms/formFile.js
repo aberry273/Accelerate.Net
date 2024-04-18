@@ -1,5 +1,6 @@
 import input from './fields/input.js'
 import textarea from './fields/textarea.js'
+import select from './fields/select.js'
 
 export default function (data) {
 	return {
@@ -42,6 +43,7 @@ export default function (data) {
     // METHODS
     renderField(field) {
       if(field.type == 'textarea') return textarea(field)
+      if(field.type == 'select') return select(field)
       
       return input(field)
     },

@@ -44,8 +44,4 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Data\" />
-  </ItemGroup>
-
 </Project>

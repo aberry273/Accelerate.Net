@@ -34,12 +34,12 @@ namespace Accelerate.Features.Content.Controllers.Api
     public class ContentSearchController : ControllerBase
     {
         UserManager<AccountUser> _userManager;
-        IMetaContentService _contentService;
+        IContentViewService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IContentPostElasticService _searchService;
         IElasticService<ContentPostReviewDocument> _searchReviewService;
         public ContentSearchController(
-            IMetaContentService contentService,
+            IContentViewService contentService,
             IContentPostElasticService service,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchPostService,
@@ -63,6 +63,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPosts([FromBody] RequestQuery query)
         {
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             var docs = await _searchService.SearchPosts(query);
             return Ok(docs);
         }
@@ -70,6 +71,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchChannels([FromBody] RequestQuery query)
         {
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             var docs = await _searchService.SearchPosts(query);
             return Ok(docs);
         }

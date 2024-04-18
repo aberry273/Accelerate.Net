@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading;
 using Twilio.TwiML.Voice;
 
 namespace Accelerate.Features.Content.Controllers
@@ -119,7 +120,13 @@ namespace Accelerate.Features.Content.Controllers
             if (item == null) return RedirectToAction(nameof(PostNotFound));
 
             var replies = await _channelSearchService.Search(this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString()), 0, 100);
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
+            var filterFields = _contentViewService.GetFilterOptions().Values.ToList();
+
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, id)
+            };
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateAggregateQuery(item.Id, filters, filterFields));
             var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies);
             //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
             //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare

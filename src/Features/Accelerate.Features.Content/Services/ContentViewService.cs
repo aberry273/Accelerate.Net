@@ -1,4 +1,5 @@
 ﻿using Accelerate.Features.Content.Controllers;
+using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
@@ -12,8 +13,11 @@ using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Threading.Channels;
 using static Accelerate.Features.Content.Constants;
+using static Elastic.Clients.Elasticsearch.JoinField;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -81,9 +85,10 @@ namespace Accelerate.Features.Content.Services
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
             viewModel.Item = item;
-
+            viewModel.ParentLink = item.ParentId != null
+                ? GetThreadLink(item.TargetThread, item.ParentId.GetValueOrDefault())
+                : null;
             viewModel.UserId = user.Id;
-            viewModel.PreviousUrl = "#";
             // Get replies
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
             viewModel.Replies = replies.Documents.ToList();
@@ -124,6 +129,15 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name = "Tags",
+                        FieldType = FormFieldTypes.chips,
+                        Placeholder = "Add a tag",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = false,
+                    },
+                    new FormField()
+                    {
                         Name = "UserId",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
@@ -152,12 +166,26 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost",
+                PostbackUrl = "https://localhost:7220/api/contentpost/quote",
                 Type = PostbackType.POST,
                 Event = "post:created",
+                ActionEvent = "action:post",
                 Label = "Reply",
                 Fields = new List<FormField>()
                 {
+                    new FormField()
+                    {
+                        Name= "QuoteIds",
+                        FieldType = FormFieldTypes.list,
+                        Class = "flat",
+                        Placeholder = "Quotes",
+                        IsArray = true,
+                        Autocomplete = null,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Hidden = false,
+                        Helper = "",
+                    },
                     new FormField()
                     {
                         Name = "Content",
@@ -165,6 +193,16 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
                         AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Tags",
+                        FieldType = FormFieldTypes.chips,
+                        Placeholder = "Add a tag",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = post.Tags != null,
+                        Value = post.Tags
                     },
                     new FormField()
                     {
@@ -204,16 +242,7 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         Value = post.TargetChannel,
-                    },
-                    new FormField()
-                    {
-                        Name = "TagItems",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = post.Tags,
-                    },
+                    }, 
                     new FormField()
                     {
                         Name = "Category",
@@ -374,12 +403,22 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
         
-        public List<string> GetFilterOptions()
+        public Dictionary<string, string> GetFilterOptions()
         {
-            return new List<string>
+            return new Dictionary<string, string>()
             {
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-                Foundations.Content.Constants.Fields.ThreadId.ToCamelCase()
+                {
+                    Constants.Filters.Tags,
+                    Foundations.Content.Constants.Fields.Tags
+                },
+                {
+                    Constants.Filters.Threads,
+                    Foundations.Content.Constants.Fields.ShortThreadId
+                },
+                {
+                    Constants.Filters.Quotes,
+                    Foundations.Content.Constants.Fields.QuoteIds
+                }
             };
         }
 
@@ -391,7 +430,7 @@ namespace Accelerate.Features.Content.Services
             if (aggregateResponse.IsValidResponse)
             {
                 var filterOptions = GetFilterOptions();
-                filterValues = filterOptions.ToDictionary(x => x, x => GetValuesFromAggregate(aggregateResponse.Aggregations, x));
+                filterValues = filterOptions.Values.ToDictionary(x => x, x => GetValuesFromAggregate(aggregateResponse.Aggregations, x));
             }
             return CreateNavigationFilters(filterValues);
         }
@@ -407,67 +446,91 @@ namespace Accelerate.Features.Content.Services
                 ToList();
             return results;
         }
-        private List<string> GetFilterKey(IDictionary<string, List<string>> filters, string key)
+        public List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters)
         {
-            key = key.ToCamelCase();
-            return filters.ContainsKey(key) ? filters[key] : new List<string>();
+            return Filters?.Select(x =>
+            {
+                x.Name = GetFilterKey(x.Name);
+                return x;
+            }).ToList();
+        }
+        public string GetFilterKey(string key)
+        {
+            var keyVal = this.GetFilterOptions().FirstOrDefault(x => x.Key == key);
+            if (keyVal.Value == null) return key.ToCamelCase();
+            return keyVal.Value?.ToCamelCase();
+        }
+        private List<string> GetAggregateValues(IDictionary<string, List<string>> aggFilters, string key)
+        {
+            if (key == null) return new List<string>();
+            return aggFilters.ContainsKey(key) ? aggFilters[key] : new List<string>();
         }
         private List<NavigationFilter> CreateNavigationFilters(IDictionary<string, List<string>> filters)
         { 
             if(filters == null) filters = new Dictionary<string, List<string>>();
             var filter = new List<NavigationFilter>();
 
-            var reviews = GetFilterKey(filters, Constants.Filters.Reviews);
+            var reviews = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Reviews));
             if(reviews.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Reviews,
                     FilterType = NavigationFilterType.Select,
-                    Values = GetFilterKey(filters, Constants.Filters.Reviews)
+                    Values = reviews
                 });
             }
-            var threads = GetFilterKey(filters, Constants.Filters.Threads);
+            var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Threads));
             if (threads.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Threads,
                     FilterType = NavigationFilterType.Checkbox,
-                    Values = GetFilterKey(filters, Constants.Filters.Threads)
+                    Values = threads
+                });
+            }
+            var quotes = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Quotes));
+            if (quotes.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Quotes,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = quotes
                 });
             }
 
-            var tags = GetFilterKey(filters, Constants.Filters.Tags);
+            var tags = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Tags));
             if (tags.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Tags,
                     FilterType = NavigationFilterType.Checkbox,
-                    Values = GetFilterKey(filters, Constants.Filters.Tags)
+                    Values = tags
                 });
             }
 
-            var content = GetFilterKey(filters, Constants.Filters.Content);
+            var content = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Content));
             if (content.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Content,
                     FilterType = NavigationFilterType.Select,
-                    Values = GetFilterKey(filters, Constants.Filters.Content)
+                    Values = content
                 });
             }
 
-            var sort = GetFilterKey(filters, Constants.Filters.Sort);
+            var sort = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Sort));
             if (sort.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Sort,
                     FilterType = NavigationFilterType.Select,
-                    Values = GetFilterKey(filters, Constants.Filters.Sort)
+                    Values = sort
                 });
             }
 
@@ -495,7 +558,15 @@ namespace Accelerate.Features.Content.Services
             }
             return model;
         }
-        
+         
+        public NavigationItem GetThreadLink(string parentName, Guid parentId)
+        {
+            return new NavigationItem()
+            {
+                Text = parentName,
+                Href = this._metaContentService.GetActionUrl(nameof(ContentController.Thread), ControllerHelper.NameOf<ContentController>(), new { id = parentId })
+            };
+        }
         public NavigationItem GetChannelLink(ContentChannelDocument x)
         {
             return new NavigationItem()

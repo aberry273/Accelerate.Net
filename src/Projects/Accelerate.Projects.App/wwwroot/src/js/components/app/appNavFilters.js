@@ -6,31 +6,42 @@ export default function (data) {
     selectedTab: '',
     selectedId: {},
     filters: [],
-    state: [],
+    state: {},
     event: 'filter:posts',
+    filterEvent: 'on:filter:posts',
     open: false,
     init() {
-      //Events
-      this.event = data.event || 'filter:posts';
-      this.filters = data.filters || [];
+    //Events
+    this.event = data.event || 'filter:posts';
+    this.filters = data.filters || [];
+
+    // On updates from filter
+    this.$events.on(this.filterEvent, async (filterUpdates) => {
+        const filterKey = filterUpdates.name;
+        const existingValues = (this.state[filterKey] != null) ? this.state[filterKey] : []; 
+        const updatedFilters = existingValues.concat(filterUpdates.values);
+        const uniqueFilters = [... new Set(updatedFilters)];
+        this.state[filterKey] = uniqueFilters;
+        this.emitChange()
+    })
       this.setHtml(data);
     },
-    isSelectedMany(val, filter) {
-      if (this.state == null || this.state[filter.name] == null) return false;
-      return this.state[filter.name].indexOf(val) > -1;
+    isSelectedMany(val, filterName) {
+      if (this.state == null || this.state[filterName] == null) return false;
+      return this.state[filterName].indexOf(val) > -1;
     },
-    isSelected(val, filter) {
-      return (this.state[filter.name] == val);
+    isSelected(val, filterName) {
+      return (this.state[filterName] == val);
     },
-    selectMany(val, filter) { 
-      if (this.state[filter.name] == null) this.state[filter.name] = [];
+    selectMany(val, filterName) { 
+      if (this.state[filterName] == null) this.state[filterName] = [];
       
-      const index = this.state[filter.name].indexOf(val);
+      const index = this.state[filterName].indexOf(val);
       if (index == -1) {
-        this.state[filter.name].push(val);
+        this.state[filterName].push(val);
       }
       else {
-        this.state[filter.name].splice(index, 1);
+        this.state[filterName].splice(index, 1);
       }
       this.emitChange()
     },
@@ -41,6 +52,15 @@ export default function (data) {
     },
     emitChange() {
       this.$events.emit(this.event, this.state)
+    },
+    stateValues() {
+        const keys = Object.keys(this.state);
+        return keys.map(x => {
+            return {
+                name: x,
+                values: this.state[x]
+            }
+        });
     },
     setHtml(data) {
       // make ajax request
@@ -59,8 +79,8 @@ export default function (data) {
                         <template x-for="val in filter.values">
                           <li>
                             <label>
-                              <input type="checkbox" :checked="isSelectedMany(val, filter)" name="solid" 
-                              @click="selectMany(val, filter)" />
+                              <input type="checkbox" :checked="isSelectedMany(val, filter.name)" name="solid" 
+                              @click="selectMany(val, filter.name)" />
                               <span x-text="val"></span>
                             </label>
                           </li>
@@ -76,8 +96,8 @@ export default function (data) {
                         <template x-for="val in filter.values">
                           <li>
                             <label>
-                              <input type="radio" :checked="isSelectedMany(val, filter)" name="solid" 
-                                @click="selectMany(val, filter)" />
+                              <input type="radio" :checked="isSelectedMany(val, filter.name)" name="solid"
+                                @click="selectMany(val, filter.name)" />
                               <span x-text="val"></span>
                             </label>
                           </li>
@@ -91,15 +111,43 @@ export default function (data) {
                     <!--No type-->
                       <ul>
                         <template x-for="val in filter.values">
-                          <li><a href="#" :selected="isSelectedMany(val, filter)" 
-                            @click="selectMany(val, filter)" x-text="val"></a></li>
+                          <li><a href="#" :selected="isSelectedMany(val, filter.name)"
+                            @click="selectMany(val, filter.name)" x-text="val"></a></li>
                         </template>
                       </ul>
                     </details>
                   </template>
+                  <template>
+                    <fieldset>
+                      <legend>Language preferences:</legend>
+                      <label>
+                        <input type="checkbox" name="english" checked />
+                        English
+                      </label>
+                    </fieldset>
+                  </template>
                 </li>
-            </ul>
+                </template>
+            </ul> 
           </nav>
+          <!--Selected filters-->
+        
+           <div class="container" x-if="stateValues.length > 0">
+                <div class="grid">
+                    <template x-for="filter in stateValues">
+                        <div>
+                            <sup x-text="filter.name"></sup>
+                            <div class="chips">
+                                <template x-for="(item, i) in filter.values">
+                                    <button class="tag flat closable secondary small" x-text="item"
+                                    @click="selectMany(item, filter.name)"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+         
       `
       this.$nextTick(() => { 
         this.$root.innerHTML = html

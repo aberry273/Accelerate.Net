@@ -1,6 +1,9 @@
 import input from './fields/input.js'
 import textarea from './fields/textarea.js'
 import file from './fields/file.js'
+import select from './fields/select.js'
+import list from './fields/list.js'
+import chips from './fields/chips.js'
 
 export default function (data) {
 	return {
@@ -15,8 +18,12 @@ export default function (data) {
     },
     // METHODS
     renderField(field) {
+      if(field.type == 'input') return input(field)
       if(field.type == 'textarea') return textarea(field)
       if(field.type == 'file') return file(field)
+      if(field.type == 'select') return select(field)
+      if(field.type == 'list') return list(field)
+      if(field.type == 'chips') return chips(field)
       return input(field)
     },
     setHtml(data) {

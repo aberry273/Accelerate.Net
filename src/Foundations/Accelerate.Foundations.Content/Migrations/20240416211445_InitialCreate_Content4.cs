@@ -5,25 +5,25 @@
 namespace Accelerate.Foundations.Content.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate_Content3 : Migration
+    public partial class InitialCreate_Content4 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Name",
-                table: "ContentChannels",
-                type: "nvarchar(max)",
+            migrationBuilder.AddColumn<int>(
+                name: "Type",
+                table: "ContentPosts",
+                type: "int",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Name",
-                table: "ContentChannels");
+                name: "Type",
+                table: "ContentPosts");
         }
     }
 }

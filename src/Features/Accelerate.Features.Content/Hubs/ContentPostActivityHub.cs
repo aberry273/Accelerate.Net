@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Hubs
 {
-    public class ContentActivityHub : BaseHub<ContentPostActivityDocument>
+    public class ContentPostActivityHub : BaseHub<ContentPostActivityDocument>
     {
         public override void UserRequest(string connectionId, string userId)
         {

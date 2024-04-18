@@ -28,18 +28,21 @@ namespace Accelerate.Features.Content.Pipelines.Posts
     {
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
+        IEntityService<ContentPostQuoteEntity> _quoteService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
         public ContentPostCreatedPipeline(
             IElasticService<ContentPostDocument> elasticService,
             IEntityService<ContentPostEntity> entityService,
+            IEntityService<ContentPostQuoteEntity> quoteService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
             _entityService = entityService;
             _elasticService = elasticService;
             _messageHub = messageHub;
+            _quoteService = quoteService;
             _accountElasticService = accountElasticService;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
@@ -50,6 +53,11 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
             };
         }
+        private List<string> GetQuoteIds(IPipelineArgs<ContentPostEntity> args)
+        {
+            var quotes = _quoteService.Find(x => x.QuoterContentPostId == args.Value.Id);
+            return quotes.Select(x => x.Value).ToList();
+        }
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
         {
@@ -57,6 +65,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var indexModel = new ContentPostDocument();
             args.Value.Hydrate(indexModel, user?.Source?.Username);
             
+            indexModel.QuoteIds = GetQuoteIds(args);
             // If a reply
             if (args.Value.ParentId != null)
             {
@@ -67,15 +76,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
                 parentIdThread.Add(parentDoc.Id);
                 indexModel.ParentIds = parentIdThread;
-
-                if (parentDoc.UserId == indexModel.UserId)
-                {
-                    indexModel.PostType = ContentPostType.Thread;
-                }
-                else
-                {
-                    indexModel.PostType = ContentPostType.Reply;
-                }
             }
             await _elasticService.Index(indexModel);
         }
@@ -87,10 +87,10 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var reviewsDoc = ContentPostUtilities.GetReplies(_entityService, args);
             parentDoc.Replies = reviewsDoc?.Replies ?? 0;
             // Update threads
-            if (parentDoc.UserId == args.Value.UserId)
+            if (args.Value.Type == ContentPostType.Page)
             {
-                if (parentDoc.Threads == null) parentDoc.Threads = new List<ContentPostDocument>();
-                parentDoc.Threads.Add(childDoc);
+                if (parentDoc.Pages == null) parentDoc.Pages = new List<ContentPostDocument>();
+                parentDoc.Pages.Add(childDoc);
             }
             await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
         }

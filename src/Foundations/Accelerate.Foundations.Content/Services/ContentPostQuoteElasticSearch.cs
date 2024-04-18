@@ -16,17 +16,16 @@ using System.Linq;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Accelerate.Foundations.Common.Extensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Elastic.Clients.Elasticsearch.Core.TermVectors;
 
 namespace Accelerate.Foundations.Content.Services
 {
     //Overwrite the core service for custom filtering
-    public class ContentPostElasticService : ElasticService<ContentPostDocument>, IContentPostElasticService
+    public class ContentPostQuoteElasticService : ElasticService<ContentPostQuoteDocument>
     {
 
-        public ContentPostElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentPostQuoteElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
-            this._indexName = "contentpost_index";
+            this._indexName = "contentpostquote_index";
             _settings = new IndexSettings()
             {
                 //NumberOfReplicas = 0,
@@ -39,11 +38,11 @@ namespace Accelerate.Foundations.Content.Services
             var mapping = new TypeMapping();
             return mapping;
         } 
-        public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request)
+        public override async Task<SearchResponse<ContentPostQuoteDocument>> GetAggregates(RequestQuery<ContentPostQuoteDocument> request)
         {
             return await base.GetAggregates(request);
         }
-        public override async Task<SearchResponse<ContentPostDocument>> Find(RequestQuery<ContentPostDocument> query)
+        public override async Task<SearchResponse<ContentPostQuoteDocument>> Find(RequestQuery<ContentPostQuoteDocument> query)
         {
             //Create if not existing
             await CreateIndex();
@@ -61,12 +60,12 @@ namespace Accelerate.Foundations.Content.Services
             return await base.DeleteIndex();
         }
 
-        private QueryDescriptor<ContentPostDocument> CreateQuery(RequestQuery<ContentPostDocument> request)
+        private QueryDescriptor<ContentPostQuoteDocument> CreateQuery(RequestQuery<ContentPostQuoteDocument> request)
         {
-            var descriptor = new QueryDescriptor<ContentPostDocument>();
+            var descriptor = new QueryDescriptor<ContentPostQuoteDocument>();
             descriptor.MatchAll();
-            if (!string.IsNullOrEmpty(request?.Query?.Content))
-                descriptor.Term(x => x.Content, request?.Query?.Content);
+            if (!string.IsNullOrEmpty(request?.Query?.Value))
+                descriptor.Term(x => x.Value, request?.Query?.Value);
 
             return descriptor;
         }
@@ -99,7 +98,7 @@ namespace Accelerate.Foundations.Content.Services
                 Value = ContentPostType.Page
             };
         } 
-        public async Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query)
+        public async Task<List<ContentPostQuoteDocument>> SearchPosts(RequestQuery Query)
         {
             var elasticQuery = BuildSearchQuery(Query);
             //TODO: remove
@@ -112,7 +111,7 @@ namespace Accelerate.Foundations.Content.Services
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse && !results.IsSuccess())
             {
-                return new List<ContentPostDocument>();
+                return new List<ContentPostQuoteDocument>();
             }
             return results.Documents.ToList();
         }
@@ -133,10 +132,6 @@ namespace Accelerate.Foundations.Content.Services
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }
         #endregion
-        public RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields)
-        {
-              return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = fields };
-        }
         #region Reviews
 
         public async Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query)
@@ -196,7 +191,7 @@ namespace Accelerate.Foundations.Content.Services
             return query;
         }
 
-        public override QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query)
+        public override QueryDescriptor<ContentPostQuoteDocument> BuildSearchQuery(RequestQuery Query)
         {
 
             if (Query == null) Query = new RequestQuery();
@@ -216,9 +211,6 @@ namespace Accelerate.Foundations.Content.Services
                 Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
             }
 
-            // If searching for threads, find the original post and any that quote the post
-            
-
             // For any multi-select, force the filter condition to each field to be Filter
             if (Query.Filters.Any(x => x.Values != null && x.Values.Count > 0))
             {
@@ -229,40 +221,7 @@ namespace Accelerate.Foundations.Content.Services
             }
             return CreateQuery(Query);
         }
-         
-        public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId)
-        {
-            var Query = new RequestQuery()
-            {
-                Filters = new List<QueryFilter>()
-            };
-
-            //Query.Filters.Add(PublicPosts());
-            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
-
-            //Filter any post where the poster is replying to themselves from the results
-            Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.MustNot, ContentPostType.Page));
-           
-            Query.Filters.Add(Filter(Constants.Fields.ParentId, threadId));
-           
-            return CreateQuery(Query);
-        }
-        public RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId)
-        {
-
-            var filters = new List<QueryFilter>()
-            {
-                this.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, channelId)
-            };
-            var aggregates = new List<string>()
-            {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-            };
-            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
-        }
-
-
+          
         #endregion
 
     }

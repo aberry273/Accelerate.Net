@@ -80,10 +80,10 @@ export default () => ({
 
 
 const exampleThread = {
-    "id": "3016f819-7c6c-4667-9875-59f27981a4c9",
+    "id": "c2f116d3-9b49-4827-8221-425b7d5d4ad7",
     "createdOn": "2024-04-01T21:09:29.9859812Z",
     "updatedOn": "2024-04-03T16:05:24.5456026+13:00",
-    "threadId": "GfgWMGx8Z0aYdVnyeYGkyQ",
+    "threadId": "0xbxwkmbJ0iCIUJbfV1K1w",
     "userId": "b2edca69-6743-4f71-969c-08dc4f9da45c",
     "parentId": null,
     "status": 0,

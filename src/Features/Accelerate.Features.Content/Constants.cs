@@ -12,6 +12,7 @@ namespace Accelerate.Features.Content
         {
             public const string Reviews = "Reviews";
             public const string Threads = "Threads";
+            public const string Quotes = "Quotes";
             public const string Tags = "Tags";
             public const string Status = "Status";
             public const string Content = "Content";
@@ -22,6 +23,8 @@ namespace Accelerate.Features.Content
             public const string ContentPostsHubName = "ContentPosts";
             public const string ContentPostReviewsHubName = "ContentPostReviews";
             public const string ContentChannelsHubName = "ContentChannels";
+            public const string ContentPostQuotesHubName = "ContentPostQuotes";
+
         }
     }
 }

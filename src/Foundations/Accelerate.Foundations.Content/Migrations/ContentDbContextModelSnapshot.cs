@@ -70,7 +70,7 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Type")
+                    b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -119,6 +119,9 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<string>("TargetThread")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
@@ -128,6 +131,39 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentPosts");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostQuoteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("QuotedContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("QuoterContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostQuotes");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostReviewEntity", b =>

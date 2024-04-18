@@ -26,6 +26,7 @@ export default function (data) {
         filterEvent: '',
         actionEvent: '',
         itemEvent: '',
+        quoteEvent: '',
 
         async init() {
             const self = this;
@@ -38,6 +39,7 @@ export default function (data) {
             this.userId = data.userId;
             this.targetThread = data.targetThread;
             this.targetChannel = data.targetChannel;
+            this.quoteEvent = data.quoteEvent;
 
             component = data.component || component
              
@@ -64,24 +66,33 @@ export default function (data) {
             })
 
             // On updates from cards
+            // Move this and all content/post based logic to page level js instead
             this.$events.on(this.actionEvent, async (request) => {
-                const payload = this.CreatePostActivity(request);
+              if(request.action == 'quote') {
+                // Don't do anything
+              }
+              else {
+                const payload = this.CreatePostActivityPayload(request);
                 await this._mxAction_HandleActionPost(payload);
+              }
             })
 
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 await this.search(filterUpdates);
             })
-
-            let queryData = {}
-            if (data.parentId) queryData.parentId = [data.parentId]
-            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
-
-            await this.search(queryData);
+            await this.initSearch();
 
             this.setHtml(data);
         },
+        async initSearch() {
+          let queryData = {}
+          if (data.parentId) queryData.parentId = [data.parentId]
+          if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+
+          await this.search(queryData);
+        },
+
         // METHODS
         async search(filters) {
             let query = this._mxList_GetFilters(filters);
@@ -90,7 +101,7 @@ export default function (data) {
             this.items = await this._mxSearch_Post(this.searchUrl, postQuery);
         },
 
-        CreatePostActivity(request) {
+        CreatePostActivityPayload(request) {
             return {
                 userId: request.userId,
                 contentPostId: request.item.id,
@@ -125,7 +136,7 @@ export default function (data) {
                 <div x-data="cardPost({
                   item: item,
                   userId: userId,
-                  updateEvent: actionEvent,
+                  actionEvent: actionEvent,
                 })"></div>
               </template>
               <template x-if="items == null || items.length == 0">

@@ -59,12 +59,12 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 // Update threads
                 if (parentDoc.UserId == args.Value.UserId)
                 {
-                    if (parentDoc.Threads == null) parentDoc.Threads = new List<ContentPostDocument>();
-                    var index = parentDoc.Threads.IndexOf(childDoc);
+                    if (parentDoc.Pages == null) parentDoc.Pages = new List<ContentPostDocument>();
+                    var index = parentDoc.Pages.IndexOf(childDoc);
                     if (index > -1)
-                        parentDoc.Threads[index] = childDoc;
+                        parentDoc.Pages[index] = childDoc;
                     else
-                        parentDoc.Threads.Add(childDoc);
+                        parentDoc.Pages.Add(childDoc);
                 }
                 await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
             }

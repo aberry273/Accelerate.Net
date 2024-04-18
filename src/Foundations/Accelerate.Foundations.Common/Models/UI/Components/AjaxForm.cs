@@ -16,5 +16,6 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public string PostbackType => Enum.GetName(Type);
         public required string PostbackUrl { get; set; }
         public string Event { get; set; }
+        public string ActionEvent { get; set; }
     }
 }
