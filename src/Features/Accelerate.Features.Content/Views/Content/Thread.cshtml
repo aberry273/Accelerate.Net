@@ -93,3 +93,6 @@
 
 <!-- Share post -->
 <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+
+
+az role assignment create --role "parrot-kv-readwrite" --assignee "<app-id>" --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group-name>/providers/Microsoft.KeyVault/vaults/<your-unique-keyvault-name>"

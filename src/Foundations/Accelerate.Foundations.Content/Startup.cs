@@ -5,6 +5,7 @@ using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerator.Foundation.Content.Database;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace Accelerate.Foundations.Content
     public static class Startup
     { 
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
-        {
+        { 
             //get secret
             // CONFIGS
             var connString = configuration.GetConnectionString(Constants.Config.LocalDatabaseKey) ?? configuration[Constants.Config.DatabaseKey];

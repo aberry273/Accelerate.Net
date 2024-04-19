@@ -3,7 +3,8 @@ using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Twilio.Models;
-using Accelerate.Foundations.Websockets.Hubs; 
+using Accelerate.Foundations.Websockets.Hubs;
+using Azure.Identity;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,12 @@ var builder = WebApplication.CreateBuilder(args);
 //var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
 builder.Configuration.AddUserSecrets<Program>();
 
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri($"https://{builder.Configuration["KeyVaultName"]}.vault.azure.net/"),
+        new DefaultAzureCredential());
+}
 // enable CORS
 var localFrontendDevServer = "localFrontendDevServer";
 builder.Services.AddCors(options =>
@@ -36,11 +43,12 @@ builder.Services.AddRazorPages();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+ 
 // Add Foundation references to the container
 Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
