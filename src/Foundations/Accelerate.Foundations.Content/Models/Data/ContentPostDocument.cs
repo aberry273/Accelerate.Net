@@ -9,6 +9,11 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         Post, Reply, Page
     }
+    public class ContentPostUserSubdocument
+    {
+        public string Username { get; set; }
+        public string Image { get; set; }
+    }
     public class ContentPostDocument
     {
         // Core properties
@@ -33,7 +38,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         //TODO: Replace with mapping 
         public List<Guid> ThreadIds { get; set; }
         public List<ContentPostDocument> Pages { get; set; }
-        public string? Username { get; set; }
+        public ContentPostUserSubdocument? Profile { get; set; }
         public int? Quotes
         {
             get

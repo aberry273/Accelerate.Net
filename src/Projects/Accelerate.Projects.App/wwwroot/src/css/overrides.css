@@ -21,12 +21,26 @@
     .sticky {
     position: sticky;
     }
+    .ma {
+        margin: calc(var(--pico-spacing)* 0.5);
+    }
+    .pa {
+        padding: calc(var(--pico-spacing)* 0.5);
+    }
   .ma-0 {
     margin: 0
   }
   .pa-0 { 
     padding: 0
   }
+.my {
+    margin-top: calc(var(--pico-spacing)* 0.5);
+    margin-top: calc(var(--pico-spacing)* 0.5);
+}
+.mx {
+    margin-left: calc(var(--pico-spacing)* 0.5);
+    margin-right: calc(var(--pico-spacing)* 0.5);
+}
   .my-0 {
     margin-top: 0;
     margin-bottom: 0;
@@ -67,6 +81,33 @@
   .pr-0 {
     padding-right: 0;
   }
+.pl {
+    padding-left: calc(var(--pico-spacing)* 0.5);
+}
+.pr {
+    padding-right: calc(var(--pico-spacing)* 0.5);
+}
+.pt {
+    padding-top: calc(var(--pico-spacing)* 0.5);
+}
+.pb {
+    padding-bottom: calc(var(--pico-spacing)* 0.5);
+}
+.ml {
+    margin-left: calc(var(--pico-spacing)* 0.5);
+}
+
+.mr {
+    margin-right: calc(var(--pico-spacing)* 0.5);
+}
+
+.mt {
+    margin-top: calc(var(--pico-spacing)* 0.5);
+}
+
+.mb {
+    margin-bottom: calc(var(--pico-spacing)* 0.5);
+}
   .transparent {
     background-color: transparent;
   }
@@ -102,6 +143,10 @@
     max-height: 50px;
     max-width: 50px;
   }
+    a.avatar.small img, button.avatar.small img, nav details.dropdown.avatar.small img { 
+        max-height: 30px;
+        max-width: 30px;
+    }
 
   img.circular {
     border-top-left-radius: 50% 50%;

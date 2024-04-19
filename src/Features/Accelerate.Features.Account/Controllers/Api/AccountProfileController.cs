@@ -31,6 +31,7 @@ namespace Accelerate.Features.Account.Controllers.Api
         IMetaContentService _contentService;
         IBlobStorageService _blobStorageService;
         IMediaService _mediaService;
+        readonly Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
         //readonly Bind<IContentChannelBus, IPublishEndpoint> _publishEndpoint;
         //IElasticService<ContentChannelDocument> _searchService;
         //IEntityService<ContentPostEntity> _postService;
@@ -39,12 +40,13 @@ namespace Accelerate.Features.Account.Controllers.Api
             IBlobStorageService blobStorageService,
             IMediaService mediaService,
             IEntityService<AccountProfile> service,
+            Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
             //IEntityService<ContentPostEntity> postService,
            // Bind<IContentChannelBus, IPublishEndpoint> publishEndpoint,
             //IElasticService<ContentChannelDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {
-            //_publishEndpoint = publishEndpoint;
+            _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
             _blobStorageService = blobStorageService;
@@ -76,7 +78,6 @@ namespace Accelerate.Features.Account.Controllers.Api
         }
         protected override async Task PostUpdateSteps(AccountProfile obj)
         {
-            //await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountProfile>() { Data = obj });
         }
         protected override async Task PostDeleteSteps(AccountProfile obj)
         {
@@ -110,7 +111,9 @@ namespace Accelerate.Features.Account.Controllers.Api
                     profile.Image = url;
                     var result = await base._service.Update(profile);
 
-                    return Ok();
+                    //TODO: Create profile pipelines instead of running the user pipeline on the profile
+                    await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>() { Data = user });
+                    return Ok(profile);
                 }
                 return NotFound();
 

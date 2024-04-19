@@ -41,7 +41,14 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
             var indexModel = new ContentPostDocument();
-            args.Value.Hydrate(indexModel, user?.Source?.Username);
+            
+            var profile = new ContentPostUserSubdocument()
+            {
+                Username = user?.Source.Username,
+                Image = user?.Source.Image
+            };
+
+            args.Value.Hydrate(indexModel, profile);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
             // If a reply
             if (args.Value.ParentId == null) return;

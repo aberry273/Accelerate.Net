@@ -17,14 +17,21 @@ export default function (data) {
 
     // On updates from filter
     this.$events.on(this.filterEvent, async (filterUpdates) => {
-        const filterKey = filterUpdates.name;
-        const existingValues = (this.state[filterKey] != null) ? this.state[filterKey] : []; 
-        const updatedFilters = existingValues.concat(filterUpdates.values);
-        const uniqueFilters = [... new Set(updatedFilters)];
-        this.state[filterKey] = uniqueFilters;
-        this.emitChange()
+        this.updateFiltersByEvent(filterUpdates)
     })
-      this.setHtml(data);
+    this.setHtml(data);
+    },
+    updateFiltersByEvent(filterUpdates) {
+        for (var i = 0; i < filterUpdates.length; i++)
+        {
+            const update = filterUpdates[i]
+            const filterKey = update.name;
+            const existingValues = (this.state[filterKey] != null) ? this.state[filterKey] : [];
+            const updatedFilters = existingValues.concat(update.values);
+            const uniqueFilters = [... new Set(updatedFilters)];
+            this.state[filterKey] = uniqueFilters;
+        }
+        this.emitChange()
     },
     isSelectedMany(val, filterName) {
       if (this.state == null || this.state[filterName] == null) return false;
@@ -139,8 +146,12 @@ export default function (data) {
                             <sup x-text="filter.name"></sup>
                             <div class="chips">
                                 <template x-for="(item, i) in filter.values">
-                                    <button class="tag flat closable secondary small" x-text="item"
-                                    @click="selectMany(item, filter.name)"></button>
+                                    <a style="text-decoration:none" class="tag flat small"
+                                        @click="selectMany(item, filter.name)">
+                                       <strong>
+                                            <sup x-text="item" />,
+                                        </strong>
+                                    </a>
                                 </template>
                             </div>
                         </div>

@@ -56,14 +56,23 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         private List<string> GetQuoteIds(IPipelineArgs<ContentPostEntity> args)
         {
             var quotes = _quoteService.Find(x => x.QuoterContentPostId == args.Value.Id);
-            return quotes.Select(x => x.Value).ToList();
+            var quotedPosts = quotes.Select(x => x.Value).ToList();
+            // add the quoter to the list of quotes so it is returned while searching
+            quotedPosts.Add(Foundations.Common.Extensions.GuidExtensions.ShortenBase64(args.Value.ThreadId));
+            return quotedPosts;
         }
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
             var indexModel = new ContentPostDocument();
-            args.Value.Hydrate(indexModel, user?.Source?.Username);
+            var profile = new ContentPostUserSubdocument()
+            {
+                Username = user?.Source.Username,
+                Image = user?.Source.Image
+            };
+
+            args.Value.Hydrate(indexModel, profile);
             
             indexModel.QuoteIds = GetQuoteIds(args);
             // If a reply

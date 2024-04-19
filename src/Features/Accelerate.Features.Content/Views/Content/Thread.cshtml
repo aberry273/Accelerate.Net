@@ -11,8 +11,31 @@
     quoteEvent: 'quote:post',
     init() {}
   }">
-    <div x-data="listAccordionCard({ items: @JsonSerializerHelper.SerializeObject(Model.Parents) })"></div>
-
+     
+    @if (Model.ChannelLink != null)
+    {
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>@Model.ChannelLink.Text</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <div class="dense blockquote" style="border: 0px">
+            <summary class="primary">
+                <a href="@Model.ChannelLink.Href" style="text-decoration:none;">
+                    <i class="material-icons">chevron_left</i>
+                    <sup class="primary">
+                        <strong>
+                            Return
+                        </strong>
+                    </sup>
+                </a>
+            </summary>
+        </div>
+    }
     @if(Model.ParentLink != null)
     {
         <div class="dense blockquote">
@@ -20,10 +43,9 @@
                 <a href="@Model.ParentLink.Href" style="text-decoration:none;">
                     <i class="material-icons">chevron_left</i>
                     <sup class="primary">
-                    
-                    <strong>
-                        @Model.ParentLink.Text
-                    </strong>
+                        <strong>
+                            @Model.ParentLink.Text
+                        </strong>
                     </sup>
                 </a>
             </summary>

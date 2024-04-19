@@ -215,18 +215,6 @@ namespace Accelerate.Foundations.Content.Services
             {
                 Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
             }
-
-            // If searching for threads, find the original post and any that quote the post
-            
-
-            // For any multi-select, force the filter condition to each field to be Filter
-            if (Query.Filters.Any(x => x.Values != null && x.Values.Count > 0))
-            {
-                foreach (var filter in Query.Filters.Where(x => x.Values != null && x.Values.Count > 0))
-                {
-                    filter.Condition = ElasticCondition.Filter;
-                }
-            }
             return CreateQuery(Query);
         }
          

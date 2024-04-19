@@ -32,6 +32,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
         Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query); 
         Task<SearchResponse<T>> Find(RequestQuery<T> query);
+        Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn);
 
         // Custom
         FieldValue GetFieldValue(QueryFilter filter, object? value);

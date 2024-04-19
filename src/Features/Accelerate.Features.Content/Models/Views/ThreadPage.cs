@@ -15,6 +15,7 @@ namespace Accelerate.Features.Content.Models.Views
         public string FilterEvent { get; set; } = "filter:update";
         public string ActionEvent { get; set; } = "action:post";
         public NavigationItem ParentLink { get; set; }
+        public NavigationItem ChannelLink { get; set; }
         public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>(); 
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditReply { get; set; }

@@ -199,6 +199,22 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 take,
                 sortByField);
         }
+        public async Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn)
+        {
+            //Create if not existing
+            await CreateIndex();
+            //Search
+            int take = itemsPerPage > 0 ? itemsPerPage : 10;
+            int skip = take * page;
+
+            return await _client.SearchAsync<T>(s => s
+                .Index(_indexName)
+                .From(skip)
+                .Size(take)
+                .Query(query)
+                .Sort(x => x.Field(new Field(sortByField)))
+            );
+        }
         // Overrides
         public abstract Task<SearchResponse<T>> Find(RequestQuery<T> query);
         

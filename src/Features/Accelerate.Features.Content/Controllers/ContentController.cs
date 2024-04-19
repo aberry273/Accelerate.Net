@@ -127,7 +127,8 @@ namespace Accelerate.Features.Content.Controllers
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, id)
             };
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateAggregateQuery(item.Id, filters, filterFields));
-            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies);
+            var channelResponse = item.TargetChannel != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.TargetChannel) : null;
+            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies, channelResponse?.Source);
             //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
             //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare
             viewModel.Parents = new List<ContentPostDocument>();

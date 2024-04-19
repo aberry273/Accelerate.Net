@@ -12,12 +12,6 @@ using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
-using Elastic.Clients.Elasticsearch.QueryDsl;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Threading.Channels;
-using static Accelerate.Features.Content.Constants;
-using static Elastic.Clients.Elasticsearch.JoinField;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -80,14 +74,16 @@ namespace Accelerate.Features.Content.Services
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             return viewModel;
         }
-        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies)
+        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
             viewModel.Item = item;
-            viewModel.ParentLink = item.ParentId != null
-                ? GetThreadLink(item.TargetThread, item.ParentId.GetValueOrDefault())
-                : null;
+            #pragma warning disable CS8601 // Possible null reference assignment.
+            viewModel.ParentLink = GetThreadLink(item.TargetThread, item.ParentId);
+            #pragma warning restore CS8601 // Possible null reference assignment.
+            viewModel.ChannelLink = GetChannelLink(channel);
+
             viewModel.UserId = user.Id;
             // Get replies
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
@@ -559,16 +555,18 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
          
-        public NavigationItem GetThreadLink(string parentName, Guid parentId)
+        public NavigationItem? GetThreadLink(string parentName, Guid? parentId)
         {
+            if(parentId  == null) { return null; }
             return new NavigationItem()
             {
                 Text = parentName,
                 Href = this._metaContentService.GetActionUrl(nameof(ContentController.Thread), ControllerHelper.NameOf<ContentController>(), new { id = parentId })
             };
         }
-        public NavigationItem GetChannelLink(ContentChannelDocument x)
+        public NavigationItem? GetChannelLink(ContentChannelDocument x)
         {
+            if (x == null) { return null; }
             return new NavigationItem()
             {
                 Text = x.Name,

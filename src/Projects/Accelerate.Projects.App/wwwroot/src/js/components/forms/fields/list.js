@@ -10,7 +10,7 @@ export default function (data) {
             ></input>
 
             <template x-for="item in field.items || []">
-                <div class="dense blockquote">
+                <div class="blockquote">
                     <summary class="primary">
                         <i class="material-icons icon-click" @click="() => {
                             const index = field.items.indexOf(item);

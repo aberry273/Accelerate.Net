@@ -5,7 +5,7 @@ namespace Accelerate.Foundations.Content.Hydrators
 {
     public static class ContentHydrators
     {
-        public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document, string username)
+        public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document, ContentPostUserSubdocument profile)
         {
             document.Status = entity.Status;
             document.Content = entity.Content;
@@ -21,7 +21,11 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.Tags = entity.TagItems;
             document.Category = entity.Category;
             document.Id = entity.Id;
-            document.Username = username ?? "Anonymous";
+            document.Profile = profile ?? 
+                new ContentPostUserSubdocument()
+                {
+                    Username = "Anonymous"
+                };
         }
         public static void Hydrate(this ContentPostReviewEntity entity, ContentPostReviewDocument document)
         {
