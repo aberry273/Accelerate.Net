@@ -23,6 +23,7 @@ namespace Accelerate.Foundations.Account
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // CONFIGS
+            var connString = configuration.GetConnectionString(Constants.Config.LocalDatabaseKey) ?? configuration[Constants.Config.DatabaseKey];
             var socialConfig = configuration
                 .GetSection("OAuthConfiguration")
                 .Get<OAuthConfiguration>();
@@ -31,8 +32,8 @@ namespace Accelerate.Foundations.Account
             socialConfig.FacebookAppSecret = configuration["FacebookAppSecret"];
 
             // CONTEXT
-            services.AddDbContext<Foundations.Database.Services.BaseContext<AccountProfile>>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)), ServiceLifetime.Transient);
-            services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(configuration.GetConnectionString(Constants.Settings.ConnectionStringName)));
+            services.AddDbContext<Foundations.Database.Services.BaseContext<AccountProfile>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(connString));
 
             // SERVICES
             services.AddTransient<IEntityService<AccountProfile>, EntityService<AccountProfile>>();

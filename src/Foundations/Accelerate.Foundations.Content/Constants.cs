@@ -8,6 +8,11 @@ namespace Accelerate.Foundations.Content
 {
     public struct Constants
     {
+        public struct Config
+        {
+            public const string LocalDatabaseKey = "LocalContentContext";
+            public const string DatabaseKey = "ContentContext";
+        }
         public struct Fields
         {
             public const string Description = "description";
@@ -31,10 +36,6 @@ namespace Accelerate.Foundations.Content
         {
             public const int MaxQueryable = 100;
             public const int DefaultPerPage = 10;
-        }
-        public struct Settings
-        {
-            public const string ConnectionStringName = "ContentContext";
         }
     }
 }

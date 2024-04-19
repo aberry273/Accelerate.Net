@@ -11,7 +11,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage
         public struct Settings
         {
             public const string AppContainerName = "parrotmvp";
-    }
+        }
         public struct Config
         {
             public const string SectionName = "AzureStorageConfiguration";

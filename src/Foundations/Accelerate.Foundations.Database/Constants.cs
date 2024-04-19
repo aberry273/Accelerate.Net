@@ -8,6 +8,10 @@ namespace Accelerate.Foundations.Database
 {
     public struct Constants
     {
+        public struct Config
+        {
+            public const string SectionName = "ConnectionStrings";
+        }
         public struct Exceptions
         {
             public struct Service

@@ -8,9 +8,10 @@ namespace Accelerate.Foundations.Account
 {
     public struct Constants
     {
-        public struct Settings
+        public struct Config
         {
-            public const string ConnectionStringName = "AccountContext";
+            public const string LocalDatabaseKey = "LocalAccountContext";
+            public const string DatabaseKey = "AccountContext";
         }
     }
 }
