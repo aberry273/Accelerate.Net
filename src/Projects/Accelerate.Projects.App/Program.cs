@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //var appSecretsId = "5334ac05-3583-4823-9d44-97410596f81b";
 builder.Configuration.AddUserSecrets<Program>();
-
+//https://learn.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-8.0
 if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddAzureKeyVault(
