@@ -103,6 +103,9 @@
                     </hgroup>
                 </header>
             </ul>
+            <ul>
+            <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateMedia.Target', { target: '@Model.ModalCreateMedia.Target' })">Add</button>
+            </ul>
         </nav>
         <!-- Filters -->
         <div x-data="appNavFilters({
@@ -120,4 +123,5 @@
             })">
         </div>
 </div>
-                
+
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateMedia))"></div>

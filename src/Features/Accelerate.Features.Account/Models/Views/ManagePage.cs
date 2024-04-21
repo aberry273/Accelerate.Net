@@ -7,6 +7,7 @@ namespace Accelerate.Features.Account.Models.Views
     {
         public AjaxForm ProfileImageForm { get; set; }
         public AjaxForm ProfileForm { get; set; }
+        public ModalForm ModalCreateMedia { get; set; }
         public Guid UserId { get; set; }
         public ManagePage(BasePage model) : base(model)
         {

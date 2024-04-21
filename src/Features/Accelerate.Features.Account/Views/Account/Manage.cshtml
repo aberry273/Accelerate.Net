@@ -34,12 +34,13 @@
                     </template>
                 </ul>
             </nav>
-            <article class="fit-content" x-transition >  
                 <section x-show="$store.tabs.isSelected('profile')">
-                    <div class="grids">
-                        <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
-                        <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
-                    </div>
+                    <article class="fit-content" x-transition>
+                        <div class="grids">
+                            <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
+                            <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
+                        </div>
+                    </article>
                 </section>
                 <section x-show="$store.tabs.isSelected('posts')">
                     @{
@@ -61,7 +62,6 @@
                         settings form
                     </div>
                 </section> 
-            </article>
         </div>
     </div>
     <!-- Other panel -->

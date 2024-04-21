@@ -45,6 +45,7 @@ namespace Accelerate.Features.Account.Services
             viewModel.UserId = user.Id;
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);
+            viewModel.ModalCreateMedia = CreateModalMediaForm(user);
             return viewModel;
         }
         public AjaxForm CreateProfileImageForm(AccountUser user)
@@ -62,7 +63,7 @@ namespace Accelerate.Features.Account.Services
                         Label = "File",
                         Name = "File",
                         FieldType = FormFieldTypes.file,
-                        Accept = ".png|.jpg",
+                        //Accept = ".png|.jpg",
                         Placeholder = "File",
                         Value = user?.AccountProfile?.Image,
                     },
@@ -119,6 +120,53 @@ namespace Accelerate.Features.Account.Services
                         Hidden = true,
                         Disabled = true,
                         Value = user?.AccountProfileId,
+                    }
+                }
+            };
+            return model;
+        }
+        public ModalForm CreateModalMediaForm(AccountUser user)
+        {
+            var model = new ModalForm();
+            model.Title = "Create media";
+            model.Text = "Test form text";
+            model.Target = "modal-create-channel";
+            model.Form = CreateMediaForm(user);
+            return model;
+        }
+        public AjaxForm CreateMediaForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = "https://localhost:7220/api/contentchannel",
+                Type = PostbackType.POST,
+                Event = "channel:create:modal",
+                Label = "Create",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Name",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Channel name",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Label = "File",
+                        Name = "File",
+                        FieldType = FormFieldTypes.file,
+                        //Accept = ".png|.jpg",
+                        Placeholder = "File",
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
                     }
                 }
             };
