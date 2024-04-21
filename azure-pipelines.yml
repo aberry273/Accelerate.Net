@@ -16,7 +16,7 @@ stages:
       vmImage: 'windows-latest'
 
     variables:
-      solution: '**/*.sln'
+      solution: '**/Accelerate.Projects.App.csproj'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'      
 
