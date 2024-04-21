@@ -1,6 +1,7 @@
 // CARDS
 import card from './cards/card.js'
 import cardPost from './cards/cardPost.js'
+import cardImage from './cards/cardImage.js'
 // CONTENT
 import header from './content/header.js'
 // NAVIGATION
@@ -22,6 +23,8 @@ import modalForm from './modals/modalForm.js'
 // LISTS
 import listCards from './lists/listCards.js'
 import listAccordionCard from './lists/listAccordionCard.js'
+// Grid
+import gridCardMedia from './grid/gridCardMedia.js'
 // CUSTOM
 import appFormResponse from './app/appFormResponse.js'
 import appListPost from './app/appListPost.js'
@@ -33,6 +36,7 @@ export {
     // CARDS
     card,
     cardPost,
+    cardImage,
     
     // CONTENT
     header,
@@ -54,6 +58,9 @@ export {
     // LISTS
     listCards,
     listAccordionCard,
+
+    // GRIDS
+    gridCardMedia,
 
     // FORMS
     formFields,

@@ -4,11 +4,8 @@
 
 
 <div x-data="{
-    item: $store.content.getDummyThread(),
-    items: $store.content.getDummyPosts(),
-    targetThreadId: $store.content.getDummyThread().threadId,
-    parentId: $store.content.getDummyThread().id,
-    threadItem: $store.content.getDummyThread(),
+    item: $store.media.getDummyMedia(),
+    items: $store.media.getDummyMedia(),
     userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
     filterEvent: 'onFilterChange',
     actionEvent: 'action:post',
@@ -98,110 +95,29 @@
       <ul>
           <header>
               <hgroup>
-                  <h1>Thread channel</h1>
+                  <h1>Media</h1>
               </hgroup>
           </header>
       </ul>
   </nav>
-  <div class="dense blockquote" style="border: 0px">
-      <summary class="primary">
-          <a href="#" style="text-decoration:none;">
-              <i class="material-icons">chevron_left</i>
-              <sup class="primary">
-                  <strong>
-                      Return
-                  </strong>
-              </sup>
-          </a>
-      </summary>
-  </div>
-  <!-- Parent thread -->
-  <!--
-  <div x-data="listAccordionCard({ items: $store.content.getDummyPosts() })"></div>
-  -->
-  <!-- Original Post -->
-  <div x-data="cardPost({
-    item: threadItem,
-    userId: userId, 
-  })"></div> 
-
-  <!-- Response Form -->
-  <div class="py-0">
-    <div x-data="appFormResponse({
-      actionUrl: 'https://localhost:7220/api/contentpostactivity',
-      postbackType: 'POST',
-      actionEvent: actionEvent,
-      event: 'post:created',
-      fieldPlaceholder: 'Whats your update?',
-      label: 'Post',
-      fields: fields
-    })"></div>
-  </div>
-
   <!-- Filters -->
   <div x-data="appNavFilters({
     filters: filterData
   })"></div>
 
-  <div class="blockquote dense">
-    <!-- Replies -->
-    <div x-data="listCards( {
-        actionUrl: 'https://localhost:7220/api/contentpostactivity',
-        searchUrl: 'https://localhost:7220/api/contentsearch/posts',
-        filterEvent: filterEvent,
-        actionEvent: actionEvent,
-        quoteEvent: quoteEvent,
-        itemEvent: $store.wssContentPosts.getMessageEvent(),
-        targetThread: targetThreadId,
-        parentId: targetThreadId,
-        items: items
-      })">
-    </div>
-  </div>
-    
-  <!--
-  <div x-data="_contentPostsManager({
-      sourceUrl: 'https://localhost:7220/api/contentpost',
-      threadUrl: 'https://localhost:7220/content/thread',
-      fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-      fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-      reviewUrl: 'https://localhost:7220/api/contentpostreview',
-      userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      targetThread: targetThreadId,
-      parentId: targetThreadId,
-      event: 'post:created',
-      items: [],
-      channel: null,
-    })">
-    <!- Original post ->
-      <div x-data="appCardPost({
-        item: threadItem
-      })"></div>
-    </div>
-
-    <!-Feed->
-    <div x-data="appNavFilters({
-      filters: filterData
-    })"></div>
-    
-    <!-Response Form->
-    <article>
-      <div x-data="appFormResponse({
-        postbackUrl: 'https://localhost:7220/api/contentpost',
-        postbackType: 'POST',
-        event: 'post:created',
-        fieldPlaceholder: 'Write a reply',
-        label: 'Reply'
-      })"></div>
-    </article>
-    
-    <!-Responses->
-    <main x-transition>
-      <div x-data="appListPost"></div>
-    </main>
-  </div>
--->
+  <div x-data="gridCardMedia( {
+    actionUrl: 'https://localhost:7220/api/contentpostactivity',
+    searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+    filterEvent: filterEvent,
+    actionEvent: actionEvent,
+    quoteEvent: quoteEvent,
+    itemEvent: $store.wssContentPosts.getMessageEvent(),
+    items: items
+  })">
 </div>
+  <!-- Parent thread -->
+
+  <!-- Media grid-->
 
 </div>
 <!-- Modals -->

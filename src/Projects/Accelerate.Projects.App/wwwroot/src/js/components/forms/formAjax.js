@@ -1,5 +1,6 @@
 import input from './fields/input.js'
 import textarea from './fields/textarea.js'
+import select from './fields/select.js'
 
 export default function (data) {
 	return {
@@ -76,11 +77,11 @@ export default function (data) {
     },
     resetValues(fields) {
         for (var i = 0; i < fields.length; i++) {
-        if (fields[i].clearOnSubmit === true) {
+          if (fields[i].clearOnSubmit === true){
             fields[i].value = null;
             fields[i].values = null;
             fields[i].items = null;
-        }
+          }
       }
     },
     setHtml(data) {

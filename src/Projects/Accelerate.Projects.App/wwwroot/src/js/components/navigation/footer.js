@@ -31,9 +31,9 @@ export default function navbar(data) {
                   <details class="dropdown">
                     <summary role="button" class="secondary">Theme</summary>
                     <ul>
-                      <li><a href="#" @click="$store.theme.setScheme('auto')">Auto</a></li>
-                      <li><a href="#" @click="$store.theme.setScheme('light')">Light</a></li>
-                      <li><a href="#" @click="$store.theme.setScheme('dark')">Dark</a></li>
+                      <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+                      <li><a href="#" data-theme-switcher="light">Light</a></li>
+                      <li><a href="#" data-theme-switcher="dark">Dark</a></li>
                     </ul>
                   </details>
                 </li>

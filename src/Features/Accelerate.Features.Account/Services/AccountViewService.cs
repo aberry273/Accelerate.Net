@@ -42,6 +42,7 @@ namespace Accelerate.Features.Account.Services
         public ManagePage GetManagePage(AccountUser user)
         {
             var viewModel = new ManagePage(_contentService.CreatePageBaseContent(GetUserProfile(user)));
+            viewModel.UserId = user.Id;
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);
             return viewModel;

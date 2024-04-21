@@ -42,14 +42,14 @@
                     </div>
                 </section>
                 <section x-show="$store.tabs.isSelected('posts')">
-                    <div>
-                        posts form
-                    </div>
+                    @{
+                        await Html.RenderPartialAsync("~/Views/Partials/AccountPosts.cshtml", Model);
+                    }
                 </section>
                 <section x-show="$store.tabs.isSelected('media')">
-                    <div>
-                        media form
-                    </div>
+                    @{
+                        await Html.RenderPartialAsync("~/Views/Partials/AccountMedia.cshtml", Model);
+                    }
                 </section>
                 <section x-show="$store.tabs.isSelected('contact')">
                     <div >

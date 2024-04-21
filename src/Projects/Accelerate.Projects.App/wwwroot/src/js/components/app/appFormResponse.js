@@ -25,18 +25,17 @@ export default function (data) {
             this.item = data.item;
             this.postbackType = data.postbackType
             this.fields = data.fields,
-            this.actionEvent = data.actionEvent;
-            this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, false)
+                this.actionEvent = data.actionEvent;
 
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
             this.$events.on(this.actionEvent, async (request) => {
                 if (request.action == 'quote') {
                     // Don't do anything
-                    console.log(request)
                     const item = request.item;
                     const field = this._mxForm_GetField(this.fields, 'QuoteIds');
                     if (!field) return;
+
                     let threadIds = field.value || []
 
                     const threadKey = item.threadId;
@@ -78,11 +77,11 @@ export default function (data) {
         },
         resetValues(fields) {
             for (var i = 0; i < fields.length; i++) {
-                if (fields[i].clearOnSubmit === true) {
-                    fields[i].value = null;
-                    fields[i].values = null;
-                    fields[i].items = null;
-                }
+              if (fields[i].clearOnSubmit === true) {
+                fields[i].value = null;
+                fields[i].values = null;
+                fields[i].items = null;
+              }
             }
         },
         format(type) {
@@ -127,8 +126,8 @@ export default function (data) {
             
             <input name="Tag" disabled type="text" placeholder="" />
             
-            <button x-show="showTags == true" class="secondary material-icons flat" @click="showTagField" :disabled="loading">sell</button>
-            <button x-show="showTags == false" class="secondary material-icons flat" @click="showTagField" :disabled="loading">cancel</button>
+            <button x-show="showTags" class="secondary material-icons flat" @click="showTagField" :disabled="loading">sell</button>
+            <button x-show="!showTags" class="secondary material-icons flat" @click="showTagField" :disabled="loading">cancel</button>
             
             <button class="" @click="await submit(fields)"  :disabled="loading">${label}</button>
 

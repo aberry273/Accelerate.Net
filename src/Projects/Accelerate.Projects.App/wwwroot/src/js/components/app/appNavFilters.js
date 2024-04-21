@@ -146,12 +146,8 @@ export default function (data) {
                             <sup x-text="filter.name"></sup>
                             <div class="chips">
                                 <template x-for="(item, i) in filter.values">
-                                    <a style="text-decoration:none" class="tag flat small"
-                                        @click="selectMany(item, filter.name)">
-                                       <strong>
-                                            <sup x-text="item" />,
-                                        </strong>
-                                    </a>
+                                    <button class="tag flat closable secondary small" x-text="item"
+                                    @click="selectMany(item, filter.name)"></button>
                                 </template>
                             </div>
                         </div>
