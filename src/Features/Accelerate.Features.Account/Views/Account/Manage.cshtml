@@ -8,6 +8,8 @@
 <script>
     const tabs = [
         "profile",
+        "posts",
+        "media",
         "contact",
         "settings",
     ]
@@ -37,6 +39,16 @@
                     <div class="grids">
                         <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
                         <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
+                    </div>
+                </section>
+                <section x-show="$store.tabs.isSelected('posts')">
+                    <div>
+                        posts form
+                    </div>
+                </section>
+                <section x-show="$store.tabs.isSelected('media')">
+                    <div>
+                        media form
                     </div>
                 </section>
                 <section x-show="$store.tabs.isSelected('contact')">
