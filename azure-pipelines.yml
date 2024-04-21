@@ -16,7 +16,8 @@ stages:
       vmImage: 'windows-latest'
 
     variables:
-      solution: '**/Accelerate.Projects.App.csproj'
+      solution: '**/*.sln'
+      project: '**/Accelerate.Projects.App.csproj'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'      
 
@@ -29,7 +30,7 @@ stages:
 
     - task: VSBuild@1
       inputs:
-        solution: '$(solution)'
+        solution: '$(project)'
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
