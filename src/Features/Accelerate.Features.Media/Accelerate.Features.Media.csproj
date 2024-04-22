@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.EventPipelines\Accelerate.Foundations.EventPipelines.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
+  </ItemGroup>
+
+</Project>

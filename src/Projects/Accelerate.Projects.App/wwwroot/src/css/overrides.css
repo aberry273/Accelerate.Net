@@ -311,18 +311,18 @@
     height: 2.25rem;
     width: 2.25rem;
   }
-  button.tab {
+button.tab, a.tab {
     --pico-background-color: transparent;
     --pico-color: var(--pico-primary);
     --pico-border-color: transparent;
-  }
-  button.tab.selected { 
-    border-bottom-color: var(--pico-primary);
-    border-bottom-left-radius: 0em;
-    border-bottom-right-radius: 0em;
-    border-bottom-width: .15rem;
-    box-shadow: transparent;
-  }
+}
+    button.tab.selected, a.tab.selected {
+        border-bottom-color: var(--pico-primary);
+        border-bottom-left-radius: 0em;
+        border-bottom-right-radius: 0em;
+        border-bottom-width: .15rem;
+        box-shadow: transparent;
+    }
   /*DROPDOWN*/
   details.dropdown.no-chevron summary::after, details.dropdown.no-chevron>a::after, details.dropdown.no-chevron>button::after {
     display: none;

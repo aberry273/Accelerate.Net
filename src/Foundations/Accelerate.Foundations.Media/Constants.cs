@@ -8,8 +8,10 @@ namespace Accelerate.Foundations.Media
 {
     public struct Constants
     {
-        public struct Settings
+        public struct Config
         {
+            public const string LocalDatabaseKey = "LocalMediaContext";
+            public const string DatabaseKey = "MediaContext";
         }
         public struct Fields
         {

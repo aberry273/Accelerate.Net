@@ -1,0 +1,38 @@
+﻿ @using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    var currentTab = Context.Request.Path.Value.Split('/').LastOrDefault();
+} 
+<div class=" container">
+    <div class="center-vertical">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Manage profile</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed-->
+        <div x-data>
+            <nav>
+                <ul>
+                    @foreach(var tab in Model.Tabs)
+                    {
+                        var tabClass = currentTab == tab.Text ? "selected" : "";
+                        <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
+                    }
+                </ul>
+            </nav>
+            <section>
+                @RenderBody()
+            </section>
+        </div>
+    </div>
+</div>
+   

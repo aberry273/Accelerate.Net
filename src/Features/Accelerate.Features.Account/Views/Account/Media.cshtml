@@ -1,0 +1,110 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{
+    Layout = "/Views/Account/_ManagePageLayout.cshtml";
+}
+<section>
+    <div x-data="{
+            item: $store.media.getDummyMedia(),
+            items: [],
+            userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            filterEvent: 'onFilterChange',
+            actionEvent: 'action:post',
+            quoteEvent: 'quote:post',
+            filterData: [
+                {
+                name: 'Tags',
+                values: ['C#'],
+                selected: 'C#',
+                type: 'Checkbox',
+                },
+                {
+                name: 'Type',
+                values: ['All', 'Image', 'Video'],
+                selected: 'All',
+                type: 'Checkbox',
+                },
+                {
+                name: 'Sort',
+                values: ['Created', 'Updated', 'Top Rated', 'Bottom Rating'],
+                selected: 'All',
+                type: 'Radio',
+                }
+            ],
+            fields: [
+                {
+                name: 'QuoteIds',
+                type: 'list',
+                class: 'flat',
+                placeholder: 'Quotes',
+                autocomplete: null,
+                ariaInvalid: true,
+                hidden: false,
+                isArray: true,
+                helper: '',
+                value: [],
+                items: [],
+                },
+                {
+                name: 'Content',
+                type: 'textarea',
+                placeholder: 'Whats your update?',
+                autocomplete: null,
+                ariaInvalid: true,
+                helper: ''
+                },
+                {
+                name: 'Tags',
+                type: 'chips',
+                placeholder: 'Tag your post',
+                autocomplete: null,
+                ariaInvalid: true,
+                isArray: false,
+                helper: '',
+                value: [],
+                items: ['tag 123', 'tag 234']
+                },
+                {
+                name: 'UserId',
+                type: 'input',
+                disabled: true,
+                hidden: true,
+                placeholder: 'Whats your update?',
+                autocomplete: null,
+                ariaInvalid: true,
+                helper: '',
+                value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+                },
+            ],
+            init() {
+
+            }
+        }">
+        <nav>
+            <ul>
+                <div x-data="appNavFilters({
+                filters: filterData
+                })"></div>
+            </ul>
+            <ul>
+                <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateMedia.Target', { target: '@Model.ModalCreateMedia.Target' })">Add</button>
+            </ul>
+        </nav>
+        <!-- Filters -->
+        <div x-data="gridCardMedia( {
+                actionUrl: 'https://localhost:7220/api/mediablob',
+                searchUrl: 'https://localhost:7220/api/mediasearch/blobs',
+                filterEvent: filterEvent,
+                actionEvent: actionEvent,
+                quoteEvent: quoteEvent,
+                userId: '@Model.UserId',
+                itemEvent: $store.wssContentPosts.getMessageEvent(),
+                items: items
+                })">
+        </div>
+    </div>
+</section>
+<div x-data="modalFormFile(@JsonSerializerHelper.SerializeObject(Model.ModalCreateMedia))"></div>

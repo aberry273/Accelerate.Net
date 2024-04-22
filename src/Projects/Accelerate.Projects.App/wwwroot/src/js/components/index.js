@@ -20,6 +20,7 @@ import snackbarList from './alerts/snackbarList.js'
 // MODALS
 import modal from './modals/modal.js'
 import modalForm from './modals/modalForm.js'
+import modalFormFile from './modals/modalFormFile.js'
 // LISTS
 import listCards from './lists/listCards.js'
 import listAccordionCard from './lists/listAccordionCard.js'
@@ -54,6 +55,7 @@ export {
     // MODALS
     modal,
     modalForm,
+    modalFormFile,
 
     // LISTS
     listCards,

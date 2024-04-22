@@ -5,6 +5,10 @@ Update-Database -context SchoolContext
 Drop-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Add-Migration InitialCreate_Content4 -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
+# Media
+Drop-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 
+Add-Migration InitialCreate_Media1 -context MediaDbContext -project "Accelerate.Foundations.Media" 
+Update-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 
 # Authentication
 Drop-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
 Add-Migration Initial_Account2 -context AccountDbContext -project "Accelerate.Foundations.Account" 

@@ -10,8 +10,10 @@
 //import wssContentPosts from './wssContentPostsVanillaExample.js'
 import wssContentPosts from './wssContentPosts.js'
 import wssContentPostReviews from './wssContentPostReviews.js'
+import wssMediaBlobs from './wssMediaBlobs.js'
 
 export {
     wssContentPosts,
-    wssContentPostReviews
+    wssContentPostReviews,
+    wssMediaBlobs
 }

@@ -3,7 +3,9 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
 @model Accelerate.Features.Account.Models.Views.ManagePage
-@{ }
+@{
+    Layout = "/Views/Account/_ManagePageLayout.cshtml";
+}
 
 <script>
     const tabs = [
@@ -34,14 +36,7 @@
                     </template>
                 </ul>
             </nav>
-                <section x-show="$store.tabs.isSelected('profile')">
-                    <article class="fit-content" x-transition>
-                        <div class="grids">
-                            <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
-                            <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
-                        </div>
-                    </article>
-                </section>
+                
                 <section x-show="$store.tabs.isSelected('posts')">
                     @{
                         await Html.RenderPartialAsync("~/Views/Partials/AccountPosts.cshtml", Model);

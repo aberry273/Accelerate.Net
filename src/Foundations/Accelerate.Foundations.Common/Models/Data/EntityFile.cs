@@ -10,6 +10,7 @@ namespace Accelerate.Foundations.Common.Models.Data
 {
     public class EntityFile
     {
+        public Guid? UserId { get; set; }
         public Guid? Id { get; set; }
         [NotMapped]
         public IFormFile File { get; set; }

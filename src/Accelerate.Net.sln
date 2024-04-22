@@ -91,6 +91,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations.AzureSecrets",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accelerate.Foundations.Integrations.AzureSecrets", "Foundations\Accelerate.Foundations.Integrations.AzureSecrets\Accelerate.Foundations.Integrations.AzureSecrets.csproj", "{F746C879-3EF8-41DD-B8E6-3E308FF5CC73}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Media", "Media", "{F60ADCC8-E332-4C38-BFDE-65D39514EAA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accelerate.Features.Media", "Features\Accelerate.Features.Media\Accelerate.Features.Media.csproj", "{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -200,6 +204,12 @@ Global
 		{F746C879-3EF8-41DD-B8E6-3E308FF5CC73}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F746C879-3EF8-41DD-B8E6-3E308FF5CC73}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{F746C879-3EF8-41DD-B8E6-3E308FF5CC73}.Staging|Any CPU.Build.0 = Debug|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB}.Staging|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -239,6 +249,8 @@ Global
 		{197B6C12-769F-4C7F-9C75-B33BADCCAE1F} = {A15B0D66-6116-488E-82F6-99675255A9F6}
 		{C0A9CE2B-51F6-4C5E-9429-0AA5E98EF0F9} = {0F78300C-A3ED-4741-A90C-3B15DDE88723}
 		{F746C879-3EF8-41DD-B8E6-3E308FF5CC73} = {C0A9CE2B-51F6-4C5E-9429-0AA5E98EF0F9}
+		{F60ADCC8-E332-4C38-BFDE-65D39514EAA5} = {A3D2B537-0213-45E5-906B-A3774496BB79}
+		{E5DEA4C9-0F77-447B-80E4-8EA1F8A158BB} = {F60ADCC8-E332-4C38-BFDE-65D39514EAA5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3584F311-FD8B-4D8A-9984-BE84EB37D3EE}

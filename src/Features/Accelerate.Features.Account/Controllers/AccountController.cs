@@ -96,11 +96,57 @@ namespace Accelerate.Features.Account.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+        /*
         #region Manage
         [HttpGet]
         [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Manage(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            var viewModel = _accountViewService.GetManagePage(user);
+            return View(viewModel);
+        }
+        #endregion
+        */
+        #region Profile
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Profile(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            var viewModel = _accountViewService.GetManagePage(user);
+            return View(viewModel);
+        }
+        #endregion
+        #region Posts
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Posts(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            var viewModel = _accountViewService.GetManagePage(user);
+            return View(viewModel);
+        }
+        #endregion
+        #region Media
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Media(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            var viewModel = _accountViewService.GetManagePage(user);
+            return View(viewModel);
+        }
+        #endregion
+        #region Settings
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Settings(string returnUrl = null)
         {
             var user = await GetUserWithProfile(this.User);
             var viewModel = _accountViewService.GetManagePage(user);

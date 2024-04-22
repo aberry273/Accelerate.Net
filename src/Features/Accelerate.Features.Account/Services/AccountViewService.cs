@@ -46,6 +46,13 @@ namespace Accelerate.Features.Account.Services
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);
             viewModel.ModalCreateMedia = CreateModalMediaForm(user);
+            viewModel.Tabs = new List<NavigationItem>()
+            {
+                GetPageLink(nameof(AccountController.Profile)),
+                GetPageLink(nameof(AccountController.Posts)),
+                GetPageLink(nameof(AccountController.Media)),
+                //GetPageLink(nameof(AccountController.Settings)),
+            };
             return viewModel;
         }
         public AjaxForm CreateProfileImageForm(AccountUser user)
@@ -60,11 +67,12 @@ namespace Accelerate.Features.Account.Services
                 {
                     new FormField()
                     {
+                        Id = "create-profile-image-file",
                         Label = "File",
-                        Name = "File",
+                        Name = "Image",
                         FieldType = FormFieldTypes.file,
-                        //Accept = ".png|.jpg",
-                        Placeholder = "File",
+                        Accept = ".png,.jpg",
+                        Placeholder = "Image",
                         Value = user?.AccountProfile?.Image,
                     },
                     new FormField()
@@ -138,19 +146,12 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentchannel",
+                PostbackUrl = "https://localhost:7220/api/mediablob/image",
                 Type = PostbackType.POST,
                 Event = "channel:create:modal",
                 Label = "Create",
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name = "Name",
-                        FieldType = FormFieldTypes.input,
-                        Placeholder = "Channel name",
-                        AriaInvalid = false
-                    },
                     new FormField()
                     {
                         Label = "File",
@@ -443,5 +444,13 @@ namespace Accelerate.Features.Account.Services
             };
         }
         #endregion
+        public NavigationItem? GetPageLink(string route, string? name = null)
+        {
+            return new NavigationItem()
+            {
+                Text = name ?? route,
+                Href = this._contentService.GetActionUrl(route, ControllerHelper.NameOf<AccountController>(), new { })
+            };
+        }
     }
 }

@@ -10,6 +10,10 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
 {
     public interface IBlobStorageService
     {
+        Task<string?> UploadAsync(Guid fileId, string fullFilePath, byte[] fileData, string fileMimeType);
+        Task<string?> UploadOther(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType);
+        Task<string?> UploadVideo(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType = "mp4");
+        Task<string?> UploadImage(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType = "png");
         Task<string?> UploadOther(string userId, string strFileName, byte[] fileData, string fileMimeType);
         Task<string?> UploadVideo(string userId, string strFileName, byte[] fileData, string fileMimeType = "mp4");
         Task<string?> UploadImage(string userId, string strFileName, byte[] fileData, string fileMimeType = "png");

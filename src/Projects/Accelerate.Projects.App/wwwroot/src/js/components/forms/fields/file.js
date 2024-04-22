@@ -1,9 +1,9 @@
 export default function (data) {
-    return ` 
+    return `
         <span x-data="{file: null}" class="file-field" :for="field.value ? '' : field.name">
             <template x-if="!field.value">
                 <article class="file-picker">
-                    <i aria-label="Agree" class="icon material-icons" >photo_camera</i>
+                    <i aria-label="File" class="icon material-icons" >photo_camera</i>
                     <label>Select a file</label>
                 </article>
             </template>
@@ -24,7 +24,7 @@ export default function (data) {
             :read-only="field.readonly"
             :role="field.role"
             :checked="field.checked"
-            x-on:change="onFieldChange(field, $event.target.files[0])"
+            x-on:change="_mxForm_OnFieldChange(field, $event.target.files[0])"
             :placeholder="field.placeholder"
             :autocomplete="field.autocomplete"
             :aria-invalid="field.ariaInvalid == true"

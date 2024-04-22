@@ -27,12 +27,12 @@ export default function (data) {
         this.$events.emit(ev, data)
       },
       load(data) {
-        this.$root.innerHTML = `
+        const html = `
         <article class="media padless" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
           <figure>
             <img 
-              :src="item.value"
-              alt="Minimal landscape"
+              :src="item.filePath"
+              :alt="item.name"
             />
             <!--
             <figcaption>
@@ -42,6 +42,9 @@ export default function (data) {
             -->
           </figure>
         </article>`
+        this.$nextTick(() => {
+            this.$root.innerHTML = html;
+        })
       },
       defaults() {
         this.load(defaults)

@@ -90,12 +90,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Features\Accelerate.Features.Account\Accelerate.Features.Account.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Media\Accelerate.Features.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AzureSecrets\Accelerate.Foundations.Integrations.AzureSecrets.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>
 

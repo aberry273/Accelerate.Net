@@ -8,7 +8,7 @@ export default function (data){
         get mxModal_GetOpen() { return this.mxSearch_Open },
 
         init() {
-            this.$watch('mxSearch_Open', () => { })
+            //this.$watch('mxSearch_Open', () => { })
             this.actionUrl = data.actionUrl;
         },
         

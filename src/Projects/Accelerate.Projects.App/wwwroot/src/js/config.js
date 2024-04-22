@@ -10,5 +10,11 @@ let wssSettings = {
         //url: "wss://localhost:7220/ContentPosts",
         //event: 'wss:contentPostReviews',
         url: "https://localhost:7220/ContentPostReviews",
+    },
+    wssMediaBlobs: {
+        //standard websockets
+        //url: "wss://localhost:7220/ContentPosts",
+        //event: 'wss:contentPostReviews',
+        url: "https://localhost:7220/MediaBlobs",
     }
 };

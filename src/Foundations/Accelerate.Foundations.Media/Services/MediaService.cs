@@ -32,6 +32,17 @@ namespace Accelerate.Foundations.Media.Services
             }
             return contentType;
         }
+        public async Task<string> UploadFile(Guid fileId, string userId, IFormFile file)
+        {
+            // Upload media
+            byte[] data;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                data = ms.ToArray();
+            }
+            return await _blobStorageService.UploadOther(fileId, userId, file.FileName, data, GetFileType(file.FileName));
+        }
         public async Task<string> UploadFile(string userId, IFormFile file)
         {
             // Upload media
@@ -49,7 +60,7 @@ namespace Accelerate.Foundations.Media.Services
         }
         public string GetFileUrl(string id)
         {
-            return $"https://localhost:7220/cdn/files/{id}";
+            return $"https://localhost:7220/media/files/{id}";
         }
         public async Task<string> GetPublicLocation(string id)
         {
@@ -58,6 +69,13 @@ namespace Accelerate.Foundations.Media.Services
 
             string downloadPath = GetTempPath(id);
             var taggedBlob = await _blobStorageService.FindBlobByTagId(id);
+            if(taggedBlob == null)
+            {
+                // TODO: Fix this elsewhere like in the websocket
+                // try fetch again - immediate loading of image is causing failure
+                await Task.Delay(250);
+                taggedBlob = await _blobStorageService.FindBlobByTagId(id);
+            }
             var blob = await _blobStorageService.GetBlobByTag(taggedBlob);
             await blob.DownloadToAsync(downloadPath);
             _publicFiles.Add(id, downloadPath);

@@ -113,7 +113,7 @@ namespace Accelerate.Foundations.Common.Services
                         },
                         new NavigationItem()
                         {
-                            Href = "/Account/Manage",
+                            Href = "/Account/Profile",
                             Text = "Account",
                         },
                         new NavigationItem()

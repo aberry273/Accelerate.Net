@@ -61,7 +61,8 @@ Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
-  
+Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
 
 
 // Add Database Exception filter
@@ -136,6 +137,7 @@ app.MapDefaultControllerRoute();
 // Map SignalR hubs
 #pragma warning disable ASP0014 // Suggest using top level route registrations
 Accelerate.Features.Content.Startup.ConfigureApp(app);
+Accelerate.Features.Media.Startup.ConfigureApp(app);
 #pragma warning restore ASP0014 // Suggest using top level route registrations
 
 

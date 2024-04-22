@@ -56,6 +56,9 @@ export default function (data){
 
 			return formData;
 		},
+		_mxForm_OnFieldChange(field, value) {
+			field.value = value;
+		},
 		_mxForm_GetFormData(form, flattenPayload = false) {
 			
 			if (!form) return {};
