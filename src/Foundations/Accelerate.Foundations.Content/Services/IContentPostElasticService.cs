@@ -15,6 +15,7 @@ namespace Accelerate.Foundations.Content.Services
     public interface IContentPostElasticService
     {
         Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query);
+        Task<List<ContentPostDocument>> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10);
         Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query);
         Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);

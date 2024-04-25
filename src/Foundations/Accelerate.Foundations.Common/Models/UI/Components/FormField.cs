@@ -22,7 +22,9 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public FormFieldTypes FieldType { get; set; }
         public bool? Disabled { get; set; }
         public bool? Hidden { get; set; }
+        public bool? Multiple { get; set; }
         public bool? IsArray { get; set; }
+        public string? Icon { get; set; }
         public string? Class { get; set; }
         public string Placeholder { get; set; }
         public bool? Autocomplete { get; set; }

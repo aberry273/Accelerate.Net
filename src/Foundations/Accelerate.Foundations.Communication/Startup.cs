@@ -18,7 +18,9 @@ namespace Accelerate.Foundations.Communication
             {
                 configuration.GetSection(Constants.Settings.EmailConfiguration).Bind(options);
 
-                options.Password = configuration[Constants.SendGrid.SecretPassword];
+                //options.ConnectionString = configuration[Constants.AzureCommunicationServices.ConnectionString];
+                options.Username = configuration[Constants.AzureCommunicationServices.EmailCommunicationServiceName];
+                options.Password = configuration[Constants.AzureCommunicationServices.EmailCommunicationServiceSecret];
             });
             services.Configure<TwilioConfiguration>(options =>
             {

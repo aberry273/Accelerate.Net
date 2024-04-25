@@ -98,7 +98,23 @@ namespace Accelerate.Foundations.Content.Services
                 Condition = ElasticCondition.Must, 
                 Value = ContentPostType.Page
             };
-        } 
+        }
+        public async Task<List<ContentPostDocument>> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10)
+        {
+            var elasticQuery = BuildUserSearchQuery(userId);
+            //TODO: remove
+
+            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * page;
+
+            var results = await Search(elasticQuery, skip, take);
+            if (!results.IsValidResponse && !results.IsSuccess())
+            {
+                return new List<ContentPostDocument>();
+            }
+            return results.Documents.ToList();
+        }
         public async Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query)
         {
             var elasticQuery = BuildSearchQuery(Query);
@@ -194,6 +210,15 @@ namespace Accelerate.Foundations.Content.Services
                 );
             }
             return query;
+        }
+
+        public  QueryDescriptor<ContentPostDocument> BuildUserSearchQuery(Guid userId)
+        {
+            var Query = new RequestQuery();
+             
+            Query.Filters.Add(Filter(Constants.Fields.UserId, ElasticCondition.Filter, userId));
+             
+            return CreateQuery(Query);
         }
 
         public override QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query)

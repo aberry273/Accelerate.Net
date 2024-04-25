@@ -1,8 +1,10 @@
 
 import mxForm from '/src/js/mixins/mxForm.js';
+import mxModal from '/src/js/mixins/mxModal.js';
 export default function (data) {
     return {
         ...mxForm(data),
+        ...mxModal(data),
         // PROPERTIES
         loading: false,
         fields: [],
@@ -12,11 +14,14 @@ export default function (data) {
         tagStr: null,
         tags: [],
         tagFieldName: 'Tags',
+        imageFieldName: 'Images',
+        videoFieldName: 'Videos',
         showTags: false,
         showText: false,
         showVideo: false,
         showImage: false,
         actionEvent: null,
+        imageModal: 'upload-media-image-modal',
         // INIT
         init() {
             this.tags = [];
@@ -26,6 +31,13 @@ export default function (data) {
             this.postbackType = data.postbackType
             this.fields = data.fields,
                 this.actionEvent = data.actionEvent;
+
+            var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
+            this.showTags = tagField = null ? !tagField.hidden : null
+            var imageField = this._mxForm_GetField(this.fields, this.imageFieldName);
+            this.showImage = imageField != null ? !imageField.hidden : null
+            var videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
+            this.showVideo = videoField != null ? !videoField.hidden : null
 
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
@@ -53,7 +65,9 @@ export default function (data) {
             this.setHtml(data)
         },
         // GETTERS
-        get typeSelected() { return this.showImage || this.showVideo || this.showText },
+        get typeSelected() {
+            return this.showImage || this.showVideo || this.showText
+        },
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
         // METHODS
         async submit(fields) {
@@ -77,64 +91,75 @@ export default function (data) {
         },
         resetValues(fields) {
             for (var i = 0; i < fields.length; i++) {
-              if (fields[i].clearOnSubmit === true) {
-                fields[i].value = null;
-                fields[i].values = null;
-                fields[i].items = null;
-              }
+                if (fields[i].clearOnSubmit === true) {
+                    fields[i].value = null;
+                    fields[i].values = null;
+                    fields[i].items = null;
+                }
             }
         },
         format(type) {
         },
         cancelTypes() {
-            this.showText = false;
-            this.showVideo = false;
-            this.showImage = false;
+            this.hideTextField(true);
+            this.hideImageField(true);
+            this.hideVideoField(true);
         },
         addTag() {
             this.tags.push(this.tagStr);
             this.tagStr = null;
         },
-        showTagField() {
-            this.showTags = !this.showTags;
-            this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, this.showTags)
+        hideTagField(val) {
+            this.showTags = val;
+            this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, val)
+        },
+        hideTextField(val) {
+            this.showText = !val;
+            this._mxForm_SetFieldVisibility(this.fields, this.textFieldName, val)
+        },
+        hideImageField(val) {
+            this.showImage = !val;
+            this._mxForm_SetFieldVisibility(this.fields, this.imageFieldName, val)
+        },
+        hideVideoField(val) {
+            this.showVideo = !val;
+            this._mxForm_SetFieldVisibility(this.fields, this.videoFieldName, val)
         },
         setHtml(data) {
             // make ajax request
             const label = data.label || 'Submit'
             const html = `
 
-        <article class="dense py-0 sticky">
-          <progress x-show="loading"></progress>
-          <!--Quotes-->
-          <fieldset x-data="formFields({fields})"></fieldset>
-         
-          <fieldset role="group">
-            <!--Types-->
-            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="showText = !showText" :disabled="loading">text_format</button>
-            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="showVideo = !showVideo" :disabled="loading">videocam</button>
-            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="showImage = !showImage" :disabled="loading">image</button>
-            <!--Cancel-->
-            <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
+            <article class="dense py-0 sticky">
+                <progress x-show="loading"></progress>
+                <!--Quotes-->
+                <fieldset x-data="formFields({fields})"></fieldset>
+                
+                <fieldset role="group">
+                    <!--Toggle fields-->
+                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideTextField(false)" :disabled="loading">text_format</button>
+                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideVideoField(false)" :disabled="loading">videocam</button>
+                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
+                    <!--Cancel-->
+                    <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
+                    
+                    <!--Type formats-->
+                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_bulleted</button>
+                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_numbered</button>
+                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">link</button>
+                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_quote</button>
+                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">code</button>
+                    
+                    <input name="Tag" disabled type="text" placeholder="" />
+                    
+                    <button x-show="showTags" class="secondary material-icons flat" @click="showTagField(!showTags)" :disabled="loading">sell</button>
+                    <button x-show="!showTags" class="secondary material-icons flat" @click="showTagField(!showTags)" :disabled="loading">cancel</button>
+                    
+                    <button class="" @click="await submit(fields)"  :disabled="loading">${label}</button>
 
-            <!--Type formats-->
-            <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_bulleted</button>
-            <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_numbered</button>
-            <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">link</button>
-            <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_quote</button>
-            <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">code</button>
-            
-            <input name="Tag" disabled type="text" placeholder="" />
-            
-            <button x-show="showTags" class="secondary material-icons flat" @click="showTagField" :disabled="loading">sell</button>
-            <button x-show="!showTags" class="secondary material-icons flat" @click="showTagField" :disabled="loading">cancel</button>
-            
-            <button class="" @click="await submit(fields)"  :disabled="loading">${label}</button>
-
-          </fieldset>
-         
-        </article>
-      `
+                </fieldset> 
+            </article>
+        `
             this.$nextTick(() => {
                 this.$root.innerHTML = html
             });

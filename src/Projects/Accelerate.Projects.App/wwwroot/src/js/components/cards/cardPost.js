@@ -124,14 +124,13 @@ export default function (data) {
         },
         load(data) {
             const html = `
-            <div :class="quotedPosts.length > 0 ? 'blockquote' : ''">
             <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
 
                 <!--End Header-->
                 <template x-if="quotedPosts.length > 0">
                     <div class="dense blockquote primary " style="border: 0px; padding-bottom:0px;">
                         <summary class="primary">
-                            <i class="icon material-icons">chevron_right</i>
+                            <i class="icon material-icons">format_quote</i>
 
                             <template x-for="quote in quotedPosts">
                                 <a style="text-decoration:none" @click="filterByThreadId(quote)">
@@ -144,112 +143,113 @@ export default function (data) {
                     </div>
                 </template>
 
-            <!--Header-->
-                <header class="padded">
-                <nav>
-                    <ul>
-                        <template x-if="selectedPost.profile.image != null">
-                            <button class="avatar small">
-                                <img 
-                                    :src="selectedPost.profile.image"
-                                    :alt="selectedPost.profile.username"
-                                />
-                            </button>
-                        </template>
-                        <aside>
-                        <li class="secondary">
-                            <strong>
-                                <span x-text="selectedPost.profile.username"></span>
-                            </strong>
-                            <strong>
-                                <a class="py-0 secondary my-0" style='text-decoration:none' :href="'/Content/thread/'+selectedPost.id">
-                                    <small><small x-text="selectedPost.shortThreadId"></small></small>
-                                </a>
-                            </strong>
-                        </li>
-                        </aside>
-                    </ul>
-                    <ul> 
-                        <li>
-                            <!--Show more-->
-                            
-
-                            <details class="dropdown flat no-chevron">
-                                <summary role="outline">
-                                    <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
-                                </summary>
-                                <ul dir="rtl">
-                                    <li><a class="click" @click="showMetadata = !showMetadata">Tags</a></li>
-                                    <li><a class="click" @click="modalAction('share')">Share</a></li>
-                                    <li><a class="click" @click="modalAction('edit')">Edit</a></li>
-                                    <li><a class="click" @click="modalAction('delete')">Delete</a></li>
-                                </ul>
-                            </details>
-                        </li>
-                    </ul>
-                </nav>
-                </header>
-            <!--Content-->
-            <template x-for="(post, i) in thread" :key="i"> 
-                <div class="content" x-show="i == currentPage" x-html="renderPost(post, i)" ></div>
-            </template>
-            <!--End content-->
-
-                <!-- Pagination-->
-                <template x-if="thread.length > 1">
-                <div class="grid" align="center">
-                    <ul>
-                    <template x-for="page in thread.length">
-                        <i @click="currentPage = page-1" :class="currentPage == page-1 ? 'primary': ''" class="icon material-iconss icon-click">•</i>
-                    </template>
-                    </ul>
-                </div>
-                </template>
-                <!--End Pagination-->
-
-                <!--Ratings-->
-                <footer class="padded">
+                <div :class="quotedPosts.length > 0 ? 'blockquote' : ''">
+                <!--Header-->
+                    <header class="padded">
                     <nav>
                         <ul>
-                        <li>
-                            <!--Agree-->
-                            <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
-                            <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
-                            <!--Disagree-->
-                            <i aria-label="Disagree" @click="action('disagree')" :class="userAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
-                            <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
-                            <!--Likes-->
-                            <i @click="action('like')" aria-label="Liked" :class="userAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
-                            <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup> 
-                        </li>
-                        </ul> 
-                        <ul>
-                        <li>
-                            <!--Quotes-->
-                            <i aria-label="Quote" @click="action('quote')" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
-                            <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
+                            <template x-if="selectedPost.profile.image != null">
+                                <button class="avatar small">
+                                    <img 
+                                        :src="selectedPost.profile.image"
+                                        :alt="selectedPost.profile.username"
+                                    />
+                                </button>
+                            </template>
+                            <aside>
+                            <li class="secondary">
+                                <strong>
+                                    <span x-text="selectedPost.profile.username"></span>
+                                </strong>
+                                <strong>
+                                    <a class="py-0 secondary my-0" style='text-decoration:none' :href="'/Content/thread/'+selectedPost.id">
+                                        <small><small x-text="selectedPost.shortThreadId"></small></small>
+                                    </a>
+                                </strong>
+                            </li>
+                            </aside>
+                        </ul>
+                        <ul> 
+                            <li>
+                                <!--Show more-->
+                            
 
-                            <!--Replies--> 
-                            <i aria-label="Reply" :class="false ? 'primary': ''" class="icon material-icons icon-click"  rel="prev">comment</i>
-                            <sup class="noselect" rel="prev" x-text="selectedPost.replies || 0"></sup> 
-                        </li>
+                                <details class="dropdown flat no-chevron">
+                                    <summary role="outline">
+                                        <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
+                                    </summary>
+                                    <ul dir="rtl">
+                                        <li><a class="click" @click="showMetadata = !showMetadata">Tags</a></li>
+                                        <li><a class="click" @click="modalAction('share')">Share</a></li>
+                                        <li><a class="click" @click="modalAction('edit')">Edit</a></li>
+                                        <li><a class="click" @click="modalAction('delete')">Delete</a></li>
+                                    </ul>
+                                </details>
+                            </li>
                         </ul>
                     </nav>
-                    <nav x-show="showMetadata && selectedPost.tags">
-                    <ul>
-                        <li>
-                        <div class="container">
-                        <template x-for="(tag, i) in selectedPost.tags">
-                            <button class="tag flat secondary small" x-text="tag"></button>
+                    </header>
+                <!--Content-->
+                <template x-for="(post, i) in thread" :key="i"> 
+                    <div class="content" x-show="i == currentPage" x-html="renderPost(post, i)" ></div>
+                </template>
+                <!--End content-->
+
+                    <!-- Pagination-->
+                    <template x-if="thread.length > 1">
+                    <div class="grid" align="center">
+                        <ul>
+                        <template x-for="page in thread.length">
+                            <i @click="currentPage = page-1" :class="currentPage == page-1 ? 'primary': ''" class="icon material-iconss icon-click">•</i>
                         </template>
-                        </div>
-                        </li>
-                    </ul>
-                    </nav>
-                </footer>
-                <!--End Ratings-->
+                        </ul>
+                    </div>
+                    </template>
+                    <!--End Pagination-->
+
+                    <!--Ratings-->
+                    <footer class="padded">
+                        <nav>
+                            <ul>
+                            <li>
+                                <!--Agree-->
+                                <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                                <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
+                                <!--Disagree-->
+                                <i aria-label="Disagree" @click="action('disagree')" :class="userAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                                <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
+                                <!--Likes-->
+                                <i @click="action('like')" aria-label="Liked" :class="userAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
+                                <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup> 
+                            </li>
+                            </ul> 
+                            <ul>
+                            <li>
+                                <!--Quotes-->
+                                <i aria-label="Quote" @click="action('quote')" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
+                                <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
+
+                                <!--Replies--> 
+                                <i aria-label="Reply" :class="false ? 'primary': ''" class="icon material-icons icon-click"  rel="prev">comment</i>
+                                <sup class="noselect" rel="prev" x-text="selectedPost.replies || 0"></sup> 
+                            </li>
+                            </ul>
+                        </nav>
+                        <nav x-show="showMetadata && selectedPost.tags">
+                        <ul>
+                            <li>
+                            <div class="container">
+                            <template x-for="(tag, i) in selectedPost.tags">
+                                <button class="tag flat secondary small" x-text="tag"></button>
+                            </template>
+                            </div>
+                            </li>
+                        </ul>
+                        </nav>
+                    </footer>
+                    <!--End Ratings-->
+                </div>
             </article>
-            </div>
         `
             this.$nextTick(() => {
                 this.$root.innerHTML = html

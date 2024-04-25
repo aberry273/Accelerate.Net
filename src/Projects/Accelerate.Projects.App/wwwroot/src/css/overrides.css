@@ -188,8 +188,8 @@
   .blockquote {
     border-right: none;
     border-left: .2rem solid var(--pico-blockquote-border-color);
-    -webkit-border-start: .2rem solid var(--pico-blockquote-border-color);
-    border-inline-start: .2rem solid var(--pico-blockquote-border-color);
+    -webkit-border-start: .4rem solid var(--pico-blockquote-border-color);
+    border-inline-start: .4rem solid var(--pico-blockquote-border-color);
     -webkit-border-end: none;
     border-inline-end: none;
   } 

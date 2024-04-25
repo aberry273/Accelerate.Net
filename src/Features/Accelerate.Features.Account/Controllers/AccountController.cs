@@ -23,6 +23,8 @@ using Elastic.Clients.Elasticsearch;
 using Accelerate.Features.Account.Models.Data;
 using System.Security.Claims;
 using Accelerate.Foundations.Common.Helpers;
+using System.Text.Encodings.Web;
+using System.Web;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -217,19 +219,23 @@ namespace Accelerate.Features.Account.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByNameAsync(model.Username) ?? await _userManager.FindByEmailAsync(model.Username);
-                
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+
+                if (user == null)
+                {
+                    var viewModel = _accountViewService.GetForgotPasswordPage(model.Username);
+                    model.Response = "There was an error resetting this users password";
+                    return View(_accountFormRazorFile, viewModel);
+                }
+                if (!(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
-                    return RedirectToAction(nameof(ConfirmAccount));
+                    await SendAccountConfirmationEmail(user);
+                    return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
-                await _emailSender.SendConfirmationLinkAsync(user, "Reset Password",
-                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                await SendResetPasswordEmail(user);
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
@@ -250,6 +256,12 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.Form.Response = "Please check your email to reset your password";
             return View(_accountFormRazorFile, viewModel);
         }
+        private async Task SendResetPasswordEmail(AccountUser user)
+        {
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
+            await _emailSender.SendConfirmationLinkAsync(user, callbackUrl, "Reset password");
+        }
         #endregion
 
         #region ResetPassword
@@ -269,7 +281,7 @@ namespace Accelerate.Features.Account.Controllers
             {
                 viewModel.Form.Response += "A code must be supplied for password reset.";
             }
-
+            
             return View(_accountFormRazorFile, viewModel);
         }
         public string ResetPasswordCallbackLink(string userId, string code, string scheme)
@@ -279,6 +291,39 @@ namespace Accelerate.Features.Account.Controllers
                 controller: ControllerHelper.NameOf<AccountController>(),
                 values: new { userId, code },
                 protocol: scheme);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordForm model)
+        {
+            var viewModel = _accountViewService.GetResetPasswordPage(model.UserId, model.Code);
+            var user = await _userManager.FindByIdAsync(model.UserId);
+
+            if (user == null)
+            {
+                viewModel.Form.Response = "There was an error resetting this users password, please contact support@parrapp.com";
+                return View(_accountFormRazorFile, viewModel);
+            }
+            if (model.Password != model.ConfirmPassword)
+            {
+                viewModel.Form.Response = "Passwords do not match";
+                return View(_accountFormRazorFile, viewModel);
+            }
+
+            var decodedCode = HttpUtility.HtmlDecode(model.Code);
+           
+            var result = await _userManager.ResetPasswordAsync(user, decodedCode, model.Password);
+
+            if(result.Succeeded)
+            {
+                await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
+                return RedirectToAction(nameof(Profile));
+            }
+
+            viewModel.Form.Response = string.Join(",", result.Errors.Select(x => x.Description));
+            
+            return View(model);
         }
         #endregion
         #region Login
@@ -419,29 +464,11 @@ namespace Accelerate.Features.Account.Controllers
                     var errors = ModelState.Select(x => x.Value?.Errors?.FirstOrDefault()?.ErrorMessage);
                     viewModel.Form.Response = string.Join(",", errors);
                 }
-                /*
-                viewModel.LoginLink = new SimpleLinkModel()
-                {
-                    Href = LoginLink(),
-                    IsInternal = true,
-                    Text = "Login",
-                    NewWindow = false
-                };
-                */
                 // If execution got this far, something failed, redisplay the form.
                 return View(_accountFormRazorFile, viewModel);
             }
             catch (Exception ex)
             {
-                /*
-                viewModel.LoginLink = new SimpleLinkModel()
-                {
-                    Href = LoginLink(),
-                    IsInternal = true,
-                    Text = "Login",
-                    NewWindow = false
-                };
-                */
                 viewModel.Form.Response = "There was an error processing your request";
                 return View(_accountFormRazorFile, viewModel);
             }
@@ -478,15 +505,70 @@ namespace Accelerate.Features.Account.Controllers
 
                 // For more information on how to enable account confirmation and password reset please
                 // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
-                await _emailSender.SendConfirmationLinkAsync(user, "Confirm Account",
-                   $"Please confirm your account by clicking here: <a href='{callbackUrl}'>link</a>");
-                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+                await SendAccountConfirmationEmail(user);
+                return RedirectToAction(nameof(AccountEmailConfirmation));
             }
 
             // If execution got this far, something failed, redisplay the form.
             return View(model);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> AccountEmailConfirmation(string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+            //ViewData["ReturnUrl"] = returnUrl;
+            //var viewModel = await this.GetLoginViewModel();
+            var viewModel = _accountViewService.GetForgotPasswordConfirmationPage();
+            viewModel.Form.Response = "Please check your email to confirm your account";
+            return View(_accountFormRazorFile, viewModel);
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> AccountConfirmation(string userId = null, string code = null)
+        {
+            var viewModel = _accountViewService.GetResetPasswordPage(userId, code);
+
+            if (userId == null)
+            {
+                viewModel.Form.Response = "There was an error with the link that was supplied. ";
+            }
+
+            if (code == null)
+            {
+                viewModel.Form.Response += "A code must be supplied for password reset.";
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            var decodedCode = HttpUtility.HtmlDecode(code);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedCode);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction(nameof(Profile));
+            }
+
+            viewModel.Form.Response = string.Join(",", result.Errors.Select(x => x.Description));
+
+            return View(_accountFormRazorFile, viewModel);
+        }
+        public string AccountConfirmationCallbackLink(string userId, string code, string scheme)
+        {
+            return this.Url.Action(
+                action: nameof(AccountConfirmation),
+                controller: ControllerHelper.NameOf<AccountController>(),
+                values: new { userId, code },
+                protocol: scheme);
+        }
+
+        private async Task SendAccountConfirmationEmail(AccountUser user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = AccountConfirmationCallbackLink(user.Id.ToString(), code, Request.Scheme);
+            await _emailSender.SendConfirmationLinkAsync(user, callbackUrl, "Confirm Account");
         }
         #endregion
 

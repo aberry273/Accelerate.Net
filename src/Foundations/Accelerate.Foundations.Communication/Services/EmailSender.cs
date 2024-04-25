@@ -1,15 +1,23 @@
 ﻿using Accelerate.Foundations.Communication.Models;
+using Azure.Communication.Email;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using Org.BouncyCastle.Cms;
+using System.Net;
+using System.Net.Security;
+using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using Twilio.TwiML.Messaging;
+using systemMail = System.Net.Mail;
 namespace Accelerate.Foundations.Communication.Services
 {
     public class EmailSender : IEmailSender
     {
         private readonly ILogger<EmailSender> _logger;
         private readonly EmailConfiguration _emailConfig;
-        
         public EmailSender(
           ILogger<EmailSender> logger, IOptions<EmailConfiguration> emailConfig)
         {
@@ -30,28 +38,28 @@ namespace Accelerate.Foundations.Communication.Services
             _emailConfig = emailConfig;
         }
 
-        public void SendEmail(EmailMessage message)
+        public void SendEmail(Models.EmailMessage message)
         {
             var emailMessage = CreateEmailMessage(message);
             Send(emailMessage);
         }
 
-        public async Task SendEmailAsync(EmailMessage message)
+        public async Task SendEmailAsync(Models.EmailMessage message)
         {
             var emailMessage = CreateEmailMessage(message);
             await SendAsync(emailMessage);
         } 
         public void SendEmail(string email, string subject, string message)
         {
-            var modal = new EmailMessage(new List<string>() { email }, subject, message);
+            var modal = new Models.EmailMessage(new List<string>() { email }, subject, message);
             this.SendEmail(modal);
         }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var modal = new EmailMessage(new List<string>() { email }, subject, message);
+            var modal = new Models.EmailMessage(new List<string>() { email }, subject, message);
             await this.SendEmailAsync(modal);
         }
-        private MimeMessage CreateEmailMessage(EmailMessage message)
+        private MimeMessage CreateEmailMessage(Models.EmailMessage message)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(message.Subject, _emailConfig.From));
@@ -85,11 +93,9 @@ namespace Accelerate.Foundations.Communication.Services
             };
             return attachment;
         }
-       
         public void Send(MimeMessage mailMessage)
         {
             using var client = new SmtpClient();
-
             try
             {
                 client.LocalDomain = _emailConfig.FromDomain;
@@ -114,7 +120,6 @@ namespace Accelerate.Foundations.Communication.Services
                 client.Dispose();
             }
         }
-
         public async Task SendAsync(MimeMessage mailMessage)
         {
             using var client = new SmtpClient();
@@ -123,8 +128,8 @@ namespace Accelerate.Foundations.Communication.Services
             {
                 client.LocalDomain = _emailConfig.FromDomain;
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-
-                await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, _emailConfig.SSL).ConfigureAwait(false);
+                
+                await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls).ConfigureAwait(false);
 
                 await client.AuthenticateAsync(_emailConfig.Username, _emailConfig.Password).ConfigureAwait(false);
 

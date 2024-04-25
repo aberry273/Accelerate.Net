@@ -29,11 +29,16 @@ namespace Accelerate.Foundations.Account.Services
             }
         }
         
-        public async Task SendConfirmationLinkAsync(AccountUser user, string email, string confirmationLink)
+        public async Task SendConfirmationLinkAsync(AccountUser user, string ctaHref, string ctaLabel)
         {
 
             var name = user.AccountProfile != null ? $"{user.AccountProfile.Firstname} {user.AccountProfile.Lastname}" : user.UserName;
-            var mailMessage = this.BuildEmailMessage(user.Email, name, _heading, _confirmAccountMessage, _emailCtaLabel, confirmationLink);
+            var intro = $"Hi, {name}. Click on the link below to confirm your new account";
+
+            var ctaStr = $"<a href=\"{ctaHref}\" target=\"_blank\" style=\"display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;\">{ctaLabel}</a>";
+
+            //var emailBody = $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>link</a>";
+            var mailMessage = this.BuildEmailMessage(user.Email, intro, _heading, _confirmAccountMessage, ctaStr);
             await _emailSender.SendEmailAsync(mailMessage);
             /*
             var emailBody = $"Please confirm your account by clicking this link: <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>link</a>";
@@ -74,19 +79,16 @@ namespace Accelerate.Foundations.Account.Services
 
             return model;
         }
-        public EmailMessage BuildEmailMessage(string email, string name, string heading, string message, string ctaText, string ctaHref)
+        public EmailMessage BuildEmailMessage(string email, string intro, string heading, string message, string ctaStr)
         {
             //var name = user.UserProfile != null ? $"{user.UserProfile.Firstname} {user.UserProfile.Lastname}" : user.UserName;
-
-            var ctaStr = $"<a href=\"{ctaHref}\" target=\"_blank\" style=\"display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;\">{ctaText}</a>";
 
             var str = _emailTemplate
                 .Replace("$EmailMessage$", message)
                 .Replace("$HtmlTitle$", _title)
-                .Replace("$HeaderText$", _heading)
-                .Replace("$EmailIntro$", _emailIntro)
+                .Replace("$HeaderText$", heading)
+                .Replace("$EmailIntro$", intro)
                 .Replace("$CallToAction$", ctaStr)
-                .Replace("$CallToActionText$", _emailCta)
                 .Replace("$PreheaderText$", _emailpreHeader)
                 .Replace("CompanyAddress", _companyAddress);
 

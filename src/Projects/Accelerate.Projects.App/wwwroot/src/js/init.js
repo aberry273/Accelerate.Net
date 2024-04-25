@@ -1,4 +1,5 @@
-import alpinejs from 'https://cdn.skypack.dev/alpinejs';
+//import alpinejs from 'https://cdn.skypack.dev/alpinejs';
+import alpinejs from './alpine.esm.js'
 
 // Load webSockets components
 import * as sockets from './websockets/index.js';

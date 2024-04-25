@@ -335,6 +335,7 @@ namespace Accelerate.Features.Account.Services
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Username or email",
                         AriaInvalid = false,
+                        Hidden = false,
                         Value = usernameOrEmail
                     },
                 }
@@ -389,16 +390,16 @@ namespace Accelerate.Features.Account.Services
             return model;
         }
         #endregion
-        #region ResetPassword
+        #region ResetPassword 
         public AccountFormPage GetResetPasswordPage(string? userId, string? code)
         {
             var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
             viewModel.Title = "Reset password";
-            viewModel.Form = this.CreateResetPasswordForm(userId, code);
+            viewModel.Form = this.CreateResetPasswordResetForm(userId, code);
             viewModel.Links = this.CreateResetPasswordLinks();
             return viewModel;
         }
-        public Form CreateResetPasswordForm(string? userId, string? code)
+        public Form CreateResetPasswordResetForm(string? userId, string? code)
         {
             var model = new Form()
             {
@@ -411,6 +412,7 @@ namespace Accelerate.Features.Account.Services
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Username or email",
                         AriaInvalid = false,
+                        Hidden = true,
                         Value = userId
                     },
                     new FormField()
@@ -419,7 +421,25 @@ namespace Accelerate.Features.Account.Services
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Code",
                         AriaInvalid = false,
+                        Hidden = true,
                         Value = code
+                    },
+                    new FormField()
+                    {
+                        Name = "Password",
+                        Label = "New Password",
+                        FieldType = FormFieldTypes.password,
+                        Placeholder = "New Password",
+                        AriaInvalid = false,
+                        Value = null
+                    },
+                    new FormField()
+                    {
+                        Name = "ConfirmPassword",
+                        FieldType = FormFieldTypes.password,
+                        Placeholder = "Confirm Password",
+                        AriaInvalid = false,
+                        Value = null
                     },
                 }
             };

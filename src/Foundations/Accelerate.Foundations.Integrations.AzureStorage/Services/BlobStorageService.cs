@@ -6,7 +6,10 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Integrations.AzureStorage.Models;
+using Azure;
 using Azure.Identity;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
@@ -27,7 +30,19 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         private readonly AzureStorageConfiguration _config;
         private readonly ILogger<BlobStorageService> _logger;
         private BlobServiceClient _client;
-        private BlobContainerClient _container; 
+        private BlobContainerClient _container;
+        BlobUploadOptions _options = new BlobUploadOptions
+        {
+            TransferOptions = new StorageTransferOptions
+            {
+                // Set the maximum number of workers that 
+                // may be used in a parallel transfer.
+                MaximumConcurrency = 8,
+
+                // Set the maximum length of a transfer to 50MB.
+                MaximumTransferSize = 50 * 1024 * 1024
+            }
+        };
         public BlobStorageService(
           ILogger<BlobStorageService> logger, IOptions<AzureStorageConfiguration> options)
         {
@@ -55,15 +70,12 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
                 throw (ex);
             }
         }
-        private string GetOtherPath(string userId, string strFileName)
-        {
-            return $"accounts/{userId}/{appUserContainerOtherSubfolderName}/{GenerateFileName(strFileName)}";
-        }
         public async Task<BlobContainerClient> GetContainer()
         {
             if (_container == null) await CreateAppContainer();
             return _container;
-        }
+        } 
+
         public async Task<string?> UploadOther(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType)
         {
             try
@@ -86,10 +98,6 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             {
                 throw (ex);
             }
-        }
-        private string GetVideoPath(string userId, string strFileName)
-        {
-            return $"accounts/{userId}/{appUserContainerVideosSubfolderName}/{GenerateFileName(strFileName)}";
         }
         public async Task<string?> UploadVideo(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType = "mp4")
         {
@@ -114,10 +122,6 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
                 throw (ex);
             }
         }
-        private string GetImagePath(string userId, string strFileName)
-        {
-           return $"accounts/{userId}/{appUserContainerImagesSubfolderName}/{GenerateFileName(strFileName)}";
-        }
         public async Task<string?> UploadImage(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType = "png")
         {
             try
@@ -140,7 +144,19 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             {
                 throw (ex);
             }
-        } 
+        }
+        public string GetOtherPath(string userId, string strFileName)
+        {
+            return $"accounts/{userId}/{appUserContainerOtherSubfolderName}/{GenerateFileName(strFileName)}";
+        }
+        public string GetImagePath(string userId, string strFileName)
+        {
+            return $"accounts/{userId}/{appUserContainerImagesSubfolderName}/{GenerateFileName(strFileName)}";
+        }
+        public string GetVideoPath(string userId, string strFileName)
+        {
+            return $"accounts/{userId}/{appUserContainerVideosSubfolderName}/{GenerateFileName(strFileName)}";
+        }
         private string GenerateFileName(string fileName)
         {
             string strFileName = string.Empty;
@@ -182,7 +198,48 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             }
             return blobs;
         }
+          
+        public async Task<List<string>> UploadManyAsync(Guid userId, List<BlobFile> files)
+        {
+            try
+            {
+                if (_container == null) await CreateAppContainer();
+                
+                var tasks = new Queue<Task<Response<BlobContentInfo>>>();
+                foreach (BlobFile file in files)
+                {
+                    Stream stream = new MemoryStream(file.fileData);
+                    var blobUploadOptions = new BlobUploadOptions()
+                    {
+                        Metadata = new Dictionary<string, string> { { "id", file.id.ToString() } },
+                        Tags = GetBlobMetaTags(file.id.ToString(), file.fileMimeType)
+                    };
+                    
+                    BlockBlobClient blob = new BlockBlobClient(_config.ConnectionString, _container.Name, GetOtherPath(userId.ToString(), file.fileName));
 
+                    tasks.Enqueue(blob.UploadAsync(stream, blobUploadOptions)); 
+                }
+
+                // Run all the tasks asynchronously.
+                await Task.WhenAll(tasks);
+
+                return files.Select(x => x.id.ToString()).ToList();
+            }
+
+            catch (RequestFailedException ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError($"Azure request failed: {ex.Message}");
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError($"Error parsing files in the directory: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError($"Exception: {ex.Message}");
+            }
+            return new List<string>();
+        }
         public async Task<string?> UploadAsync(string fullFilePath, byte[] fileData, string fileMimeType)
         {
             try

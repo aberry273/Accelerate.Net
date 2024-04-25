@@ -8,6 +8,12 @@ namespace Accelerate.Foundations.Communication
 {
     public struct Constants
     {
+        public struct AzureCommunicationServices
+        {
+            public const string EmailCommunicationServiceName = "AzureCommsServicesResourceName";
+            public const string EmailCommunicationServiceSecret = "AzureCommsServicesClientSecret";
+            public const string ConnectionString = "AzureCommsServicesConnectionString";
+        }
         public struct SendGrid
         {
             public const string SecretPassword = "SendGrid:ApiKey";

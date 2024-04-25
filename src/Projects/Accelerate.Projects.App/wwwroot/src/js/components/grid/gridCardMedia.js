@@ -143,7 +143,7 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div x-transition class="grid col-4">
+            <div x-transition class="grid col-4" :class="items.length == 0 ? 'col-1' : ''">
               <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
                 <div x-data="cardImage({
                   item: item,

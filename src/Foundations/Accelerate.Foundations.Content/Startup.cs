@@ -26,12 +26,14 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostActivityEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostReviewEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostQuoteEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostMediaEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             //Services
             services.AddTransient<IEntityService<ContentChannelEntity>, EntityService<ContentChannelEntity>>();
             services.AddTransient<IEntityService<ContentPostEntity>, EntityService<ContentPostEntity>>();
             services.AddTransient<IEntityService<ContentPostActivityEntity>, EntityService<ContentPostActivityEntity>>();
             services.AddTransient<IEntityService<ContentPostReviewEntity>, EntityService<ContentPostReviewEntity>>();
             services.AddTransient<IEntityService<ContentPostQuoteEntity>, EntityService<ContentPostQuoteEntity>>();
+            services.AddTransient<IEntityService<ContentPostMediaEntity>, EntityService<ContentPostMediaEntity>>();
             //Parent context for mappings
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
 
@@ -41,7 +43,8 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IElasticService<ContentPostReviewDocument>, ContentReviewElasticService>();
             services.AddTransient<IElasticService<ContentPostActivityDocument>, ContentActivityElasticService>();
             services.AddTransient<IElasticService<ContentChannelDocument>, ContentChannelElasticService>();
-            
+            services.AddTransient<IElasticService<ContentPostMediaDocument>, ContentPostMediaElasticService>();
+
             services.AddTransient<IElasticService<ContentPostQuoteDocument>, ContentPostQuoteElasticService>();
         }
         public static void InitializePipeline(BaseContext<ContentPostEntity> context)

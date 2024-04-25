@@ -10,6 +10,10 @@ namespace Accelerate.Features.Account.Models.Data
 
         [Required]
         public string Code { get; set; }
+        [Required]
+        public string Password { get; set; }
+        [Required]
+        public string ConfirmPassword { get; set; }
 
         public string? Response { get; set; }
     }

@@ -11,11 +11,13 @@ namespace Accelerator.Foundation.Content.Database
 {
     public class ContentDbContext : DbContext
     {
+        public BaseContext<ContentPostMediaEntity> Media { get; set; }
         public BaseContext<ContentPostQuoteEntity> Quotes { get; set; }
         public BaseContext<ContentChannelEntity> Channels { get; set; }
         public BaseContext<ContentPostEntity> Posts { get; set; }
         public ContentDbContext(DbContextOptions<ContentDbContext> options,
                 BaseContext<ContentPostEntity> postContext,
+                BaseContext<ContentPostMediaEntity> mediaContext,
                 BaseContext<ContentPostQuoteEntity> quoteContext,
                 BaseContext<ContentChannelEntity> channelContext)
             : base(options)
@@ -23,6 +25,7 @@ namespace Accelerator.Foundation.Content.Database
             Posts = postContext;
             Posts = postContext;
             Quotes = quoteContext;
+            Media = mediaContext;
             Channels = channelContext;
         }
 
@@ -32,6 +35,8 @@ namespace Accelerator.Foundation.Content.Database
             builder.Entity<ContentChannelEntity>()
                 .HasKey(c => c.Id);
             builder.Entity<ContentPostQuoteEntity>()
+                .HasKey(c => c.Id);
+            builder.Entity<ContentPostMediaEntity>()
                 .HasKey(c => c.Id);
 
             builder.Entity<ContentPostEntity>()

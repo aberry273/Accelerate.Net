@@ -23,13 +23,13 @@
                 </header>
             </ul>
         </nav>
-        <div class="dense blockquote" style="border: 0px">
+        <div class="dense " style="border: 0px">
             <summary class="primary">
                 <a href="@Model.ChannelLink.Href" style="text-decoration:none;">
                     <i class="material-icons">chevron_left</i>
                     <sup class="primary">
                         <strong>
-                            Return
+                            @Model.ChannelLink.Text
                         </strong>
                     </sup>
                 </a>
@@ -38,10 +38,10 @@
     }
     @if(Model.ParentLink != null)
     {
-        <div class="dense blockquote">
+        <div class="dense ">
             <summary class="primary">
                 <a href="@Model.ParentLink.Href" style="text-decoration:none;">
-                    <i class="material-icons">chevron_left</i>
+                    <i class="material-icons">expand_less</i>
                     <sup class="primary">
                         <strong>
                             @Model.ParentLink.Text

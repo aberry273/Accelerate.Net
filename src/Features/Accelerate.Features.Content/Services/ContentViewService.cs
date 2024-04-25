@@ -12,6 +12,7 @@ using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
+using System.Drawing;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -49,7 +50,7 @@ namespace Accelerate.Features.Content.Services
             }
 
             viewModel.UserId = user.Id;
-            viewModel.FormCreateReply = CreatePostForm(user);
+            viewModel.FormCreatePost = CreatePostForm(user);
             viewModel.ModalCreateChannel = CreateModalChannelForm(user);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
@@ -109,10 +110,10 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost",
+                PostbackUrl = "https://localhost:7220/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
-                Label = "Comment",
+                Label = "Submit",
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -127,10 +128,31 @@ namespace Accelerate.Features.Content.Services
                     {
                         Name = "Tags",
                         FieldType = FormFieldTypes.chips,
-                        Placeholder = "Add a tag",
+                        Placeholder = "Add tag",
                         ClearOnSubmit = true,
                         AriaInvalid = false,
                         Hidden = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "Images",
+                        FieldType = FormFieldTypes.file,
+                        Placeholder = "Upload image",
+                        Multiple = true,
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = true,
+                    },
+                    new FormField()
+                    {
+                        Name = "Video",
+                        FieldType = FormFieldTypes.file,
+                        Placeholder = "Upload video",
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = true,
                     },
                     new FormField()
                     {
@@ -140,6 +162,15 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         Value = user.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "Type",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentPostType.Post,
                     }
                 }
             };
@@ -162,7 +193,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost/quote",
+                PostbackUrl = "https://localhost:7220/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
                 ActionEvent = "action:post",
@@ -189,6 +220,27 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
                         AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Images",
+                        FieldType = FormFieldTypes.file,
+                        Placeholder = "Upload image",
+                        Multiple = true,
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = true,
+                    },
+                    new FormField()
+                    {
+                        Name = "Video",
+                        FieldType = FormFieldTypes.file,
+                        Placeholder = "Upload video",
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = true,
                     },
                     new FormField()
                     {
@@ -219,6 +271,15 @@ namespace Accelerate.Features.Content.Services
                         AriaInvalid = false,
                         ClearOnSubmit = false,
                         Value = post.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "Type",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentPostType.Post,
                     },
                     new FormField()
                     {
