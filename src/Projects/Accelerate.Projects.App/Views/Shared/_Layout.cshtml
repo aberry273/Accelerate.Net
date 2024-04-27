@@ -2,7 +2,7 @@
 @inject UserManager<AccountUser> UserManager
 @model BasePage
 @{
-    var lang = Model.Metadata.LanguageCode ?? "en";
+    var lang = Model.Metadata.LanguageCode ?? "en"; 
 }
 <!DOCTYPE html>
 <html lang="@lang">
@@ -58,7 +58,28 @@
     <!-- JS Libraries -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     
-    <script src="~/src/js/config.js"></script>
+    <script>
+        let wssSettings = {
+            wssContentPosts: {
+                //standard websockets
+                //url: "wss://localhost:7220/ContentPosts",
+                //event: 'wss:contentPosts',
+                url: @Model.Url+"/ContentPosts",
+            },
+            wssContentPostReviews: {
+                //standard websockets
+                //url: "wss://localhost:7220/ContentPosts",
+                //event: 'wss:contentPostReviews',
+                url: @Model.Url+"/ContentPostReviews",
+            },
+            wssMediaBlobs: {
+                //standard websockets
+                //url: "wss://localhost:7220/ContentPosts",
+                //event: 'wss:contentPostReviews',
+                url: @Model.Url+"/MediaBlobs",
+            }
+        };
+    </script>
     <!-- For componentizing and lazy loading Alpine -->
     <script type="module" src="~/src/js/init.js"></script>
 

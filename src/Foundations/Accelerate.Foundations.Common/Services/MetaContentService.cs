@@ -52,6 +52,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new BasePage()
             {
+                Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
                 SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
@@ -65,6 +66,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new BasePage()
             {
+                Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
                 SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
