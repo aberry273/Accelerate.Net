@@ -10,6 +10,9 @@ namespace Accelerate.Foundations.Account
     {
         public struct Config
         {
+            public const string ConfigName = "AccountConfiguration";
+            public const string UserIndexName = "UserIndexName";
+
             public const string LocalDatabaseKey = "LocalAccountContext";
             public const string DatabaseKey = "AccountContext";
         }

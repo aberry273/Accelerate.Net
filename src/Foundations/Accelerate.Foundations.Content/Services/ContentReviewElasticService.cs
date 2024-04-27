@@ -13,9 +13,9 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentReviewElasticService :  ElasticService<ContentPostReviewDocument>
     {
 
-        public ContentReviewElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentReviewElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentpostreview_index";
+            this._indexName = config.Value.ReviewIndexName;
         }
         public override async Task<SearchResponse<ContentPostReviewDocument>> Find(RequestQuery<ContentPostReviewDocument> query)
         {

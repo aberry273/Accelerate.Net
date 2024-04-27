@@ -13,9 +13,9 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentChannelElasticService :  ElasticService<ContentChannelDocument>
     {
 
-        public ContentChannelElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentChannelElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentchannel_index";
+            this._indexName = config.Value.ChannelIndexName;
         }
         public override async Task<SearchResponse<ContentChannelDocument>> Find(RequestQuery<ContentChannelDocument> query)
         {

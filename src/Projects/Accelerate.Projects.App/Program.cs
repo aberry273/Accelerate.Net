@@ -51,7 +51,7 @@ Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(build
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 var isProduction = builder.Environment.IsProduction();
-isProduction = true;
+//isProduction = true;
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);

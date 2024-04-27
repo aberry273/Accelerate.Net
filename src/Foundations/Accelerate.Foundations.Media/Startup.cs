@@ -18,6 +18,10 @@ namespace Accelerate.Foundations.Media
             //get secret
             // CONFIGS
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
+            services.Configure<MediaConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+            });
             //Context
             services.AddDbContext<BaseContext<MediaBlobEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             //Services

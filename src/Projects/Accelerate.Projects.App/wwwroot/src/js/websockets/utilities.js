@@ -32,6 +32,5 @@ export async function createClient(url, wssEvent ) {
         return client;
     } catch (err) {
         console.log(err);
-        setTimeout(createClient(url, wssEvent), 5000);
     }
 }

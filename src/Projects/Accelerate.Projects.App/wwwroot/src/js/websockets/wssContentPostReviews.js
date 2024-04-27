@@ -17,8 +17,6 @@ export default function (settings) {
                 this.connectionId = this.client.connection.connectionId;
                 emit(wssEvent, connectedEvent, this.client.connection.connectionId);
             } catch (err) {
-                console.error(err);
-                //setTimeout(createClient, 5000);
             }
         },
         getMessageEvent() {

@@ -1,4 +1,5 @@
-﻿using Accelerate.Foundations.Content.Models;
+﻿using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Services;
@@ -19,6 +20,10 @@ namespace Accelerate.Foundations.Content
         {
             //get secret
             // CONFIGS
+            services.Configure<ContentConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+            });
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
             //Context
             services.AddDbContext<BaseContext<ContentChannelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);

@@ -18,7 +18,6 @@ export default function (settings) {
                 emit(wssEvent, connectedEvent, this.client.connection.connectionId);
             } catch (err) {
                 console.error(err);
-                //setTimeout(createClient, 5000);
             }
         },
         getMessageEvent() {

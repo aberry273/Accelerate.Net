@@ -15,6 +15,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
+using Accelerate.Foundations.Account.Models.Data;
 
 namespace Accelerate.Foundations.Account
 {
@@ -24,6 +25,10 @@ namespace Accelerate.Foundations.Account
         {
             // CONFIGS
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
+            services.Configure<AccountConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+            });
             var socialConfig = configuration
                 .GetSection("OAuthConfiguration")
                 .Get<OAuthConfiguration>();

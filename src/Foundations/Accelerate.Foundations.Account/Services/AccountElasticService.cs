@@ -1,5 +1,6 @@
 ﻿
 using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Account.Models.Data;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -14,9 +15,9 @@ namespace Accelerate.Foundations.Account.Services
     public class AccountElasticService : ElasticService<AccountUserDocument>
     {
 
-        public AccountElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public AccountElasticService(IOptions<ElasticConfiguration> options, IOptions<AccountConfiguration> config) : base(options)
         {
-            this._indexName = "accountuser_index";
+            this._indexName = config.Value.UserIndexName;
         }
         public override async Task<SearchResponse<AccountUserDocument>> Find(RequestQuery<AccountUserDocument> query)
         {

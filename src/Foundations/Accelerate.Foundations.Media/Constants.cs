@@ -10,6 +10,9 @@ namespace Accelerate.Foundations.Media
     {
         public struct Config
         {
+            public const string ConfigName = "MediaConfiguration";
+            public const string MediaIndexName = "MediaIndexName";
+
             public const string LocalDatabaseKey = "LocalMediaContext";
             public const string DatabaseKey = "MediaContext";
         }

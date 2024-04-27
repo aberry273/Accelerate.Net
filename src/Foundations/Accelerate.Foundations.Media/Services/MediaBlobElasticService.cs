@@ -13,9 +13,9 @@ namespace Accelerate.Foundations.Media.Services
     public class MediaBlobElasticService :  ElasticService<MediaBlobDocument>
     {
 
-        public MediaBlobElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public MediaBlobElasticService(IOptions<ElasticConfiguration> options, IOptions<MediaConfiguration> config) : base(options)
         {
-            this._indexName = "mediablob_index";
+            this._indexName = config.Value.MediaIndexName;
         }
         public override async Task<SearchResponse<MediaBlobDocument>> Find(RequestQuery<MediaBlobDocument> query)
         {

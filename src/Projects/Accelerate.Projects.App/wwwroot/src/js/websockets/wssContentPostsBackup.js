@@ -42,7 +42,7 @@ export default function (settings) {
                 });
             } catch (err) {
                 console.log(err);
-                setTimeout(this.start, 5000);
+                //setTimeout(this.start, 5000);
             }
         },
         getMessageEvent() {

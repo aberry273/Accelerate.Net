@@ -24,9 +24,9 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentPostElasticService : ElasticService<ContentPostDocument>, IContentPostElasticService
     {
 
-        public ContentPostElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentPostElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentpost_index";
+            this._indexName = config.Value.PostIndexName;
             _settings = new IndexSettings()
             {
                 //NumberOfReplicas = 0,
