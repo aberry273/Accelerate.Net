@@ -29,9 +29,10 @@
         public required string Name { get; set; }
         public ValueType ValueType { get; set; } = ValueType.String;
         public QueryOperator Operator { get; set; } = QueryOperator.Equals;
-        public List<object>? Values { get; set; }
+        public IEnumerable<object>? Values { get; set; }
         public object? Value { get; set; }
         public bool Keyword { get; set; } = true;
+        public List<QueryFilter>? Filters { get; set; }
     }
     public class RequestQuery<T> : RequestQuery
     {

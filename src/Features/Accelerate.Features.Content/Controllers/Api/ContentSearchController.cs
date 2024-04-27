@@ -38,12 +38,14 @@ namespace Accelerate.Features.Content.Controllers.Api
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IContentPostElasticService _searchService;
         IElasticService<ContentPostReviewDocument> _searchReviewService;
+        IElasticService<ContentChannelDocument> _searchChannelService;
         public ContentSearchController(
             IContentViewService contentService,
             IContentPostElasticService service,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchPostService,
             IElasticService<ContentPostReviewDocument> searchReviewService,
+            IElasticService<ContentChannelDocument> searchChannelService,
             UserManager<AccountUser> userManager)
         {
             _publishEndpoint = publishEndpoint;
@@ -51,6 +53,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             _contentService = contentService;
             _searchService = service;
             _searchReviewService = searchReviewService;
+            _searchChannelService = searchChannelService;
         }
         [Route("Reviews")]
         [HttpPost]
@@ -73,6 +76,15 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             var docs = await _searchService.SearchPosts(query);
+            return Ok(docs);
+        }
+        [Route("Posts/Related/{channelId}")]
+        [HttpPost]
+        public async Task<IActionResult> SearchPostsRelated(Guid channelId, [FromBody] RequestQuery query)
+        {
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
+            var channel = await _searchChannelService.GetDocument<ContentChannelDocument>(channelId.ToString());
+            var docs = await _searchService.SearchRelatedPosts(channel.Source, query);
             return Ok(docs);
         }
         [Route("Channels")]

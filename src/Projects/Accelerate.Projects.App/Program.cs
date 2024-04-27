@@ -50,13 +50,15 @@ Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builde
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
+var isProduction = builder.Environment.IsProduction();
+isProduction = true;
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);

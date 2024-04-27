@@ -19,7 +19,10 @@
             <ul>
                 <div x-data="dropdown(@JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown))"></div>
                 <!--Filters-->
-                <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
+                @if(Model.ModalCreateChannel != null)
+                {
+                    <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
+                }
             </ul>
         </nav>
         <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>

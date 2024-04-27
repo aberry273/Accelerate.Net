@@ -99,6 +99,22 @@ namespace Accelerate.Foundations.Content.Services
                 Value = ContentPostType.Page
             };
         }
+        public async Task<List<ContentPostDocument>> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10)
+        {
+            var elasticQuery = BuildRelatedSearchQuery(channel, query);
+            //TODO: remove
+
+            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * page;
+
+            var results = await Search(elasticQuery, skip, take);
+            if (!results.IsValidResponse && !results.IsSuccess())
+            {
+                return new List<ContentPostDocument>();
+            }
+            return results.Documents.ToList();
+        }
         public async Task<List<ContentPostDocument>> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10)
         {
             var elasticQuery = BuildUserSearchQuery(userId);
@@ -211,8 +227,25 @@ namespace Accelerate.Foundations.Content.Services
             }
             return query;
         }
+        public QueryDescriptor<ContentPostDocument> BuildRelatedSearchQuery(ContentChannelDocument channel, RequestQuery query)
+        {
+            var Query = new RequestQuery();
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
-        public  QueryDescriptor<ContentPostDocument> BuildUserSearchQuery(Guid userId)
+            var notInChannel = Filter(Constants.Fields.TargetChannel, ElasticCondition.MustNot, QueryOperator.Equals, channel.Id, true);
+            notInChannel.Filters = new List<QueryFilter>()
+            {
+                FilterValues(Constants.Fields.Tags, ElasticCondition.Filter, QueryOperator.Equals, channel.Tags, true)
+            };
+            Query.Filters.Add(notInChannel);
+            //Query.Filters.Add(Filter(Constants.Fields.Category, ElasticCondition.Filter, channel.Category));
+            //Query.Filters.Add(FilterValues(Constants.Fields.Tags, ElasticCondition.Filter, QueryOperator.Equals, channel.Tags, true));
+
+            return CreateQuery(Query);
+        }
+
+
+        public QueryDescriptor<ContentPostDocument> BuildUserSearchQuery(Guid userId)
         {
             var Query = new RequestQuery();
              
@@ -227,7 +260,7 @@ namespace Accelerate.Foundations.Content.Services
             if (Query == null) Query = new RequestQuery();
 
             //Query.Filters.Add(PublicPosts());
-            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             // If searching for threads
             if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.ParentId))
@@ -273,6 +306,11 @@ namespace Accelerate.Foundations.Content.Services
                 Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
             };
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
+        }
+
+        public Elastic.Clients.Elasticsearch.QueryDsl.Query[] GetQueries(RequestQuery request, ElasticCondition condition)
+        {
+            throw new NotImplementedException();
         }
 
 

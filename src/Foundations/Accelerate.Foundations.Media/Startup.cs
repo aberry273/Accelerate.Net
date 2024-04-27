@@ -13,11 +13,11 @@ namespace Accelerate.Foundations.Media
 {
     public static class Startup
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, bool isProduction)
         {
             //get secret
             // CONFIGS
-            var connString = configuration.GetConnectionString(Constants.Config.LocalDatabaseKey) ?? configuration[Constants.Config.DatabaseKey];
+            var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
             //Context
             services.AddDbContext<BaseContext<MediaBlobEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             //Services

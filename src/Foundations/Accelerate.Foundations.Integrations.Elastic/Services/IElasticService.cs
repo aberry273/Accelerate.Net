@@ -40,14 +40,13 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Query CreateTermsQuery(QueryFilter filter);
         Query CreateTermQuery(QueryFilter filter);
         Query CreatExistsQuery(QueryFilter filter);
-        Query CreateTerm(QueryFilter filter);
-        Query[] GetQueries(RequestQuery request, ElasticCondition condition);
+        Query CreateTerm(QueryFilter filter); 
         QueryDescriptor<T> CreateQuery(RequestQuery request);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op);
         QueryFilter Filter(string field, object? value);
         QueryFilter Filter(string field, ElasticCondition cond, object? value);
-        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value);
-        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, List<object>? values);
+        QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value, bool? keyword);
+        QueryFilter FilterValues(string field, ElasticCondition cond, QueryOperator op, IEnumerable<object>? values, bool? keyword);
         abstract QueryDescriptor<T> BuildSearchQuery(RequestQuery Query);
         Task<List<T>> Search(RequestQuery Query);
     }

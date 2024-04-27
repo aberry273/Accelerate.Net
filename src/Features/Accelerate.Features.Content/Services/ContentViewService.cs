@@ -33,6 +33,15 @@ namespace Accelerate.Features.Content.Services
             } : null;
             return _metaContentService.CreatePageBaseContent(profile);
         }
+        public ChannelsPage CreateAnonymousChannelsPage()
+        {
+            var model = CreateBaseContent(null);
+            var viewModel = new ChannelsPage(model);
+            viewModel.ChannelsDropdown = GetChannelsDropdown();
+
+            viewModel.UserId = Guid.Empty;
+            return viewModel;
+        }
         public ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels)
         {
             var model = CreateBaseContent(user);
@@ -49,8 +58,8 @@ namespace Accelerate.Features.Content.Services
                 viewModel.ChannelsDropdown.Items.AddRange(channelItems);
             }
 
-            viewModel.UserId = user.Id;
-            viewModel.FormCreatePost = CreatePostForm(user);
+            viewModel.UserId = user != null ? user.Id : Guid.Empty;
+            viewModel.FormCreatePost = user != null ? CreatePostForm(user) : null;
             viewModel.ModalCreateChannel = CreateModalChannelForm(user);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
@@ -79,6 +88,7 @@ namespace Accelerate.Features.Content.Services
                     Text = "Related",
                     Href = $"{this.GetChannelUrl(item)}/Related",
                 },
+                /*
                 new NavigationItem()
                 {
                     Text = "Media",
@@ -88,7 +98,7 @@ namespace Accelerate.Features.Content.Services
                 {
                     Text = "Users",
                     Href = $"{this.GetChannelUrl(item)}/Users",
-                }
+                }*/
             };
 
             viewModel.ChannelsDropdown = GetChannelsDropdown(channels, item.Name);

@@ -212,9 +212,9 @@ namespace Accelerate.Foundations.Content.Services
             }
 
             // For any multi-select, force the filter condition to each field to be Filter
-            if (Query.Filters.Any(x => x.Values != null && x.Values.Count > 0))
+            if (Query.Filters.Any(x => x.Values != null && x.Values.Any()))
             {
-                foreach (var filter in Query.Filters.Where(x => x.Values != null && x.Values.Count > 0))
+                foreach (var filter in Query.Filters.Where(x => x.Values != null && x.Values.Any()))
                 {
                     filter.Condition = ElasticCondition.Filter;
                 }

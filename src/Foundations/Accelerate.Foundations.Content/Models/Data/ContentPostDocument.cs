@@ -41,6 +41,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? Content { get; set; }
         public string? TargetThread { get; set; }
         public string? TargetChannel { get; set; }
+        public string? ChannelName { get; set; }
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
         public IEnumerable<string>? QuoteIds { get; set; }

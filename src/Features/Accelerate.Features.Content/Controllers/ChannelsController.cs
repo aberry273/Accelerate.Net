@@ -57,6 +57,10 @@ namespace Accelerate.Features.Content.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            if(!this.User.Identity.IsAuthenticated)
+            {
+                return View(_contentViewService.CreateAnonymousChannelsPage());
+            }
             var user = await GetUserWithProfile(this.User);
             //if (user == null) return RedirectToAction("Index", "Account");
 
@@ -201,7 +205,7 @@ namespace Accelerate.Features.Content.Controllers
         {
             var query = new QueryDescriptor<ContentChannelDocument>();
             query.MatchAll();
-            query.Term(x => x.UserId.Suffix("keyword"), user.Id.ToString());
+            query.Term(x => x.UserId.Suffix("keyword"), user != null ? user.Id.ToString() : Guid.Empty.ToString());
             return query;
         } 
     }

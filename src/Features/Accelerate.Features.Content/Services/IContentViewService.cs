@@ -15,7 +15,7 @@ namespace Accelerate.Features.Content.Services
         ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels);
         ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null);
-
+        ChannelsPage CreateAnonymousChannelsPage();
         string GetFilterKey(string key);
         List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters);
 

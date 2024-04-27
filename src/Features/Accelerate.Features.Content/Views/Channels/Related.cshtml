@@ -17,15 +17,11 @@
     <!--Feed-->
     <div x-data="listCards( {
         actionUrl: 'https://localhost:7220/api/contentpostactivity',
-        searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+        searchUrl: 'https://localhost:7220/api/contentsearch/posts/related/@Model.Item.Id',
         filterEvent: '@Model.FilterEvent',
         userId: '@Model.UserId',
         actionEvent: 'action:post',
-        filters: {
-            targetChannel: ['@Model.Item.Id'],
-            category: ['@Model.Item.Category'],
-            tags: @JsonSerializerHelper.SerializeObject(Model.Item.Tags),
-        },
+        filters: {},
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">
     </div>

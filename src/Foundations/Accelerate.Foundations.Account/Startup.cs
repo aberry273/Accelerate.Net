@@ -20,10 +20,10 @@ namespace Accelerate.Foundations.Account
 {
     public static class Startup
     {
-        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureServices(IServiceCollection services, IConfiguration configuration, bool isProduction)
         {
             // CONFIGS
-            var connString = configuration.GetConnectionString(Constants.Config.LocalDatabaseKey) ?? configuration[Constants.Config.DatabaseKey];
+            var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
             var socialConfig = configuration
                 .GetSection("OAuthConfiguration")
                 .Get<OAuthConfiguration>();

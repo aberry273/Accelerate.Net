@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Content.Services
         Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query);
         Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);
+        Task<List<ContentPostDocument>> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
 
         QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query);
         Query CreateTerm(QueryFilter filter);

@@ -272,7 +272,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
         public Query? CreateTermsQuery(QueryFilter filter)
         {
-            if (filter.Values.Count == 0) return null;
+            if (!filter.Values.Any()) return null;
             var name = filter.Name.ToCamelCase();
             if (filter.Keyword) { name += ".keyword"; }
             var values = filter.Values
@@ -334,34 +334,36 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 Operator = op
             };
         }
-        public QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value)
+        public QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value, bool? keyword)
         {
             return new QueryFilter()
             {
                 Name = field,
                 Condition = cond,
                 Operator = op,
-                Value = value
+                Value = value,
+                Keyword = keyword.GetValueOrDefault(),
             };
         }
-        public QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, List<object>? values)
+        public QueryFilter FilterValues(string field, ElasticCondition cond, QueryOperator op, IEnumerable<object>? values, bool? keyword)
         {
             return new QueryFilter()
             {
                 Name = field,
                 Condition = cond,
                 Operator = op,
-                Values = values
+                Values = values,
+                Keyword = keyword.GetValueOrDefault(),
             };
         }
 
-        public Query? CreateTerm(QueryFilter filter)
+        public Query? CreateTerm(QueryFilter? filter)
         {
             if (filter.Value != null)
             {
                 return CreateTermQuery(filter);
             }
-            else if (filter.Values != null && filter.Values.Count > 0)
+            else if (filter.Values != null && filter.Values.Any())
             {
                 return CreateTermsQuery(filter);
             }
@@ -374,9 +376,9 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 return null;
             }
         }
-        public Query[] GetQueries(RequestQuery request, ElasticCondition condition)
+        public Query[] GetQueries(List<QueryFilter> filters, ElasticCondition condition)
         {
-            return request?.Filters?.
+            return filters?.
                 Where(x => x.Condition == condition).
                 Select(CreateTerm).
                 Where(x => x != null).
@@ -386,19 +388,20 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         {
             var query = new QueryDescriptor<T>();
             query.MatchAll();
-
-            var must = GetQueries(request, ElasticCondition.Must);
+           // query = CreateQuery(new QueryDescriptor<T>(), request.Filters);
+         
+            var must = GetQueries(request?.Filters, ElasticCondition.Must);
             if (must.Any()) query.Bool(x => x.Must(must));
             
-            var mustNot = GetQueries(request, ElasticCondition.MustNot);
+            var mustNot = GetQueries(request?.Filters, ElasticCondition.MustNot);
             if (mustNot.Any()) query.Bool(x => x.MustNot(mustNot));
 
-            var should = GetQueries(request, ElasticCondition.Should);
+            var should = GetQueries(request?.Filters, ElasticCondition.Should);
             if (should.Any()) query.Bool(x => x.Should(should));
 
-            var filter = GetQueries(request, ElasticCondition.Filter);
+            var filter = GetQueries(request?.Filters, ElasticCondition.Filter);
             if (filter.Any()) query.Bool(x => x.Filter(filter));
-             
+            
             return query;
         }
 
