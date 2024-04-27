@@ -360,7 +360,6 @@ namespace Accelerate.Features.Account.Controllers
             if (result == null)
             {
                 var response = "No account with that email/username could be found";
-                return View(_accountFormRazorFile, viewModel);
                 return RedirectToAction(nameof(Login), new { username = request.Username, response = response });
 
             }
