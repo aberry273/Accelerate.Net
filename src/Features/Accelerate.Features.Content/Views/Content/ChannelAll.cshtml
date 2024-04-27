@@ -1,0 +1,28 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model ChannelPage
+@{
+    Layout = "/Views/Content/Shared/_ChannelPageLayout.cshtml";
+}   
+<!--Filter-->
+<div x-data="appNavFilters({
+    filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+    event: '@Model.FilterEvent'
+})"></div>
+         
+<!--Feed-->
+<div x-data="listCards({
+    actionUrl: 'https://localhost:7220/api/contentpostactivity',
+    searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+    filterEvent: '@Model.FilterEvent',
+    userId: '@Model.UserId',
+    actionEvent: 'action:post',
+    filters: {
+        targetChannel: ['@Model.Item.Id']
+    },
+    itemEvent: $store.wssContentPosts.getMessageEvent(),
+    })">
+</div>

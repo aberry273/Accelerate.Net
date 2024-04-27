@@ -74,8 +74,10 @@
         filterEvent: '@Model.FilterEvent',
         actionEvent: '@Model.ActionEvent',
         itemEvent: $store.wssContentPosts.getMessageEvent(),
-        targetThread: '@Model.Item.ThreadId',
         parentId: '@Model.Item.Id',
+        filters: {
+            parentId: ['@Model.Item.Id']
+        },
         userId: '@Model.UserId',
         items: @JsonSerializerHelper.SerializeObject(Model.Replies)
     })">

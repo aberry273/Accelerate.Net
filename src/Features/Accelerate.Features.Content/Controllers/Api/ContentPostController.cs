@@ -73,10 +73,11 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
-                var hasQuotes = (obj.QuoteIds != null && obj.QuoteIds.Any());
-                var hasMedia = (obj.MediaIds != null && obj.MediaIds.Any());
-                var hasImages = (obj.Images != null && obj.Images.Any());
-                if (!hasQuotes && !hasMedia && !hasImages)
+                var quotes = (obj.QuoteIds != null) ? obj.QuoteIds.Where(x => !string.IsNullOrEmpty(x) && x != "null").ToList() : new List<string>();
+                var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
+                var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
+                
+                if (!quotes.Any() && !media.Any() && !images.Any())
                 {
                     return await base.Post(obj);
                 }
@@ -90,38 +91,31 @@ namespace Accelerate.Features.Content.Controllers.Api
 
                 var post = _service.Get(postId.GetValueOrDefault());
 
-                if (hasQuotes)
+                if (quotes.Any())
                 {
-                    var quotes = obj
+                    var quotesItems = obj
                         .QuoteIds
                         .Select(x => CreateQuoteLink(post, x))
                         .ToList();
 
-                    var quoteResults = _quoteService.AddRange(quotes);
+                    var quoteResults = _quoteService.AddRange(quotesItems);
                 }
                 // Upload formfiles, create entities from formfiles, add to request
-                if(obj.Images != null)
+                if (images.Any())
                 {
                     var user = await _userManager.FindByIdAsync(obj.UserId.ToString());
                     var mediaFileIds = await UploadImagesFromFiles(user, obj.Images);
                     
-                    if(obj.MediaIds == null)
-                    {
-                        obj.MediaIds = new List<Guid>();
-                    }
-                    obj.MediaIds.AddRange(mediaFileIds.Select(x => x));
-
-                    hasMedia = true;
+                    media.AddRange(mediaFileIds.Select(x => x));
                 }
                 // for all guids sent through in request, create aa link
-                if (hasMedia)
+                if (media.Any())
                 {
-                    var media = obj
-                        .MediaIds
+                    var mediaItems = media
                         .Select(x => CreateMediaLink(post, x))
                         .ToList();
 
-                    var quoteResults = _postMediaService.AddRange(media);
+                    var quoteResults = _postMediaService.AddRange(mediaItems);
                 }
 
                 await PostCreateSteps(post);
@@ -186,6 +180,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             {
                 MediaBlobId = mediaId,
                 ContentPostId = post.Id,
+                FilePath = _mediaFileService.GetFileUrl(mediaId.ToString()),
             };
         }
 

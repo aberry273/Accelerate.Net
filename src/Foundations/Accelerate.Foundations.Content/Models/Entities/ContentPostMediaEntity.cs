@@ -17,5 +17,6 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public Guid ContentPostId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
+        public string FilePath { get; set; }
     }
 }

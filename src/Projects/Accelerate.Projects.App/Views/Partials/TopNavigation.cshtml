@@ -3,9 +3,67 @@
 <!-- Header -->
 @if (Model.Authenticated)
 {
-    <div x-data="usernavbar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+     <nav>
+        <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+        <ul>
+            @foreach(var link in Model.Items)
+            {
+                if(link.Disabled == true)
+                {
+                    <li>@link.Text</li>
+                }
+                else
+                {
+                    <li><a href="@link.Href">@link.Text</a></li>
+                }
+            }
+            @if(Model.Dropdown != null)
+            {
+                <details class="dropdown avatar">
+                    <summary role="link">
+                        @if (!string.IsNullOrEmpty(@Model.Dropdown.Image))
+                        {
+                            <img src="@Model.Dropdown.Image" />
+                        }
+                        else
+                        {
+                            <i class="icon material-icons icon-click">person</i>
+                        }
+                    </summary>
+                    <ul>
+                        @foreach (var link in Model.Dropdown.Items)
+                        {
+                            if (link.Disabled == true)
+                            {
+                                <li>@link.Text</li>
+                            }
+                            else
+                            {
+                                <li><a href="@link.Href">@link.Text</a></li>
+                            }
+                        }
+                    </ul>
+                </details>
+            }
+        </ul>
+    </nav>
 }
 else
 {
-    <div x-data="navbar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+    <nav>
+        <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+        <ul>
+            @foreach (var link in Model.Items)
+            {
+                if (link.Disabled == true)
+                {
+                    <li>@link.Text</li>
+                }
+                else
+                {
+                    <li><a href="@link.Href">@link.Text</a></li>
+                }
+            }
+        </ul>
+    </nav>
 }

@@ -40,6 +40,7 @@ export default function (data) {
             this.targetThread = data.targetThread;
             this.targetChannel = data.targetChannel;
             this.quoteEvent = data.quoteEvent;
+            this.filters = data.filters;
 
             component = data.component || component
              
@@ -86,10 +87,7 @@ export default function (data) {
             this.setHtml(data);
         },
         async initSearch() {
-          let queryData = {}
-          if (data.parentId) queryData.parentId = [data.parentId]
-          if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
-
+         let queryData = this.filters || {}
           await this.search(queryData);
         },
 

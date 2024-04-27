@@ -89,6 +89,7 @@ export default function (data) {
             el.scrollIntoView()
         },
         renderPost(post) {
+            if (!post.content) return null;
             if (post.type == 'image') return cardRenderingText(post)
             if (post.type == 'video') return cardRenderingText(post)
             if (post.type == 'mixed') return cardRenderingText(post)
@@ -157,29 +158,26 @@ export default function (data) {
                                 </button>
                             </template>
                             <aside>
-                            <li class="secondary">
-                                <strong>
-                                    <span x-text="selectedPost.profile.username"></span>
-                                </strong>
-                                <strong>
-                                    <a class="py-0 secondary my-0" style='text-decoration:none' :href="'/Content/thread/'+selectedPost.id">
-                                        <small><small x-text="selectedPost.shortThreadId"></small></small>
-                                    </a>
-                                </strong>
-                            </li>
-                            </aside>
+                                <li class="secondary">
+                                    <strong>
+                                        <span x-text="selectedPost.profile.username"></span>
+                                    </strong>
+                                    <strong>
+                                        <a class="py-0 secondary my-0" style='text-decoration:none' :href="selectedPost.href">
+                                            <small><small x-text="selectedPost.shortThreadId"></small></small>
+                                        </a>
+                                    </strong>
+                                </li>
+                             </aside>
                         </ul>
                         <ul> 
                             <li>
                                 <!--Show more-->
-                            
-
                                 <details class="dropdown flat no-chevron">
                                     <summary role="outline">
                                         <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                                     </summary>
                                     <ul dir="rtl">
-                                        <li><a class="click" @click="showMetadata = !showMetadata">Tags</a></li>
                                         <li><a class="click" @click="modalAction('share')">Share</a></li>
                                         <li><a class="click" @click="modalAction('edit')">Edit</a></li>
                                         <li><a class="click" @click="modalAction('delete')">Delete</a></li>
@@ -189,11 +187,23 @@ export default function (data) {
                         </ul>
                     </nav>
                     </header>
-                <!--Content-->
-                <template x-for="(post, i) in thread" :key="i"> 
-                    <div class="content" x-show="i == currentPage" x-html="renderPost(post, i)" ></div>
-                </template>
-                <!--End content-->
+                    <!--Text Content-->
+                    <template x-for="(post, i) in thread" :key="i"> 
+                        <div class="content" x-show="i == currentPage" x-html="renderPost(post, i)" ></div>
+                    </template>
+                    <!--End Text Content-->
+
+                    <template x-if="selectedPost.images != null && selectedPost.images.length > 0">
+                       
+                        <div x-data="gridCardMedia( {
+                                userId: '@Model.UserId',
+                                itemEvent: $store.wssContentPosts.getMessageEvent(),
+                                items: selectedPost.images,
+                                cols: 3
+                            })">
+                        </div>
+                    </template>
+
 
                     <!-- Pagination-->
                     <template x-if="thread.length > 1">
@@ -211,40 +221,44 @@ export default function (data) {
                     <footer class="padded">
                         <nav>
                             <ul>
-                            <li>
-                                <!--Agree-->
-                                <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
-                                <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
-                                <!--Disagree-->
-                                <i aria-label="Disagree" @click="action('disagree')" :class="userAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
-                                <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
-                                <!--Likes-->
-                                <i @click="action('like')" aria-label="Liked" :class="userAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
-                                <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup> 
-                            </li>
+                                <li>
+                                    <!--Agree-->
+                                    <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                                    <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
+                                    <!--Disagree-->
+                                    <i aria-label="Disagree" @click="action('disagree')" :class="userAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                                    <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
+                                    <!--Likes-->
+                                    <i @click="action('like')" aria-label="Liked" :class="userAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
+                                    <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup> 
+                                </li>
                             </ul> 
                             <ul>
-                            <li>
-                                <!--Quotes-->
-                                <i aria-label="Quote" @click="action('quote')" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
-                                <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
+                                <li>
+                                    <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                                    <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                                      
 
-                                <!--Replies--> 
-                                <i aria-label="Reply" :class="false ? 'primary': ''" class="icon material-icons icon-click"  rel="prev">comment</i>
-                                <sup class="noselect" rel="prev" x-text="selectedPost.replies || 0"></sup> 
-                            </li>
+                                    <!--Quotes-->
+                                    <i aria-label="Quote" @click="action('quote')" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
+                                    <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
+
+                                    <!--Replies--> 
+                                    <i aria-label="Reply" :class="false ? 'primary': ''" class="icon material-icons icon-click"  rel="prev">comment</i>
+                                    <sup class="noselect" rel="prev" x-text="selectedPost.replies || 0"></sup> 
+                                </li>
                             </ul>
                         </nav>
                         <nav x-show="showMetadata && selectedPost.tags">
-                        <ul>
-                            <li>
-                            <div class="container">
-                            <template x-for="(tag, i) in selectedPost.tags">
-                                <button class="tag flat secondary small" x-text="tag"></button>
-                            </template>
-                            </div>
-                            </li>
-                        </ul>
+                            <ul>
+                                <li>
+                                    <div class="container">
+                                        <template x-for="(tag, i) in selectedPost.tags">
+                                            <button class="tag flat secondary small" x-text="tag"></button>
+                                        </template>
+                                    </div>
+                                </li>
+                            </ul>
                         </nav>
                     </footer>
                     <!--End Ratings-->

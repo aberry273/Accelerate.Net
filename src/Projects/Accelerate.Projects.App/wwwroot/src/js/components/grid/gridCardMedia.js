@@ -69,7 +69,9 @@ export default function (data) {
                     this._mxModal_Open(this.modalId)
                 })
             })
-            await this.initSearch();
+
+            if (this.searchUrl != null)
+                await this.initSearch();
 
             this.setHtml(data);
         },
@@ -170,17 +172,17 @@ export default function (data) {
                         </ul>
                         <ul>
                             <i 
-                            :disabled="selectedIndex > 0"
-                            aria-label="Previous" 
-                            @click="browsePreviousMedia" 
-                            class="icon material-icons icon-click" 
-                            rel="prev">chevron_left</i>
+                                :disabled="selectedIndex > 0"
+                                aria-label="Previous" 
+                                @click="browsePreviousMedia" 
+                                class="icon material-icons icon-click" 
+                                rel="prev">chevron_left</i>
 
                             <i aria-label="Next" 
-                            :disabled="selectedIndex < items.length-1"
-                            @click="browseNextMedia" 
-                            class="icon material-icons icon-click" 
-                            rel="prev">chevron_right</i>
+                                :disabled="selectedIndex < items.length-1"
+                                @click="browseNextMedia" 
+                                class="icon material-icons icon-click" 
+                                rel="prev">chevron_right</i>
 
                             <details class="dropdown flat no-chevron">
                                 <summary role="outline">

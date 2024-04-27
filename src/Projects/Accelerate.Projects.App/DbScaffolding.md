@@ -3,7 +3,7 @@ Add-Migration InitialCreate_School -context SchoolContext
 Update-Database -context SchoolContext
 # Content
 Drop-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
-Add-Migration InitialCreate_Content5 -context ContentDbContext -project "Accelerate.Foundations.Content" 
+Add-Migration InitialCreate_Content6 -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 # Media
 Drop-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 

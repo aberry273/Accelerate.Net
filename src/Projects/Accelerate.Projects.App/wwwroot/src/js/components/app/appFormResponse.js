@@ -71,22 +71,25 @@ export default function (data) {
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
         // METHODS
         async submit(fields) {
-            this.loading = true;
-            const payload = {}
-            fields.map(x => {
-                payload[x.name] = x.value
-                //if array, join values into str delimited list
-                if (Array.isArray(x.value) && !x.isArray) {
-                    payload[x.name] = x.value.join(',')
-                }
-                return payload
-            })
+            try {
+                this.loading = true;
 
-            let response = await this.$fetch.POST(data.postbackUrl, payload);
-            if (this.event) {
-                this.$dispatch(this.event, response)
+                const payload = this._mxForm_GetFileFormData({ fields: fields })
+
+                const config = this.mxForm_HeadersMultiPart;
+                const isJson = false
+                let response = await this._mxForm_SubmitAjaxRequest(data.postbackUrl, payload, config, isJson);
+
+                if (this.event) {
+                    this.$dispatch(this.event, response)
+                }
+                this.$dispatch(this.localEvent, response)
+
+                this.resetValues(fields);
             }
-            this.resetValues(fields);
+            catch (e) {
+
+            }
             this.loading = false;
         },
         resetValues(fields) {
@@ -130,14 +133,16 @@ export default function (data) {
             const label = data.label || 'Submit'
             const html = `
 
-            <article class="dense py-0 sticky">
+            <article class="dense sticky">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->
                 <fieldset x-data="formFields({fields})"></fieldset>
                 
                 <fieldset role="group">
                     <!--Toggle fields-->
+                    <!--
                     <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideTextField(false)" :disabled="loading">text_format</button>
+                    -->
                     <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideVideoField(false)" :disabled="loading">videocam</button>
                     <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
                     <!--Cancel-->
@@ -152,8 +157,8 @@ export default function (data) {
                     
                     <input name="Tag" disabled type="text" placeholder="" />
                     
-                    <button x-show="showTags" class="secondary material-icons flat" @click="showTagField(!showTags)" :disabled="loading">sell</button>
-                    <button x-show="!showTags" class="secondary material-icons flat" @click="showTagField(!showTags)" :disabled="loading">cancel</button>
+                    <button x-show="showTags" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                    <button x-show="!showTags" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
                     
                     <button class="" @click="await submit(fields)"  :disabled="loading">${label}</button>
 

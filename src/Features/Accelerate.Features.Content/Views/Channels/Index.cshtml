@@ -3,7 +3,7 @@
 @using Accelerate.Features.Content.Models.Views
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
-@model ChannelPage
+@model ChannelsPage
 
 <div class="grid" x-data>
     <!-- Channels panel -->
@@ -12,7 +12,7 @@
             <ul>
                 <header>
                     <hgroup>
-                        <h1>@Model.Item.Name</h1>
+                        <h1>All</h1>
                     </hgroup>
                 </header>
             </ul>
@@ -22,44 +22,19 @@
                 <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add Channel</button>
             </ul>
         </nav>
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
        
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-       
-        <!--Filter-->
-        <div x-data="appNavFilters({
-            filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-            event: '@Model.FilterEvent'
-        })"></div>
-
-        <!--Feed-->
-        <!--
-        <div x-data="_contentPostsManager({
-                feed: $store.feedFilters.current,
-                sourceUrl: 'https://localhost:7220/api/contentpost',
-                reviewUrl: 'https://localhost:7220/api/contentpostreview',
-                fetchPostsUrl: 'https://localhost:7220/api/contentsearch/posts',
-                fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
-                threadUrl: 'https://localhost:7220/content/thread',
-                targetChannel: '@Model.Item.Id',
-                event: 'post:created',
-                userId: '@Model.UserId',
-                items: [],
-                channel: 'all',
-                })">
-            <div x-data="appListPost"></div>
-        </div>
-        -->
         <!--Feed-->
         <div x-data="listCards( {
             actionUrl: 'https://localhost:7220/api/contentpostactivity',
             searchUrl: 'https://localhost:7220/api/contentsearch/posts',
-            filterEvent: '@Model.FilterEvent',
+            filterEvent: null,
             userId: '@Model.UserId',
             actionEvent: 'action:post',
-            targetChannel: '@Model.Item.Id',
             itemEvent: $store.wssContentPosts.getMessageEvent(),
           })">
         </div>
+
     </div>
 </div>
 

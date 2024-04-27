@@ -44,7 +44,7 @@ namespace Accelerate.Features.Content.Services
                 var channelItems = channels.Documents.Select(x => new NavigationItem()
                 {
                     Text = x.Name,
-                    Href = this._metaContentService.GetActionUrl(nameof(ContentController.Channel), ControllerHelper.NameOf<ContentController>(), new { id = x.Id })
+                    Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new { id = x.Id })
                 });
                 viewModel.ChannelsDropdown.Items.AddRange(channelItems);
             }
@@ -62,6 +62,34 @@ namespace Accelerate.Features.Content.Services
             var viewModel = new ChannelPage(model);
 
             viewModel.Item = item;
+            viewModel.Tabs = new List<NavigationItem>()
+            {
+                new NavigationItem()
+                {
+                    Text = "All",
+                    Href = $"{this.GetChannelUrl(item)}/All",
+                },
+                new NavigationItem()
+                {
+                    Text = "Posts",
+                    Href = $"{this.GetChannelUrl(item)}/Posts",
+                },
+                new NavigationItem()
+                {
+                    Text = "Related",
+                    Href = $"{this.GetChannelUrl(item)}/Related",
+                },
+                new NavigationItem()
+                {
+                    Text = "Media",
+                    Href = $"{this.GetChannelUrl(item)}/Media",
+                },
+                new NavigationItem()
+                {
+                    Text = "Users",
+                    Href = $"{this.GetChannelUrl(item)}/Users",
+                }
+            };
 
             viewModel.ChannelsDropdown = GetChannelsDropdown(channels, item.Name);
 
@@ -70,7 +98,7 @@ namespace Accelerate.Features.Content.Services
 
             viewModel.UserId = user.Id;
             viewModel.FormCreateReply = CreatePostForm(user, item);
-            viewModel.ModalCreateChannel = CreateModalChannelForm(user);
+            viewModel.ModalEditChannel = EditModalChannelForm(user, item);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             return viewModel;
@@ -126,12 +154,23 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Add tag",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = true,
+                        Value = channel?.Category
+                    },
+                    new FormField()
+                    {
                         Name = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Add tag",
                         ClearOnSubmit = true,
                         AriaInvalid = false,
                         Hidden = false,
+                        Value = channel?.Tags
                     },
                     new FormField()
                     {
@@ -279,7 +318,7 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = ContentPostType.Post,
+                        Value = ContentPostType.Reply,
                     },
                     new FormField()
                     {
@@ -323,13 +362,72 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
 
-        public ModalForm CreateModalChannelForm(AccountUser user)
+        public ModalForm EditModalChannelForm(AccountUser user, ContentChannelDocument channel)
         {
             var model = new ModalForm();
-            model.Title = "Create channel";
+            model.Title = "Edit channel";
             model.Text = "Test form text";
             model.Target = "modal-create-channel";
-            model.Form = CreateChannelForm(user);
+            model.Form = EditChannelForm(user, channel);
+            return model;
+        }
+        public AjaxForm EditChannelForm(AccountUser user, ContentChannelDocument channel)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = $"https://localhost:7220/api/contentchannel/{channel.Id}",
+                Type = PostbackType.PUT,
+                Event = "channel:edit:modal",
+                Label = "Update",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Name",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Channel name",
+                        AriaInvalid = false,
+                        Value = channel.Name
+                    },
+                    new FormField()
+                    {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = false,
+                        Disabled = false,
+                        AriaInvalid = false,
+                        Value = channel.Category
+                    },
+                    new FormField()
+                    {
+                        Name = "TagItems",
+                        Label = "Tags",
+                        FieldType = FormFieldTypes.chips,
+                        Placeholder = "Listen to posts tagged with..",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = false,
+                        Value = channel.Tags
+                    },
+                    new FormField()
+                    {
+                        Name = "Description",
+                        FieldType = FormFieldTypes.textarea,
+                        Placeholder = "Describe what content this channel is for",
+                        AriaInvalid = false,
+                        Value = channel.Description
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
+                    }
+                }
+            };
             return model;
         }
         public AjaxForm CreateChannelForm(AccountUser user)
@@ -351,6 +449,24 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = false,
+                        Disabled = false,
+                        AriaInvalid = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "TagItems",
+                        Label = "Tags",
+                        FieldType = FormFieldTypes.chips,
+                        Placeholder = "Listen to posts tagged with..",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = false,
+                    },
+                    new FormField()
+                    {
                         Name = "Description",
                         FieldType = FormFieldTypes.textarea,
                         Placeholder = "Describe what content this channel is for",
@@ -369,7 +485,25 @@ namespace Accelerate.Features.Content.Services
             };
             return model;
         }
+        public ModalForm CreateModalChannelForm(AccountUser user)
+        {
+            var model = new ModalForm();
+            model.Title = "Create channel";
+            model.Text = "Test form text";
+            model.Target = "modal-create-channel";
+            model.Form = CreateChannelForm(user);
+            return model;
+        }
         public ModalForm CreateModalEditReplyForm(AccountUser user)
+        {
+            var model = new ModalForm();
+            model.Title = "Edit post";
+            model.Text = "Test form text";
+            model.Target = "modal-edit-post";
+            model.Form = CreateFormEditReply(user);
+            return model;
+        }
+        public ModalForm EditModalReplyForm(AccountUser user)
         {
             var model = new ModalForm();
             model.Title = "Edit post";
@@ -604,7 +738,7 @@ namespace Accelerate.Features.Content.Services
                     new NavigationItem()
                     {
                         Text = "All",
-                        Href = this._metaContentService.GetActionUrl(nameof(ContentController.Browse), ControllerHelper.NameOf<ContentController>())
+                        Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Index), ControllerHelper.NameOf<ChannelsController>())
                     }
                 }
             };
@@ -622,7 +756,7 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = parentName,
-                Href = this._metaContentService.GetActionUrl(nameof(ContentController.Thread), ControllerHelper.NameOf<ContentController>(), new { id = parentId })
+                Href = this._metaContentService.GetActionUrl(nameof(ThreadsController.Thread), ControllerHelper.NameOf<ThreadsController>(), new { id = parentId })
             };
         }
         public NavigationItem? GetChannelLink(ContentChannelDocument x)
@@ -631,8 +765,12 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = x.Name,
-                Href = this._metaContentService.GetActionUrl(nameof(ContentController.Channel), ControllerHelper.NameOf<ContentController>(), new {id = x.Id })
+                Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new {id = x.Id })
             };
+        }
+        private string GetChannelUrl(ContentChannelDocument x)
+        {
+            return this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new { id = x.Id });
         }
 
     }

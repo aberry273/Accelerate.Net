@@ -86,8 +86,8 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
-                        Href = "/Account/Login",
-                        Text = "Login",
+                        Href = Foundations.Common.Constants.Paths.LoginPath,
+                        Text = Foundations.Common.Constants.Paths.LoginLabel,
                     },
                 }
             };
@@ -113,13 +113,13 @@ namespace Accelerate.Foundations.Common.Services
                         },
                         new NavigationItem()
                         {
-                            Href = "/Account/Profile",
-                            Text = "Account",
+                            Href = Foundations.Common.Constants.Paths.ProfilePath,
+                            Text = Foundations.Common.Constants.Paths.ProfileLabel,
                         },
                         new NavigationItem()
                         {
-                            Href = "/Account/Logout",
-                            Text = "Logout",
+                            Href = Foundations.Common.Constants.Paths.LogoutPath,
+                            Text = Foundations.Common.Constants.Paths.LogoutLabel,
                         },
                     }
                 },
@@ -127,8 +127,8 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
-                        Href = "/Content/Browse",
-                        Text = "Browse",
+                        Href = Foundations.Common.Constants.Paths.LoggedInPath,
+                        Text = Foundations.Common.Constants.Paths.LoggedInLabel,
                     },
                 }
             };

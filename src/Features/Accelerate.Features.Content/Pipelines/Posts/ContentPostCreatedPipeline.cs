@@ -29,6 +29,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
+        IEntityService<ContentPostMediaEntity> _mediaService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
@@ -36,6 +37,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IElasticService<ContentPostDocument> elasticService,
             IEntityService<ContentPostEntity> entityService,
             IEntityService<ContentPostQuoteEntity> quoteService,
+            IEntityService<ContentPostMediaEntity> mediaService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
@@ -43,6 +45,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _elasticService = elasticService;
             _messageHub = messageHub;
             _quoteService = quoteService;
+            _mediaService = mediaService;
             _accountElasticService = accountElasticService;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
@@ -52,6 +55,14 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
+        }
+        private List<ContentPostMediaSubdocument> GetImages(IPipelineArgs<ContentPostEntity> args)
+        {
+            var media = _mediaService.Find(x => x.ContentPostId == args.Value.Id);
+            var mediaItems = media.Select(x => new ContentPostMediaSubdocument(){
+                filePath = x.FilePath
+            }).ToList();
+            return mediaItems;
         }
         private List<string> GetQuoteIds(IPipelineArgs<ContentPostEntity> args)
         {
@@ -75,6 +86,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             args.Value.Hydrate(indexModel, profile);
             
             indexModel.QuoteIds = GetQuoteIds(args);
+            indexModel.Images = GetImages(args);
             // If a reply
             if (args.Value.ParentId != null)
             {

@@ -9,6 +9,11 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         Post, Reply, Page
     }
+    public class ContentPostMediaSubdocument
+    {
+        public string Name { get; set; }
+        public string filePath { get; set; }
+    }
     public class ContentPostUserSubdocument
     {
         public string Username { get; set; }
@@ -20,6 +25,13 @@ namespace Accelerate.Foundations.Content.Models.Data
         public Guid Id { get; set; }
         public DateTime? CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
+        public string Href 
+        { 
+            get
+            {
+                return $"/Threads/{this.Id}";
+            }
+        }
         public string? ShortThreadId { get; set; }
         public string? ThreadId { get; set; }
         public Guid? UserId { get; set; }
@@ -32,6 +44,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
         public IEnumerable<string>? QuoteIds { get; set; }
+        public IEnumerable<ContentPostMediaSubdocument>? Images { get; set; }
         // Computed
         public ContentPostReviewsDocument Reviews { get; set; }
         public ContentPostType PostType { get; set; } = ContentPostType.Post;

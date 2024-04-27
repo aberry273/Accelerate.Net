@@ -52,7 +52,11 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override void UpdateValues(ContentChannelEntity from, dynamic to)
         {
+            from.Tags = to.Tags;
             from.Description = to.Description;
+            from.Name = to.Name;
+            from.Category = to.Category;
+            from.Status = to.Status;
         }
         protected override async Task PostUpdateSteps(ContentChannelEntity obj)
         {

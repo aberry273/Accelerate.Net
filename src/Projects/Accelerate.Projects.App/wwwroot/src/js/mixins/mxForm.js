@@ -10,7 +10,6 @@ export default function (data) {
 		get mxForm_HeadersMultiPart() {
 			return {
 				'Accept': '*/*',
-				//'Content-Type': 'multipart/form-data'
 			}
 		},
 		// METHODS
@@ -19,24 +18,22 @@ export default function (data) {
 		_mxForm_GetFileFormData(form, flattenPayload = false) {
 			if (!form) return new FormData();
 			const formData = new FormData();
-
-			if (form.fields) {
-				form.fields.map((x) => {
+			if (form.fields) { 
+				for (var i = 0; i < form.fields.length; i++) {
+					var x = form.fields[i]
+					if (x.value == null) continue;
 					const name = x.name.replace(/\s/g, '');
-					if (x.type == 'file') {
-						if (x.multiple) {
-							for (var i = 0; i < x.value.length; i++) {
-								formData.append(name, x.value[i]);
-							}
+					if (x.multiple) {
+						for (var j = 0; j < x.value.length; j++) {
+							formData.append(name, x.value[j]);
 						}
-						else {
-						}
+						continue;
 					}
-					else
+					else {
 						formData.append(name, x.value);
-				});
+					}
+				}
 			}
-
 			if (!form.sections) {
 				return formData;
 			}

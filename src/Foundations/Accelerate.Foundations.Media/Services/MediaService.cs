@@ -72,6 +72,7 @@ namespace Accelerate.Foundations.Media.Services
             return new BlobFile()
             {
                 id = blobId,
+                fileName = file.FileName,
                 fileMimeType = GetFileType(file.FileName),
                 fileData = data,
                 blobPath = blobPath
@@ -116,10 +117,7 @@ namespace Accelerate.Foundations.Media.Services
             var taggedBlob = await _blobStorageService.FindBlobByTagId(id);
             if(taggedBlob == null)
             {
-                // TODO: Fix this elsewhere like in the websocket
-                // try fetch again - immediate loading of image is causing failure
-                await Task.Delay(250);
-                taggedBlob = await _blobStorageService.FindBlobByTagId(id);
+                return null;
             }
             var blob = await _blobStorageService.GetBlobByTag(taggedBlob);
             await blob.DownloadToAsync(downloadPath);
