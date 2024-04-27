@@ -771,13 +771,13 @@ input.file-field:is([type="file"]) {
 @media (min-width: 768px) {
     .form {
         width: 100%;
-        width: 100%;
+        max-width: 100%;
     }
 }
 
 @media (min-width: 576px) {
     .form {
         width: 100%;
-        width: 100%;
+        max-width: 100%;
     }
 }
