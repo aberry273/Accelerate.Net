@@ -88,6 +88,11 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
+                        Href = Foundations.Common.Constants.Paths.BrowsePath,
+                        Text = Foundations.Common.Constants.Paths.BrowseLabel,
+                    },
+                    new NavigationItem()
+                    {
                         Href = Foundations.Common.Constants.Paths.LoginPath,
                         Text = Foundations.Common.Constants.Paths.LoginLabel,
                     },
@@ -129,8 +134,8 @@ namespace Accelerate.Foundations.Common.Services
                 {
                     new NavigationItem()
                     {
-                        Href = Foundations.Common.Constants.Paths.LoggedInPath,
-                        Text = Foundations.Common.Constants.Paths.LoggedInLabel,
+                        Href = Foundations.Common.Constants.Paths.BrowsePath,
+                        Text = Foundations.Common.Constants.Paths.BrowseLabel,
                     },
                 }
             };
