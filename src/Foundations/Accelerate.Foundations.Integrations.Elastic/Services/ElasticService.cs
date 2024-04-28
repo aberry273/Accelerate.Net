@@ -72,6 +72,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         public async Task<CountResponse> Count<T>(Action<CountRequestDescriptor<T>> request)
         {
+            await CreateIndex();
             return await _client.CountAsync<T>(request);
         }
         
@@ -120,6 +121,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
         public async Task<MultiGetResponse<T>> GetDocuments<T>(List<Guid> ids)
         {
+            await CreateIndex();
             var multiget = new MultiGetRequest(IndexName)
             {
                 Ids = new Ids(ids.Select(x => x.ToString()))
@@ -130,6 +132,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         public async Task<GetResponse<T>> GetDocument<T>(string id)
         {
+            await CreateIndex();
             return await _client.GetAsync<T>(id, idx => idx.Index(_indexName));
         }
         public async Task<UpdateResponse<T>> UpdateDocument<T>(T document, string id)
@@ -156,6 +159,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
         {
+            await CreateIndex();
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
                 .From(from)
@@ -166,6 +170,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
         {
+            await CreateIndex();
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
                 .From(from)
@@ -177,6 +182,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
         public async Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
         {
+            await CreateIndex();
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
                 .From(from)
@@ -418,6 +424,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         /// <returns></returns>
         public async Task<List<T>> Search(RequestQuery Query)
         {
+            await CreateIndex();
             var elasticQuery = BuildSearchQuery(Query);
             //TODO: remove
             Query.ItemsPerPage = 100;
