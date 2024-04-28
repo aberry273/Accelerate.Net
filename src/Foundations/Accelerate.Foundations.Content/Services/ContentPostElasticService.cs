@@ -109,7 +109,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * page;
 
             var results = await Search(elasticQuery, skip, take);
-            if (!results.IsValidResponse && !results.IsSuccess())
+            if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
                 return new List<ContentPostDocument>();
             }
@@ -125,7 +125,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * page;
 
             var results = await Search(elasticQuery, skip, take);
-            if (!results.IsValidResponse && !results.IsSuccess())
+            if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
                 return new List<ContentPostDocument>();
             }
@@ -142,7 +142,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * Query.Page;
 
             var results = await Search(elasticQuery, skip, take);
-            if (!results.IsValidResponse && !results.IsSuccess())
+            if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
                 return new List<ContentPostDocument>();
             }

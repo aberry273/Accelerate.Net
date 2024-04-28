@@ -164,6 +164,15 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentPostEntityStatus.Public,
+                    },
+                    new FormField()
+                    {
                         Name = "Category",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Add tag",
@@ -365,8 +374,8 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = Enum.GetName(ContentPostEntityStatus.Public),
-                    }
+                        Value = ContentPostEntityStatus.Public,
+                    },
                 }
             };
             return model;
@@ -398,6 +407,15 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Channel name",
                         AriaInvalid = false,
                         Value = channel.Name
+                    },
+                    new FormField()
+                    {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentChannelEntityStatus.Public,
                     },
                     new FormField()
                     {
@@ -456,6 +474,15 @@ namespace Accelerate.Features.Content.Services
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Channel name",
                         AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentChannelEntityStatus.Public,
                     },
                     new FormField()
                     {
@@ -547,6 +574,15 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         Value = null,
+                    },
+                    new FormField()
+                    {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentPostEntityStatus.Public,
                     },
                     new FormField()
                     {
