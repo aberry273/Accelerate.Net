@@ -148,7 +148,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost/mixed",
+                PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
                 Label = "Submit",
@@ -242,7 +242,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost/mixed",
+                PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
                 ActionEvent = "action:post",
@@ -385,7 +385,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"https://localhost:7220/api/contentchannel/{channel.Id}",
+                PostbackUrl = $"/api/contentchannel/{channel.Id}",
                 Type = PostbackType.PUT,
                 Event = "channel:edit:modal",
                 Label = "Update",
@@ -444,7 +444,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentchannel",
+                PostbackUrl = "/api/contentchannel",
                 Type = PostbackType.POST,
                 Event = "channel:create:modal",
                 Label = "Create",
@@ -526,7 +526,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost",
+                PostbackUrl = "/api/contentpost",
                 Type = PostbackType.PUT,
                 Event = "post:edited:modal",
                 Label = "Comment",
@@ -575,7 +575,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/contentpost",
+                PostbackUrl = "/api/contentpost",
                 Type = PostbackType.DELETE,
                 Event = "post:deleted:modal",
                 Label = "Delete",

@@ -59,7 +59,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"https://localhost:7220/api/accountprofile/{user?.AccountProfileId}/image",
+                PostbackUrl = $"/api/accountprofile/{user?.AccountProfileId}/image",
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
                 Label = "Update",
@@ -91,7 +91,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"https://localhost:7220/api/accountprofile/{user?.AccountProfileId}",
+                PostbackUrl = $"/api/accountprofile/{user?.AccountProfileId}",
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
                 Label = "Update",
@@ -146,7 +146,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "https://localhost:7220/api/mediablob/image",
+                PostbackUrl = "/api/mediablob/image",
                 Type = PostbackType.POST,
                 Event = "channel:create:modal",
                 Label = "Create",
