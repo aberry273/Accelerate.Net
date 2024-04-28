@@ -61,7 +61,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
                     this._client = new BlobServiceClient(_config.ConnectionString);
                 }
                 var container = _client.GetBlobContainerClient(_containerName);
-                if (_container == null || !await _container.ExistsAsync())
+                if (!await container.ExistsAsync())
                 {
                     container = await _client.CreateBlobContainerAsync(_containerName);
                 }
