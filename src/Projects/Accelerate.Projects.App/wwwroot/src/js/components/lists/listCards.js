@@ -110,7 +110,11 @@ export default function (data) {
 
         updateItemUpdate(wssMessage) {
             var item = wssMessage.data;
-            if (this.items == null) this.items = [];
+            let emptyItems = false;
+            if (this.items == null) {
+                this.items = [];
+                emptyItems = true;
+            }
             if (wssMessage.update == 'Created') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
                 if (index == -1) this.items.push(item);
@@ -123,6 +127,9 @@ export default function (data) {
             if (wssMessage.update == 'Deleted') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
                 this.items.splice(index, 1);
+            }
+            if (emptyItems) {
+                this.setHtml(this.data);
             }
         },
         // METHODS

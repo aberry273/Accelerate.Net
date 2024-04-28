@@ -14,7 +14,7 @@ namespace Accelerate.Foundations.Media.Models.Entities
     {
         Hidden, Public, Archived
     }
-    [Table("ContentChannels")]
+    [Table("MediaBlobs")]
     public class MediaBlobEntity : BaseEntity
     {
 

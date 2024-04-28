@@ -27,6 +27,7 @@ namespace Accelerate.Features.Content.Controllers
 {
     public class ChannelsController : BaseController
     {
+        SignInManager<AccountUser> _signInManager;
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         IContentPostElasticService _contentElasticSearchService;
@@ -40,12 +41,14 @@ namespace Accelerate.Features.Content.Controllers
             IMetaContentService service,
             IContentViewService contentViewService,
             IContentPostElasticService postElasticSearchService,
+            SignInManager<AccountUser> signInManager,
             IEntityService<ContentPostEntity> postService,
             IEntityService<AccountProfile> profileService,
             IElasticService<ContentPostDocument> searchService,
             IElasticService<ContentChannelDocument> channelService,
             UserManager<AccountUser> userManager) : base(service)
         {
+            _signInManager = signInManager;
             _userManager = userManager;
             _contentViewService = contentViewService;
             _contentService = service;
@@ -62,6 +65,11 @@ namespace Accelerate.Features.Content.Controllers
                 return View(_contentViewService.CreateAnonymousChannelsPage());
             }
             var user = await GetUserWithProfile(this.User);
+            if(user == null)
+            {
+                await _signInManager.SignOutAsync();
+                return View(_contentViewService.CreateAnonymousChannelsPage());
+            }
             //if (user == null) return RedirectToAction("Index", "Account");
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
@@ -74,7 +82,10 @@ namespace Accelerate.Features.Content.Controllers
         private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
-            if (user == null) return null;
+            if (user == null)
+            {
+                return null;
+            }
             var profile = _profileService.Get(user.AccountProfileId);
             user.AccountProfile = profile;
             return user;

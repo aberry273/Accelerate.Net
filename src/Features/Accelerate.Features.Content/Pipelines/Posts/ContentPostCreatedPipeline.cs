@@ -79,7 +79,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             if (string.IsNullOrEmpty(args.Value.TargetChannel)) return null;
             var channel = _channelService.Get(Guid.Parse(args.Value.TargetChannel));
-            return channel.Name;
+            return channel?.Name;
         }
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)

@@ -26,7 +26,8 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         string appUserContainerImagesSubfolderName = "images";
         string appUserContainerVideosSubfolderName = "videos";
         string appUserContainerOtherSubfolderName = "other";
-        string accessKey = string.Empty;
+        string _accessKey = string.Empty;
+        string _containerName = string.Empty;
         private readonly AzureStorageConfiguration _config;
         private readonly ILogger<BlobStorageService> _logger;
         private BlobServiceClient _client;
@@ -48,7 +49,8 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         {
             _logger = logger;
             _config = options.Value;
-            this.accessKey = _config.AccessKey;
+            this._accessKey = _config.AccessKey;
+            this._containerName = _config.ContainerName;
         }
         private async Task CreateAppContainer()
         {
@@ -58,10 +60,10 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
                 {
                     this._client = new BlobServiceClient(_config.ConnectionString);
                 }
-                var container = _client.GetBlobContainerClient(Constants.Settings.AppContainerName);
-                if(container == null)
+                var container = _client.GetBlobContainerClient(_containerName);
+                if (_container == null || !await _container.ExistsAsync())
                 {
-                    container = await _client.CreateBlobContainerAsync(Constants.Settings.AppContainerName);
+                    container = await _client.CreateBlobContainerAsync(_containerName);
                 }
                 this._container = container;
             }
@@ -177,12 +179,12 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         public async Task<BlobClient> GetBlobByTag(TaggedBlobItem taggedBlob)
         {
             if (taggedBlob == null) return null;
-            if (_container == null) await CreateAppContainer();
+            await CreateAppContainer();
             return _container.GetBlobClient(taggedBlob.BlobName);
         }
         public async Task<TaggedBlobItem> FindBlobByTagId(string id)
         {
-            if (_container == null) await CreateAppContainer();
+            await CreateAppContainer();
             //string query = @"""Date"" >= '2020-04-20' AND ""Date"" <= '2020-04-30'";
             string query = @"""id"" = '"+id+"'";
             var blobs = await FindBlobByQuery(query);
@@ -203,7 +205,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         {
             try
             {
-                if (_container == null) await CreateAppContainer();
+                await CreateAppContainer();
                 
                 var tasks = new Queue<Task<Response<BlobContentInfo>>>();
                 foreach (BlobFile file in files)
@@ -243,8 +245,8 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         public async Task<string?> UploadAsync(string fullFilePath, byte[] fileData, string fileMimeType)
         {
             try
-            { 
-                if(_container == null) await CreateAppContainer();
+            {
+                await CreateAppContainer();
                 BlockBlobClient blob = new BlockBlobClient(_config.ConnectionString, _container.Name, fullFilePath);
                 //...
                 var id = Guid.NewGuid().ToString();
@@ -266,7 +268,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         {
             try
             {
-                if (_container == null) await CreateAppContainer();
+                await CreateAppContainer();
                 BlockBlobClient blob = new BlockBlobClient(_config.ConnectionString, _container.Name, fullFilePath);
                 //...
                 var id = fileId.ToString();

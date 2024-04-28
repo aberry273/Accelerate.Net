@@ -16,6 +16,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage
             {
                 configuration.GetSection(Constants.Config.SectionName).Bind(options);
 
+                options.ContainerName = configuration[Constants.Config.ContainerName];
                 options.AccessKey = configuration[Constants.Config.AccessKey];
                 options.ConnectionString = configuration[Constants.Config.ConnectionString];
             });

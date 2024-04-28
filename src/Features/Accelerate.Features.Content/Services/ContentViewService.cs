@@ -176,7 +176,7 @@ namespace Accelerate.Features.Content.Services
                         Name = "Category",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Add tag",
-                        ClearOnSubmit = true,
+                        ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = true,
                         Value = channel?.Category
@@ -186,7 +186,7 @@ namespace Accelerate.Features.Content.Services
                         Name = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Add tag",
-                        ClearOnSubmit = true,
+                        ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = false,
                         Value = channel?.Tags
@@ -305,7 +305,7 @@ namespace Accelerate.Features.Content.Services
                         Name = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Add a tag",
-                        ClearOnSubmit = true,
+                        ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = post.Tags != null,
                         Value = post.Tags
@@ -386,7 +386,7 @@ namespace Accelerate.Features.Content.Services
             var model = new ModalForm();
             model.Title = "Edit channel";
             model.Text = "Test form text";
-            model.Target = "modal-create-channel";
+            model.Target = "modal-edit-channel";
             model.Form = EditChannelForm(user, channel);
             return model;
         }
@@ -432,7 +432,7 @@ namespace Accelerate.Features.Content.Services
                         Label = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Listen to posts tagged with..",
-                        ClearOnSubmit = true,
+                        ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = false,
                         Value = channel.Tags
@@ -498,7 +498,7 @@ namespace Accelerate.Features.Content.Services
                         Label = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Listen to posts tagged with..",
-                        ClearOnSubmit = true,
+                        ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = false,
                     },

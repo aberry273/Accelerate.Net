@@ -30,26 +30,42 @@
         </nav>
         <div class="grid">
             <div>
-                <sup>Category</sup>
+                <strong><sup>Category</sup></strong>
                 <div class="chips">
-                    <a style="text-decoration:none" class="tag flat closable primary small">
-                        <strong><sup>@Model.Item.Category</sup></strong>
-                    </a>
+                    @if(!string.IsNullOrEmpty(Model.Item.Category))
+                    {
+                        <a style="text-decoration:none" class="tag flat closable primary small">
+                            <strong><sup>@Model.Item.Category</sup></strong>
+                        </a>
+                    }
+                    else
+                    {
+                        <sup>No category set</sup>
+                    }
                 </div>
             </div>
             <div>
-                <sup>Tags</sup>
-                <div class="chips">
-                    <template x-for="item in @JsonSerializerHelper.SerializeObject(Model.Item.Tags)">
-                        <a style="text-decoration:none" class="tag flat closable primary small">
-                            <strong><sup x-text="item"</sup></strong>
-                        </a>
-                    </template>
-                </div>
+                <strong><sup>Tags</sup></strong>
+                @if (Model.Item.Tags != null)
+                {
+                    <div class="chips">
+                        <template x-for="item in @JsonSerializerHelper.SerializeObject(Model.Item.Tags)">
+                            <a style="text-decoration:none" class="tag flat closable primary small">
+                                <strong><sup x-text="item"></sup></strong>
+                            </a>
+                        </template>
+                    </div>
+                }
+                else
+                {
+                    <div class="chips">
+                        <sup>No tags set</sup>
+                    </div>
+                }
             </div>
         </div>
         <div>
-            <sup>Description</sup>
+            <strong><sup>Description</sup></strong>
             <p>@Model.Item.Description</p>
         </div>
 

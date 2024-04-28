@@ -67,13 +67,15 @@ namespace Accelerate.Features.Account.Services
                 {
                     new FormField()
                     {
-                        Id = "create-profile-image-file",
-                        Label = "File",
-                        Name = "Image",
+                        Name = "File",
                         FieldType = FormFieldTypes.file,
+                        Placeholder = "Upload image",
+                        Multiple = false,
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = false,
                         Accept = ".png,.jpg",
-                        Placeholder = "Image",
-                        Value = user?.AccountProfile?.Image,
                     },
                     new FormField()
                     {
@@ -154,11 +156,15 @@ namespace Accelerate.Features.Account.Services
                 {
                     new FormField()
                     {
-                        Label = "File",
                         Name = "File",
                         FieldType = FormFieldTypes.file,
-                        //Accept = ".png|.jpg",
-                        Placeholder = "File",
+                        Placeholder = "Upload image",
+                        Multiple = false,
+                        ClearOnSubmit = true,
+                        Icon = "photo_camera",
+                        AriaInvalid = false,
+                        Hidden = false,
+                        Accept = ".png,.jpg",
                     },
                     new FormField()
                     {
