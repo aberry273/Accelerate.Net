@@ -84,31 +84,38 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
-            var indexModel = new ContentPostDocument();
-            var profile = new ContentPostUserSubdocument()
+            try
             {
-                Username = user?.Source.Username,
-                Image = user?.Source.Image
-            };
+                var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
+                var indexModel = new ContentPostDocument();
+                var profile = new ContentPostUserSubdocument()
+                {
+                    Username = user?.Source.Username,
+                    Image = user?.Source.Image
+                };
 
-            args.Value.Hydrate(indexModel, profile);
+                args.Value.Hydrate(indexModel, profile);
 
-            indexModel.ChannelName = GetChannelName(args);
-            indexModel.QuoteIds = GetQuoteIds(args);
-            indexModel.Images = GetImages(args);
-            // If a reply
-            if (args.Value.ParentId != null)
-            {
-                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
-                var parentDoc = parentResponse.Source;
-                await UpdateParentDocument(parentDoc, indexModel, args);
+                indexModel.ChannelName = GetChannelName(args);
+                indexModel.QuoteIds = GetQuoteIds(args);
+                indexModel.Images = GetImages(args);
+                // If a reply
+                if (args.Value.ParentId != null)
+                {
+                    var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+                    var parentDoc = parentResponse.Source;
+                    await UpdateParentDocument(parentDoc, indexModel, args);
 
-                var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
-                parentIdThread.Add(parentDoc.Id);
-                indexModel.ParentIds = parentIdThread;
+                    var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
+                    parentIdThread.Add(parentDoc.Id);
+                    indexModel.ParentIds = parentIdThread;
+                }
+                await _elasticService.Index(indexModel);
             }
-            await _elasticService.Index(indexModel);
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private async Task UpdateParentDocument(ContentPostDocument parentDoc, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)

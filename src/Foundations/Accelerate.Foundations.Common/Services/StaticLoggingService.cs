@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Accelerate.Foundations.Common.Services
 {
@@ -27,6 +29,7 @@ namespace Accelerate.Foundations.Common.Services
         public static void Log(string message)
         {
             Logger.LogInformation(message);
+            Trace.TraceInformation(message);
         }
         public static void LogError(string error)
         {
@@ -35,6 +38,7 @@ namespace Accelerate.Foundations.Common.Services
         public static void LogError(Exception error)
         {
             Logger.LogError(error.ToString());
+            Trace.TraceError(error.ToString());
         }
 
         public static ILoggerFactory LoggerFactory
