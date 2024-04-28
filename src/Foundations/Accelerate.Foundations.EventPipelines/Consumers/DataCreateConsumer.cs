@@ -32,7 +32,7 @@ namespace Accelerate.Foundations.EventPipelines.Consumers
         public async Task Consume(ConsumeContext<CreateDataContract<T>> context)
         {
             Foundations.Common.Services.StaticLoggingService.Log($"DataCreatePipeline [Started]]");
-            try
+            //try
             {
                 // Run synchronous pipeline first
                 _pipeline.Run(context.Message.Data);
@@ -45,6 +45,7 @@ namespace Accelerate.Foundations.EventPipelines.Consumers
                     UserId = context.Message.UserId
                 });
             }
+            /*
             catch (Exception ex)
             {
                 Foundations.Common.Services.StaticLoggingService.LogError(ex);
@@ -56,6 +57,7 @@ namespace Accelerate.Foundations.EventPipelines.Consumers
                 };
                 await _messageHub.Clients.All.SendMessage("user", payload);
             }
+            */
             Foundations.Common.Services.StaticLoggingService.Log($"DataCreatePipeline [Finished]]");
         }
     }
