@@ -13,3 +13,8 @@ dotnet user-secrets init --project .\Projects\Accelerate.Projects.App\Accelerate
 dotnet user-secrets set "appsettings.key" "value" --project .\Projects\Accelerate.Projects.App\Accelerate.Projects.App.csproj
 1. Or 
 type .\secrets.json | dotnet user-secrets set
+
+
+
+Debug on azure:
+https://parrotapp.scm.azurewebsites.net/api/vfs/LogFiles/eventlog.xml

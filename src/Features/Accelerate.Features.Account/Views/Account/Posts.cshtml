@@ -9,8 +9,8 @@
 
 <section>
     <div x-data="listCards( {
-        actionUrl: 'https://localhost:7220/api/contentpostactivity',
-        searchUrl: 'https://localhost:7220/api/contentsearch/posts/@Model.UserId',
+        actionUrl: '/api/contentpostactivity',
+        searchUrl: '/api/contentsearch/posts/@Model.UserId',
         filterEvent: null,
         userId: '@Model.UserId',
         actionEvent: 'action:post',

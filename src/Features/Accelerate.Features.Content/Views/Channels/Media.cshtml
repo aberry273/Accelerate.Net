@@ -16,8 +16,8 @@
          
         <!--Feed-->
         <div x-data="listCards( {
-            actionUrl: 'https://localhost:7220/api/contentpostactivity',
-            searchUrl: 'https://localhost:7220/api/contentsearch/posts',
+            actionUrl: '/api/contentpostactivity',
+            searchUrl: '/api/contentsearch/posts',
             filterEvent: '@Model.FilterEvent',
             userId: '@Model.UserId',
             actionEvent: 'action:post',
