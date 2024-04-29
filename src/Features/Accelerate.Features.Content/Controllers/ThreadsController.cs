@@ -55,11 +55,11 @@ namespace Accelerate.Features.Content.Controllers
             _channelSearchService = channelService;
         }
         [HttpGet("Threads/{id}")]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        //[RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Thread([FromRoute]Guid id)
         {
             var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction("Index", "Account");
+            
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
 
             var item = response.Source;

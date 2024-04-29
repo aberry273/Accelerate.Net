@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
 using Azure.Core;
+using System.Security.Principal;
+using System.Security.Claims;
 
 namespace Accelerate.Foundations.Common.Services
 {
@@ -44,7 +46,7 @@ namespace Accelerate.Foundations.Common.Services
         }
         public BasePage CreatePageBaseContent(UserProfile? profile = null)
         {
-            return (profile != null)
+            return (profile != null && profile.IsAuthenticated)
                 ? this.CreateAuthenticatedContent(profile)
                 : this.CreateUnauthenticatedContent(); 
         }
@@ -66,6 +68,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new BasePage()
             {
+                IsAuthenticated = true,
                 Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
                 SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),

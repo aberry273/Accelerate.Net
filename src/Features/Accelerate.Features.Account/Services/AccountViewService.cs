@@ -29,19 +29,12 @@ namespace Accelerate.Features.Account.Services
             _contentService = contentService;
         }
         #region Manage
-
-        private UserProfile GetUserProfile(AccountUser user)
-        {
-            if (user == null) return null;
-            return new UserProfile()
-            {
-                Image = user?.AccountProfile?.Image,
-                Username = user?.UserName
-            };
-        }
+         
         public ManagePage GetManagePage(AccountUser user)
         {
-            var viewModel = new ManagePage(_contentService.CreatePageBaseContent(GetUserProfile(user)));
+            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+
+            var viewModel = new ManagePage(_contentService.CreatePageBaseContent(profile));
             viewModel.UserId = user.Id;
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);

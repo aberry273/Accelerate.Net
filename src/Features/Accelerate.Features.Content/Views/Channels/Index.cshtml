@@ -25,8 +25,14 @@
                 }
             </ul>
         </nav>
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
-       
+        @if (Model.IsAuthenticated)
+        {
+            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
+        }
+        else
+        {
+            <article>Login to respond</article>
+        }
         <!--Feed-->
         <div x-data="listCards( {
             actionUrl: '/api/contentpostactivity',

@@ -15,7 +15,6 @@ namespace Accelerate.Features.Content.Models.Views
         public ModalForm ModalDeleteReply { get; set; }
         public ChannelsPage(BasePage model) : base(model)
         {
-
         }
     }
 }

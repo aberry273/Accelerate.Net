@@ -8,6 +8,7 @@ namespace Accelerate.Foundations.Common.Models
 {
     public class UserProfile
     {
+        public bool IsAuthenticated { get; set; }
         public string Username {  get; set; }
         public string Image { get; set; }
     }

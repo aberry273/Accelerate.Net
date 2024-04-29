@@ -28,7 +28,7 @@ export default function (data) {
       },
       load(data) {
         const html = `
-        <article class="media padless" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
+        <article class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
           <figure>
             <img 
               :src="item.filePath"

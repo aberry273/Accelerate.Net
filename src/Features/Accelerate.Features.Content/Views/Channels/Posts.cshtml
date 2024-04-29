@@ -8,26 +8,28 @@
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
 }
 <div>
-    <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-
-        <!--Filter-->
-        <div x-data="appNavFilters({
-            filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-            event: '@Model.FilterEvent'
-        })"></div>
+    @if (Model.IsAuthenticated)
+    {
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
+    <!--Filter-->
+    <div x-data="appNavFilters({
+        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        event: '@Model.FilterEvent'
+    })"></div>
          
-        <!--Feed-->
-        <div x-data="listCards( {
-            actionUrl: '/api/contentpostactivity',
-            searchUrl: '/api/contentsearch/posts',
-            filterEvent: '@Model.FilterEvent',
-            userId: '@Model.UserId',
-            actionEvent: 'action:post',
-            filters: {
-                targetChannel: ['@Model.Item.Id']
-            },
-            itemEvent: $store.wssContentPosts.getMessageEvent(),
-          })">
-        </div>
+    <!--Feed-->
+    <div x-data="listCards( {
+        actionUrl: '/api/contentpostactivity',
+        searchUrl: '/api/contentsearch/posts',
+        filterEvent: '@Model.FilterEvent',
+        userId: '@Model.UserId',
+        actionEvent: 'action:post',
+        filters: {
+            targetChannel: ['@Model.Item.Id']
+        },
+        itemEvent: $store.wssContentPosts.getMessageEvent(),
+        })">
     </div>
- </div>
+</div>
+</div>

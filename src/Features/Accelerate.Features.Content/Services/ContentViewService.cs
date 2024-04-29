@@ -13,6 +13,7 @@ using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using System.Drawing;
+using System.Security.Principal;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -26,11 +27,7 @@ namespace Accelerate.Features.Content.Services
 
         private BasePage CreateBaseContent(AccountUser user)
         {
-            var profile = user != null ? new UserProfile()
-            {
-                Username = user.UserName,
-                Image = user?.AccountProfile?.Image
-            } : null;
+            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
             return _metaContentService.CreatePageBaseContent(profile);
         }
         public ChannelsPage CreateAnonymousChannelsPage()
@@ -123,13 +120,16 @@ namespace Accelerate.Features.Content.Services
             #pragma warning restore CS8601 // Possible null reference assignment.
             viewModel.ChannelLink = GetChannelLink(channel);
 
-            viewModel.UserId = user.Id;
             // Get replies
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
             viewModel.Replies = replies.IsValidResponse && replies.IsSuccess() ? replies.Documents?.ToList() : null;
-            viewModel.FormCreateReply = CreateReplyForm(user, item);
-            viewModel.ModalEditReply = CreateModalEditReplyForm(user);
-            viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            if(user != null)
+            {
+                viewModel.UserId = user.Id;
+                viewModel.FormCreateReply = CreateReplyForm(user, item);
+                viewModel.ModalEditReply = CreateModalEditReplyForm(user);
+                viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            }
 
             // Add filters
             viewModel.Filters = CreateSearchFilters(aggregateResponse);

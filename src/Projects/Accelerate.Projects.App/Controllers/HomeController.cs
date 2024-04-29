@@ -8,8 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Views;
-using Accelerate.Features.Content.Controllers;
-
+using Accelerate.Features.Content.Controllers; 
 namespace Accelerate.Projects.App.Controllers
 {
     //[Authorize]
@@ -26,11 +25,8 @@ namespace Accelerate.Projects.App.Controllers
             _userManager = userManager;
         }
         private BasePage CreateBaseContent(AccountUser user)
-        {
-            var profile = user != null ? new UserProfile()
-            {
-                Username = user.UserName,
-            } : null;
+        { 
+            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
             return _contentService.CreatePageBaseContent(profile);
         }
 

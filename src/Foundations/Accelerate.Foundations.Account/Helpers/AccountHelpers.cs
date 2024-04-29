@@ -1,7 +1,20 @@
-﻿namespace Accelerate.Foundations.Account.Helpers
+﻿using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Common.Models.Views;
+using Accelerate.Foundations.Common.Models;
+
+namespace Accelerate.Foundations.Account.Helpers
 {
     public class AccountHelpers
     {
+        public static UserProfile CreateUserProfile(AccountUser user)
+        {
+            return user != null ? new UserProfile()
+            {
+                IsAuthenticated = true,
+                Username = user.UserName,
+                Image = user?.AccountProfile?.Image
+            } : null;
+        }
         public static string CreatePassword(int length)
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
