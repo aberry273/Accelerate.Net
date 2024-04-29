@@ -76,6 +76,7 @@ export default () => ({
 
     // Store scheme to local storage
     schemeToLocalStorage() {
+        console.log('set scheme');
         window.localStorage?.setItem(this.localStorageKey, this.scheme);
     },
 })

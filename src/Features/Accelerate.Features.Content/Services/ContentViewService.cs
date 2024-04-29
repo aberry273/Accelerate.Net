@@ -126,7 +126,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = user.Id;
             // Get replies
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
-            viewModel.Replies = replies.Documents.ToList();
+            viewModel.Replies = replies.IsValidResponse && replies.IsSuccess() ? replies.Documents?.ToList() : null;
             viewModel.FormCreateReply = CreateReplyForm(user, item);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
