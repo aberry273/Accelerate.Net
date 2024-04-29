@@ -1,10 +1,12 @@
 ﻿
+using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
 using Accelerate.Foundations.Integrations.AzureStorage.Services;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
 using static Accelerate.Foundations.Integrations.AzureStorage.Constants;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -12,17 +14,20 @@ namespace Accelerate.Foundations.Media.Services
 {
     public class MediaService : IMediaService
     {
+        SiteConfiguration _siteConfig;
         private static Dictionary<string, string> _publicFiles = new Dictionary<string, string>();
         IMetaContentService _contentService;
         IBlobStorageService _blobStorageService;
         private FileExtensionContentTypeProvider _contentTypeProvider;
         public MediaService(
             IMetaContentService contentService,
-            IBlobStorageService blobStorageService
+            IBlobStorageService blobStorageService,
+            IOptions<SiteConfiguration> siteConfig
         )
         {
             _contentService = contentService;
             _blobStorageService = blobStorageService;
+            _siteConfig = siteConfig.Value;
             this._contentTypeProvider = new FileExtensionContentTypeProvider();
         }
         private string GetFileType(string fileName)
@@ -106,7 +111,7 @@ namespace Accelerate.Foundations.Media.Services
         }
         public string GetFileUrl(string id)
         {
-            return $"https://localhost:7220/media/files/{id}";
+            return $"{_siteConfig.Domain}/{Constants.Paths.MediaFile}/{id}";
         }
         public async Task<string> GetPublicLocation(string id)
         {

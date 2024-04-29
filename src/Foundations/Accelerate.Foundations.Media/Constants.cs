@@ -8,6 +8,10 @@ namespace Accelerate.Foundations.Media
 {
     public struct Constants
     {
+        public struct Paths
+        {
+            public const string MediaFile = "media/files";
+        }
         public struct Config
         {
             public const string ConfigName = "MediaConfiguration";

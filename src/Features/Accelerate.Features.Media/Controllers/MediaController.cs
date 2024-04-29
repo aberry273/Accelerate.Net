@@ -31,7 +31,8 @@ namespace Accelerate.Projects.App.Controllers
         }
         public async Task<ActionResult> Files(string id)
         {
-            var file = await _mediaService.GetPublicLocation(id); 
+            var file = await _mediaService.GetPublicLocation(id);
+            if (file == null) return null;
             return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png");
         }
     }

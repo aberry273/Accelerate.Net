@@ -156,6 +156,19 @@ namespace Accelerate.Features.Content.Services
                 {
                     new FormField()
                     {
+                        Name= "QuoteIds",
+                        FieldType = FormFieldTypes.list,
+                        Class = "flat",
+                        Placeholder = "Quotes",
+                        IsArray = true,
+                        Autocomplete = null,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Hidden = false,
+                        Helper = "",
+                    },
+                    new FormField()
+                    {
                         Name = "Content",
                         FieldType = FormFieldTypes.textarea,
                         Placeholder = "Post an update",
@@ -559,6 +572,19 @@ namespace Accelerate.Features.Content.Services
                 Label = "Comment",
                 Fields = new List<FormField>()
                 {
+                    new FormField()
+                    {
+                        Name= "QuoteIds",
+                        FieldType = FormFieldTypes.list,
+                        Class = "flat",
+                        Placeholder = "Quotes",
+                        IsArray = true,
+                        Autocomplete = null,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Hidden = false,
+                        Helper = "",
+                    },
                     new FormField()
                     {
                         Name = "Content",

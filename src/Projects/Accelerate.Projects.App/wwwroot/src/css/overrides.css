@@ -182,13 +182,13 @@ a.avatar img, button.avatar img, nav details.dropdown.avatar img {
     border-top-right-radius: 50% 50%;
     border-bottom-right-radius: 50% 50%;
     border-bottom-left-radius: 50% 50%;
-    max-height: 50px;
-    max-width: 50px;
+    height: 50px;
+    width: 50px;
 }
 
 a.avatar.small img, button.avatar.small img, nav details.dropdown.avatar.small img {
-    max-height: 30px;
-    max-width: 30px;
+    height: 30px;
+    width: 30px;
 }
 
 img.circular {
