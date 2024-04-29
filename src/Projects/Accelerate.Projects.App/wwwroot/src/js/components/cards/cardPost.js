@@ -21,7 +21,7 @@ export default function (data) {
             this.item = data.item;
             this.userId = data.userId;
             this.updateEvent = data.updateEvent,
-            this.thread = this.setThreadItems(data.item);
+                this.thread = this.setThreadItems(data.item);
 
             const self = this;
             this.$nextTick(() => {
@@ -115,12 +115,12 @@ export default function (data) {
         },
         filterByThreadId(threadId) {
             const filters =
-            [
-                {
-                    name: 'Quotes',
-                    values: [threadId]
-                }
-            ]
+                [
+                    {
+                        name: 'Quotes',
+                        values: [threadId]
+                    }
+                ]
             this.$events.emit(this.filterEvent, filters)
         },
         load(data) {
@@ -199,11 +199,11 @@ export default function (data) {
                     <!--End Text Content-->
 
                     <template x-if="selectedPost.images != null && selectedPost.images.length > 0">
-                       
                         <div x-data="gridCardMedia( {
                                 userId: '@Model.UserId',
                                 itemEvent: $store.wssContentPosts.getMessageEvent(),
                                 items: selectedPost.images,
+                                modalId: selectedPost.id,
                                 cols: 3
                             })">
                         </div>

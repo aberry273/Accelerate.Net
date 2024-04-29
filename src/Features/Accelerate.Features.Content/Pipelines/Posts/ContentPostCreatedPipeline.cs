@@ -63,7 +63,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var media = _mediaService.Find(x => x.ContentPostId == args.Value.Id);
             var mediaItems = media.Select(x => new ContentPostMediaSubdocument(){
-                filePath = x.FilePath
+                filePath = x.FilePath,
+                Id = x.MediaBlobId.ToString()
             }).ToList();
             return mediaItems;
         }

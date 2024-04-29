@@ -19,9 +19,22 @@ html {
     scroll-behavior: smooth;
 }
 
+dialog.fullscreen {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    overflow: hidden; /* Hide scrollbars */
+    text-align: center;
+}
+
 .fullscreen {
     min-width: 100%;
     min-height: 100%;
+}
+
+dialog.fullscreen img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 i:disabled {
@@ -498,13 +511,13 @@ button.floating-next {
     top: 50%;
     right: 0;
     margin-left: -20px;
-    ;
 }
 
-button.float-previous {
+button.floating-previous {
     position: fixed;
     top: 50%;
     left: 0;
+    margin-right: 20px;
 }
 
 /* CHIPS */

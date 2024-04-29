@@ -12,6 +12,7 @@ namespace Accelerate.Foundations.Content.Models.Data
     public class ContentPostMediaSubdocument
     {
         public string Name { get; set; }
+        public string Id { get; set; }
         public string filePath { get; set; }
     }
     public class ContentPostUserSubdocument

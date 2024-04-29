@@ -43,6 +43,8 @@ export default function (data) {
             this.searchUrl = data.searchUrl;
             this.userId = data.userId;
             this.initSearch = data.initSearch;
+            //this.modalEvent = data.modalEvent;
+            this.modalId = data.modalId;
 
             component = data.component || component
             // init websockets
@@ -65,15 +67,13 @@ export default function (data) {
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 await this.search(filterUpdates);
             })
-            this.$events.on(this.modalEvent, async (item) => {
+            this.$events.on(this.modalId, async (item) => {
                 this.$nextTick(() => {
                     this.selectedItem = item;
                     this._mxModal_Open(this.modalId)
                 })
             })
-            if (this.initSearch)
-                await this.initSearch();
-
+            if (this.initSearch) await this.initSearch();
             this.setHtml(data);
         },
         async initSearch() {
@@ -81,18 +81,25 @@ export default function (data) {
             if (data.userId) queryData.userId = [data.userId]
             await this.search(queryData);
         },
-
         browseNextMedia() {
-            if (this.selectedIndex == this.items.legnth - 1) return;
+            if (this.selectedIndex == this.items.length) return;
             this.selectedItem = this.items[this.selectedIndex + 1];
         },
         browsePreviousMedia() {
             if (this.selectedIndex == 0) return;
             this.selectedItem = this.items[this.selectedIndex - 1];
         },
+
+        get hasNext() {
+            return this.selectedIndex < this.items.length - 1;
+        },
+        get hasPrevious() {
+            if (this.items == null || this.items.length == 0) return false;
+            return this.selectedIndex > 0;
+        },
         get selectedIndex() {
-            if (this.items == null) return -1;
-            if (this.selectedItem == null) return -1;
+            if (this.items == null) return 0;
+            if (this.selectedItem == null) return 0;
             return this.items.map(x => x.id).indexOf(this.selectedItem.id)
         },
 
@@ -122,8 +129,7 @@ export default function (data) {
             if (wssMessage.update == 'Created') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
                 if (index == -1) this.items.push(item);
-                else this.items[index] = item
-                console.log(item);
+                else this.items[index] = item;
             }
             if (wssMessage.update == 'Updated') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
@@ -151,11 +157,6 @@ export default function (data) {
             return 'col-4';
         },
 
-        get hasNext() {
-            if (this.items == null || this.items.length == 0) return false;
-            return this.selectedIndex < this.items.length - 1;
-        },
-
         // METHODS
         setHtml(data) {
             // make ajax request 
@@ -165,7 +166,7 @@ export default function (data) {
                 <div x-data="cardImage({
                   item: item,
                   userId: userId,
-                  modalEvent: modalEvent,
+                  modalEvent: modalId,
                 })"></div>
               </template>
               <!--
@@ -177,29 +178,17 @@ export default function (data) {
               -->
             </div>
           
-            <dialog :id="modalId">
+            <dialog :id="modalId" class="fullscreen">
                 <article class="fullscreen">
                     <header>
                         <nav>
                         <ul>
                             <p>
-                            <strong x-text="selectedItem.name"></strong>
+                                <strong x-text="selectedItem.name"></strong>
                             </p>
                         </ul>
                         <ul>
-                            <i 
-                            :disabled="selectedIndex > 0"
-                            aria-label="Previous" 
-                            @click="browsePreviousMedia" 
-                            class="icon material-icons icon-click" 
-                            rel="prev">chevron_left</i>
-
-                            <i aria-label="Next" 
-                            :disabled="hasNext"
-                            @click="browseNextMedia" 
-                            class="icon material-icons icon-click" 
-                            rel="prev">chevron_right</i>
-
+                         
                             <!--
                             <details class="dropdown flat no-chevron">
                                 <summary role="outline">
@@ -218,23 +207,24 @@ export default function (data) {
                     </header>
                     <div>
 
+                        <button aria-label="Previous" 
+                            :disabled="!hasPrevious"
+                            @click="browsePreviousMedia" 
+                            class="material-icons floating-previous" 
+                            rel="next">chevron_left</button>
+        
                        <figure>
                             <img
                             :src="selectedItem.filePath"
+                            onerror="this.src='/src/images/broken.jpg'"
                             :alt="selectedItem.name"
                           /> 
                         </figure>
-                        <button 
-                            :disabled="selectedIndex > 0"
-                            aria-label="Previous" 
-                            @click="browsePreviousMedia" 
-                            class=" material-icons floating-previous" 
-                            rel="prev">chevron_left</button>
 
                         <button aria-label="Next" 
-                            :disabled="hasNext"
+                            :disabled="!hasNext"
                             @click="browseNextMedia" 
-                            class=" material-icons floating-next" 
+                            class="material-icons floating-next" 
                             rel="next">chevron_right</button>
     
                     </div>
