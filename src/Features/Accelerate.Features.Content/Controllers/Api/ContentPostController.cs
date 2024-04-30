@@ -30,6 +30,8 @@ using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using MassTransit.Initializers;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
+using Accelerate.Foundations.Media.Models.Data;
+using System.Collections.Generic;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -104,9 +106,9 @@ namespace Accelerate.Features.Content.Controllers.Api
                 if (images.Any())
                 {
                     var user = await _userManager.FindByIdAsync(obj.UserId.ToString());
-                    var mediaFileIds = await UploadImagesFromFiles(user, obj.Images);
+                    var mediaFiles = await UploadImagesFromFiles(user, obj.Images);
                     
-                    media.AddRange(mediaFileIds.Select(x => x));
+                    media.AddRange(mediaFiles.Select(x => x.Id));
                 }
                 // for all guids sent through in request, create aa link
                 if (media.Any())
@@ -133,7 +135,33 @@ namespace Accelerate.Features.Content.Controllers.Api
             }
         }
 
-        private async Task<List<Guid>> UploadImagesFromFiles(AccountUser user, List<IFormFile> files)
+        private async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(AccountUser user, List<IFormFile> files)
+        {
+            if (files == null) return new List<MediaBlobUploadResult>();
+
+            // upload file 
+            var newFiles = files.Select(x => new MediaBlobUploadRequest(x));
+            // bulk upload with preset ids
+            var fileResults = await _mediaFileService.UploadImages(user.Id, newFiles);
+
+            // bulk create entities
+            var mediaBlobEntities = newFiles.Select(x =>
+            {
+                return new MediaBlobEntity()
+                {
+                    Id = x.Id,
+                    FilePath = _mediaFileService.GetFileUrl(x.Id.ToString()),
+                    Name = x.File.FileName,
+                    UserId = user.Id
+                };
+            });
+            // TODO return IDs of all created entities rather than count
+            var blobEntityGuids = await this._mediaService.AddRange(mediaBlobEntities);
+
+            return fileResults.ToList();
+        }
+        /*
+        private async Task<List<Guid>> UploadImagesFromFilesOld(AccountUser user, List<IFormFile> files)
         {
             if (files == null) return new List<Guid>();
             
@@ -158,6 +186,7 @@ namespace Accelerate.Features.Content.Controllers.Api
 
             return newFiles.Keys.ToList();
         }
+        */
 
         private ContentPostQuoteEntity CreateQuoteLink(ContentPostEntity post, string threadId)
         {

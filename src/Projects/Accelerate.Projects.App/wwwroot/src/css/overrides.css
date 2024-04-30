@@ -19,6 +19,21 @@ html {
     scroll-behavior: smooth;
 }
 
+nav.floating {
+    position: fixed;
+    background-color: var(--pico-background-color);
+    top: 0;
+    z-index: 11;
+}
+
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
 dialog.fullscreen {
     padding-bottom: 0;
     margin-bottom: 0;

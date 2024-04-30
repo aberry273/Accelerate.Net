@@ -201,7 +201,7 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Add tag",
                         ClearOnSubmit = false,
                         AriaInvalid = false,
-                        Hidden = false,
+                        Hidden = true,
                         Value = channel?.Tags
                     },
                     new FormField()
@@ -320,7 +320,7 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Add a tag",
                         ClearOnSubmit = false,
                         AriaInvalid = false,
-                        Hidden = post.Tags != null,
+                        Hidden = true,
                         Value = post.Tags
                     },
                     new FormField()
@@ -447,7 +447,7 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Listen to posts tagged with..",
                         ClearOnSubmit = false,
                         AriaInvalid = false,
-                        Hidden = false,
+                        Hidden = true,
                         Value = channel.Tags
                     },
                     new FormField()

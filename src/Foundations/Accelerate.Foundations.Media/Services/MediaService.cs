@@ -3,10 +3,15 @@ using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
 using Accelerate.Foundations.Integrations.AzureStorage.Services;
+using Accelerate.Foundations.Media.Models.Data;
 using Azure.Storage.Blobs;
+using Elastic.Clients.Elasticsearch;
+using ImageMagick;
+using ImageMagick.ImageOptimizers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
+using System.Drawing;
 using static Accelerate.Foundations.Integrations.AzureStorage.Constants;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -14,6 +19,7 @@ namespace Accelerate.Foundations.Media.Services
 {
     public class MediaService : IMediaService
     {
+        ImageOptimizer _optimizer;
         SiteConfiguration _siteConfig;
         private static Dictionary<string, string> _publicFiles = new Dictionary<string, string>();
         IMetaContentService _contentService;
@@ -29,51 +35,57 @@ namespace Accelerate.Foundations.Media.Services
             _blobStorageService = blobStorageService;
             _siteConfig = siteConfig.Value;
             this._contentTypeProvider = new FileExtensionContentTypeProvider();
+            _optimizer = new ImageOptimizer();
         }
-        private string GetFileType(string fileName)
+
+        private MediaBlobUploadResult CreateUploadResult(BlobFile file, bool success)
         {
-            string contentType;
-            if (!_contentTypeProvider.TryGetContentType(fileName, out contentType))
+            return new MediaBlobUploadResult()
             {
-                contentType = "application/octet-stream";
-            }
-            return contentType;
+                Success = success,
+                Id = file.id,
+                FilePath = file.fileName,
+            };
         }
-        public async Task<List<string>> UploadVideos(Guid userId, Dictionary<Guid, IFormFile> files)
+        public async Task<List<MediaBlobUploadResult>> UploadImages(Guid userId, IEnumerable<MediaBlobUploadRequest> files)
         {
-            var blobFiles = files.Select(x => CreateVideoBlob(userId, x.Key, x.Value)).ToList();
-            return await _blobStorageService.UploadManyAsync(userId, blobFiles);
+            var blobFiles = files.Select(x => CreateImageBlob(userId, x.Id, x.File)).ToList();
+            var uploadResults = await _blobStorageService.UploadManyAsync(userId, blobFiles, BlobFileTypeEnum.Image);
+            var results = uploadResults.Select((x, i) => CreateUploadResult(blobFiles.ElementAt(i), x.IsCompleted)).ToList();
+            return results;
         }
-        public async Task<List<string>> UploadImages(Guid userId, Dictionary<Guid, IFormFile> files)
+        public async Task<List<MediaBlobUploadResult>> UploadVideos(Guid userId, IEnumerable<MediaBlobUploadRequest> files)
         {
-            var blobFiles = files.Select(x => CreateImageBlob(userId, x.Key, x.Value)).ToList();
-            return await _blobStorageService.UploadManyAsync(userId, blobFiles);
+            var blobFiles = files.Select(x => CreateVideoBlob(userId, x.Id, x.File)).ToList();
+            var uploadResults = await _blobStorageService.UploadManyAsync(userId, blobFiles, BlobFileTypeEnum.Video);
+            var results = uploadResults.Select((x, i) => CreateUploadResult(blobFiles.ElementAt(i), x.IsCompleted)).ToList();
+            return results;
         }
-        public async Task<List<string>> UploadFiles(Guid userId, Dictionary<Guid, IFormFile> files)
+        public async Task<List<MediaBlobUploadResult>> UploadFiles(Guid userId, IEnumerable<MediaBlobUploadRequest> files)
         {
-            var blobFiles = files.Select(x => CreateFileBlob(userId, x.Key, x.Value)).ToList();
-            return await _blobStorageService.UploadManyAsync(userId, blobFiles);
-        }
-        private BlobFile CreateImageBlob(Guid userId, Guid blobId, IFormFile file)
-        {
-            return CreateBlob(userId, blobId, file, _blobStorageService.GetImagePath(userId.ToString(), file.FileName));
+            var blobFiles = files.Select(x => CreateFileBlob(userId, x.Id, x.File)).ToList();
+            var uploadResults = await _blobStorageService.UploadManyAsync(userId, blobFiles, BlobFileTypeEnum.File);
+            var results = uploadResults.Select((x, i) => CreateUploadResult(blobFiles.ElementAt(i), x.IsCompleted)).ToList();
+            return results;
         }
         private BlobFile CreateVideoBlob(Guid userId, Guid blobId, IFormFile file)
         {
-            return CreateBlob(userId, blobId, file, _blobStorageService.GetVideoPath(userId.ToString(), file.FileName));
+            var path = _blobStorageService.GetImagePath(userId.ToString(), file.FileName);
+            return CreateBlob(userId, blobId, file, path);
         }
         private BlobFile CreateFileBlob(Guid userId, Guid blobId, IFormFile file)
         {
-            return CreateBlob(userId, blobId, file, _blobStorageService.GetOtherPath(userId.ToString(), file.FileName));
+            var path = _blobStorageService.GetImagePath(userId.ToString(), file.FileName);
+            return CreateBlob(userId, blobId, file, path);
+        }
+        private BlobFile CreateImageBlob(Guid userId, Guid blobId, IFormFile file)
+        {
+            var path = _blobStorageService.GetImagePath(userId.ToString(), file.FileName);
+            return CreateBlob(userId, blobId, file, path);
         }
         private BlobFile CreateBlob(Guid userId, Guid blobId, IFormFile file, string blobPath)
         {
-            byte[] data;
-            using (var ms = new MemoryStream())
-            {
-                file.CopyTo(ms);
-                data = ms.ToArray();
-            }
+            byte[] data = CompressImage(file);
             return new BlobFile()
             {
                 id = blobId,
@@ -83,6 +95,75 @@ namespace Accelerate.Foundations.Media.Services
                 blobPath = blobPath
             };
         }
+
+        public bool FileExists(string filePath)
+        {
+            return File.Exists(filePath);
+        }
+
+        public string GetParameterPath(string filePath, int h, int w)
+        {
+            return $"{filePath}w={w}h={h}";
+        }
+
+        public string ResizeImage(string filePath, int h, int w)
+        {
+            /// Read from file
+            using var image = new MagickImage(filePath);
+
+            var size = new MagickGeometry(h, w);
+            // This will resize the image to a fixed size without maintaining the aspect ratio.
+            // Normally an image will be resized to fit inside the specified size.
+            size.IgnoreAspectRatio = true;
+
+            image.Resize(size);
+
+            var resizedPath = GetParameterPath(filePath, h, w);
+            image.Write(resizedPath);
+
+            return resizedPath;
+        }
+        public byte[] CompressImage(IFormFile file)
+        {
+            byte[] data;
+            using (var ms = new MemoryStream())
+            {
+                file.CopyTo(ms);
+                //_optimizer.LosslessCompress(ms);
+                data = ms.ToArray();
+                ms.Position = 0;
+            }
+
+            return data;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /// <summary>
+        /// OLD
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+
+        private string GetFileType(string fileName)
+        {
+            string contentType;
+            if (!_contentTypeProvider.TryGetContentType(fileName, out contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+            return contentType;
+        } 
         public async Task<string> UploadFile(Guid fileId, string userId, IFormFile file)
         {
             // Upload media
@@ -97,12 +178,13 @@ namespace Accelerate.Foundations.Media.Services
         public async Task<string> UploadFile(string userId, IFormFile file)
         {
             // Upload media
-            byte[] data;
+            byte[] data = CompressImage(file);
+            /*
             using (var ms = new MemoryStream())
             {
                 file.CopyTo(ms);
                 data = ms.ToArray();
-            }
+            }*/
             return await _blobStorageService.UploadOther(userId, file.FileName, data, GetFileType(file.FileName));
         }
         public string GetPrivateLocation(string fileName)

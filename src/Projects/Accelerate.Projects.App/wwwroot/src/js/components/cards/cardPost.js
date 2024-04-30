@@ -152,7 +152,7 @@ export default function (data) {
                             <template x-if="selectedPost.profile.image != null">
                                 <button class="avatar small">
                                     <img 
-                                        :src="selectedPost.profile.image"
+                                        :src="selectedPost.profile.image+'?w=40'"
                                         :alt="selectedPost.profile.username"
                                     />
                                 </button>

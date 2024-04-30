@@ -8,6 +8,10 @@ namespace Accelerate.Foundations.Integrations.AzureStorage
 {
     public struct Constants
     { 
+        public struct Paths
+        {
+            public const string BaseFolder = "accounts";
+        }
         public struct Config
         {
             public const string SectionName = "AzureStorageConfiguration";

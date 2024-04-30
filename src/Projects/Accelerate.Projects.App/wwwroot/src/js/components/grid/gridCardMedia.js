@@ -156,6 +156,13 @@ export default function (data) {
             if (this.items.length <= 3) return 'col-3'
             return 'col-4';
         },
+        get imageHeight() {
+            if (this.items.length <= 1) return 400
+            if (this.items.length <= 2) return 300
+            if (this.items.length <= 3) return 200
+            return 200
+        },
+
 
         // METHODS
         setHtml(data) {
@@ -167,6 +174,7 @@ export default function (data) {
                   item: item,
                   userId: userId,
                   modalEvent: modalId,
+                  imageHeight: imageHeight
                 })"></div>
               </template>
               <!--

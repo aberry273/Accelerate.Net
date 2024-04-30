@@ -1,69 +1,79 @@
 ﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
 
-<!-- Header -->
-@if (Model.Authenticated)
-{
-     <nav>
-        <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
-        <ul>
-            @foreach(var link in Model.Items)
-            {
-                if(link.Disabled == true)
+<div x-data="{fixed: false}">
+    <nav style="height:50px" :class="fixed ? 'show' : 'hide'"><ul></ul></nav>
+
+    <!-- Header -->
+    @if (Model.Authenticated)
+    {
+    
+         <nav 
+              :class="fixed ? 'container sticky floating' : ''" 
+              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+            <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+            <ul>
+                @foreach(var link in Model.Items)
                 {
-                    <li>@link.Text</li>
+                    if(link.Disabled == true)
+                    {
+                        <li>@link.Text</li>
+                    }
+                    else
+                    {
+                        <li><a href="@link.Href">@link.Text</a></li>
+                    }
                 }
-                else
+                @if(Model.Dropdown != null)
                 {
-                    <li><a href="@link.Href">@link.Text</a></li>
-                }
-            }
-            @if(Model.Dropdown != null)
-            {
-                <details class="dropdown avatar">
-                    <summary role="link">
-                        @if (!string.IsNullOrEmpty(@Model.Dropdown.Image))
-                        {
-                            <img src="@Model.Dropdown.Image" />
-                        }
-                        else
-                        {
-                            <i class="icon material-icons icon-click">person</i>
-                        }
-                    </summary>
-                    <ul>
-                        @foreach (var link in Model.Dropdown.Items)
-                        {
-                            if (link.Disabled == true)
+                    var profilePicture = $"{Model.Dropdown.Image}?w=50";
+                    <details class="dropdown avatar">
+                        <summary role="link">
+                            @if (!string.IsNullOrEmpty(@profilePicture))
                             {
-                                <li>@link.Text</li>
+                                <img src="@profilePicture" />
                             }
                             else
                             {
-                                <li><a href="@link.Href">@link.Text</a></li>
+                                <i class="icon material-icons icon-click">person</i>
                             }
-                        }
-                    </ul>
-                </details>
-            }
-        </ul>
-    </nav>
-}
-else
-{
-    <nav>
-        <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
-        <ul>
-            @foreach (var link in Model.Items)
-            {
-                if (link.Disabled == true)
-                {
-                    <li>@link.Text</li>
+                        </summary>
+                        <ul>
+                            @foreach (var link in Model.Dropdown.Items)
+                            {
+                                if (link.Disabled == true)
+                                {
+                                    <li>@link.Text</li>
+                                }
+                                else
+                                {
+                                    <li><a href="@link.Href">@link.Text</a></li>
+                                }
+                            }
+                        </ul>
+                    </details>
                 }
-                else
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <nav x-data="{fixed: false}"
+             :class="fixed ? 'container sticky floating' : ''"
+             @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+            <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+            <ul>
+                @foreach (var link in Model.Items)
                 {
-                    <li><a href="@link.Href">@link.Text</a></li>
+                    if (link.Disabled == true)
+                    {
+                        <li>@link.Text</li>
+                    }
+                    else
+                    {
+                        <li><a href="@link.Href">@link.Text</a></li>
+                    }
                 }
-            }
-        </ul>
-    </nav>
-}
+            </ul>
+        </nav>
+    }
+</div>

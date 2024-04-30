@@ -149,15 +149,15 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
         }
         public string GetOtherPath(string userId, string strFileName)
         {
-            return $"accounts/{userId}/{appUserContainerOtherSubfolderName}/{GenerateFileName(strFileName)}";
+            return $"{Constants.Paths.BaseFolder}/{userId}/{appUserContainerOtherSubfolderName}/{GenerateFileName(strFileName)}";
         }
         public string GetImagePath(string userId, string strFileName)
         {
-            return $"accounts/{userId}/{appUserContainerImagesSubfolderName}/{GenerateFileName(strFileName)}";
+            return $"{Constants.Paths.BaseFolder}/{userId}/{appUserContainerImagesSubfolderName}/{GenerateFileName(strFileName)}";
         }
         public string GetVideoPath(string userId, string strFileName)
         {
-            return $"accounts/{userId}/{appUserContainerVideosSubfolderName}/{GenerateFileName(strFileName)}";
+            return $"{Constants.Paths.BaseFolder}/{userId}/{appUserContainerVideosSubfolderName}/{GenerateFileName(strFileName)}";
         }
         private string GenerateFileName(string fileName)
         {
@@ -200,32 +200,61 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             }
             return blobs;
         }
+
+        private BlockBlobClient CreateImageBlob(Guid userId, BlobFile file)
+        {
+            return new BlockBlobClient(_config.ConnectionString, _container.Name, GetImagePath(userId.ToString(), file.fileName));
+        }
+
+        private BlockBlobClient CreateVideoBlob(Guid userId, BlobFile file)
+        {
+            return new BlockBlobClient(_config.ConnectionString, _container.Name, GetVideoPath(userId.ToString(), file.fileName));
+        }
+
+        private BlockBlobClient CreateFileBlob(Guid userId, BlobFile file)
+        {
+            return new BlockBlobClient(_config.ConnectionString, _container.Name, GetOtherPath(userId.ToString(), file.fileName));
+        }
+        private BlobUploadOptions CreateBlobOptions(BlobFile file)
+        {
+            return new BlobUploadOptions()
+            {
+                Metadata = new Dictionary<string, string> { { "id", file.id.ToString() } },
+                Tags = GetBlobMetaTags(file.id.ToString(), file.fileMimeType)
+            };
+        }
           
-        public async Task<List<string>> UploadManyAsync(Guid userId, List<BlobFile> files)
+        public async Task<List<Task<Response<BlobContentInfo>>>> UploadManyAsync(Guid userId, List<BlobFile> files, BlobFileTypeEnum fileType)
         {
             try
             {
                 await CreateAppContainer();
-                
+
                 var tasks = new Queue<Task<Response<BlobContentInfo>>>();
                 foreach (BlobFile file in files)
                 {
-                    Stream stream = new MemoryStream(file.fileData);
-                    var blobUploadOptions = new BlobUploadOptions()
+                    var stream = new MemoryStream(file.fileData);
+                    var blobUploadOptions = CreateBlobOptions(file);
+                    BlockBlobClient blob;
+                    switch(fileType)
                     {
-                        Metadata = new Dictionary<string, string> { { "id", file.id.ToString() } },
-                        Tags = GetBlobMetaTags(file.id.ToString(), file.fileMimeType)
-                    };
-                    
-                    BlockBlobClient blob = new BlockBlobClient(_config.ConnectionString, _container.Name, GetOtherPath(userId.ToString(), file.fileName));
-
+                        case BlobFileTypeEnum.Image:
+                            blob = CreateImageBlob(userId, file);
+                            break;
+                        case BlobFileTypeEnum.Video:
+                            blob = CreateVideoBlob(userId, file);
+                            break;
+                        default:
+                            blob = CreateFileBlob(userId, file);
+                            break;
+                    }
                     tasks.Enqueue(blob.UploadAsync(stream, blobUploadOptions)); 
                 }
 
                 // Run all the tasks asynchronously.
                 await Task.WhenAll(tasks);
-
-                return files.Select(x => x.id.ToString()).ToList();
+                
+                return tasks.ToList();
             }
 
             catch (RequestFailedException ex)
@@ -240,7 +269,15 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             {
                 Foundations.Common.Services.StaticLoggingService.LogError($"Exception: {ex.Message}");
             }
-            return new List<string>();
+            return new List<Task<Response<BlobContentInfo>>>();
+        }
+        private BlobUploadOptions CreateBloblUploadOptions(string id, string mimeType)
+        {
+            return new BlobUploadOptions()
+            {
+                Metadata = new Dictionary<string, string> { { "id", id } },
+                Tags = GetBlobMetaTags(id.ToString(), mimeType)
+            };
         }
         public async Task<string?> UploadAsync(string fullFilePath, byte[] fileData, string fileMimeType)
         {
@@ -248,14 +285,9 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
             {
                 await CreateAppContainer();
                 BlockBlobClient blob = new BlockBlobClient(_config.ConnectionString, _container.Name, fullFilePath);
-                //...
                 var id = Guid.NewGuid().ToString();
                 Stream stream = new MemoryStream(fileData);
-                var blobUploadOptions = new BlobUploadOptions()
-                {
-                    Metadata = new Dictionary<string, string> { { "id", id } },
-                    Tags = GetBlobMetaTags(id, fileMimeType)
-                };
+                var blobUploadOptions = CreateBloblUploadOptions(id, fileMimeType);
                 var result = await blob.UploadAsync(stream, blobUploadOptions);
                 return id; 
             }
@@ -273,11 +305,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
                 //...
                 var id = fileId.ToString();
                 Stream stream = new MemoryStream(fileData);
-                var blobUploadOptions = new BlobUploadOptions()
-                {
-                    Metadata = new Dictionary<string, string> { { "id", id } },
-                    Tags = GetBlobMetaTags(id, fileMimeType)
-                };
+                var blobUploadOptions = CreateBloblUploadOptions(id, fileMimeType);
                 var result = await blob.UploadAsync(stream, blobUploadOptions);
                 return id;
             }

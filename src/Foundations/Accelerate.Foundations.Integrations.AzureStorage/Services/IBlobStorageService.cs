@@ -1,4 +1,5 @@
 ﻿using Accelerate.Foundations.Integrations.AzureStorage.Models;
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@ namespace Accelerate.Foundations.Integrations.AzureStorage.Services
 {
     public interface IBlobStorageService
     {
-        Task<List<string>> UploadManyAsync(Guid userId, List<BlobFile> files);
+        Task<List<Task<Response<BlobContentInfo>>>> UploadManyAsync(Guid userId, List<BlobFile> files, BlobFileTypeEnum fileType);
         Task<string?> UploadAsync(Guid fileId, string fullFilePath, byte[] fileData, string fileMimeType);
         Task<string?> UploadOther(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType);
         Task<string?> UploadVideo(Guid fileId, string userId, string strFileName, byte[] fileData, string fileMimeType = "mp4");

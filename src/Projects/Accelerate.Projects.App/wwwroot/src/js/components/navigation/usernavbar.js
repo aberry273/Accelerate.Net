@@ -33,7 +33,7 @@ export default function navbar(data) {
               <details class="dropdown avatar">
                 <summary role="link">
                   <template x-if="data.dropdown.img">
-                    <img :src="data.dropdown.img" /> 
+                    <img :src="data.dropdown.img+'?w=50'" /> 
                   </template>
                   <template x-if="!data.dropdown.img">
                    <i class="icon material-icons icon-click">person</i>
