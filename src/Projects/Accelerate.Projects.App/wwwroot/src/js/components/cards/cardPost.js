@@ -198,11 +198,11 @@ export default function (data) {
                     </template>
                     <!--End Text Content-->
 
-                    <template x-if="selectedPost.images != null && selectedPost.images.length > 0">
+                    <template x-if="selectedPost.media != null && selectedPost.media.length > 0">
                         <div x-data="gridCardMedia( {
                                 userId: '@Model.UserId',
                                 itemEvent: $store.wssContentPosts.getMessageEvent(),
-                                items: selectedPost.images,
+                                items: selectedPost.media,
                                 modalId: selectedPost.id,
                                 cols: 3
                             })">

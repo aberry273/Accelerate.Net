@@ -2,6 +2,7 @@
 import card from './cards/card.js'
 import cardPost from './cards/cardPost.js'
 import cardImage from './cards/cardImage.js'
+import cardVideo from './cards/cardVideo.js'
 // CONTENT
 import header from './content/header.js'
 // NAVIGATION
@@ -38,6 +39,7 @@ export {
     card,
     cardPost,
     cardImage,
+    cardVideo,
     
     // CONTENT
     header,

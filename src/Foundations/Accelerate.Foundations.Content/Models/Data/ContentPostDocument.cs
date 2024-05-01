@@ -47,7 +47,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
         public IEnumerable<string>? QuoteIds { get; set; }
-        public IEnumerable<ContentPostMediaSubdocument>? Images { get; set; }
+        public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
         // Computed
         public ContentPostReviewsDocument Reviews { get; set; }
         public ContentPostType PostType { get; set; } = ContentPostType.Post;

@@ -170,12 +170,24 @@ export default function (data) {
             const html = `
             <div x-transition class="grid" :class="gridCols">
               <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
-                <div x-data="cardImage({
-                  item: item,
-                  userId: userId,
-                  modalEvent: modalId,
-                  imageWidth: imageWidth
-                })"></div>
+                <div>
+                    <template x-if="item.type == 'Video'">
+                      <div x-data="cardVideo({
+                          item: item,
+                          userId: userId,
+                          modalEvent: modalId,
+                          imageWidth: imageWidth
+                        })"></div>
+                    </template>
+                    <template x-if="item.type == 'Image'">
+                      <div x-data="cardImage({
+                          item: item,
+                          userId: userId,
+                          modalEvent: modalId,
+                          imageWidth: imageWidth
+                        })"></div>
+                    </template>
+                </div>
               </template>
               <!--
               <template x-if="items == null || items.length == 0">

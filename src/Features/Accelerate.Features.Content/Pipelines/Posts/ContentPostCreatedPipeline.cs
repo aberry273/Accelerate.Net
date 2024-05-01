@@ -63,7 +63,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
             };
         }
-        private List<ContentPostMediaSubdocument> GetImages(IPipelineArgs<ContentPostEntity> args)
+        private List<ContentPostMediaSubdocument> GetMedia(IPipelineArgs<ContentPostEntity> args)
         {
             var mediaLinks = _mediaPostService
                 .Find(x => x.ContentPostId == args.Value.Id)
@@ -109,7 +109,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 
                 indexModel.ChannelName = GetChannelName(args);
                 indexModel.QuoteIds = GetQuoteIds(args);
-                indexModel.Images = GetImages(args);
+                indexModel.Media = GetMedia(args);
                 // If a reply
                 if (args.Value.ParentId != null)
                 {
