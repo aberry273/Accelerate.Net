@@ -12,11 +12,11 @@ export default function (data) {
     return {
         item: null,
         data: null,
-        imageHeight: null,
+        imageWidth: null,
         init() {
             this.item = data.item;
             this.data = data;
-            this.imageHeight = data.imageHeight;
+            this.imageWidth = data.imageWidth;
             this.modalEvent = data.modalEvent;
             const self = this;
 
@@ -25,8 +25,8 @@ export default function (data) {
             })
         },
         getImage(filePath) {
-            if (this.imageHeight) {
-                return filePath + '?h=' + this.imageHeight;
+            if (this.imageWidth) {
+                return filePath + '?w=' + this.imageWidth;
             }
             return filePath;
         },

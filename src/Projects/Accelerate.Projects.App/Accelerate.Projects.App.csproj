@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\CdnController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Views\Shared\_Layout.Backup.cshtml" />
     <Content Remove="wwwroot\src - Copy (2)\css\app.scss" />
     <Content Remove="wwwroot\src - Copy (2)\css\components\_amount.scss" />

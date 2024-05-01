@@ -13,7 +13,8 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         public string Name { get; set; }
         public string Id { get; set; }
-        public string filePath { get; set; }
+        public string FilePath { get; set; }
+        public string Type { get; set; }
     }
     public class ContentPostUserSubdocument
     {

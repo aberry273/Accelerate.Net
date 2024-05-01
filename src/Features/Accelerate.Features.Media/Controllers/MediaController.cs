@@ -33,19 +33,19 @@ namespace Accelerate.Projects.App.Controllers
         {
             var file = await _mediaService.GetPublicLocation(id);
             if (file == null) return null;
-            if (w != null)
-            {
-                var width = w.GetValueOrDefault();
-                var height = h != null ? h.GetValueOrDefault() : width;
-                var resizedPath = _mediaService.GetParameterPath(file, height, width);
+            if(w == null && h == null)
+                return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png"); ;
 
-                if(!_mediaService.FileExists(resizedPath)) {
-                    resizedPath = _mediaService.ResizeImage(file, height, width);
-                }
+            var ignoreAspectRatio = h == null || w == null;
+            var width = w != null ? w.GetValueOrDefault() : h.GetValueOrDefault();
+            var height = h != null ? h.GetValueOrDefault() : width;
+            var resizedPath = _mediaService.GetParameterPath(file, height, width);
 
-                return new FileStreamResult(new FileStream(resizedPath, FileMode.Open), "image/png");
+            if(!_mediaService.FileExists(resizedPath)) {
+                resizedPath = _mediaService.ResizeImage(file, height, width, ignoreAspectRatio);
             }
-            return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png");
+
+            return new FileStreamResult(new FileStream(resizedPath, FileMode.Open), "image/png");
         }
     }
 }

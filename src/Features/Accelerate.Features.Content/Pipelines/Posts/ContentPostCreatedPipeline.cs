@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Features.Content.Pipelines.Reviews;
 using Accelerate.Foundations.Content.Hydrators;
+using Accelerate.Foundations.Media.Models.Entities;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
@@ -30,7 +31,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IElasticService<ContentPostDocument> _elasticService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentChannelEntity> _channelService;
-        IEntityService<ContentPostMediaEntity> _mediaService;
+        IEntityService<MediaBlobEntity> _mediaService;
+        IEntityService<ContentPostMediaEntity> _mediaPostService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
@@ -39,7 +41,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IEntityService<ContentChannelEntity> channelService,
             IEntityService<ContentPostEntity> entityService,
             IEntityService<ContentPostQuoteEntity> quoteService,
-            IEntityService<ContentPostMediaEntity> mediaService,
+            IEntityService<MediaBlobEntity> mediaService,
+            IEntityService<ContentPostMediaEntity> mediaPostService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
@@ -48,6 +51,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _messageHub = messageHub;
             _quoteService = quoteService;
             _mediaService = mediaService;
+            _mediaPostService = mediaPostService;
             _channelService = channelService;
             _accountElasticService = accountElasticService;
             // To update as reflection / auto load based on inheritance classes in library
@@ -61,10 +65,15 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         }
         private List<ContentPostMediaSubdocument> GetImages(IPipelineArgs<ContentPostEntity> args)
         {
-            var media = _mediaService.Find(x => x.ContentPostId == args.Value.Id);
+            var mediaLinks = _mediaPostService
+                .Find(x => x.ContentPostId == args.Value.Id)
+                .Select(x => x.MediaBlobId)
+                .ToList();
+            var media = _mediaService.Find(x => mediaLinks.Contains(x.Id));
             var mediaItems = media.Select(x => new ContentPostMediaSubdocument(){
-                filePath = x.FilePath,
-                Id = x.MediaBlobId.ToString()
+                FilePath = x.FilePath,
+                Type = Enum.GetName(x.Type),
+                Id = x.Id.ToString()
             }).ToList();
             return mediaItems;
         }

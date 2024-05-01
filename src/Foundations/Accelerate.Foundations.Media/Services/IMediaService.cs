@@ -19,7 +19,7 @@ namespace Accelerate.Foundations.Media.Services
         bool FileExists(string filePath);
 
         string GetParameterPath(string filePath, int h, int w);
-        string ResizeImage(string filePath, int h, int w);
+        string ResizeImage(string filePath, int h, int w, bool ignoreAspectRatio);
         byte[] CompressImage(IFormFile file);
     }
 }

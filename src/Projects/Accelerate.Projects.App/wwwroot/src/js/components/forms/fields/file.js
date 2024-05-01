@@ -10,8 +10,26 @@ export default function (data) {
             <!--Single-->
             <template x-if="!field.multiple && field.value">
                 <article class="padless">
-                    <img :src="_mxForm_GetFilePreview(field.value)" />
-                    <label @click="(ev) => { ev.preventDefault(); field.value = null }">Cancel</label>
+
+                    <!--Video-->
+                    <template x-if="_mxForm_IsVideo(field.value)">
+                        <div class="padless">
+                            <video width="320" height="240" controls>
+                              <source :src="_mxForm_GetFilePreview(field.value)" type="video/mp4">
+                             Your browser does not support the video tag.
+                            </video>
+                            <label @click="(ev) => { ev.preventDefault(); field.value = null }">Cancel</label>
+                        </div>
+                    </template>
+
+                    <!--Image-->
+                    <template x-if="_mxForm_IsImage(field.value)">
+                        <div class="padless">
+                            <img :src="_mxForm_GetFilePreview(field.value)" />
+                            <label @click="(ev) => { ev.preventDefault(); field.value = null }">Cancel</label>
+                        </div>
+                    </template>
+
                 </article>
             </template>
             <!--multiple-->
@@ -22,9 +40,25 @@ export default function (data) {
                         <label x-text="field.label || 'Upload file'"></label>
                     </div>
                     <template x-for="(file, i) in field.value">
-                        <div class="padless">
-                            <img :src="_mxForm_GetFilePreview(file)" />
-                            <label @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</label>
+                        <div>
+                            <!--Video-->
+                            <template x-if="_mxForm_IsVideo(file)">
+                                <div class="padless">
+                                    <video width="320" height="240" controls>
+                                      <source :src="_mxForm_GetFilePreview(file)" type="video/mp4">
+                                     Your browser does not support the video tag.
+                                    </video>
+                                    <label @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</label>
+                                </div>
+                            </template>
+
+                            <!--Image-->
+                            <template x-if="_mxForm_IsImage(file)">
+                                <div class="padless">
+                                    <img :src="_mxForm_GetFilePreview(file)" />
+                                    <label @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</label>
+                                </div>
+                            </template>
                         </div>
                     </template>
                 </div>
@@ -45,6 +79,8 @@ export default function (data) {
             x-on:change="($event) => {
                 if(!field.multiple) {
                     _mxForm_OnFieldChange(field, $event.target.files[0])
+                    console.log($event)
+                    $event.target.parent()[0].load()
                 }
                 else {
                     if (field.value == null) field.value = [];

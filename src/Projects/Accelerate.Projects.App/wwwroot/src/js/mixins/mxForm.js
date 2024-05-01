@@ -64,6 +64,20 @@ export default function (data) {
 		_mxForm_OnFieldChange(field, value) {
 			field.value = value;
 		},
+
+		_mxForm_IsImage(file) {
+			if (file == null || file.type == null) return false;
+			return file.type.startsWith('image/');
+		},
+		_mxForm_IsVideo(file) {
+			console.log(URL.createObjectURL(file));
+			if (file == null || file.type == null) return false;
+			return file.type.startsWith('video/');
+		},
+		_mxForm_GetFileType(file) {
+			return file.type
+			return (typeof file == 'string') ? file : URL.createObjectURL(file)
+		},
 		_mxForm_GetFilePreview(file) {
 			return (typeof file == 'string') ? file : URL.createObjectURL(file)
 		},

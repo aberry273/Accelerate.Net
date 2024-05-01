@@ -217,11 +217,13 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "Video",
+                        Name = "Videos",
                         FieldType = FormFieldTypes.file,
                         Placeholder = "Upload video",
                         ClearOnSubmit = true,
-                        Icon = "photo_camera",
+                        Multiple = true,
+                        Icon = "videocam",
+                        Accept = ".mp4,.mov",
                         AriaInvalid = false,
                         Hidden = true,
                     },
@@ -305,11 +307,12 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "Video",
+                        Name = "Videos",
                         FieldType = FormFieldTypes.file,
                         Placeholder = "Upload video",
                         ClearOnSubmit = true,
-                        Icon = "photo_camera",
+                        Icon = "videocam",
+                        Accept = ".mp4,.mov",
                         AriaInvalid = false,
                         Hidden = true,
                     },

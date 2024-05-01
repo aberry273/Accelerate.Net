@@ -106,7 +106,7 @@ namespace Accelerate.Foundations.Media.Services
             return $"{filePath}w={w}h={h}";
         }
 
-        public string ResizeImage(string filePath, int h, int w)
+        public string ResizeImage(string filePath, int h, int w, bool ignoreAspectRatio)
         {
             /// Read from file
             using var image = new MagickImage(filePath);
@@ -114,7 +114,7 @@ namespace Accelerate.Foundations.Media.Services
             var size = new MagickGeometry(h, w);
             // This will resize the image to a fixed size without maintaining the aspect ratio.
             // Normally an image will be resized to fit inside the specified size.
-            size.IgnoreAspectRatio = true;
+            size.IgnoreAspectRatio = ignoreAspectRatio;
 
             image.Resize(size);
 
@@ -122,18 +122,18 @@ namespace Accelerate.Foundations.Media.Services
             image.Write(resizedPath);
 
             return resizedPath;
-        }
+        } 
         public byte[] CompressImage(IFormFile file)
         {
             byte[] data;
+            
             using (var ms = new MemoryStream())
             {
                 file.CopyTo(ms);
-                //_optimizer.LosslessCompress(ms);
-                data = ms.ToArray();
                 ms.Position = 0;
+                _optimizer.LosslessCompress(ms);
+                data = ms.ToArray();
             }
-
             return data;
         }
 

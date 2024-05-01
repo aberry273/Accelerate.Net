@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Media.Models.Entities
 {
+    public enum MediaBlobFileType
+    {
+        Image, Video, File
+    }
     public enum MediaBlobEntityStatus
     {
         Hidden, Public, Archived
@@ -22,6 +26,7 @@ namespace Accelerate.Foundations.Media.Models.Entities
         public Guid? UserId { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
+        public MediaBlobFileType Type { get; set; } = MediaBlobFileType.File;
         public MediaBlobEntityStatus Status { get; set; } = MediaBlobEntityStatus.Hidden;
         public string Name { get; set; }
         public string? FilePath { get; set; }
