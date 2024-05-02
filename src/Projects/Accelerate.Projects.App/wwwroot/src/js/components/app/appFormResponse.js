@@ -16,6 +16,7 @@ export default function (data) {
         tagFieldName: 'Tags',
         imageFieldName: 'Images',
         videoFieldName: 'Videos',
+        textFieldName: 'Content',
         showTags: false,
         showText: false,
         showVideo: false,
@@ -30,7 +31,7 @@ export default function (data) {
             this.item = data.item;
             this.postbackType = data.postbackType
             this.fields = data.fields,
-                this.actionEvent = data.actionEvent;
+            this.actionEvent = data.actionEvent;
 
             var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
             this.showTags = tagField = null ? !tagField.hidden : null
@@ -65,8 +66,25 @@ export default function (data) {
             this.setHtml(data)
         },
         // GETTERS
+        get tagField() {
+            return this._mxForm_GetField(this.fields, this.tagFieldName);
+        },
+        get imageField() {
+            return this._mxForm_GetField(this.fields, this.imageFieldName);
+        },
+        get videoField() {
+            return this._mxForm_GetField(this.fields, this.videoFieldName);
+        },
+        get textField() {
+            return this._mxForm_GetField(this.fields, this.textFieldName);
+        },
         get typeSelected() {
             return this.showImage || this.showVideo || this.showText
+        },
+        get isValid() {
+            return (this.textField.value != null && this.textField.value.length > 0)
+                || (this.videoField.value != null && this.videoField.value.length > 0)
+                || (this.imageField.value != null && this.imageField.value.length > 0)
         },
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
         // METHODS
@@ -104,7 +122,7 @@ export default function (data) {
         format(type) {
         },
         cancelTypes() {
-            this.hideTextField(true);
+            this.hideTagField(true);
             this.hideImageField(true);
             this.hideVideoField(true);
         },
@@ -160,7 +178,7 @@ export default function (data) {
                     <button x-show="showTags" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
                     <button x-show="!showTags" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
                     
-                    <button class="" @click="await submit(fields)"  :disabled="loading">${label}</button>
+                    <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 
                 </fieldset> 
             </article>

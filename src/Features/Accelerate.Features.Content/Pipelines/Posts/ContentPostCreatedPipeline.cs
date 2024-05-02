@@ -73,6 +73,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var mediaItems = media.Select(x => new ContentPostMediaSubdocument(){
                 FilePath = x.FilePath,
                 Type = Enum.GetName(x.Type),
+                Name = x.Name,
                 Id = x.Id.ToString()
             }).ToList();
             return mediaItems;

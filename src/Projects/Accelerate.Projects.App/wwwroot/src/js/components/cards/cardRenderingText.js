@@ -1,3 +1,3 @@
 export default function (data) {
-    return `<p>${data.content}</p>`
+    return `<div class="padded">${data.content}</div>`
 }

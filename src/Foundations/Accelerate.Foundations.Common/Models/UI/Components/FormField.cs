@@ -22,6 +22,9 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public FormFieldTypes FieldType { get; set; }
         public bool? Disabled { get; set; }
         public bool? Hidden { get; set; }
+        /// <summary>
+        ///  If using a FileForm ensure multiple is flagged for multi select components
+        /// </summary>
         public bool? Multiple { get; set; }
         public bool? IsArray { get; set; }
         public string? Icon { get; set; }

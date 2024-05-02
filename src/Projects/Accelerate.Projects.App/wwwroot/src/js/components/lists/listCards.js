@@ -123,6 +123,7 @@ export default function (data) {
             if (wssMessage.update == 'Updated') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
                 this.items[index] = item
+                this.$emit(item.id, item);
             }
             if (wssMessage.update == 'Deleted') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
@@ -142,6 +143,7 @@ export default function (data) {
                   item: item,
                   userId: userId,
                   actionEvent: actionEvent,
+                  updateEvent: item.id,
                 })"></div>
               </template>
               <template x-if="items == null || items.length == 0">

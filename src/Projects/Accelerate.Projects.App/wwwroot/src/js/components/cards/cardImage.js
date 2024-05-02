@@ -35,7 +35,7 @@ export default function (data) {
         },
         load(data) {
             const html = `
-              <article class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
+              <div class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
                 <figure>
                   <img 
                     :src="getImage(item.filePath)"
@@ -43,7 +43,7 @@ export default function (data) {
                     :alt="item.name"
                   />
                 </figure>
-              </article>`
+              </div>`
             this.$nextTick(() => {
                 this.$root.innerHTML = html;
             })

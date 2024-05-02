@@ -25,7 +25,9 @@
                 }
                 @if(Model.Dropdown != null)
                 {
-                    var profilePicture = $"{Model.Dropdown.Image}?w=50";
+                    var profilePicture = !string.IsNullOrEmpty(Model.Dropdown.Image)
+                        ? $"{Model.Dropdown.Image}?w=50"
+                        : null;
                     <details class="dropdown avatar">
                         <summary role="link">
                             @if (!string.IsNullOrEmpty(@profilePicture))

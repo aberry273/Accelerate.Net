@@ -292,7 +292,7 @@ button.img {
 
     .blockquote.dense {
         margin: 0 0;
-        padding: calc(var(--pico-spacing)*0.5);
+        padding: calc(var(--pico-spacing)*0.5) 0 0 0;
     }
 
     .blockquote.selected {
@@ -459,67 +459,54 @@ article.flat {
 }
 
 article.dense {
-    margin-bottom: calc(var(--pico-block-spacing-vertical)* .5);
-}
-
-    article.dense header, article header.dense {
-        margin-top: calc(var(--pico-block-spacing-vertical)* -1);
-        margin-bottom: 0;
-        padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
-    }
-
-    article.dense p {
-        margin-top: 0;
-        margin-bottom: 0;
-    }
-
-    article.dense footer, article footer.dense {
-        margin-top: 0;
-        margin-bottom: calc(var(--pico-block-spacing-vertical)* -1.5);
-        padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
-    }
-
-        article.dense footer ul li {
-            padding: calc(var(--pico-block-spacing-vertical)* 0.25) 0;
-        }
-
-article.padless {
     padding: 0
 }
 
-    article.padless ul {
-        margin-bottom: 0;
-        padding-left: 0;
-    }
-
-article header.padded {
-    margin: var(--pico-block-spacing-vertical)*0 var(--pico-block-spacing-vertical) var(--pico-block-spacing-horizontal) var(--pico-block-spacing-horizontal);
+article .content {
+    padding: 0 calc(var(--pico-block-spacing-horizontal)* .33) 0 calc(var(--pico-block-spacing-horizontal)* .33);
 }
 
-article footer.padded {
-    margin: var(--pico-block-spacing-vertical)*0 var(--pico-block-spacing-vertical)*0 var(--pico-block-spacing-horizontal) var(--pico-block-spacing-horizontal);
-}
-
-article div.content p {
+article.dense ul {
     margin: 0;
-    padding: calc(var(--pico-block-spacing-vertical)* 0) var(--pico-block-spacing-horizontal);
+    margin-bottom: 0;
+    padding-left: 0;
+}
+article.dense ul li {
+    margin-bottom: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+article.dense header ul li {
+    padding-top: calc(var(--pico-block-spacing-vertical)* .5);
+}
+article.dense header {
+    margin: 0;
+}
+article.dense footer {
+    margin: 0;
+}
+
+article div.content {
+    margin: 0;s
 }
 
 /* MEDIA CARD*/
-article.media {
+article .media {
     border-radius: 12px;
 }
 
-    article.media figure {
-        width: 100%;
-        height: 100%;
-        border-radius: 12px;
-    }
+article .media figure {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+}
 
-        article.media figure img {
-            object-fit: cover;
-            border-radius: 12px;
-        }
+article .media figure img {
+    object-fit: cover;
+    border-radius: 12px;
+}
 
 button.floating-next {
     position: fixed;

@@ -12,6 +12,17 @@ export default function (data) {
 				'Accept': '*/*',
 			}
 		},
+		_mxForm_SetFormDataField(formData, field) {
+			const name = field.name.replace(/\s/g, '');
+			if (field.multiple) {
+				for (var j = 0; j < x.value.length; j++) {
+					formData.append(name, x.value[j]);
+				}
+			}
+			else {
+				formData.append(name, x.value);
+			}
+		},
 		// METHODS
 		/// form = json object representing a form
 		/// flattenPayload whether form sections and condensed into a single property or to keep their structure
@@ -32,6 +43,7 @@ export default function (data) {
 					else {
 						formData.append(name, x.value);
 					}
+					
 				}
 			}
 			if (!form.sections) {

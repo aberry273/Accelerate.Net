@@ -151,6 +151,7 @@ namespace Accelerate.Features.Content.Services
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
+                ActionEvent = "action:post",
                 Label = "Submit",
                 Fields = new List<FormField>()
                 {
@@ -162,6 +163,7 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Quotes",
                         IsArray = true,
                         Autocomplete = null,
+                        Multiple = true,
                         ClearOnSubmit = true,
                         AriaInvalid = true,
                         Hidden = false,
@@ -199,6 +201,7 @@ namespace Accelerate.Features.Content.Services
                         Name = "Tags",
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Add tag",
+                        Multiple = true,
                         ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = true,
@@ -280,6 +283,7 @@ namespace Accelerate.Features.Content.Services
                         Class = "flat",
                         Placeholder = "Quotes",
                         IsArray = true,
+                        Multiple = true,
                         Autocomplete = null,
                         ClearOnSubmit = true,
                         AriaInvalid = true,
@@ -322,6 +326,7 @@ namespace Accelerate.Features.Content.Services
                         FieldType = FormFieldTypes.chips,
                         Placeholder = "Add a tag",
                         ClearOnSubmit = false,
+                        Multiple = true,
                         AriaInvalid = false,
                         Hidden = true,
                         Value = post.Tags

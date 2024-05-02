@@ -35,13 +35,13 @@ export default function (data) {
         },
         load(data) {
             const html = `
-              <article class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
-              <video width="320" height="240" controls>
+              <div class="media padless flat" style="cursor: pointer" class="padless clickable">
+              <video width="100%" height="100%" controls>
                     <source :src="item.filePath"
                     onerror="this.src='/src/images/broken.jpg'" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
-              </article>`
+              </div>`
             this.$nextTick(() => {
                 this.$root.innerHTML = html;
             })
