@@ -22,7 +22,7 @@ export default function (data) {
                     </template>
                 </div>
             </div>    
-            <input style="width:30%" name="Tag" type="text" x-model="field.newtag" placeholder="tag your post.." />
+            <input :style="{ mxResponsive_IsSmall ? 'width:30%' : 'width: 100%' }" name="Tag" type="text" x-model="field.newtag" placeholder="tag your post.." />
             
             <button class="small flat secondary material-icons" @click="()=> {
                 if(field.value == null) field.value = [];

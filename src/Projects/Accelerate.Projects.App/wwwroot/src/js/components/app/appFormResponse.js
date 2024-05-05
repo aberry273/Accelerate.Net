@@ -34,7 +34,7 @@ export default function (data) {
             this.actionEvent = data.actionEvent;
 
             var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
-            this.showTags = tagField = null ? !tagField.hidden : null
+            this.showTags = tagField = null ? !tagField.hidden : true
             var imageField = this._mxForm_GetField(this.fields, this.imageFieldName);
             this.showImage = imageField != null ? !imageField.hidden : null
             var videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
@@ -175,8 +175,8 @@ export default function (data) {
                     
                     <input name="Tag" disabled type="text" placeholder="" />
                     
-                    <button x-show="showTags" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                    <button x-show="!showTags" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
+                    <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                    <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
                     
                     <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 

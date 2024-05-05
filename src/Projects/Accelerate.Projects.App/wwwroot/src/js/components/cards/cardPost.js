@@ -126,6 +126,16 @@ export default function (data) {
                 ]
             this.$events.emit(this.filterEvent, filters)
         },
+        filterByTag(tag) {
+            const filters =
+                [
+                    {
+                        name: 'Tags',
+                        values: [tag]
+                    }
+                ]
+            this.$events.emit(this.filterEvent, filters)
+        },
         load(data) {
             const html = `
             <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
@@ -272,9 +282,11 @@ export default function (data) {
                         <nav x-show="showMetadata && selectedPost.tags">
                             <ul>
                                 <li>
-                                    <div class="container">
+                                    <div class=" chips">
                                         <template x-for="(tag, i) in selectedPost.tags">
-                                            <button class="tag flat secondary small" x-text="tag"></button>
+                                            <a @click="filterByTag(tag)" style="text-decoration:none" class="tag flat closable primary small">
+                                                <strong><sup x-text="tag"</sup></strong>
+                                            </a>
                                         </template>
                                     </div>
                                 </li>
