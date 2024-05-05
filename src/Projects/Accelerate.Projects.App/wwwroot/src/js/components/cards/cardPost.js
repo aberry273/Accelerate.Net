@@ -1,6 +1,5 @@
 const defaults = {}
 import cardRenderingText from './cardRenderingText.js'
-
 export default function (data) {
     return {
         currentPage: 0,
@@ -88,10 +87,6 @@ export default function (data) {
         },
         renderPost(post) {
             if (!post.content) return null;
-            if (post.type == 'image') return cardRenderingText(post)
-            if (post.type == 'video') return cardRenderingText(post)
-            if (post.type == 'mixed') return cardRenderingText(post)
-            if (post.type == 'text') return cardRenderingText(post)
             return cardRenderingText(post)
         },
         userAction(item, action) {
@@ -110,6 +105,16 @@ export default function (data) {
         },
         getTinyThreadId(threadId) {
             return threadId.slice(0, 8);
+        },
+        getImage(filePath) {
+            if (this.imageWidth) {
+                return filePath + '?w=' + this.imageWidth;
+            }
+            return filePath;
+        },
+
+        modalAction(action, data) {
+            this.$events.emit(this.modalEvent, data)
         },
         filterByThreadId(threadId) {
             const filters =
@@ -146,25 +151,27 @@ export default function (data) {
                 <!--Header-->
                     <header class="padded">
                         <nav>
-                            <ul class="profile">
-                                <template x-if="selectedPost.profile.image != null">
-                                <li>
-                                    <button class="avatar small">
-                                        <img 
-                                            :src="selectedPost.profile.image+'?w=40'"
-                                            :alt="selectedPost.profile.username"
-                                        />
-                                    </button>
-                                </li>
-                                </template>
-                                <aside>
-                                    <li class="secondary pa-0">
-                                        <strong class="pb-0">
-                                            <span x-text="selectedPost.profile.username"></span>
-                                        </strong>
-                                    </li>
-                                 </aside>
-                            </ul>
+                            <template x-if="selectedPost.profile != null">
+                                <ul class="profile">
+                                    <template x-if="selectedPost.profile.image != null">
+                                        <li>
+                                            <button class="avatar small">
+                                                <img 
+                                                    :src="selectedPost.profile.image+'?w=40'"
+                                                    :alt="selectedPost.profile.username"
+                                                />
+                                            </button>
+                                        </li>
+                                    </template>
+                                    <aside>
+                                        <li class="secondary pa-0">
+                                            <strong class="pb-0">
+                                                <span x-text="selectedPost.profile.username"></span>
+                                            </strong>
+                                        </li>
+                                     </aside>
+                                </ul>
+                            </template>
                             <ul> 
                                 <li>
                                      <strong x-show="selectedPost.channelName">
@@ -201,7 +208,7 @@ export default function (data) {
                                 userId: '@Model.UserId',
                                 itemEvent: $store.wssContentPosts.getMessageEvent(),
                                 items: selectedPost.media,
-                                modalId: selectedPost.id,
+                                modalId: 'media-modal'+selectedPost.id,
                                 cols: 3
                             })">
                         </div>

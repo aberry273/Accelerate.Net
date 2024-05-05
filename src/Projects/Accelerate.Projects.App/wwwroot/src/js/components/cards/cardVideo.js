@@ -12,11 +12,9 @@ export default function (data) {
     return {
         item: null,
         data: null,
-        imageWidth: null,
         init() {
             this.item = data.item;
             this.data = data;
-            this.imageWidth = data.imageWidth;
             this.modalEvent = data.modalEvent;
             const self = this;
 
@@ -24,19 +22,13 @@ export default function (data) {
                 this.load(self.data)
             })
         },
-        getImage(filePath) {
-            if (this.imageWidth) {
-                return filePath + '?w=' + this.imageWidth;
-            }
-            return filePath;
-        },
         modalAction(action, data) {
             this.$events.emit(this.modalEvent, data)
         },
         load(data) {
             const html = `
               <div class="media padless flat" style="cursor: pointer" class="padless clickable">
-              <video width="100%" height="100%" controls>
+                <video width="100%" height="400px" controls>
                     <source :src="item.filePath"
                     onerror="this.src='/src/images/broken.jpg'" type="video/mp4">
                     Your browser does not support the video tag.

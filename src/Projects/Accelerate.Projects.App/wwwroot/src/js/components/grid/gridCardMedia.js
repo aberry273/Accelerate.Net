@@ -32,7 +32,7 @@ export default function (data) {
         quoteEvent: '',
         actionUrl: '',
         actionEvent: 'modal-media-action',
-        modalId: 'gridCardMediaModal',
+        modalId: '',
         initSearch: false,
 
         async init() {

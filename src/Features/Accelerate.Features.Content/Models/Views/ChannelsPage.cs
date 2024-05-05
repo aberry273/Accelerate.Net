@@ -13,6 +13,7 @@ namespace Accelerate.Features.Content.Models.Views
         public ModalForm ModalCreateChannel { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
+        public string ActionEvent { get; set; } = "action:post";
         public ChannelsPage(BasePage model) : base(model)
         {
         }

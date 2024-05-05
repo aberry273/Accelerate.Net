@@ -154,7 +154,7 @@ export default function (data) {
             <article class="dense sticky">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->
-                <fieldset x-data="formFields({fields})"></fieldset>
+                <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>
                 
                 <fieldset role="group">
                     <!--Toggle fields-->

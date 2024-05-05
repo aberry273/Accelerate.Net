@@ -48,3 +48,15 @@
 </div>
 
 <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
+
+<!-- Edit post -->
+@if (Model.IsAuthenticated)
+{
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+
+    <!-- Delete post -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+
+    <!-- Share post -->
+    <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+}
