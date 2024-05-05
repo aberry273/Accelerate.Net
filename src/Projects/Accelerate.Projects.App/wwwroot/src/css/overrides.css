@@ -438,6 +438,11 @@ nav details.dropdown summary.flat:not([role]) {
         background-color: RGBA(0,0,0, 0.25);
     }
 /*CARDS*/
+article {
+    /*
+        margin-bottom: calc(var(--pico-block-spacing-vertical)*.25);
+        */
+}
 article header {
     background-color: transparent;
     border-bottom: none;

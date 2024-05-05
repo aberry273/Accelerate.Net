@@ -10,7 +10,7 @@
     var currentTab = Context.Request.Path.Value.Split('/').LastOrDefault();
 }
 
-<div class="grid" x-data>
+<div class="grid" x-data="{ showDetails: false }">
     <!-- Channels panel -->
     <div>
         <nav>
@@ -22,68 +22,67 @@
                 </header>
             </ul>
             <ul>
-                <!--Filters-->
-                <div x-data="dropdown(@JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown))"></div>
-                
+                <button x-show="showDetails" class="material-icons click flat primary" @@click="showDetails = false">expand_less</button>
+                <button x-show="!showDetails" class="material-icons click flat primary" @@click="showDetails = true">expand_more</button>
                 <button class="material-icon click flat primary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
             </ul>
         </nav>
-        <div class="grid">
-            <div>
-                <strong><sup>Category</sup></strong>
-                <div class="chips">
-                    @if(!string.IsNullOrEmpty(Model.Item.Category))
+        <div x-show="showDetails" x-transition>
+            <div class="grid">
+                <div>
+                    <strong><sup>Category</sup></strong>
+                    <div class="chips">
+                        @if(!string.IsNullOrEmpty(Model.Item.Category))
+                        {
+                            <a style="text-decoration:none" class="tag flat closable primary small">
+                                <strong><sup>@Model.Item.Category</sup></strong>
+                            </a>
+                        }
+                        else
+                        {
+                            <sup>No category set</sup>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <strong><sup>Tags</sup></strong>
+                    @if (Model.Item.Tags != null)
                     {
-                        <a style="text-decoration:none" class="tag flat closable primary small">
-                            <strong><sup>@Model.Item.Category</sup></strong>
-                        </a>
+                        <div class="chips">
+                            <template x-for="item in @JsonSerializerHelper.SerializeObject(Model.Item.Tags)">
+                                <a style="text-decoration:none" class="tag flat closable primary small">
+                                    <strong><sup x-text="item"></sup></strong>
+                                </a>
+                            </template>
+                        </div>
                     }
                     else
                     {
-                        <sup>No category set</sup>
+                        <div class="chips">
+                            <sup>No tags set</sup>
+                        </div>
                     }
                 </div>
             </div>
             <div>
-                <strong><sup>Tags</sup></strong>
-                @if (Model.Item.Tags != null)
-                {
-                    <div class="chips">
-                        <template x-for="item in @JsonSerializerHelper.SerializeObject(Model.Item.Tags)">
-                            <a style="text-decoration:none" class="tag flat closable primary small">
-                                <strong><sup x-text="item"></sup></strong>
-                            </a>
-                        </template>
-                    </div>
-                }
-                else
-                {
-                    <div class="chips">
-                        <sup>No tags set</sup>
-                    </div>
-                }
+                <strong><sup>Description</sup></strong>
+                <p>@Model.Item.Description</p>
             </div>
-        </div>
-        <div>
-            <strong><sup>Description</sup></strong>
-            <p>@Model.Item.Description</p>
         </div>
 
         <!--Feed-->
-        <div x-data>
-            <nav>
-                <ul>
-                    @foreach (var tab in Model.Tabs)
-                    {
-                        var tabClass = currentTab == tab.Text ? "selected" : "";
-                        <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
-                    }
-                </ul>
-            </nav>
-            <section>
-                @RenderBody()
-            </section>
-        </div>
+        <nav>
+            <ul>
+                @foreach (var tab in Model.Tabs)
+                {
+                    var tabClass = currentTab == tab.Text ? "selected" : "";
+                    <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
+                }
+            </ul>
+        </nav>
+        <section>
+            @RenderBody()
+        </section>
         <!--
         <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
 
@@ -110,12 +109,13 @@
 <!-- Edit channel -->
 <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
 
-<!-- Edit post -->
-<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+@if (Model.IsAuthenticated)
+{
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
 
-<!-- Delete post -->
-<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+    <!-- Delete post -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
-<!-- Share post -->
-<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
-
+    <!-- Share post -->
+    <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+}

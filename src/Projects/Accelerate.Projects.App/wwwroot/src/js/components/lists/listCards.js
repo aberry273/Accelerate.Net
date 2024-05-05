@@ -123,7 +123,7 @@ export default function (data) {
             if (wssMessage.update == 'Updated') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
                 this.items[index] = item
-                this.$emit(item.id, item);
+                this.$events.emit(item.id, item);
             }
             if (wssMessage.update == 'Deleted') {
                 const index = this.items.map(x => x.id).indexOf(item.id);
@@ -138,7 +138,7 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
+              <template x-for="(item, i) in items" :key="item.id || i" >
                 <div x-data="cardPost({
                   item: item,
                   userId: userId,

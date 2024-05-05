@@ -23,8 +23,8 @@
         actionUrl: '/api/contentpostactivity',
         searchUrl: '/api/contentsearch/posts',
         filterEvent: '@Model.FilterEvent',
+        actionEvent: '@Model.ActionEvent',
         userId: '@Model.UserId',
-        actionEvent: 'action:post',
         filters: {
             targetChannel: ['@Model.Item.Id']
         },
@@ -32,6 +32,3 @@
         })">
     </div>
 </div>
-
-<!-- Create channel -->
-<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>

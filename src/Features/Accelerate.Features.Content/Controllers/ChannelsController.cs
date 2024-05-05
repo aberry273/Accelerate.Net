@@ -36,7 +36,7 @@ namespace Accelerate.Features.Content.Controllers
         IEntityService<AccountProfile> _profileService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
-        private const string _notFoundRazorFile = "~/Views/Content/NotFound.cshtml";
+        private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
         public ChannelsController(
             IMetaContentService service,
             IContentViewService contentViewService,
@@ -60,12 +60,12 @@ namespace Accelerate.Features.Content.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            if(!this.User.Identity.IsAuthenticated)
+            if (!this.User.Identity.IsAuthenticated)
             {
                 return View(_contentViewService.CreateAnonymousChannelsPage());
             }
             var user = await GetUserWithProfile(this.User);
-            if(user == null)
+            if (user == null)
             {
                 await _signInManager.SignOutAsync();
                 return View(_contentViewService.CreateAnonymousChannelsPage());

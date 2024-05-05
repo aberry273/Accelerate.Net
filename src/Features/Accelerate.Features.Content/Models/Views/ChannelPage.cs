@@ -17,6 +17,7 @@ namespace Accelerate.Features.Content.Models.Views
         public ModalForm ModalDeleteReply { get; set; }
         public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();
         public string FilterEvent { get; set; } = "filter:update";
+        public string ActionEvent { get; set; } = "action:post";
         public ChannelPage(BasePage model) : base(model)
         {
 

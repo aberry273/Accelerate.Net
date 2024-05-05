@@ -29,7 +29,7 @@
   <ItemGroup>
     <Content Remove="appsettings.Development.json" />
     <Content Remove="appsettings.json" />
-    <Content Remove="Views\Channels\All.cshtml" />
+    <Content Remove="Views\Content\ChannelAll.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +45,10 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Content\" />
   </ItemGroup>
 
 </Project>

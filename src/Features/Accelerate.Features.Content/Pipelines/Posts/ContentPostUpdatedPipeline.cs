@@ -44,8 +44,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             
             var profile = new ContentPostUserSubdocument()
             {
-                Username = user?.Source.Username,
-                Image = user?.Source.Image
+                Username = user?.Source?.Username,
+                Image = user?.Source?.Image
             };
 
             args.Value.Hydrate(indexModel, profile);
