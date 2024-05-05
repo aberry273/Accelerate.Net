@@ -4,9 +4,11 @@ import file from './fields/file.js'
 import select from './fields/select.js'
 import list from './fields/list.js'
 import chips from './fields/chips.js'
+import mxResponsive from '/src/js/mixins/mxResponsive.js';
 
 export default function (data) {
-	return {
+    return {
+    ...mxResponsive(data),
     // PROPERTIES
     loading: false,
     fields: [],

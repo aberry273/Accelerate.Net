@@ -10,6 +10,7 @@ import mxAction from '/src/js/mixins/mxAction.js';
 import mxWebsockets from '/src/js/mixins/mxWebsockets.js';
 import mxAlert from '/src/js/mixins/mxAlert.js';
 import mxModal from '/src/js/mixins/mxModal.js';
+import mxResponsive from '/src/js/mixins/mxResponsive.js';
 
 export default function (data) {
     return {
@@ -20,6 +21,7 @@ export default function (data) {
         ...mxWebsockets(data),
         ...mxAlert(data),
         ...mxModal(data),
+        ...mxResponsive(data),
 
         // PROPERTIES
         items: [],
@@ -150,6 +152,7 @@ export default function (data) {
         },
 
         get gridCols() {
+            if (this.mxResponsive_IsXSmall) return 'col-1'
             if (this.items == null) return 'col-1'
             if (this.items.length <= 1) return 'col-1'
             if (this.items.length <= 2) return 'col-2'

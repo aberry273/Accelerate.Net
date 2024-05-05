@@ -39,16 +39,19 @@
 </head>
 
 <body style="background-color: min-height: 100%; height: 100vh;">
+
+    <!-- Header -->
+    @{
+        await Html.RenderPartialAsync("~/Views/Partials/TopNavigation.cshtml", Model.TopNavigation);
+    }
+
     <div class="container">
-        <!-- Header -->
-        @{await Html.RenderPartialAsync("~/Views/Partials/TopNavigation.cshtml", Model.TopNavigation);}
-        <!-- Body -->
-        @RenderBody() 
+            <!-- Body -->
+            @RenderBody()
         <!-- Footer -->
         <div x-data="footer(footerData)"></div>
     </div>
-    <!-- ./ Footer -->
-    
+
     <!-- Alerts -->
     <div x-data="snackbar({event: 'snackbar-success', type: 'success' })" x-on:show:alert.window="show"></div>
     <div x-data="snackbar({event: 'snackbar-error', type: 'error' })" x-on:show:alert.window="show"></div>
@@ -60,22 +63,20 @@
     
     <script>
         let wssSettings = {
+            wssContentChannels: {
+                wssEvent: 'wss:contentChannels',
+                url: "@Model.Url/ContentChannels",
+            },
             wssContentPosts: {
-                //standard websockets
-                //url: "wss://localhost:7220/ContentPosts",
-                //event: 'wss:contentPosts',
+                wssEvent: 'wss:contentPosts',
                 url: "@Model.Url/ContentPosts",
             },
             wssContentPostReviews: {
-                //standard websockets
-                //url: "wss://localhost:7220/ContentPosts",
-                //event: 'wss:contentPostReviews',
+                wssEvent: 'wss:contentPostReviews',
                 url: "@Model.Url/ContentPostReviews",
             },
             wssMediaBlobs: {
-                //standard websockets
-                //url: "wss://localhost:7220/ContentPosts",
-                //event: 'wss:contentPostReviews',
+                wssEvent: 'wss:mediaBlobs',
                 url: "@Model.Url/MediaBlobs",
             }
         };

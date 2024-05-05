@@ -26,6 +26,7 @@ export default function (data) {
             this.load(this.data)
           
             this.$events.on(this.updateEvent, (item) => {
+                if (this.item.id != item.id) return;
                 this.item = item;
                 this.thread = this.setThreadItems(item);
             });
@@ -112,10 +113,11 @@ export default function (data) {
             }
             return filePath;
         },
-
+        /*
         modalAction(action, data) {
             this.$events.emit(this.modalEvent, data)
         },
+        */
         filterByThreadId(threadId) {
             const filters =
                 [
@@ -142,9 +144,8 @@ export default function (data) {
 
                 <!--End Header-->
                 <template x-if="quotedPosts.length > 0">
-                    <div class="dense blockquote primary " style="border: 0px; padding-bottom:0px;">
+                    <div class=" blockquote dense" style="padding-left:4px;">
                         <summary class="primary">
-                            <i class="icon material-icons">format_quote</i>
 
                             <template x-for="quote in quotedPosts">
                                 <a style="text-decoration:none" @click="filterByThreadId(quote)">
@@ -157,7 +158,7 @@ export default function (data) {
                     </div>
                 </template>
 
-                <div :class="quotedPosts.length > 0 ? 'blockquote content' : 'content'">
+                <div :class="quotedPosts.length > 0 ? ' content' : 'content'">
                 <!--Header-->
                     <header class="padded">
                         <nav>

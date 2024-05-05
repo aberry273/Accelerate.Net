@@ -1,5 +1,4 @@
 import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
-const wssEvent = 'wss:mediaBlobs';
 
 export default function (settings) {
     return {
@@ -7,24 +6,28 @@ export default function (settings) {
         settings: {},
         client: null,
         connectionId: null,
+        wssEvent: null,
         async init() {
             this.settings = settings;
+            this.wssEvent = settings.wssEvent;
+            console.log(this.settings)
             const self = this;
             // Start the connection.
             try {
-                this.client = await createClient(this.settings.url, wssEvent)
+                this.client = await createClient(this.settings.url, this.wssEvent)
                 await this.client.start();
                 this.connectionId = this.client.connection.connectionId;
-                emit(wssEvent, connectedEvent, this.client.connection.connectionId);
+                emit(this.wssEvent, connectedEvent, this.client.connection.connectionId);
             } catch (err) {
                 console.error(err);
+                //setTimeout(createClient, 5000);
             }
         },
         getMessageEvent() {
-            return `${wssEvent}:${messageEvent}`;
+            return `${this.wssEvent}:${messageEvent}`;
         },
         getConnectedEvent() {
-            return `${wssEvent}:${connectedEvent}`;
+            return `${this.wssEvent}:${connectedEvent}`;
         },
         async connectUser(userId) {
             console.log('connectUser ' + userId)

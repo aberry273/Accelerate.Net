@@ -40,8 +40,8 @@ namespace Accelerate.Features.Content
         {
             app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostReviewDocument>>($"/{Constants.Settings.ContentPostReviewsHubName}");
-            app.MapHub<BaseHub<ContentPostQuoteDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
+            //app.MapHub<BaseHub<ContentPostActivity>>($"/{Constants.Settings.ContentPostActivities}");
 
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)

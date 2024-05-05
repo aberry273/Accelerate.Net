@@ -7,9 +7,8 @@
     @if (Model.Authenticated)
     {
     
-         <nav 
-              :class="fixed ? 'container sticky floating' : ''" 
-              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+         <nav :class="fixed ? 'container floating' : 'container'"
+             @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
             <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
             <ul>
                 @foreach(var link in Model.Items)
@@ -60,7 +59,7 @@
     else
     {
         <nav x-data="{fixed: false}"
-             :class="fixed ? 'container sticky floating' : ''"
+             :class="fixed ? 'container  floating' : ''"
              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
             <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
             <ul>

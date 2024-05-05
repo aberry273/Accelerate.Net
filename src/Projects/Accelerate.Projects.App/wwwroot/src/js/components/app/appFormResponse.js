@@ -1,10 +1,12 @@
 
 import mxForm from '/src/js/mixins/mxForm.js';
 import mxModal from '/src/js/mixins/mxModal.js';
+import mxResponsive from '/src/js/mixins/mxResponsive.js';
 export default function (data) {
     return {
         ...mxForm(data),
         ...mxModal(data),
+        ...mxResponsive(data),
         // PROPERTIES
         loading: false,
         fields: [],

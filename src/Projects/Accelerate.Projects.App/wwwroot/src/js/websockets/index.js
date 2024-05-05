@@ -1,19 +1,14 @@
 
-//these expect a global variable/object with the names of each wss with settings values
-/*let wssSettings = {
-    wssContentPosts: {
-      url: '"wss://localhost:7220/ContentPosts"',
-    }
-  };
-  */
-
-//import wssContentPosts from './wssContentPostsVanillaExample.js'
-import wssContentPosts from './wssContentPosts.js'
-import wssContentPostReviews from './wssContentPostReviews.js'
-import wssMediaBlobs from './wssMediaBlobs.js'
+import wssContentPostReviews from './wssService.js'
+import wssMediaBlobs from './wssService.js'
+import wssContentPosts from './wssService.js'
+import wssContentChannels from './wssService.js'
+import wssContentPostActivities from './wssService.js'
 
 export {
     wssContentPosts,
     wssContentPostReviews,
-    wssMediaBlobs
+    wssMediaBlobs,
+    wssContentChannels,
+    wssContentPostActivities
 }

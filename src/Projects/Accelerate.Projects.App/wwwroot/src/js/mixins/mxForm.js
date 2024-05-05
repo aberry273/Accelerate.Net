@@ -12,6 +12,7 @@ export default function (data) {
 				'Accept': '*/*',
 			}
 		},
+
 		_mxForm_SetFormDataField(formData, field) {
 			const name = field.name.replace(/\s/g, '');
 			if (field.multiple) {
