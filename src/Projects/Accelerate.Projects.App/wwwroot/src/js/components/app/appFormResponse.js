@@ -24,6 +24,8 @@ export default function (data) {
         showVideo: false,
         showImage: false,
         actionEvent: null,
+        fixed: false,
+        boundingRect: null,
         imageModal: 'upload-media-image-modal',
         // INIT
         init() {
@@ -64,10 +66,12 @@ export default function (data) {
                     this._mxForm_SetField(this.fields, field);
                 }
             })
-
             this.setHtml(data)
         },
         // GETTERS
+        get isInPosition() {
+            return this.$refs.fixedForm.getBoundingClientRect().y <= 0
+        },
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
         },
@@ -89,7 +93,7 @@ export default function (data) {
                 || (this.imageField.value != null && this.imageField.value.length > 0)
         },
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
-        // METHODS
+        // 
         async submit(fields) {
             try {
                 this.loading = true;
@@ -152,8 +156,35 @@ export default function (data) {
             // make ajax request
             const label = data.label || 'Submit'
             const html = `
+            <nav class="floating container"
+                    @scroll.window="fixed = isInPosition ? true : false"
+                    style="margin-top: 50px;  padding-left: 0; margin-left: 0; z-index:111;"
+                    :style="fixed ? 'display:block;margin-top: 50px;padding-left: 0px; ' : 'display:none;'"
+                >
+                      <article class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
+                        <progress x-show="loading"></progress>
+                        <!--Quotes-->
+                        <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>
 
-            <article class="dense sticky">
+                        <fieldset role="group">
+                            <!--Toggle fields-->
+                            <!--
+                            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideTextField(false)" :disabled="loading">text_format</button>
+                            -->
+                            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideVideoField(false)" :disabled="loading">videocam</button>
+                            <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
+                            <!--Cancel-->
+                            <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
+
+                            <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                            <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
+
+                            <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
+
+                        </fieldset> 
+                    </article>
+            </nav>
+            <article class="dense sticky" x-ref="fixedForm">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->
                 <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>

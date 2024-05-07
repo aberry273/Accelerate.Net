@@ -1,13 +1,14 @@
 ﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
 
-<div x-data="{fixed: false}">
+<div x-data="{fixed: false}" class="container">
     <nav style="height:50px" :class="fixed ? 'show' : 'hide'"><ul></ul></nav>
 
     <!-- Header -->
     @if (Model.Authenticated)
     {
     
-         <nav :class="fixed ? 'container floating' : 'container'"
+         <nav :class="fixed ? 'floating container' : ''"
+             :style="fixed ?  'padding-left:0px; width: 95.75%' : ''"
              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
             <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
             <ul>

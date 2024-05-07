@@ -2,13 +2,21 @@
 import alpinejs from './alpine.esm.js'
 
 // Load webSockets components
+//TODO: Switch to service based loading for each config item instead
 import * as sockets from './websockets/index.js';
 Object.keys(sockets).forEach(socket => {
     let settings = wssSettings[socket]
     let data = sockets[socket](settings);
     alpinejs.store(socket, data);
 });
-
+/*
+import { wssService } from './websockets/index.js';
+Object.keys(wssSettings).forEach(wss => {
+    let setting = wssSettings[wss]
+    let service = wssService(setting);
+    alpinejs.store(service, setting);
+});
+*/
 // Load stores
 import * as stores from './stores/index.js';
 Object.keys(stores).forEach(store => {

@@ -10,5 +10,5 @@ export {
     wssContentPostReviews,
     wssMediaBlobs,
     wssContentChannels,
-    wssContentPostActivities
+    //wssContentPostActivities,
 }

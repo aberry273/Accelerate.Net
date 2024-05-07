@@ -44,10 +44,9 @@
     @{
         await Html.RenderPartialAsync("~/Views/Partials/TopNavigation.cshtml", Model.TopNavigation);
     }
-
     <div class="container">
-            <!-- Body -->
-            @RenderBody()
+        <!-- Body -->
+        @RenderBody()
         <!-- Footer -->
         <div x-data="footer(footerData)"></div>
     </div>
@@ -78,7 +77,13 @@
             wssMediaBlobs: {
                 wssEvent: 'wss:mediaBlobs',
                 url: "@Model.Url/MediaBlobs",
-            }
+            },
+            /*
+            wssContentPostActivities: {
+                wssEvent: 'wss:contentPostActivities',
+                url: "@Model.Url/ContentPostActivities",
+            },
+            */
         };
     </script>
     <!-- For componentizing and lazy loading Alpine -->

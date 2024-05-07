@@ -6,7 +6,6 @@ export default () => {
                 .then((response) => response.json())
         },
         async POST(url, data, headers, isJson = true) {
-          console.log(isJson)
             const response = await fetch(url, {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.
                 mode: "cors", // no-cors, *cors, same-origin

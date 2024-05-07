@@ -194,16 +194,18 @@ export default function (data) {
                                    <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
                                    <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
                                     <!--Show more-->
-                                    <details class="dropdown flat no-chevron">
-                                        <summary role="outline">
-                                            <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
-                                        </summary>
-                                        <ul dir="rtl">
-                                            <li><a class="click" @click="modalAction('share')">Share</a></li>
-                                            <li><a class="click" @click="modalAction('edit')">Edit</a></li>
-                                            <li><a class="click" @click="modalAction('delete')">Delete</a></li>
-                                        </ul>
-                                    </details>
+                                    <template x-if="item.userId == userId">
+                                        <details class="dropdown flat no-chevron">
+                                            <summary role="outline">
+                                                <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
+                                            </summary>
+                                            <ul dir="rtl">
+                                                <li><a class="click" @click="modalAction('share')">Share</a></li>
+                                                <li><a class="click" @click="modalAction('edit')">Edit</a></li>
+                                                <li><a class="click" @click="modalAction('delete')">Delete</a></li>
+                                            </ul>
+                                        </details>
+                                    </template>
                                 </li>
                             </ul>
                         </nav>
