@@ -14,13 +14,11 @@
     <!-- Channels panel -->
     <div>
         <nav>
-            <ul>
-                <header>
-                    <hgroup>
-                        <h1>@Model.Item.Name</h1>
-                    </hgroup>
-                </header>
-            </ul>
+            <header>
+                <hgroup>
+                    <h1>@Model.Item.Name</h1>
+                </hgroup>
+            </header>
             <ul>
                 <button x-show="showDetails" class="material-icons click flat primary" @@click="showDetails = false">expand_less</button>
                 <button x-show="!showDetails" class="material-icons click flat primary" @@click="showDetails = true">expand_more</button>

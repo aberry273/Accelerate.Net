@@ -56,7 +56,17 @@
     <div x-data="snackbar({event: 'snackbar-error', type: 'error' })" x-on:show:alert.window="show"></div>
     <div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
     <div x-data="snackbarList({event: 'snackbar-add', limit: 5 })" x-on:show:alert.window="show"></div>
-
+    
+    <script defer>
+        let _emojiJson = [];
+        const emojiJsonUrl = "https://unpkg.com/emoji.json@15.1.0/emoji.json";
+        fetch(emojiJsonUrl)
+            .then(res => res.json())
+            .then(out => {
+                _emojiJson = out;
+            })
+            .catch(err => { throw err });
+    </script>
     <!-- JS Libraries -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     

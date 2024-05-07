@@ -24,6 +24,7 @@ export default function (data) {
         showVideo: false,
         showImage: false,
         actionEvent: null,
+        showFloatingPanel: false,
         fixed: false,
         boundingRect: null,
         imageModal: 'upload-media-image-modal',
@@ -70,6 +71,7 @@ export default function (data) {
         },
         // GETTERS
         get isInPosition() {
+            if (this.$refs.fixedForm == null) return false;
             return this.$refs.fixedForm.getBoundingClientRect().y <= 0
         },
         get tagField() {
@@ -136,6 +138,9 @@ export default function (data) {
             this.tags.push(this.tagStr);
             this.tagStr = null;
         },
+        hideFloatingPanel(val) {
+            this.showFloatingPanel = val;
+        },
         hideTagField(val) {
             this.showTags = val;
             this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, val)
@@ -158,10 +163,10 @@ export default function (data) {
             const html = `
             <nav class="floating container"
                     @scroll.window="fixed = isInPosition ? true : false"
-                    style="margin-top: 50px;  padding-left: 0; margin-left: 0; z-index:111;"
-                    :style="fixed ? 'display:block;margin-top: 50px;padding-left: 0px; ' : 'display:none;'"
+                    style="margin-top: 60px;  padding-left: 0; margin-left: 0; z-index:111;"
+                    :style="fixed ? 'display:block;margin-top: 60px;padding-left: 0px; ' : 'display:none;'"
                 >
-                      <article class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
+                      <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
                         <progress x-show="loading"></progress>
                         <!--Quotes-->
                         <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>
@@ -175,6 +180,7 @@ export default function (data) {
                             <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
                             <!--Cancel-->
                             <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
+                            <button  class="secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
 
                             <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
                             <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
@@ -184,6 +190,14 @@ export default function (data) {
                         </fieldset> 
                     </article>
             </nav>
+            <button
+                x-show="(showFloatingPanel || isInPosition)"
+                @click="hideFloatingPanel(false)"
+                class="material-icons round xsmall"
+                style="y-index:11; position: fixed; top: 70px; right: calc(var(--pico-spacing)*4.25);">
+                edit
+            </button>
+
             <article class="dense sticky" x-ref="fixedForm">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->

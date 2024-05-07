@@ -394,18 +394,19 @@ button.round {
     border-radius: 100%;
     height: 4rem;
     width: 4rem;
+    padding: 0px;
 }
-
     button.round.small {
-        height: 3rem;
-        width: 3rem;
+        height: 3.25rem;
+        width: 3.25rem;
+        padding: 0px;
     }
 
     button.round.xsmall {
         height: 2.25rem;
         width: 2.25rem;
-    }
-
+        padding: 0px;
+    } 
 button.tab, a.tab {
     --pico-background-color: transparent;
     --pico-color: var(--pico-primary);

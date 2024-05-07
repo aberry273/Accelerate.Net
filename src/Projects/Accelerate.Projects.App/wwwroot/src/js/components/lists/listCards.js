@@ -104,7 +104,7 @@ export default function (data) {
                 userId: request.userId,
                 contentPostId: request.item.id,
                 action: request.action,
-                value: null,
+                value: true,
             }
         },
 

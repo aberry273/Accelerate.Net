@@ -9,13 +9,11 @@
     <!-- Channels panel -->
     <div>
         <nav>
-            <ul>
-                <header>
-                    <hgroup>
-                        <h1>All</h1>
-                    </hgroup>
-                </header>
-            </ul>
+            <header>
+                <hgroup>
+                    <h1>All</h1>
+                </hgroup>
+            </header>
             <ul x-data="mxWebsocketListener({
                 wss: $store.wssContentChannels,
                 userId: '@Model.UserId',

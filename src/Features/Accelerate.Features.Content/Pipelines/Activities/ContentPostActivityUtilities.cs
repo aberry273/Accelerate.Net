@@ -18,9 +18,24 @@ namespace Accelerate.Features.Content.Pipelines.Activities
                .Select(x =>
                    new ContentPostReviewsDocument
                    {
-                       Agrees = x.Count(y => y.Type == ContentPostActivityTypes.Agree),
-                       Disagrees = x.Count(y => y.Type == ContentPostActivityTypes.Disagree),
-                       Likes = x.Count(y => y.Type == ContentPostActivityTypes.Like),
+                       Agrees = x
+                           .Where(y => y.Type == ContentPostActivityTypes.Agree)
+                           .OrderByDescending(y => y.CreatedOn)
+                           .GroupBy(y => y.UserId)
+                           .First()
+                           .Count(y => y.Value == "true"),
+                       Disagrees = x
+                           .Where(y => y.Type == ContentPostActivityTypes.Disagree)
+                           .OrderByDescending(y => y.CreatedOn)
+                           .GroupBy(y => y.UserId)
+                           .First()
+                           .Count(y => y.Value == "true"),
+                       Likes = x
+                           .Where(y => y.Type == ContentPostActivityTypes.Like)
+                           .OrderByDescending(y => y.CreatedOn)
+                           .GroupBy(y => y.UserId)
+                           .First()
+                           .Count(y => y.Value == "true"),
                    }).Single();
         }
 
