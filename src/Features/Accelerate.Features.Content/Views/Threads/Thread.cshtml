@@ -69,8 +69,8 @@
 
     <!-- Replies -->
     <div x-data="listCards( {
-        actionUrl: '/api/contentpostactivity',
-        searchUrl: '/api/contentsearch/posts',
+        actionUrl: '@Model.ActionsApiUrl',
+        searchUrl: '@Model.PostsApiUrl',
         filterEvent: '@Model.FilterEvent',
         actionEvent: '@Model.ActionEvent',
         itemEvent: $store.wssContentPosts.getMessageEvent(),

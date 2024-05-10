@@ -53,8 +53,8 @@ namespace Accelerate.Foundations.Content.Models.Entities
         [NotMapped]
         public virtual ICollection<ContentPostActivityEntity>? Activities { get; set; }
         [NotMapped]
-        public virtual ICollection<ContentPostReviewEntity>? Reviews { get; set; }
+        public virtual ICollection<ContentPostActionsEntity>? Actions { get; set; }
         [NotMapped]
-        public virtual ICollection<ContentPostReviewEntity>? Media { get; set; }
+        public virtual ICollection<ContentPostMediaEntity>? Media { get; set; }
     }
 }

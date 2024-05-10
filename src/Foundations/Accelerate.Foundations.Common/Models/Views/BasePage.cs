@@ -8,6 +8,7 @@ namespace Accelerate.Foundations.Common.Models.Views
 {
     public class BasePage
     {
+        public Guid? UserId { get; set; }
         public bool IsAuthenticated { get; set; }
         public NavigationBar TopNavigation { get; set; } = new NavigationBar();
 
@@ -29,6 +30,7 @@ namespace Accelerate.Foundations.Common.Models.Views
         public BasePage() { }
         public BasePage(BasePage model)
         {
+            UserId = model.UserId;
             IsAuthenticated = model.IsAuthenticated;
             Breadcrumbs = model.Breadcrumbs;
             Footer = model.Footer;

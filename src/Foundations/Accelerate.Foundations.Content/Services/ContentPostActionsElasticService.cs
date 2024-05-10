@@ -10,14 +10,14 @@ using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentReviewElasticService :  ElasticService<ContentPostReviewDocument>
+    public class ContentPostActionsElasticService :  ElasticService<ContentPostActionsDocument>
     {
 
-        public ContentReviewElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
+        public ContentPostActionsElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = config.Value.ReviewIndexName;
+            this._indexName = config.Value.ActionsIndexName;
         }
-        public override async Task<SearchResponse<ContentPostReviewDocument>> Find(RequestQuery<ContentPostReviewDocument> query)
+        public override async Task<SearchResponse<ContentPostActionsDocument>> Find(RequestQuery<ContentPostActionsDocument> query)
         {
             //Create if not existing
             await CreateIndex();
@@ -31,14 +31,14 @@ namespace Accelerate.Foundations.Content.Services
                 take);
         }
 
-        public override Task<SearchResponse<ContentPostReviewDocument>> GetAggregates(RequestQuery<ContentPostReviewDocument> query)
+        public override Task<SearchResponse<ContentPostActionsDocument>> GetAggregates(RequestQuery<ContentPostActionsDocument> query)
         {
             throw new NotImplementedException();
         }
 
-        private QueryDescriptor<ContentPostReviewDocument> CreateQuery(RequestQuery<ContentPostReviewDocument> request)
+        private QueryDescriptor<ContentPostActionsDocument> CreateQuery(RequestQuery<ContentPostActionsDocument> request)
         {
-            var descriptor =  new QueryDescriptor<ContentPostReviewDocument>();
+            var descriptor =  new QueryDescriptor<ContentPostActionsDocument>();
             descriptor.MatchAll();
           
             return descriptor;

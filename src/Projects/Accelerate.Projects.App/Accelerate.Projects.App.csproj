@@ -110,7 +110,8 @@
     <Folder Include="Services\" />
     <Folder Include="Views\Home\" />
     <Folder Include="wwwroot\src\js\components\forms\" />
-    <Folder Include="wwwroot\src\js\data\" />
+    <Folder Include="wwwroot\src\js\mixins\components\" />
+    <Folder Include="wwwroot\src\js\mixins\composite\" />
   </ItemGroup>
 
   <ItemGroup>

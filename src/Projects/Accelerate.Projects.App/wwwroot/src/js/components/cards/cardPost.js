@@ -37,15 +37,18 @@ export default function (data) {
             let thread = [op].concat((op.threads == null) ? [] : op.threads)
             return thread;
         },
-        action(action) {
+        CreatePostActionPayload(action) {
             const payload = {
-                // postback type
-                action: action,
-                // content post item
-                item: this.selectedPost,
                 userId: this.userId,
+                contentPostId: this.selectedPost.id,
             }
-            this.$events.emit(this.actionEvent, payload)
+            payload[action] = true;
+            return payload;
+        },
+        async action(action) {
+            const payload = this.CreatePostActionPayload(action);
+
+            const result = await this.$store.wssContentPostActions._wssContentActions_HandlePost(payload);
         },
         redirectAction(action) {
             const ev = `redirect-${action}`;
@@ -90,8 +93,10 @@ export default function (data) {
             if (!post.content) return null;
             return cardRenderingText(post)
         },
-        userAction(item, action) {
-            return false;
+        userSelectedAction(action, item) {
+            // Retrieves the action based on the post actions
+            //return this._mxContentActions_GetAction(item, action);
+            return this.$store.wssContentPostActions._wssContentActions_CheckUserAction(item.id, this.userId, action);
         },
         cleanTargetThread(post) {
             if (!post.targetThread) return post.shortThreadId
@@ -263,15 +268,15 @@ export default function (data) {
                             <ul>
                                 <li>
                                     <!--Agree-->
-                                    <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                                    <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userSelectedAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
                                     <!--Disagree-->
-                                    <i aria-label="Disagree" @click="action('disagree')" :class="userAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                                    <i aria-label="Disagree" @click="action('disagree')" :class="userSelectedAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
                                     <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
                                  
                                     <!--Likes-->
                                     <!--
-                                    <i @click="action('like')" aria-label="Liked" :class="userAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
+                                    <i @click="action('like')" aria-label="Liked" :class="userSelectedAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup>
                                     -->
                                     

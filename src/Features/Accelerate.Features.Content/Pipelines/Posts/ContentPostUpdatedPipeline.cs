@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines.Reviews;
+﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Services;

@@ -74,13 +74,6 @@ export default function (data) {
             // On websocket client initialized, send channel to server
             this.$events.on(this.$store.wssContentPosts.getConnectedEvent(), async (ev) => {
                 await this.$store.wssContentPosts.connectUser(this.userId);
-
-                if (this.targetThread) {
-                    await this.$store.wssContentPosts.connectThread(this.userId, this.targetThread);
-                }
-                if (this.targetChannel) {
-                    await this.$store.wssContentPosts.connectChannel(this.userId, this.targetChannel);
-                }
             })
             // On updates from the websocket
             this.$events.on(this.$store.wssContentPosts.getMessageEvent(), async (e) => {
@@ -94,13 +87,6 @@ export default function (data) {
             // On websocket client initialized, send channel to server
             this.$events.on(this.$store.wssContentPostReviews.getConnectedEvent(), async (ev) => {
                 await this.$store.wssContentPostReviews.connectUser(this.userId);
-
-                if (this.targetThread) {
-                    await this.$store.wssContentPostReviews.connectThread(this.userId, this.targetThread);
-                }
-                if (this.targetChannel) {
-                    await this.$store.wssContentPostReviews.connectChannel(this.userId, this.targetChannel);
-                }
             })
             // On updates from the websocket
             this.$events.on(this.$store.wssContentPostReviews.getMessageEvent(), async (e) => {

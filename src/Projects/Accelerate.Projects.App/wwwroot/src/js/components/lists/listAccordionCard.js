@@ -1,16 +1,10 @@
 
-import mxList from '/src/js/mixins/mxList.js';
-import mxSearch from '/src/js/mixins/mxSearch.js';
-import mxAction from '/src/js/mixins/mxAction.js';
-import mxWebsockets from '/src/js/mixins/mxWebsockets.js';
-import mxAlert from '/src/js/mixins/mxAlert.js';
-
+import { mxSearch, mxList, mxWebsockets, mxAlert }  from '/src/js/mixins/index.js';
 export default function (data) {
     return {
         // mixins
         ...mxList(data),
         ...mxSearch(data),
-        ...mxAction(data),
         ...mxWebsockets(data),
         ...mxAlert(data),
 

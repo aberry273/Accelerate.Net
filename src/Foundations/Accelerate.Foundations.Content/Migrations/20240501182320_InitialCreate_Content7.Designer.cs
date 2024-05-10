@@ -195,7 +195,7 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.ToTable("ContentPostQuotes");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostReviewEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -226,7 +226,7 @@ namespace Accelerate.Foundations.Content.Migrations
 
                     b.HasIndex("ContentPostId");
 
-                    b.ToTable("ContentPostReview");
+                    b.ToTable("ContentPostAction");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActivityEntity", b =>
@@ -240,10 +240,10 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Navigation("ContentPost");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostReviewEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionEntity", b =>
                 {
                     b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
-                        .WithMany("Reviews")
+                        .WithMany("Actions")
                         .HasForeignKey("ContentPostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -255,7 +255,7 @@ namespace Accelerate.Foundations.Content.Migrations
                 {
                     b.Navigation("Activities");
 
-                    b.Navigation("Reviews");
+                    b.Navigation("Actions");
                 });
 #pragma warning restore 612, 618
         }

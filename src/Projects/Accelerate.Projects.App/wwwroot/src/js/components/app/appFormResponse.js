@@ -163,8 +163,8 @@ export default function (data) {
             const html = `
             <nav class="floating container"
                     @scroll.window="fixed = isInPosition ? true : false"
-                    style="margin-top: 60px;  padding-left: 0; margin-left: 0; z-index:111;"
-                    :style="fixed ? 'display:block;margin-top: 60px;padding-left: 0px; ' : 'display:none;'"
+                    style="margin-top: 55px;  padding-left: 0; margin-left: 0; z-index:111;"
+                    :style="fixed ? 'display:block;margin-top: 55px;padding-left: 0px; ' : 'display:none;'"
                 >
                       <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
                         <progress x-show="loading"></progress>
@@ -194,7 +194,7 @@ export default function (data) {
                 x-show="(showFloatingPanel || isInPosition)"
                 @click="hideFloatingPanel(false)"
                 class="material-icons round xsmall"
-                style="y-index:11; position: fixed; top: 70px; right: calc(var(--pico-spacing)*4.25);">
+                style="y-index:111; position: fixed; bottom: 16px; right: calc(var(--pico-spacing)*0.5);">
                 edit
             </button>
 

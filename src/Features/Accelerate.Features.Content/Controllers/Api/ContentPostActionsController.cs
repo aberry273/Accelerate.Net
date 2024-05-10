@@ -23,18 +23,18 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostReviewController : BaseApiController<ContentPostReviewEntity>
+    public class ContentPostActionsController : BaseApiController<ContentPostActionsEntity>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
-        readonly Bind<IContentReviewBus, IPublishEndpoint> _publishEndpoint;
+        readonly Bind<IContentActionsBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
-        public ContentPostReviewController(
+        public ContentPostActionsController(
             IMetaContentService contentService,
-            IEntityService<ContentPostReviewEntity> service,
+            IEntityService<ContentPostActionsEntity> service,
             IEntityService<ContentPostEntity> postService,
-            Bind<IContentReviewBus, IPublishEndpoint> publishEndpoint,
+            Bind<IContentActionsBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
         {
@@ -47,45 +47,45 @@ namespace Accelerate.Features.Content.Controllers.Api
 
         [Route("agree")]
         [HttpPost]
-        public async Task<IActionResult> Agree([FromBody] ContentPostReviewEntity obj)
+        public async Task<IActionResult> Agree([FromBody] ContentPostActionsEntity obj)
         {
-            var existingReview = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
+            var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
             obj.Agree = true;
             obj.Disagree = false;
-            if (existingReview != null)
+            if (existingAction != null)
             {
-                this.UpdateValues(existingReview, obj);
-                return await this.Put(existingReview.Id, existingReview);
+                this.UpdateValues(existingAction, obj);
+                return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
             return await base.Post(obj);
         }
         [Route("disagree")]
         [HttpPost]
-        public async Task<IActionResult> Disagree([FromBody] ContentPostReviewEntity obj)
+        public async Task<IActionResult> Disagree([FromBody] ContentPostActionsEntity obj)
         {
-            var existingReview = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
+            var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
             obj.Agree = false;
             obj.Disagree = true;
-            if (existingReview != null)
+            if (existingAction != null)
             {
-                this.UpdateValues(existingReview, obj);
-                return await this.Put(existingReview.Id, existingReview);
+                this.UpdateValues(existingAction, obj);
+                return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
             return await base.Post(obj);
         }
         [Route("like")]
         [HttpPost]
-        public async Task<IActionResult> Like([FromBody] ContentPostReviewEntity obj)
+        public async Task<IActionResult> Like([FromBody] ContentPostActionsEntity obj)
         {
-            var existingReview = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
+            var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
 
             obj.Like = true;
-            if (existingReview != null)
+            if (existingAction != null)
             {
-                this.UpdateValues(existingReview, obj);
-                return await this.Put(existingReview.Id, existingReview);
+                this.UpdateValues(existingAction, obj);
+                return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
             return await base.Post(obj);
@@ -93,63 +93,63 @@ namespace Accelerate.Features.Content.Controllers.Api
 
         [Route("unlike")]
         [HttpPost]
-        public async Task<IActionResult> Unlike([FromBody] ContentPostReviewEntity obj)
+        public async Task<IActionResult> Unlike([FromBody] ContentPostActionsEntity obj)
         {
-            var existingReview = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
+            var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
 
             obj.Like = false;
-            if (existingReview != null)
+            if (existingAction != null)
             {
-                this.UpdateValues(existingReview, obj);
-                return await this.Put(existingReview.Id, existingReview);
+                this.UpdateValues(existingAction, obj);
+                return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
             return await base.Post(obj);
         }
 
         [HttpPost]
-        public override async Task<IActionResult> Post([FromBody] ContentPostReviewEntity obj)
+        public override async Task<IActionResult> Post([FromBody] ContentPostActionsEntity obj)
         {
-            var existingReview = _service.Find(x => x.UserId == obj.UserId).FirstOrDefault();
-            if (existingReview != null)
+            var existingAction = _service.Find(x => x.UserId == obj.UserId).FirstOrDefault();
+            if (existingAction != null)
             {
                 //If exists, edit existing
                 //If neither set on request, use existing (user only likes)
                 if(obj.Agree == null && obj.Disagree == null)
                 {
-                    obj.Agree = existingReview.Agree;
-                    obj.Disagree = existingReview.Disagree;
+                    obj.Agree = existingAction.Agree;
+                    obj.Disagree = existingAction.Disagree;
                 }
                 //if both are set to true, set disagree to false and agree to true;
                 if (obj.Agree.GetValueOrDefault() && obj.Disagree.GetValueOrDefault())
                 {
                     obj.Disagree = null;
                 }
-                this.UpdateValues(existingReview, obj);
-                return await this.Put(existingReview.Id, existingReview);
+                this.UpdateValues(existingAction, obj);
+                return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
             return await base.Post(obj);
         }
 
-        protected override async Task PostCreateSteps(ContentPostReviewEntity obj)
+        protected override async Task PostCreateSteps(ContentPostActionsEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostReviewEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostActionsEntity>() { Data = obj });
         }
-        protected override void UpdateValues(ContentPostReviewEntity from, dynamic to)
+        protected override void UpdateValues(ContentPostActionsEntity from, dynamic to)
         {
             from.UpdatedOn = DateTime.Now;
             from.Like = to.Like != null ? to.Like : null;
             from.Agree = to.Disagree != null ? !to.Disagree : to.Agree;
             from.Disagree = to.Agree != null ? !to.Agree : to.Disagree;
         }
-        protected override async Task PostUpdateSteps(ContentPostReviewEntity obj)
+        protected override async Task PostUpdateSteps(ContentPostActionsEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostReviewEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostActionsEntity>() { Data = obj });
         }
-        protected override async Task PostDeleteSteps(ContentPostReviewEntity obj)
+        protected override async Task PostDeleteSteps(ContentPostActionsEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostReviewEntity>() { Data = obj });
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostActionsEntity>() { Data = obj });
         }
     }
 }

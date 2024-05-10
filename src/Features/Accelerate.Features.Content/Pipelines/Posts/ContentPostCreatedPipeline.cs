@@ -19,7 +19,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Database.Services;
-using Accelerate.Features.Content.Pipelines.Reviews;
+using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Foundations.Content.Hydrators;
 using Accelerate.Foundations.Media.Models.Entities;
 
@@ -134,8 +134,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             if (parentDoc == null) return;
             // Update reply count
-            var reviewsDoc = ContentPostUtilities.GetReplies(_entityService, args);
-            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
+            var replies = ContentPostUtilities.GetReplies(_entityService, args);
+            parentDoc.Replies = replies ?? 0;
             // Update threads
             if (args.Value.Type == ContentPostType.Page)
             {

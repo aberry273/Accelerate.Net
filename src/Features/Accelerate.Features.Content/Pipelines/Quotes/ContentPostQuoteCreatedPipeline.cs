@@ -65,8 +65,8 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
         }
         public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuoterContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
 

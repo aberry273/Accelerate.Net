@@ -169,24 +169,24 @@ namespace Accelerate.Foundations.Content.Services
         {
               return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = fields };
         }
-        #region Reviews
+        #region Actions
 
-        public async Task<List<ContentPostReviewDocument>> SearchUserReviews(RequestQuery Query)
+        public async Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query)
         {
-            var elasticQuery = GetUserReviewsQuery(Query);
+            var elasticQuery = GetUserActionsQuery(Query);
             int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
             if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
             int skip = take * Query.Page;
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse || !results.IsSuccess())
             {
-                return new List<ContentPostReviewDocument>();
+                return new List<ContentPostActionsDocument>();
             }
             return results.Documents.ToList();
         }
-        public QueryDescriptor<ContentPostReviewDocument> GetUserReviewsQuery(RequestQuery request)
+        public QueryDescriptor<ContentPostActionsDocument> GetUserActionsQuery(RequestQuery request)
         {
-            var query = new QueryDescriptor<ContentPostReviewDocument>();
+            var query = new QueryDescriptor<ContentPostActionsDocument>();
             if (request.Filters != null && request.Filters.Any())
             {
                 query.MatchAll();

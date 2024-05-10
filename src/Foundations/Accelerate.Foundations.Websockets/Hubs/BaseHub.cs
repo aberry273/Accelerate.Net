@@ -13,7 +13,14 @@ namespace Accelerate.Foundations.Websockets.Hubs
 {
     public abstract class BaseHub<T> : Hub<IBaseHubClient<WebsocketMessage<T>>>
     {
-        public abstract List<string> GetConnections(string user, WebsocketMessage<T> data);
+        public virtual List<string> GetConnections(string user, WebsocketMessage<T> data)
+        {
+            // Message user(s) that own this
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(user);
+            var allConnections = new List<string>();
+            allConnections.AddRange(userConnections);
+            return allConnections.Distinct().ToList();
+        }
         public virtual void UserRequest(string connectionId, string userId)
         {
             if(userId == null)
@@ -34,52 +41,6 @@ namespace Accelerate.Foundations.Websockets.Hubs
                 var connections = HubClientConnectionsSingleton.UserConnections.FirstOrDefault(x => x.Key == userId).Value;
                 if (!connections.Contains(connectionId))
                 {
-                    connections.Add(connectionId);
-                }
-            }
-        }
-        public virtual void ChannelRequest(string connectionId, string userId, string channelId)
-        {
-            if (channelId == null)
-            {
-                return;
-            }
-            //base.Groups.AddToGroupAsync(connectionId, channelId);
-
-            if (!HubClientConnectionsSingleton.ChannelConnections.ContainsKey(channelId))
-            {
-                HubClientConnectionsSingleton.ChannelConnections.TryAdd(channelId, new List<string>()
-                {
-                    connectionId
-                });
-            }
-            else
-            {
-                var connections = HubClientConnectionsSingleton.ChannelConnections.FirstOrDefault(x => x.Key == channelId).Value;
-                if (!connections.Contains(connectionId)){
-                    connections.Add(connectionId);
-                }
-            }
-        }
-        public virtual void ThreadRequest(string connectionId, string userId, string threadId)
-        {
-            if (threadId == null)
-            {
-                return;
-            }
-            //base.Groups.AddToGroupAsync(connectionId, threadId);
-
-            if (!HubClientConnectionsSingleton.ThreadConnections.ContainsKey(threadId))
-            {
-                HubClientConnectionsSingleton.ThreadConnections.TryAdd(threadId, new List<string>()
-                {
-                    connectionId
-                });
-            }
-            else
-            {
-                var connections = HubClientConnectionsSingleton.ThreadConnections.FirstOrDefault(x => x.Key == threadId).Value;
-                if (!connections.Contains(connectionId)){
                     connections.Add(connectionId);
                 }
             }

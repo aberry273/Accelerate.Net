@@ -15,11 +15,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
-    public class ContentPostCreateCompletedPipeline : DataCreateCompletedEventPipeline<ContentPostEntity>
+    public class ContentPostDeletedCompletedPipeline : DataDeleteCompletedEventPipeline<ContentPostEntity>
     {
-        IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         IElasticService<ContentPostDocument> _elasticService;
-        public ContentPostCreateCompletedPipeline(
+        IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
+        public ContentPostDeletedCompletedPipeline(
             IElasticService<ContentPostDocument> elasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
@@ -35,30 +35,28 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             };
         }
         // ASYNC PROCESSORS
-
-        // ASYNC PROCESSORS
         public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
         {
-            ContentPostDocument doc;
-            var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
-            doc = response.Source;
-            // If its a reply to own thread by the user, send the parent as the update instead
-            if (doc.PostType == ContentPostType.Page)
-            {
-                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
-                doc = parentResponse.Source;
-            }
+            var userId = args.Value.UserId.ToString();
+            var id = args.Value.Id;
+
+            // Get doc, sned parent ID if its a self rpely
             var payload = new WebsocketMessage<ContentPostDocument>()
             {
-                Message = "Create successful",
+                Message = "Delete successful",
                 Code = 200,
-                Data = doc,
-                UpdateType = DataRequestCompleteType.Created,
+                Data = new ContentPostDocument()
+                {
+                    Id = id,
+                },
+                UpdateType = DataRequestCompleteType.Deleted,
                 Group = "Post",
                 Alert = true
             };
-            await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
+            await _messageHub.Clients.Clients(userConnections).SendMessage(userId, payload);
         }
+
         // SYNC PROCESSORS
     }
 }

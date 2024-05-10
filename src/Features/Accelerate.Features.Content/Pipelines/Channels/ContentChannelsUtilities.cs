@@ -6,7 +6,7 @@ using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Foundations.Websockets.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Accelerate.Features.Content.Pipelines.Reviews
+namespace Accelerate.Features.Content.Pipelines.Actions
 {
     public static class ContentChannelsUtilities
     { 
@@ -20,7 +20,7 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
                 Code = 200,
                 Data = args.Value,
                 UpdateType = type,
-                Group = "Review",
+                Group = "Action",
             };
             await messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
         }

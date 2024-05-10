@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Content.Models.Entities
 {
-    [Table("ContentPostReview")]
-    public class ContentPostReviewEntity : BaseEntity
+    [Table("ContentPostActions")]
+    public class ContentPostActionsEntity : BaseEntity
     {
         [JsonIgnore]
         public virtual ContentPostEntity? ContentPost { get; set; }
@@ -24,5 +24,6 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public bool? Agree { get; set; }
         public bool? Disagree { get; set; }
         public bool? Like { get; set; }
+        public string? Reaction { get; set; }
     }
 }

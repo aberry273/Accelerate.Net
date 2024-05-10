@@ -33,22 +33,7 @@ namespace Accelerate.Foundations.Common.Controllers
                 Foundations.Common.Services.StaticLoggingService.LogError(ex);
                 return BadRequest();
             }
-        }/*
-        [HttpGet]
-        public virtual async Task<IActionResult> Get([FromQuery] RequestQuery<T> query)
-        {
-            try
-            {
-                int take = query.ItemsPerPage > 0 ? query.ItemsPerPage : 10;
-                int skip = take * query.Page;
-                return Ok(_service.Find(x => true, skip, take));
-            }
-            catch(Exception ex)
-            {
-                Foundations.Common.Services.StaticLoggingService.LogError(ex);
-                return BadRequest();
-            }
-        }*/
+        }
 
         [HttpGet]
         [Route("{id}")]

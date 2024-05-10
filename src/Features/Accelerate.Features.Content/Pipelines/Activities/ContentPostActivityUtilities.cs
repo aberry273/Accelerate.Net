@@ -10,13 +10,13 @@ namespace Accelerate.Features.Content.Pipelines.Activities
 {
     public static class ContentPostActivityUtilities
     {
-        public static ContentPostReviewsDocument GetActivities(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
+        public static ContentPostActionsSummaryDocument GetActivities(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         {
             return entityService
                .Find(x => x.ContentPostId == args.Value.ContentPostId)
                .GroupBy(g => 1)
                .Select(x =>
-                   new ContentPostReviewsDocument
+                   new ContentPostActionsSummaryDocument
                    {
                        Agrees = x
                            .Where(y => y.Type == ContentPostActivityTypes.Agree)
@@ -48,7 +48,7 @@ namespace Accelerate.Features.Content.Pipelines.Activities
                 Code = 200,
                 Data = args.Value,
                 UpdateType = type,
-                Group = "Review",
+                Group = "Action",
             };
             await messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
         }

@@ -49,7 +49,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public IEnumerable<string>? QuoteIds { get; set; }
         public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
         // Computed
-        public ContentPostReviewsDocument Reviews { get; set; }
+        public ContentPostActionsSummaryDocument ActionsTotals { get; set; }
         public ContentPostType PostType { get; set; } = ContentPostType.Post;
         //TODO: Replace with mapping 
         public List<Guid> ThreadIds { get; set; }
@@ -59,32 +59,32 @@ namespace Accelerate.Foundations.Content.Models.Data
         {
             get
             {
-                if (Reviews == null) return 0;
-                return Reviews.Quotes;
+                if (ActionsTotals == null) return 0;
+                return ActionsTotals.Quotes;
             }
         }
         public int? Agrees
         {
             get
             {
-                if (Reviews == null) return 0;
-                return Reviews.Agrees;
+                if (ActionsTotals == null) return 0;
+                return ActionsTotals.Agrees;
             }
         }
         public int? Disagrees
         {
             get
             {
-                if (Reviews == null) return 0;
-                return Reviews.Disagrees;
+                if (ActionsTotals == null) return 0;
+                return ActionsTotals.Disagrees;
             }
         }
         public int? Likes
         {
             get
             {
-                if (Reviews == null) return 0;
-                return Reviews.Likes;
+                if (ActionsTotals == null) return 0;
+                return ActionsTotals.Likes;
             }
         }
         public int? Replies { get; set; }

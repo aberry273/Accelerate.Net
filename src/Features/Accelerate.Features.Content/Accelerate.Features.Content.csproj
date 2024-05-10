@@ -23,7 +23,7 @@
     <Compile Remove="Pipelines\IContentPostCreatedPipeline.cs" />
     <Compile Remove="Services\ContentActivityElasticService.cs" />
     <Compile Remove="Services\ContentElasticService.cs" />
-    <Compile Remove="Services\ContentReviewElasticService.cs" />
+    <Compile Remove="Services\ContentActionElasticService.cs" />
   </ItemGroup>
 
   <ItemGroup>

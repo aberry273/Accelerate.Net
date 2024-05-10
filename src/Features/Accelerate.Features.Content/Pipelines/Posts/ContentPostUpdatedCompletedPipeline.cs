@@ -15,11 +15,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
-    public class ContentPostDeleteCompletedPipeline : DataDeleteCompletedEventPipeline<ContentPostEntity>
+    public class ContentPostUpdatedCompletedPipeline : DataUpdateCompletedEventPipeline<ContentPostEntity>
     {
-        IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
-        public ContentPostDeleteCompletedPipeline(
+        IElasticService<ContentPostDocument> _elasticService;
+        public ContentPostUpdatedCompletedPipeline(
             IElasticService<ContentPostDocument> elasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
@@ -35,28 +35,22 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             };
         }
         // ASYNC PROCESSORS
+
         public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
         {
-            var userId = args.Value.UserId.ToString();
-            var id = args.Value.Id;
-
-            // Get doc, sned parent ID if its a self rpely
+            var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
             var payload = new WebsocketMessage<ContentPostDocument>()
             {
-                Message = "Delete successful",
+                Message = "Update successful",
                 Code = 200,
-                Data = new ContentPostDocument()
-                {
-                    Id = id,
-                },
-                UpdateType = DataRequestCompleteType.Deleted,
+                Data = doc.Source,
+                UpdateType = DataRequestCompleteType.Updated,
                 Group = "Post",
                 Alert = true
             };
-            var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
-            await _messageHub.Clients.Clients(userConnections).SendMessage(userId, payload);
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(args.Value.UserId.ToString());
+            await _messageHub.Clients.Clients(userConnections).SendMessage(args.Value.UserId.ToString(), payload);
         }
-
         // SYNC PROCESSORS
     }
 }

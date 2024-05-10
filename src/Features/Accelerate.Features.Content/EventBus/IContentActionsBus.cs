@@ -4,7 +4,7 @@ using Accelerate.Foundations.EventPipelines.EventBus;
 
 namespace Accelerate.Features.Content.EventBus
 {
-    public interface IContentReviewBus: IDataBus<ContentPostReviewEntity>
+    public interface IContentActionsBus: IDataBus<ContentPostActionsEntity>
     {
     }
 }

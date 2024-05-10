@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines.Reviews;
+﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -54,12 +54,12 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
                     Id = args.Value.Id,
                 }
             };
-            await ContentPostQuoteUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Delete review successful", DataRequestCompleteType.Deleted);
+            await ContentPostQuoteUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
         }
         public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuotedContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
             

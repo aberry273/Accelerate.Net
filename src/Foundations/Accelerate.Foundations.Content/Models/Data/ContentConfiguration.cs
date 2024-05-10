@@ -10,6 +10,6 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         public string PostIndexName { get; set; }
         public string ChannelIndexName { get; set; }
-        public string ReviewIndexName { get; set; }
+        public string ActionsIndexName { get; set; }
     }
 }

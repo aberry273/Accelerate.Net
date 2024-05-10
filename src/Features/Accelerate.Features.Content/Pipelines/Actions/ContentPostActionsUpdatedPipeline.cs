@@ -23,22 +23,22 @@ using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Content.Hydrators;
 
-namespace Accelerate.Features.Content.Pipelines.Reviews
+namespace Accelerate.Features.Content.Pipelines.Actions
 {
-    public class ContentPostReviewUpdatedPipeline : DataUpdateEventPipeline<ContentPostReviewEntity>
+    public class ContentPostActionUpdatedPipeline : DataUpdateEventPipeline<ContentPostActionsEntity>
     {
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHubPosts;
-        IHubContext<BaseHub<ContentPostReviewDocument>, IBaseHubClient<WebsocketMessage<ContentPostReviewDocument>>> _messageHub;
+        IHubContext<BaseHub<ContentPostActionsDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsDocument>>> _messageHub;
         IElasticService<ContentPostDocument> _elasticPostService;
-        IEntityService<ContentPostReviewEntity> _entityService;
-        IElasticService<ContentPostReviewDocument> _elasticService;
-        public ContentPostReviewUpdatedPipeline(
+        IEntityService<ContentPostActionsEntity> _entityService;
+        IElasticService<ContentPostActionsDocument> _elasticService;
+        public ContentPostActionUpdatedPipeline(
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
-            IElasticService<ContentPostReviewDocument> elasticService,
+            IElasticService<ContentPostActionsDocument> elasticService,
             IElasticService<ContentPostDocument> elasticPostService,
-            IEntityService<ContentPostReviewEntity> entityService,
-            IHubContext<BaseHub<ContentPostReviewDocument>, IBaseHubClient<WebsocketMessage<ContentPostReviewDocument>>> messageHub,
+            IEntityService<ContentPostActionsEntity> entityService,
+            IHubContext<BaseHub<ContentPostActionsDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsDocument>>> messageHub,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts)
         {
             _messageHub = messageHub;
@@ -48,30 +48,30 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
             _entityService = entityService;
             _publishEndpoint = publishEndpoint;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostReviewEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
                 IndexDocument,
                 UpdatePostIndex,
                // PublishPostUpdatedMessage
             };
-            _processors = new List<PipelineProcessor<ContentPostReviewEntity>>()
+            _processors = new List<PipelineProcessor<ContentPostActionsEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-        public async Task IndexDocument(IPipelineArgs<ContentPostReviewEntity> args)
+        public async Task IndexDocument(IPipelineArgs<ContentPostActionsEntity> args)
         {
-            var indexModel = new ContentPostReviewDocument();
+            var indexModel = new ContentPostActionsDocument();
             args.Value.Hydrate(indexModel);
             var result = await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
-            // Run directly in same function as reviews are simple types and will not be extended via pipelines
+            // Run directly in same function as Actions are simple types and will not be extended via pipelines
             if(result.IsValidResponse)
             {
-                var docArgs = new PipelineArgs<ContentPostReviewDocument>()
+                var docArgs = new PipelineArgs<ContentPostActionsDocument>()
                 {
                     Value = indexModel
                 };
-                await ContentPostReviewUtilities.SendWebsocketReviewUpdate(_messageHub, docArgs, "Update review successful", DataRequestCompleteType.Updated);
+                await ContentPostActionUtilities.SendWebsocketActionUpdate(_messageHub, docArgs, "Update Action successful", DataRequestCompleteType.Updated);
             }
             args.Params["IndexedModel"] = indexModel; 
         }
@@ -80,13 +80,13 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostReviewEntity> args)
+        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActionsEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostReviewUtilities.GetReviews(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostActionUtilities.GetActions(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source; 
-            contentPostDocument.Reviews = reviewsDoc;
+            contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
             await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 

@@ -44,8 +44,8 @@
         })"></div>
         <!--Feed-->
         <div x-data="listCards( {
-            actionUrl: '/api/contentpostactivity',
-            searchUrl: '/api/contentsearch/posts',
+            actionUrl: '@Model.ActionsApiUrl',
+            searchUrl: '@Model.PostsApiUrl',
             filterEvent: null,
             userId: '@Model.UserId',
             actionEvent: 'action:post',

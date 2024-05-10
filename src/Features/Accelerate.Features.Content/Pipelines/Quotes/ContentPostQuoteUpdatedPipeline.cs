@@ -64,14 +64,14 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
             var indexModel = new ContentPostQuoteDocument();
             args.Value.Hydrate(indexModel);
             var result = await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
-            // Run directly in same function as reviews are simple types and will not be extended via pipelines
+            // Run directly in same function as Actions are simple types and will not be extended via pipelines
             if(result.IsValidResponse)
             {
                 var docArgs = new PipelineArgs<ContentPostQuoteDocument>()
                 {
                     Value = indexModel
                 };
-                await ContentPostQuoteUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Update review successful", DataRequestCompleteType.Updated);
+                await ContentPostQuoteUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Update Action successful", DataRequestCompleteType.Updated);
             }
             args.Params["IndexedModel"] = indexModel; 
         }
@@ -82,8 +82,8 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
         /// <returns></returns>
         public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuotedContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source; 
      

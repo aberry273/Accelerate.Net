@@ -4,18 +4,13 @@ let component = `
       item: item,
     })"></div>
 `
-import mxList from '/src/js/mixins/mxList.js';
-import mxSearch from '/src/js/mixins/mxSearch.js';
-import mxAction from '/src/js/mixins/mxAction.js';
-import mxWebsockets from '/src/js/mixins/mxWebsockets.js';
-import mxAlert from '/src/js/mixins/mxAlert.js';
-
+import { mxList, mxSearch, mxWebsockets, mxAlert } from '/src/js/mixins/index.js';
 export default function (data) {
     return {
         // mixins
         ...mxList(data),
         ...mxSearch(data),
-        ...mxAction(data),
+        //...mxAction(data),
         ...mxWebsockets(data),
         ...mxAlert(data),
 
@@ -44,40 +39,6 @@ export default function (data) {
 
             component = data.component || component
              
-            // Setup websocket listeners
-            await this._mxWebsockets_InitWebsocketEvents(
-                this.$store.wssContentPosts,
-                this.userId,
-                this.targetChannel,
-                this.targetThread,
-            )
-            await this._mxWebsockets_InitWebsocketEvents(
-                this.$store.wssContentPostReviews,
-                this.userId,
-                this.targetChannel,
-                this.targetThread,
-            )
-
-            // On updates from the websocket
-            this.$events.on(this.$store.wssContentPosts.getMessageEvent(), async (e) => {
-                const data = e.data;
-                if (!data) return;
-                if (data.alert) this._mxAlert_AddAlert(data);
-                this.updateItemUpdate(data);
-            })
-
-            // On updates from cards
-            // Move this and all content/post based logic to page level js instead
-            this.$events.on(this.actionEvent, async (request) => {
-              if(request.action == 'quote') {
-                // Don't do anything
-              }
-              else {
-                const payload = this.CreatePostActivityPayload(request);
-                await this._mxAction_HandleActionPost(payload);
-              }
-            })
-
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 await this.search(filterUpdates);
@@ -96,49 +57,16 @@ export default function (data) {
             let query = this._mxList_GetFilters(filters);
             const postQuery = this._mxSearch_CreateSearchQuery(query);
             if (postQuery == null) return;
-            this.items = await this._mxSearch_Post(this.searchUrl, postQuery);
-        },
+            const items = await this._mxSearch_Post(this.searchUrl, postQuery);
 
-        CreatePostActivityPayload(request) {
-            return {
-                userId: request.userId,
-                contentPostId: request.item.id,
-                action: request.action,
-                value: true,
-            }
-        },
-
-        updateItemUpdate(wssMessage) {
-            var item = wssMessage.data;
-            let emptyItems = false;
-            if (this.items == null) {
-                this.items = [];
-                emptyItems = true;
-            }
-            if (wssMessage.update == 'Created') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                if (index == -1) this.items.push(item);
-                else this.items[index] = item
-            }
-            if (wssMessage.update == 'Updated') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items[index] = item
-                this.$events.emit(item.id, item);
-            }
-            if (wssMessage.update == 'Deleted') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items.splice(index, 1);
-            }
-            if (emptyItems) {
-                this.setHtml(this.data);
-            }
+            this.$store.wssContentPosts.setItems(items);
         },
         // METHODS
         setHtml(data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in items" :key="item.id || i" >
+              <template x-for="(item, i) in $store.wssContentPosts.items" :key="item.id || i" >
                 <div x-data="cardPost({
                   item: item,
                   userId: userId,

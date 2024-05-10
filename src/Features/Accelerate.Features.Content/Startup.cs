@@ -5,7 +5,7 @@ using Accelerate.Features.Content.Pipelines.Activities;
 using Accelerate.Features.Content.Pipelines.Channels;
 using Accelerate.Features.Content.Pipelines.Posts;
 using Accelerate.Features.Content.Pipelines.Quotes;
-using Accelerate.Features.Content.Pipelines.Reviews;
+using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Content.Models.Data;
@@ -39,7 +39,7 @@ namespace Accelerate.Features.Content
         public static void ConfigureApp(WebApplication app)
         {
             app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
-            app.MapHub<BaseHub<ContentPostReviewDocument>>($"/{Constants.Settings.ContentPostReviewsHubName}");
+            app.MapHub<BaseHub<ContentPostActionsDocument>>($"/{Constants.Settings.ContentPostActionsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
             //app.MapHub<BaseHub<ContentPostActivity>>($"/{Constants.Settings.ContentPostActivities}");
 
@@ -50,21 +50,20 @@ namespace Accelerate.Features.Content
             services.AddTransient<IContentViewService, ContentViewService>();
 
             services.AddTransient<BaseHub<ContentPostDocument>, ContentPostHub>();
-            services.AddTransient<BaseHub<ContentPostReviewDocument>, ContentPostReviewHub>();
+            services.AddTransient<BaseHub<ContentPostActionsDocument>, ContentPostActionsHub>();
             services.AddTransient<BaseHub<ContentChannelDocument>, ContentChannelHub>();
             services.AddTransient<BaseHub<ContentPostActivityDocument>, ContentPostActivityHub>();
             services.AddTransient<BaseHub<ContentPostQuoteDocument>, ContentPostQuoteHub>();
 
             // POSTS
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostEntity, ContentPostCreatedPipeline, ContentPostUpdatedPipeline, ContentPostDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostEntity, ContentPostCreateCompletedPipeline, ContentPostUpdateCompletedPipeline, ContentPostDeleteCompletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostEntity, ContentPostCreatedCompletedPipeline, ContentPostUpdatedCompletedPipeline, ContentPostDeletedCompletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostEntity, IContentPostBus>(services);
 
-            // Reviews
-            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostReviewEntity, ContentPostReviewCreatedPipeline, ContentPostReviewUpdatedPipeline, ContentPostReviewDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostReviewEntity>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostReviewEntity, IContentReviewBus>(services);
-
+            // Actions
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedPipeline, ContentPostActionUpdatedPipeline, ContentPostActionsDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedCompletedPipeline, ContentPostActionsUpdatedCompletedPipeline, ContentPostActionsDeletedCompletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
             // Activities
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActivityEntity, ContentPostActivityCreatedPipeline, ContentPostActivityUpdatedPipeline, ContentPostActivityDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActivityEntity>(services);

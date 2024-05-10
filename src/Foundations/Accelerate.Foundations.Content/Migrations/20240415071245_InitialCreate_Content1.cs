@@ -103,7 +103,7 @@ namespace Accelerate.Foundations.Content.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ContentPostReview",
+                name: "ContentPostAction",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -117,9 +117,9 @@ namespace Accelerate.Foundations.Content.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ContentPostReview", x => x.Id);
+                    table.PrimaryKey("PK_ContentPostAction", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ContentPostReview_ContentPosts_ContentPostId",
+                        name: "FK_ContentPostAction_ContentPosts_ContentPostId",
                         column: x => x.ContentPostId,
                         principalTable: "ContentPosts",
                         principalColumn: "Id",
@@ -142,8 +142,8 @@ namespace Accelerate.Foundations.Content.Migrations
                 column: "QuoterContentPostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContentPostReview_ContentPostId",
-                table: "ContentPostReview",
+                name: "IX_ContentPostAction_ContentPostId",
+                table: "ContentPostAction",
                 column: "ContentPostId");
         }
 
@@ -160,7 +160,7 @@ namespace Accelerate.Foundations.Content.Migrations
                 name: "ContentPostQuotes");
 
             migrationBuilder.DropTable(
-                name: "ContentPostReview");
+                name: "ContentPostAction");
 
             migrationBuilder.DropTable(
                 name: "ContentPosts");

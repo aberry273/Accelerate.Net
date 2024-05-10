@@ -10,7 +10,7 @@ namespace Accelerate.Features.Content
     {
         public struct Filters
         {
-            public const string Reviews = "Reviews";
+            public const string Actions = "Actions";
             public const string Threads = "Threads";
             public const string Quotes = "Quotes";
             public const string Tags = "Tags";
@@ -21,7 +21,7 @@ namespace Accelerate.Features.Content
         public struct Settings
         {
             public const string ContentPostsHubName = "ContentPosts";
-            public const string ContentPostReviewsHubName = "ContentPostReviews";
+            public const string ContentPostActionsHubName = "ContentPostActions";
             public const string ContentChannelsHubName = "ContentChannels";
             public const string ContentPostActivitiesHubName = "ContentPostActivities";
             public const string ContentPostQuotesHubName = "ContentPostQuotes";

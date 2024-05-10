@@ -1,13 +1,13 @@
 
-import wssContentPostReviews from './wssService.js'
-import wssMediaBlobs from './wssService.js'
-import wssContentPosts from './wssService.js'
+import wssContentPostActions from './wssContentPostActions.js'
+import wssContentPosts from './wssContentPosts.js'
+import wssMediaBlobs from './wssContentPosts.js'
 import wssContentChannels from './wssService.js'
 import wssContentPostActivities from './wssService.js'
 
 export {
     wssContentPosts,
-    wssContentPostReviews,
+    wssContentPostActions,
     wssMediaBlobs,
     wssContentChannels,
     //wssContentPostActivities,

@@ -12,6 +12,7 @@ namespace Accelerate.Foundations.Account.Helpers
             {
                 IsAuthenticated = true,
                 Username = user.UserName,
+                UserId = user?.Id,
                 Image = user?.AccountProfile?.Image
             } : null;
         }

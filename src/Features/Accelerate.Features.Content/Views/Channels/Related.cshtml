@@ -16,7 +16,7 @@
          
     <!--Feed-->
     <div x-data="listCards( {
-        actionUrl: '/api/contentpostactivity',
+        actionUrl: '@Model.ActionsApiUrl',
         searchUrl: '/api/contentsearch/posts/related/@Model.Item.Id',
         filterEvent: '@Model.FilterEvent',
         userId: '@Model.UserId',

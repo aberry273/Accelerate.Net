@@ -8,20 +8,16 @@ using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Foundations.Websockets.Models;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Accelerate.Features.Content.Pipelines.Reviews
+namespace Accelerate.Features.Content.Pipelines.Actions
 {
     public static class ContentPostUtilities
     {
-        public static ContentPostReviewsDocument? GetReplies(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
+        public static int? GetReplies(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
         {
             return entityService
                .Find(x => x.ParentId == args.Value.ParentId && x.Type != ContentPostType.Page)
                .GroupBy(g => 1)
-               .Select(x =>
-                   new ContentPostReviewsDocument
-                   {
-                       Replies = x.Count(),
-                   })?.SingleOrDefault();
+               .Select(x => x.Count())?.SingleOrDefault();
         } 
         public static async Task SendWebsocketPostUpdate(IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, string userId, ContentPostDocument doc, DataRequestCompleteType type)
         {
@@ -43,8 +39,8 @@ namespace Accelerate.Features.Content.Pipelines.Reviews
             var parentResponse = await elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
             if (!parentResponse.IsValidResponse) return;
             var parentDoc = parentResponse.Source;
-            var reviewsDoc = ContentPostUtilities.GetReplies(entityService, args);
-            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
+            var replies = ContentPostUtilities.GetReplies(entityService, args);
+            parentDoc.Replies = replies ?? 0;
             await elasticService.UpdateDocument<ContentPostDocument>(parentDoc, parentDoc.Id.ToString());
             //SendWebsocketPostUpdate(messageHubPosts, parentDoc.UserId.ToString(), parentDoc, DataRequestCompleteType.Updated);
         } 

@@ -73,18 +73,23 @@
     <script>
         let wssSettings = {
             wssContentChannels: {
+                userId: '@Model.UserId',
                 wssEvent: 'wss:contentChannels',
                 url: "@Model.Url/ContentChannels",
             },
             wssContentPosts: {
+                userId: '@Model.UserId',
                 wssEvent: 'wss:contentPosts',
                 url: "@Model.Url/ContentPosts",
             },
-            wssContentPostReviews: {
-                wssEvent: 'wss:contentPostReviews',
-                url: "@Model.Url/ContentPostReviews",
+            wssContentPostActions: {
+                userId: '@Model.UserId',
+                wssEvent: 'wss:contentPostActions',
+                url: "@Model.Url/ContentPostActions",
+                postbackUrl: '/api/contentpostactions',
             },
             wssMediaBlobs: {
+                userId: '@Model.UserId',
                 wssEvent: 'wss:mediaBlobs',
                 url: "@Model.Url/MediaBlobs",
             },
@@ -101,12 +106,6 @@
 
     <!-- DATA -->
     <script>
-        let headerData = {
-            title: 'parrot.app',
-            subtitle: 'The new bird in town',
-            text: 'Total project size is < 20kb gzipped'
-        }
-
         let footerData = {
             title: 'parrot.app',
             subtitle: 'The new bird in town',

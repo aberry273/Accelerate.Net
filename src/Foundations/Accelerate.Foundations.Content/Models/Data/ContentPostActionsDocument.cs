@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
-    public class ContentPostReviewDocument
+    public class ContentPostActionsDocument
     {
         // Core properties
         public Guid Id { get; set; }

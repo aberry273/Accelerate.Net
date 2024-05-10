@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines.Reviews;
+﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -49,8 +49,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var parentDoc = parentResponse.Source;
             if (!parentResponse.IsValidResponse || parentDoc == null) return;
             // Update reply count
-            var reviewsDoc = ContentPostUtilities.GetReplies(_entityService, args);
-            parentDoc.Replies = reviewsDoc?.Replies ?? 0;
+            var replies = ContentPostUtilities.GetReplies(_entityService, args);
+            parentDoc.Replies = replies ?? 0;
             // Update threads
             if (parentDoc.UserId == args.Value.UserId)
             {

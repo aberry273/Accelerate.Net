@@ -15,7 +15,7 @@ namespace Accelerate.Foundations.Content.Services
 
         public ContentActivityElasticService(IOptions<ElasticConfiguration> options) : base(options)
         {
-            this._indexName = "contentpostreview_index";
+            this._indexName = "contentpostAction_index";
         }
         public override async Task<SearchResponse<ContentPostActivityDocument>> Find(RequestQuery<ContentPostActivityDocument> query)
         {

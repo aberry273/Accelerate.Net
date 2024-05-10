@@ -15,6 +15,8 @@ namespace Accelerate.Features.Content.Models.Views
         public List<ContentPostDocument> Replies { get; set; } = new List<ContentPostDocument>();
         public string FilterEvent { get; set; } = "filter:update";
         public string ActionEvent { get; set; } = "action:post";
+        public string ActionsApiUrl { get; set; }
+        public string PostsApiUrl { get; set; }
         public NavigationItem ParentLink { get; set; }
         public NavigationItem ChannelLink { get; set; }
         public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>(); 

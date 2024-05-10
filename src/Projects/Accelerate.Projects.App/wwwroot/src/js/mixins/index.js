@@ -1,21 +1,27 @@
 
+// Component mixins
 import mxTemplate from './mxTemplate.js'
 import mxForm from './mxForm.js'
 import mxModal from './mxModal.js'
 import mxList from './mxList.js'
-import mxAction from './mxAction.js'
 import mxWebsockets from './mxWebsockets.js'
-import mxWebsocketListener from './mxWebsocketListener.js'
 import mxResponsive from './mxResponsive.js'
 import mxAlert from './mxAlert.js'
+// Global mixins
+import mxFetch from './global/mxFetch.js'
+import mxEvents from './global/mxEvents.js'
+import mxSearch from './global/mxSearch.js'
 
 export {
+    mxWebsockets,
+    mxAlert,
+    mxResponsive,
+    // Component
     mxForm,
     mxModal,
     mxList,
-    mxAction,
-    mxWebsockets,
-    mxWebsocketListener,
-    mxAlert,
-    mxResponsive,
+    // Global
+    mxFetch,
+    mxEvents,
+    mxSearch,
 }

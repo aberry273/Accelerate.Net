@@ -60,6 +60,10 @@ namespace Accelerate.Features.Content.Services
             viewModel.ModalCreateChannel = CreateModalChannelForm(user);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            viewModel.ActionsApiUrl = "/api/contentpostactions";
+            viewModel.PostsApiUrl = "/api/contentsearch/posts";
+            viewModel.FilterEvent = "filter:update";
+            viewModel.ActionEvent = "action:post";
             return viewModel;
         }
         public ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse)
@@ -108,6 +112,10 @@ namespace Accelerate.Features.Content.Services
             viewModel.ModalEditChannel = EditModalChannelForm(user, item);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            viewModel.ActionsApiUrl = "/api/contentpostactions";
+            viewModel.PostsApiUrl = "/api/contentsearch/posts";
+            viewModel.FilterEvent = "filter:update";
+            viewModel.ActionEvent = "action:post";
             return viewModel;
         }
         public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null)
@@ -131,6 +139,8 @@ namespace Accelerate.Features.Content.Services
                 viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             }
 
+            viewModel.ActionsApiUrl = "/api/contentpostactions";
+            viewModel.PostsApiUrl = "/api/contentsearch/posts";
             // Add filters
             viewModel.Filters = CreateSearchFilters(aggregateResponse);
 
@@ -741,14 +751,14 @@ namespace Accelerate.Features.Content.Services
             if(filters == null) filters = new Dictionary<string, List<string>>();
             var filter = new List<NavigationFilter>();
 
-            var reviews = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Reviews));
-            if(reviews.Count > 0)
+            var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Actions));
+            if(Actions.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
-                    Name = Constants.Filters.Reviews,
+                    Name = Constants.Filters.Actions,
                     FilterType = NavigationFilterType.Select,
-                    Values = reviews
+                    Values = Actions
                 });
             }
             var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Threads));

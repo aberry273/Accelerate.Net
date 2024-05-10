@@ -429,6 +429,10 @@ nav details.dropdown summary.flat:not([role]) {
     border-width: 0;
 }
 /*ICONS*/
+.icon.primary {
+    color: var(--pico-primary);
+}
+
 .icon-click {
     padding: 4px;
     cursor: pointer;

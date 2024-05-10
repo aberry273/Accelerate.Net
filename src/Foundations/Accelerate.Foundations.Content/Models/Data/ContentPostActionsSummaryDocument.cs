@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
-    public class ContentPostReviewsDocument
+    public class ContentPostActionsSummaryDocument
     {
         public int? Agrees { get; set; }
         public int? Disagrees { get; set; }

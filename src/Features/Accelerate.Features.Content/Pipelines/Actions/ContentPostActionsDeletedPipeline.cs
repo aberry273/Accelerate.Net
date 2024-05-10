@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines.Reviews;
+﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -16,19 +16,19 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
-    public class ContentPostReviewDeletedPipeline : DataDeleteEventPipeline<ContentPostReviewEntity>
+    public class ContentPostActionsDeletedPipeline : DataDeleteEventPipeline<ContentPostActionsEntity>
     {
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHubPosts;
-        IHubContext<BaseHub<ContentPostReviewDocument>, IBaseHubClient<WebsocketMessage<ContentPostReviewDocument>>> _messageHub;
-        IElasticService<ContentPostReviewDocument> _elasticService;
-        IEntityService<ContentPostReviewEntity> _entityService;
+        IHubContext<BaseHub<ContentPostActionsDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsDocument>>> _messageHub;
+        IElasticService<ContentPostActionsDocument> _elasticService;
+        IEntityService<ContentPostActionsEntity> _entityService;
         IElasticService<ContentPostDocument> _elasticPostService;
-        public ContentPostReviewDeletedPipeline(
+        public ContentPostActionsDeletedPipeline(
             IElasticService<ContentPostDocument> elasticPostService,
-            IElasticService<ContentPostReviewDocument> elasticService,
+            IElasticService<ContentPostActionsDocument> elasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts,
-            IEntityService<ContentPostReviewEntity> entityService,
-            IHubContext<BaseHub<ContentPostReviewDocument>, IBaseHubClient<WebsocketMessage<ContentPostReviewDocument>>> messageHub)
+            IEntityService<ContentPostActionsEntity> entityService,
+            IHubContext<BaseHub<ContentPostActionsDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsDocument>>> messageHub)
         {
             _elasticService = elasticService;
             _elasticPostService = elasticPostService;
@@ -36,33 +36,33 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _entityService = entityService;
             _messageHubPosts = messageHubPosts;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostReviewEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
                 DeleteDocument,
                 UpdatePostIndex
             };
         }
         // ASYNC PROCESSORS
-        public async Task DeleteDocument(IPipelineArgs<ContentPostReviewEntity> args)
+        public async Task DeleteDocument(IPipelineArgs<ContentPostActionsEntity> args)
         {
-            var indexResponse = await _elasticService.DeleteDocument<ContentPostReviewEntity>(args.Value.Id.ToString());
+            var indexResponse = await _elasticService.DeleteDocument<ContentPostActionsEntity>(args.Value.Id.ToString());
 
-            var docArgs = new PipelineArgs<ContentPostReviewDocument>()
+            var docArgs = new PipelineArgs<ContentPostActionsDocument>()
             {
-                Value = new ContentPostReviewDocument()
+                Value = new ContentPostActionsDocument()
                 {
                     Id = args.Value.Id,
                 }
             };
-            await ContentPostReviewUtilities.SendWebsocketReviewUpdate(_messageHub, docArgs, "Delete review successful", DataRequestCompleteType.Deleted);
+            await ContentPostActionUtilities.SendWebsocketActionUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostReviewEntity> args)
+        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActionsEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostReviewUtilities.GetReviews(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostActionUtilities.GetActions(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.Reviews = reviewsDoc;
+            contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
             await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 

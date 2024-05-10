@@ -68,6 +68,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new BasePage()
             {
+                UserId = profile.UserId,
                 IsAuthenticated = true,
                 Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
                 SideNavigation = new NavigationGroup(),

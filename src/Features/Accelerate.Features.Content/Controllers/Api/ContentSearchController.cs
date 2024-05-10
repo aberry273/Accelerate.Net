@@ -37,14 +37,14 @@ namespace Accelerate.Features.Content.Controllers.Api
         IContentViewService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IContentPostElasticService _searchService;
-        IElasticService<ContentPostReviewDocument> _searchReviewService;
+        //IElasticService<ContentPostActionDocument> _searchActionService;
         IElasticService<ContentChannelDocument> _searchChannelService;
         public ContentSearchController(
             IContentViewService contentService,
             IContentPostElasticService service,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchPostService,
-            IElasticService<ContentPostReviewDocument> searchReviewService,
+            //IElasticService<ContentPostActionDocument> searchActionService,
             IElasticService<ContentChannelDocument> searchChannelService,
             UserManager<AccountUser> userManager)
         {
@@ -52,14 +52,14 @@ namespace Accelerate.Features.Content.Controllers.Api
             _userManager = userManager;
             _contentService = contentService;
             _searchService = service;
-            _searchReviewService = searchReviewService;
+            //_searchActionService = searchActionService;
             _searchChannelService = searchChannelService;
         }
-        [Route("Reviews")]
+        [Route("Actions")]
         [HttpPost]
-        public async Task<IActionResult> SearchUserReviews([FromBody] RequestQuery query)
+        public async Task<IActionResult> SearchUserActions([FromBody] RequestQuery query)
         {
-            var docs = await _searchService.SearchUserReviews(query);
+            var docs = await _searchService.SearchUserActions(query);
             return Ok(docs);
         }
         [Route("Posts/{userId}")]

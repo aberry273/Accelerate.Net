@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.Pipelines.Reviews;
+﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -40,9 +40,9 @@ namespace Accelerate.Features.Content.Pipelines.Channels
         {
             var indexResponse = await _elasticService.DeleteDocument<ContentChannelEntity>(args.Value.Id.ToString());
 
-            var docArgs = new PipelineArgs<ContentPostReviewDocument>()
+            var docArgs = new PipelineArgs<ContentChannelDocument>()
             {
-                Value = new ContentPostReviewDocument()
+                Value = new ContentChannelDocument()
                 {
                     Id = args.Value.Id,
                 }

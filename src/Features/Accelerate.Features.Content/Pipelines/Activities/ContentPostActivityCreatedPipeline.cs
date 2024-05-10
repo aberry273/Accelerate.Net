@@ -65,11 +65,11 @@ namespace Accelerate.Features.Content.Pipelines.Activities
         }
         public async Task UpdatePostIndex(IPipelineArgs<ContentPostActivityEntity> args)
         {
-            // fetch reviews
-            var reviewsDoc = ContentPostActivityUtilities.GetActivities(_entityService, args);
+            // fetch Actions
+            var ActionsDoc = ContentPostActivityUtilities.GetActivities(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.Reviews = reviewsDoc;
+            contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
             await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 

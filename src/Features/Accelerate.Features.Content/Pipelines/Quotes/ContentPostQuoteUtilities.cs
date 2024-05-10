@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
                 Code = 200,
                 Data = args.Value,
                 UpdateType = type,
-                Group = "Review",
+                Group = "Action",
             };
             await messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
         }

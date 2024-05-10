@@ -26,13 +26,6 @@ export default function (data){
             // On websocket client initialized, send channel to server
             this.$events.on(wssService.getConnectedEvent(), async (ev) => {
                 await wssService.connectUser(userId);
-
-                if (targetThread) {
-                    await wssService.connectThread(userId, targetThread);
-                }
-                if (targetChannel) {
-                    await wssService.connectChannel(userId, targetChannel);
-                }
             })
         },
     }
