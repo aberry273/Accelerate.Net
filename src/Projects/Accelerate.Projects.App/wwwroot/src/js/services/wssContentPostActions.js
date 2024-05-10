@@ -1,19 +1,23 @@
 import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
 import wssService from './wssService.js'
-import {mxAlert, mxFetch } from '/src/js/mixins/index.js';
+import {mxAlert, mxFetch, mxList, mxSearch } from '/src/js/mixins/index.js';
 
 export default function (settings) {
     return {
         // properties
-        postbackUrl: 'wssContentServicePostActions.postbackUrl',
+        postbackUrl: 'wssContentPostActions.postbackUrl',
+        queryUrl: 'wssContentPostActions.queryUrl',
         // mixins
         ...mxFetch(settings),
         ...mxAlert(settings),
+        ...mxList(settings),
+        ...mxSearch(settings),
         // inherited
         ...wssService(settings),
 
         async init() {
             this.postbackUrl = settings.postbackUrl;
+            this.queryUrl = settings.queryUrl;
             await this.initializeWssClient();
             await this.connectUser(settings.userId);
             // On updates from the websocket 
@@ -25,6 +29,13 @@ export default function (settings) {
             })
         },
         // Custom logic
+        async Search(filters) {
+            let query = this._mxList_GetFilters(filters);
+            const postQuery = this._mxSearch_CreateSearchQuery(query);
+            if (postQuery == null) return;
+            const items = await this._mxSearch_Post(this.queryUrl, postQuery);
+            this.setItems(items);
+        },
         async _wssContentActions_HandlePost(payload) {
             const url = `${this.postbackUrl}`
             const result = await this._mxFetch_Post(url, payload);

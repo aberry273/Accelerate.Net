@@ -10,6 +10,7 @@ namespace Accelerate.Foundations.Common.Models.Views
     {
         public Guid? UserId { get; set; }
         public bool IsAuthenticated { get; set; }
+        public List<JsServiceSettings> ServiceSettings { get; set; } = new List<JsServiceSettings>();
         public NavigationBar TopNavigation { get; set; } = new NavigationBar();
 
         public Footer Footer { get; set; } = new Footer();
@@ -39,6 +40,7 @@ namespace Accelerate.Foundations.Common.Models.Views
             SEO = model.SEO;
             SideNavigation = model.SideNavigation;
             SocialMetadata = model.SocialMetadata;
+            ServiceSettings = model.ServiceSettings;
         }
     }
 }

@@ -41,26 +41,17 @@ export default function (data) {
              
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
-                await this.search(filterUpdates);
+                await this.$store.wssContentPosts.Search(filterUpdates);
             })
             await this.initSearch();
 
             this.setHtml(data);
         },
         async initSearch() {
-         let queryData = this.filters || {}
-          await this.search(queryData);
+            let queryData = this.filters || {}
+            await this.$store.wssContentPosts.Search(queryData);
         },
 
-        // METHODS
-        async search(filters) {
-            let query = this._mxList_GetFilters(filters);
-            const postQuery = this._mxSearch_CreateSearchQuery(query);
-            if (postQuery == null) return;
-            const items = await this._mxSearch_Post(this.searchUrl, postQuery);
-
-            this.$store.wssContentPosts.setItems(items);
-        },
         // METHODS
         setHtml(data) {
             // make ajax request 

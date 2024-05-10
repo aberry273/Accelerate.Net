@@ -28,7 +28,9 @@ namespace Accelerate.Features.Content.Services
         private BasePage CreateBaseContent(AccountUser user)
         {
             var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
-            return _metaContentService.CreatePageBaseContent(profile);
+            var model = _metaContentService.CreatePageBaseContent(profile);
+            model.ServiceSettings = this.CreateContentServiceSettings(user.Id, model.Url);
+            return model;
         }
         public ChannelsPage CreateAnonymousChannelsPage()
         {
@@ -153,6 +155,37 @@ namespace Accelerate.Features.Content.Services
             viewModel.Title = "Post not found";
             viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
             return viewModel;
+        }
+        private List<JsServiceSettings> CreateContentServiceSettings(Guid userId, string domainUrl)
+        {
+            return new List<JsServiceSettings>()
+            {
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentChannels",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentChannels",
+                    Url = $"{domainUrl}/ContentChannels",
+                },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPosts",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPosts",
+                    Url = $"{domainUrl}/ContentPosts",
+                    PostbackUrl = "/api/contentposts",
+                    QueryUrl = "/api/contentsearch/posts"
+                },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPostActions",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPostActions",
+                    Url = $"{domainUrl}/ContentPostActions",
+                    PostbackUrl = "/api/contentpostactions",
+                    QueryUrl = "/api/contentsearch/actions"
+                },
+            };
         }
         public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null)
         {

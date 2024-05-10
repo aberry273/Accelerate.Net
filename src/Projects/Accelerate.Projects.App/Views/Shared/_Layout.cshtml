@@ -69,37 +69,42 @@
     </script>
     <!-- JS Libraries -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
-    
+
     <script>
-        let wssSettings = {
-            wssContentChannels: {
+       
+        //let wssSettings = @JsonSerializerHelper.SerializeObject(Model.ServiceSettings)
+        
+        let wssSettings = [
+            {
+                serviceName: 'wssContentChannels',
                 userId: '@Model.UserId',
                 wssEvent: 'wss:contentChannels',
                 url: "@Model.Url/ContentChannels",
             },
-            wssContentPosts: {
+            {
+                serviceName: 'wssContentPosts',
                 userId: '@Model.UserId',
                 wssEvent: 'wss:contentPosts',
                 url: "@Model.Url/ContentPosts",
+                postbackUrl: '/api/contentpostactions',
+                queryUrl: '/api/contentsearch/posts',
             },
-            wssContentPostActions: {
+            {
+                serviceName: 'wssContentPostActions',
                 userId: '@Model.UserId',
                 wssEvent: 'wss:contentPostActions',
                 url: "@Model.Url/ContentPostActions",
                 postbackUrl: '/api/contentpostactions',
+                queryUrl: '/api/contentsearch/actions',
             },
-            wssMediaBlobs: {
+            {
+                serviceName: 'wssMediaBlobs',
                 userId: '@Model.UserId',
                 wssEvent: 'wss:mediaBlobs',
                 url: "@Model.Url/MediaBlobs",
-            },
-            /*
-            wssContentPostActivities: {
-                wssEvent: 'wss:contentPostActivities',
-                url: "@Model.Url/ContentPostActivities",
-            },
-            */
-        };
+            }, 
+        ];
+       
     </script>
     <!-- For componentizing and lazy loading Alpine -->
     <script type="module" src="~/src/js/init.js"></script>

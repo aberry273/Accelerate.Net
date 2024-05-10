@@ -1,5 +1,7 @@
-export default function (data){
+import { mxFetch } from '/src/js/mixins/index.js';
+export default function (data) {
     return {
+        ...mxFetch(),
         init() {
             this.$watch('mxSearch_Open', () => { })
         },
@@ -38,8 +40,8 @@ export default function (data){
         },
 
         async _mxSearch_Post(fetchUrl, searchQuery) {
-            if (!fetchUrl || !searchQuery) return;
-            return await this.$fetch.POST(fetchUrl, searchQuery);
+            if (!fetchUrl || !searchQuery) throw new DOMException("no url or data pased into _mxSearch_Post");
+            return await this._mxFetch_Post(fetchUrl, searchQuery);
         },
     }
 }
