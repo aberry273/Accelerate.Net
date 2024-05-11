@@ -15,12 +15,12 @@ namespace Accelerate.Foundations.Content.Services
     public interface IContentPostElasticService
     {
         Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query);
-        Task<List<ContentPostDocument>> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10);
-        Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query);
+        Task<ContentSearchResults> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10);
+        Task<ContentSearchResults> SearchPosts(RequestQuery Query);
+        Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);
-        Task<List<ContentPostDocument>> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
-
+        
         QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query);
         Query CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);

@@ -40,6 +40,7 @@
     }
     public class RequestQuery
     {
+        public Guid? UserId { get; set; }
         public int Page { get; set; } = 0;
         public int ItemsPerPage { get; set; } = 10;
         //public Dictionary<string, List<string>>? Filters { get; set; }

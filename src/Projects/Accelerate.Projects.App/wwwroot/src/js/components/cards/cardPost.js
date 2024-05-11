@@ -96,7 +96,7 @@ export default function (data) {
         userSelectedAction(action, item) {
             // Retrieves the action based on the post actions
             //return this._mxContentActions_GetAction(item, action);
-            return this.$store.wssContentPostActions._wssContentActions_CheckUserAction(item.id, this.userId, action);
+            return this.$store.wssContentPosts.CheckUserPostAction(item.id, this.userId, action);
         },
         cleanTargetThread(post) {
             if (!post.targetThread) return post.shortThreadId

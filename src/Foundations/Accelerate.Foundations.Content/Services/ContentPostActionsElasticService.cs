@@ -10,7 +10,7 @@ using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentPostActionsElasticService :  ElasticService<ContentPostActionsDocument>
+    public class ContentPostActionsElasticService : ElasticService<ContentPostActionsDocument>
     {
 
         public ContentPostActionsElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)

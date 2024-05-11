@@ -23,9 +23,13 @@ namespace Accelerate.Foundations.Content.Services
     //Overwrite the core service for custom filtering
     public class ContentPostElasticService : ElasticService<ContentPostDocument>, IContentPostElasticService
     {
-
-        public ContentPostElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
+        IElasticService<ContentPostActionsDocument> _actionSearchService;
+        public ContentPostElasticService(
+            IOptions<ElasticConfiguration> options, 
+            IOptions<ContentConfiguration> config,
+            IElasticService<ContentPostActionsDocument> actionSearchService) : base(options)
         {
+            _actionSearchService = actionSearchService;
             this._indexName = config.Value.PostIndexName;
             _settings = new IndexSettings()
             {
@@ -99,7 +103,7 @@ namespace Accelerate.Foundations.Content.Services
                 Value = ContentPostType.Page
             };
         }
-        public async Task<List<ContentPostDocument>> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10)
+        public async Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10)
         {
             var elasticQuery = BuildRelatedSearchQuery(channel, query);
             //TODO: remove
@@ -108,14 +112,16 @@ namespace Accelerate.Foundations.Content.Services
             if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
             int skip = take * page;
 
+            var model = new ContentSearchResults();
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
-                return new List<ContentPostDocument>();
+                return model;
             }
-            return results.Documents.ToList();
+            model.Posts = results.Documents.ToList();
+            return model;
         }
-        public async Task<List<ContentPostDocument>> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10)
+        public async Task<ContentSearchResults> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10)
         {
             var elasticQuery = BuildUserSearchQuery(userId);
             //TODO: remove
@@ -124,14 +130,16 @@ namespace Accelerate.Foundations.Content.Services
             if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
             int skip = take * page;
 
+            var model = new ContentSearchResults();
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
-                return new List<ContentPostDocument>();
+                return model;
             }
-            return results.Documents.ToList();
+            model.Posts = results.Documents.ToList();
+            return model;
         }
-        public async Task<List<ContentPostDocument>> SearchPosts(RequestQuery Query)
+        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
         {
             var elasticQuery = BuildSearchQuery(Query);
             //TODO: remove
@@ -141,12 +149,18 @@ namespace Accelerate.Foundations.Content.Services
             if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
             int skip = take * Query.Page;
 
+            var model = new ContentSearchResults();
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
-                return new List<ContentPostDocument>();
+                return model;
             }
-            return results.Documents.ToList();
+            model.Posts = results.Documents.ToList();
+            //actions
+            var postIds = model.Posts.Select(x => x.Id.ToString()).ToList();
+            var postActionResults = await SearchPostActions(Query, postIds);
+            model.Actions = postActionResults.ToList();
+            return model;
         }
 
         public RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId)
@@ -171,6 +185,29 @@ namespace Accelerate.Foundations.Content.Services
         }
         #region Actions
 
+        public async Task<List<ContentPostActionsDocument>> SearchPostActions(RequestQuery Query, List<string> ids)
+        {
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * Query.Page;
+            var searchquery = BuildPostActionsSearchQuery(Query, ids);
+            var results = await _actionSearchService.Search<ContentPostActionsDocument>(searchquery, skip, take);
+            if (!results.IsValidResponse || !results.IsSuccess())
+            {
+                return new List<ContentPostActionsDocument>();
+            }
+            return results.Documents.ToList();
+        }
+        public QueryDescriptor<ContentPostActionsDocument> BuildPostActionsSearchQuery(RequestQuery query, List<string> postIds)
+        {
+            var Query = new RequestQuery();
+            Query.Filters = new List<QueryFilter>()
+            {
+                Filter(Constants.Fields.UserId, ElasticCondition.Filter, query.UserId),
+                FilterValues(Constants.Fields.ContentPostId, ElasticCondition.Filter, QueryOperator.Equals, postIds, true)
+            };
+            return _actionSearchService.CreateQuery(Query);
+        }
         public async Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query)
         {
             var elasticQuery = GetUserActionsQuery(Query);

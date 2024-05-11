@@ -67,16 +67,16 @@ namespace Accelerate.Features.Content.Controllers.Api
         public async Task<IActionResult> SearchUserPosts([FromBody] RequestQuery query, [FromRoute] Guid userId)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var docs = await _searchService.SearchUserPosts(userId, query.Page, query.ItemsPerPage);
-            return Ok(docs);
+            var result = await _searchService.SearchUserPosts(userId, query.Page, query.ItemsPerPage);
+            return Ok(result);
         }
         [Route("Posts")]
         [HttpPost]
         public async Task<IActionResult> SearchPosts([FromBody] RequestQuery query)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var docs = await _searchService.SearchPosts(query);
-            return Ok(docs);
+            var result = await _searchService.SearchPosts(query);
+            return Ok(result);
         }
         [Route("Posts/Related/{channelId}")]
         [HttpPost]
@@ -84,8 +84,8 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             var channel = await _searchChannelService.GetDocument<ContentChannelDocument>(channelId.ToString());
-            var docs = await _searchService.SearchRelatedPosts(channel.Source, query);
-            return Ok(docs);
+            var result = await _searchService.SearchRelatedPosts(channel.Source, query);
+            return Ok(result);
         }
         [Route("Channels")]
         [HttpPost]

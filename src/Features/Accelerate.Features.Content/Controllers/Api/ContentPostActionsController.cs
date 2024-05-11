@@ -110,7 +110,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public override async Task<IActionResult> Post([FromBody] ContentPostActionsEntity obj)
         {
-            var existingAction = _service.Find(x => x.UserId == obj.UserId).FirstOrDefault();
+            var existingAction = _service.Find(x => x.UserId == obj.UserId && x.ContentPostId == obj.ContentPostId, 0, 1).FirstOrDefault();
             if (existingAction != null)
             {
                 //If exists, edit existing

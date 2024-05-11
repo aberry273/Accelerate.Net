@@ -88,7 +88,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             var contentPostDocument = fetchResponse.Source; 
             contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
+            await _elasticPostService.UpdateOrCreateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 
             // Send websocket request
             await ContentPostUtilities.SendWebsocketPostUpdate(_messageHubPosts ,args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);

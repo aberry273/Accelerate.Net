@@ -32,27 +32,28 @@ export default function (settings) {
         setItems(items) {
             this.items = items;
         },
-        updateItems(wssMessage) {
+        updateItems(items, wssMessage) {
             var item = wssMessage.data;
             let emptyItems = false;
-            if (this.items == null) {
-                this.items = [];
+            if (items == null) {
+                items = [];
                 emptyItems = true;
             }
             if (wssMessage.update == 'Created') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                if (index == -1) this.items.push(item);
-                else this.items[index] = item
+                const index = items.map(x => x.id).indexOf(item.id);
+                if (index == -1) items.push(item);
+                else items[index] = item
             }
             if (wssMessage.update == 'Updated') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items[index] = item
+                const index = items.map(x => x.id).indexOf(item.id);
+                items[index] = item
                 this._mxEvents_Emit(item.id, item);
             }
             if (wssMessage.update == 'Deleted') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items.splice(index, 1);
+                const index = items.map(x => x.id).indexOf(item.id);
+                items.splice(index, 1);
             }
+            return items;
         },
         getMessageEvent() {
             return `${this.wssEvent}:${messageEvent}`;

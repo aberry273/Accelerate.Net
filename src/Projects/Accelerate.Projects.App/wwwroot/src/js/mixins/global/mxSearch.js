@@ -14,7 +14,7 @@ export default function (data) {
         
         // METHODS
         /// Converts the data object into a list of filters
-        _mxSearch_CreateSearchQuery(data, page = 0, itemsPerPage = 10) {
+        _mxSearch_CreateSearchQuery(data, userId, page = 0, itemsPerPage = 1) {
             if (!data) return;
             let filters = [];
         
@@ -32,6 +32,7 @@ export default function (data) {
             }
             let payload = {
                 query: null,
+                userId: userId,
                 page: page,
                 itemsPerPage: itemsPerPage,
                 filters: filters,

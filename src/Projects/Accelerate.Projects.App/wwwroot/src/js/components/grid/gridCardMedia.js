@@ -139,7 +139,7 @@ export default function (data) {
         // METHODS
         async search(filters) {
             let query = this._mxList_GetFilters(filters);
-            const postQuery = this._mxSearch_CreateSearchQuery(query, 0, 100);
+            const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId, 0, 100);
             if (postQuery == null) return;
             this.items = await this._mxSearch_Post(this.searchUrl, postQuery);
         },
