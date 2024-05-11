@@ -42,11 +42,11 @@ export default function (data) {
                 userId: this.userId,
                 contentPostId: this.selectedPost.id,
             }
-            payload[action] = true;
+            payload[action] = this.userSelectedAction(action, this.selectedPost) ? false : true;
             return payload;
         },
         async quote() {
-            this.$events.emit(this.actionEvent+':quote', this.selectedPost)
+            this.$events.emit(actionEvent+':quote', this.selectedPost)
         },
         async action(action) {
             const payload = this.CreatePostActionPayload(action);

@@ -28,7 +28,7 @@ export default function (settings) {
 
                 if (data.alert) this._mxAlert_AddAlert(data);
 
-                this._mxEvents_On(wssContentPostActionsUpdate, data);
+                this._mxEvents_Emit(wssContentPostActionsUpdate, data);
                 // N ow use the contentService to hold actions
                 //this.items = this.updateItems(this.items, data);
             })

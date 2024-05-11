@@ -1,13 +1,14 @@
 import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
 import wssService from './wssService.js'
-import { mxAlert, mxList, mxSearch } from '/src/js/mixins/index.js';
-const wssContentPostActionsUpdate = 'wss:post:action';
+import {mxAlert, mxFetch, mxList, mxSearch } from '/src/js/mixins/index.js';
+
 export default function (settings) {
     return {
-        postbackUrl: 'wssContentPosts.postbackUrl',
-        queryUrl: 'wssContentPosts.queryUrl',
-        actions: [],
+        // properties
+        postbackUrl: 'wssContentChannels.postbackUrl',
+        queryUrl: 'wssContentChannels.queryUrl',
         // mixins
+        ...mxFetch(settings),
         ...mxAlert(settings),
         ...mxList(settings),
         ...mxSearch(settings),
@@ -20,18 +21,11 @@ export default function (settings) {
             this.userId = settings.userId;
             await this.initializeWssClient();
             await this.connectUser(settings.userId);
-
-            // On updates from the websocket 
             this._mxEvents_On(this.getMessageEvent(), async (e) => {
                 const data = e.data;
                 if (!data) return;
                 if (data.alert) this._mxAlert_AddAlert(data);
                 this.items = this.updateItems(this.items, data);
-            })
-            // Listen for wssContentPostActionsUpdate
-            this._mxEvents_On(wssContentPostActionsUpdate, async (data) => {
-                if (!data) return;
-                this.actions = this.updateItems(this.actions, data);
             })
         },
         // Custom logic
@@ -42,16 +36,6 @@ export default function (settings) {
             const result = await this._mxSearch_Post(this.queryUrl, postQuery);
             this.setItems(result.posts);
             this.actions = result.actions;
-        },
-        GetPostAction(postId, userId) {
-            const actions = this.actions.filter(x => x.userId == userId && x.contentPostId == postId);
-            if (actions == null || actions.length == 0) return null;
-            return actions[0];
-        },
-        CheckUserPostAction(postId, userId, actionType) {
-            const action = this.GetPostAction(postId, userId);
-            if (action == null) return false;
-            return action[actionType] === true;
         },
     }
 }

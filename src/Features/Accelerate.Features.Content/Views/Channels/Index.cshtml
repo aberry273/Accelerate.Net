@@ -14,13 +14,7 @@
                     <h1>All</h1>
                 </hgroup>
             </header>
-            <ul x-data="mxWebsocketListener({
-                wss: $store.wssContentChannels,
-                userId: '@Model.UserId',
-                targetThread: null,
-                targetChannel: null,
-                items: @JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown.Items)
-            })">
+            <ul>
                 <div x-data="dropdown(@JsonSerializerHelper.SerializeObject(Model.ChannelsDropdown))"></div>
                 <!--Filters-->
                 @if(Model.ModalCreateChannel != null)

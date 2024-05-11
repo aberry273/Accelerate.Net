@@ -113,18 +113,6 @@ namespace Accelerate.Features.Content.Controllers.Api
             var existingAction = _service.Find(x => x.UserId == obj.UserId && x.ContentPostId == obj.ContentPostId, 0, 1).FirstOrDefault();
             if (existingAction != null)
             {
-                //If exists, edit existing
-                //If neither set on request, use existing (user only likes)
-                if(obj.Agree == null && obj.Disagree == null)
-                {
-                    obj.Agree = existingAction.Agree;
-                    obj.Disagree = existingAction.Disagree;
-                }
-                //if both are set to true, set disagree to false and agree to true;
-                if (obj.Agree.GetValueOrDefault() && obj.Disagree.GetValueOrDefault())
-                {
-                    obj.Disagree = null;
-                }
                 this.UpdateValues(existingAction, obj);
                 return await this.Put(existingAction.Id, existingAction);
             }

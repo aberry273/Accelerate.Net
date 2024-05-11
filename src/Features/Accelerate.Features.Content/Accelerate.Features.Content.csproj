@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <Folder Include="Views\Content\" />
+    <Folder Include="Views\Channel\" />
   </ItemGroup>
 
 </Project>

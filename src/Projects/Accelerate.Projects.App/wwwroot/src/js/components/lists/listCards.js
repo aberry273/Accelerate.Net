@@ -65,10 +65,10 @@ export default function (data) {
                   updateEvent: item.id,
                 })"></div>
               </template>
-              <template x-if="items == null || items.length == 0">
+              <template x-if="$store.wssContentPosts.items == null || $store.wssContentPosts.items.length == 0">
                 <article>
                   <header><strong>No results!</strong></header>
-                  No results could be found
+                  It looks not there are no posts here yet, try create your own!
                 </article>
               </template>
             </div>
