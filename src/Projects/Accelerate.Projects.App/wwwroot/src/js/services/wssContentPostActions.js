@@ -41,6 +41,7 @@ export default function (settings) {
             // websocket will update it accordingly to remove if failure
             // or with proper data if successful
             if (result.status >= 200 < 300) {
+                payload.animate = true;
                 this._mxEvents_Emit(wssContentPostActionsUpdate, payload);
             }
         },

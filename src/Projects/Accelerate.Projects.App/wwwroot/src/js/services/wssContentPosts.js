@@ -43,11 +43,15 @@ export default function (settings) {
             this.setItems(result.posts);
             this.actions = result.actions;
         },
-        CheckUserPostAction(postId, userId, action) {
+        GetPostAction(postId, userId) {
             const actions = this.actions.filter(x => x.userId == userId && x.contentPostId == postId);
-            if (actions == null || actions.length == 0) return false;
-            const result = actions[0];
-            return result[action];
+            if (actions == null || actions.length == 0) return null;
+            return actions[0];
+        },
+        CheckUserPostAction(postId, userId, actionType) {
+            const action = this.GetPostAction(postId, userId);
+            if (action == null) return false;
+            return action[actionType];
         },
     }
 }
