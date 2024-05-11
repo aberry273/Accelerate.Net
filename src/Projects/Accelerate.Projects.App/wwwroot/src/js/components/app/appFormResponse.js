@@ -173,7 +173,7 @@ export default function (data) {
                       <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
                         <progress x-show="loading"></progress>
                         <!--Quotes-->
-                        <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>
+                        <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
                         <fieldset role="group">
                             <!--Toggle fields-->
@@ -206,7 +206,7 @@ export default function (data) {
             <article class="dense sticky" x-ref="fixedForm">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->
-                <fieldset class="pa-2" x-data="formFields({fields})"></fieldset>
+                <fieldset class="padded" x-data="formFields({fields})"></fieldset>
                 
                 <fieldset role="group">
                     <!--Toggle fields-->

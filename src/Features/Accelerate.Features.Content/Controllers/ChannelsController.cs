@@ -36,6 +36,7 @@ namespace Accelerate.Features.Content.Controllers
         IEntityService<AccountProfile> _profileService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
+        private const string _channelPath = "~/Views/Channel";
         private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
         public ChannelsController(
             IMetaContentService service,
@@ -73,8 +74,9 @@ namespace Accelerate.Features.Content.Controllers
             //if (user == null) return RedirectToAction("Index", "Account");
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelsAggregateQuery());
 
-            var viewModel = _contentViewService.CreateChannelsPage(user, channels);
+            var viewModel = _contentViewService.CreateChannelsPage(user, channels, aggResponse);
 
             return View(viewModel);
         }
@@ -113,7 +115,10 @@ namespace Accelerate.Features.Content.Controllers
         {
             return await All(id);
         }
-
+        private string GetChannelView(string routeName)
+        {
+            return $"{_channelPath}/{routeName}.cshtml";
+        }
         [HttpGet]
         [Route("Channels/{id}/All")]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
@@ -131,7 +136,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
-            return View(viewModel);
+            return View(this.GetChannelView(nameof(this.All)), viewModel);
         }
         [HttpGet]
         [Route("Channels/{id}/Posts")]
@@ -150,7 +155,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
-            return View(viewModel);
+            return View(this.GetChannelView(nameof(this.Posts)), viewModel);
         }
 
         [HttpGet]
@@ -170,7 +175,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
-            return View(viewModel);
+            return View(this.GetChannelView(nameof(this.Related)), viewModel);
         }
         [HttpGet]
         [Route("Channels/{id}/Media")]
@@ -189,7 +194,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
-            return View(viewModel);
+            return View(this.GetChannelView(nameof(this.Media)), viewModel);
         }
 
         [HttpGet]
@@ -209,7 +214,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
-            return View(viewModel);
+            return View(this.GetChannelView(nameof(this.Users)), viewModel);
         }
 
         private QueryDescriptor<ContentChannelDocument> GetUserChannelsQuery(AccountUser user)

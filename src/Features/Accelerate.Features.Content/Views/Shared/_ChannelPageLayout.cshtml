@@ -22,7 +22,10 @@
             <ul>
                 <button x-show="showDetails" class="material-icons click flat primary" @@click="showDetails = false">expand_less</button>
                 <button x-show="!showDetails" class="material-icons click flat primary" @@click="showDetails = true">expand_more</button>
-                <button class="material-icon click flat primary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
+                @if(Model.UserId == Model.Item.UserId)
+                {
+                    <button class="material-icon click flat primary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
+                }
             </ul>
         </nav>
         <div x-show="showDetails" x-transition>
@@ -81,34 +84,16 @@
         <section>
             @RenderBody()
         </section>
-        <!--
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-
-        <div x-data="appNavFilters({
-            filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-            event: '@Model.FilterEvent'
-        })"></div>
-
-        <div x-data="listCards( {
-            actionUrl: 'https://localhost:7220/api/contentpostactivity',
-            searchUrl: 'https://localhost:7220/api/contentsearch/posts',
-            filterEvent: '@Model.FilterEvent',
-            userId: '@Model.UserId',
-            actionEvent: 'action:post',
-            targetChannel: '@Model.Item.Id',
-            itemEvent: $store.wssContentPosts.getMessageEvent(),
-          })">
-        </div>
-        -->
+       
     </div>
 </div>
 
 <!-- Modals -->
 <!-- Edit channel -->
-<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
-
 @if (Model.IsAuthenticated)
 {
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
+
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
 
     <!-- Delete post -->

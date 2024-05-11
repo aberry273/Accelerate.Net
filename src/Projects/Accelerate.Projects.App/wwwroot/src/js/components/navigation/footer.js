@@ -23,9 +23,9 @@ export default function navbar(data) {
         this.$root.innerHTML = `
           <footer>
             <nav>
-              <ul>
+              <li class="pl-0">
                 ${data.text}
-              </ul>
+              </li>
               <ul>
                 <li>
                   <details class="dropdown">

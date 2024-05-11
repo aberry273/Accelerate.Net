@@ -71,9 +71,8 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 
     <script>
-       
-        //let wssSettings = @JsonSerializerHelper.SerializeObject(Model.ServiceSettings)
-        
+        let wssSettings = @Html.Raw(JsonSerializerHelper.SerializeObject(Model.ServiceSettings))
+        /*
         let wssSettings = [
             {
                 serviceName: 'wssContentChannels',
@@ -106,6 +105,7 @@
                 url: "@Model.Url/MediaBlobs",
             }, 
         ];
+        */
        
     </script>
     <!-- For componentizing and lazy loading Alpine -->

@@ -48,13 +48,52 @@ namespace Accelerate.Foundations.Common.Services
         {
             return (profile != null && profile.IsAuthenticated)
                 ? this.CreateAuthenticatedContent(profile)
-                : this.CreateUnauthenticatedContent(); 
+                : this.CreateUnauthenticatedContent();
+        }
+        private List<JsServiceSettings> CreateContentServiceSettings(Guid? userId, string domainUrl)
+        {
+            return new List<JsServiceSettings>()
+            {
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentChannels",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentChannels",
+                    Url = $"{domainUrl}/ContentChannels",
+                },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPosts",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPosts",
+                    Url = $"{domainUrl}/ContentPosts",
+                    PostbackUrl = "/api/contentposts",
+                    QueryUrl = "/api/contentsearch/posts"
+                },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPostActions",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPostActions",
+                    Url = $"{domainUrl}/ContentPostActions",
+                    PostbackUrl = "/api/contentpostactions",
+                    QueryUrl = "/api/contentsearch/actions"
+                },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssMediaBlobs",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:mediaBlobs",
+                    Url = $"{domainUrl}/MediaBlobs",
+                },
+            };
         }
         public BasePage CreateUnauthenticatedContent()
         {
             return new BasePage()
             {
-                Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
+                Url = _siteConfig.Domain,
+                ServiceSettings = this.CreateContentServiceSettings(null, _siteConfig.Domain),
                 SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
@@ -70,7 +109,8 @@ namespace Accelerate.Foundations.Common.Services
             {
                 UserId = profile.UserId,
                 IsAuthenticated = true,
-                Url = _urlHelper.ActionContext.HttpContext.Request.Host.Value,
+                ServiceSettings = this.CreateContentServiceSettings(profile.UserId, _siteConfig.Domain),
+                Url = _siteConfig.Domain,
                 SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),

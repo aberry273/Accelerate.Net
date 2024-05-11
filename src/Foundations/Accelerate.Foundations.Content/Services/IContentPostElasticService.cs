@@ -25,7 +25,7 @@ namespace Accelerate.Foundations.Content.Services
         Query CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
         Task<DeleteIndexResponse> DeleteIndex();
-
+        RequestQuery<ContentPostDocument> CreateChannelsAggregateQuery();
         RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields);
         RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId);
     }

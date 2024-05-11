@@ -173,18 +173,17 @@ export default function (data) {
                         <nav>
                             <template x-if="selectedPost.profile != null">
                                 <ul class="profile">
-                                    <template x-if="selectedPost.profile.image != null">
+                                    <template x-if="selectedPost.profile.image != null && selectedPost.profile.image.length>0">
                                         <li>
                                             <button class="avatar small">
                                                 <img 
                                                     :src="selectedPost.profile.image+'?w=40'"
-                                                    :alt="selectedPost.profile.username"
                                                 />
                                             </button>
                                         </li>
                                     </template>
                                     <aside>
-                                        <li class="secondary pa-0">
+                                        <li class="secondary pa-0" style="padding-top:0px;">
                                             <strong class="pb-0">
                                                 <span x-text="selectedPost.profile.username"></span>
                                             </strong>
@@ -260,6 +259,7 @@ export default function (data) {
                                             <small>
                                                 <small>
                                                     <span x-text="selectedPost.shortThreadId"></span>
+                                                    <i style="font-size: calc(var(--pico-font-size)*0.875)" class="material-icons ">open_in_full</i>
                                                     <template x-if="selectedPost.replies > 0">
                                                         <span x-text="'('+selectedPost.replies+')'"></span>
                                                     </template>
@@ -275,6 +275,7 @@ export default function (data) {
                                     <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Agree">expand_less</i>
                                     <i x-show="userId" aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userSelectedAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
+                                   
                                     <!--Disagree-->
                                     <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Disagree">expand_more</i>
                                     <i x-show="userId" aria-label="Disagree" @click="action('disagree')" :class="userSelectedAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>

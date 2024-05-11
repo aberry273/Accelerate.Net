@@ -12,7 +12,7 @@ namespace Accelerate.Features.Content.Services
     public interface IContentViewService
     {
         NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);
-        ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels);
+        ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null);
         ChannelsPage CreateAnonymousChannelsPage();

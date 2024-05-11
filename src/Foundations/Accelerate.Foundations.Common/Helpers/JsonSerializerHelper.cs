@@ -15,7 +15,7 @@ namespace Accelerate.Foundations.Common.Helpers
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 ContractResolver = new SubstituteNullWithEmptyStringContractResolver(),
-                Formatting = Formatting.Indented,
+                Formatting = Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore,
             };
             return JsonConvert.SerializeObject(obj, settings);

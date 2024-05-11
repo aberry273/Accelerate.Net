@@ -41,7 +41,7 @@ export default function (settings) {
             }
             if (wssMessage.update == 'Created') {
                 const index = items.map(x => x.id).indexOf(item.id);
-                if (index == -1) items.push(item);
+                if (index == -1) items.unshift(item);
                 else items[index] = item
             }
             if (wssMessage.update == 'Updated') {

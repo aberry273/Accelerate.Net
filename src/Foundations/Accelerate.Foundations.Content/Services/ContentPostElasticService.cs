@@ -345,6 +345,20 @@ namespace Accelerate.Foundations.Content.Services
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }
 
+        public RequestQuery<ContentPostDocument> CreateChannelsAggregateQuery()
+        {
+            var filters = new List<QueryFilter>()
+            {
+                //this.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, channelId)
+            };
+            var aggregates = new List<string>()
+            {
+                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
+        }
+
         public Elastic.Clients.Elasticsearch.QueryDsl.Query[] GetQueries(RequestQuery request, ElasticCondition condition)
         {
             throw new NotImplementedException();
