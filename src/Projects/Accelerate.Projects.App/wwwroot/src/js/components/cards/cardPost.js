@@ -1,5 +1,6 @@
 const defaults = {}
 import cardRenderingText from './cardRenderingText.js'
+const quoteEvent = 'action:post:quote';
 export default function (data) {
     return {
         currentPage: 0,
@@ -7,7 +8,7 @@ export default function (data) {
         item: null,
         userId: null,
         updateEvent: '',
-        actionEvent: 'action:post',
+        actionEvent: 'action:post', 
         modalEvent: 'action:post',
         redirectEvent: 'action:post',
         filterEvent: 'on:filter:posts',
@@ -20,7 +21,7 @@ export default function (data) {
             this.item = data.item;
             this.userId = data.userId;
             this.updateEvent = data.updateEvent,
-            this.thread = this.setThreadItems(data.item);
+            this.thread = this.setThreadItems(data.item); 
 
             const self = this;
             this.load(this.data)
@@ -46,7 +47,7 @@ export default function (data) {
             return payload;
         },
         async quote() {
-            this.$events.emit(actionEvent+':quote', this.selectedPost)
+            this.$events.emit(quoteEvent, this.selectedPost)
         },
         async action(action) {
             const payload = this.CreatePostActionPayload(action);
@@ -271,10 +272,12 @@ export default function (data) {
                             <ul>
                                 <li>
                                     <!--Agree-->
-                                    <i aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userSelectedAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
+                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Agree">expand_less</i>
+                                    <i x-show="userId" aria-label="Agree" :href="selectedPost.id" @click="action('agree')" :class="userSelectedAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
                                     <!--Disagree-->
-                                    <i aria-label="Disagree" @click="action('disagree')" :class="userSelectedAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
+                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Disagree">expand_more</i>
+                                    <i x-show="userId" aria-label="Disagree" @click="action('disagree')" :class="userSelectedAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
                                     <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
                                  
                                     <!--Likes-->
@@ -284,7 +287,8 @@ export default function (data) {
                                     -->
                                     
                                     <!--Quotes-->
-                                    <i aria-label="Quote" @click="quote()" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
+                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Quote">format_quote</i>
+                                    <i x-show="userId" aria-label="Quote" @click="quote()" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
 
                                 </li>

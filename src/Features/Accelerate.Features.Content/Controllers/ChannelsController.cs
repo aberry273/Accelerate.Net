@@ -216,7 +216,7 @@ namespace Accelerate.Features.Content.Controllers
         {
             var query = new QueryDescriptor<ContentChannelDocument>();
             query.MatchAll();
-            query.Term(x => x.UserId.Suffix("keyword"), user != null ? user.Id.ToString() : Guid.Empty.ToString());
+            query.Term(x => x.UserId.Suffix("keyword"), user != null ? user.Id.ToString() : null);
             return query;
         } 
     }

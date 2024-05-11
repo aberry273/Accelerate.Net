@@ -2,11 +2,13 @@ import { emit, createClient, connectedEvent, messageEvent } from './utilities.js
 import wssService from './wssService.js'
 import { mxAlert, mxList, mxSearch } from '/src/js/mixins/index.js';
 const wssContentPostActionsUpdate = 'wss:post:action';
+const quoteEvent = 'action:post:quote';
 export default function (settings) {
     return {
         postbackUrl: 'wssContentPosts.postbackUrl',
         queryUrl: 'wssContentPosts.queryUrl',
         actions: [],
+        quotes: [],
         // mixins
         ...mxAlert(settings),
         ...mxList(settings),
@@ -33,6 +35,16 @@ export default function (settings) {
                 if (!data) return;
                 this.actions = this.updateItems(this.actions, data);
             })
+            // Listen of post quoting
+            this._mxEvents_On(quoteEvent, async (item) => {
+                const threadKey = item.threadId;
+                const index = this.quotes.indexOf(threadKey);
+                if (index > -1) return;
+                if (index == -1) {
+                    this.quotes.push(threadKey)
+                }  
+            })
+
         },
         // Custom logic
         async Search(filters) {

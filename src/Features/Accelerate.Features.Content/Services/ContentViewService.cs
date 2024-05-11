@@ -38,7 +38,7 @@ namespace Accelerate.Features.Content.Services
             var viewModel = new ChannelsPage(model);
             viewModel.ChannelsDropdown = GetChannelsDropdown();
 
-            viewModel.UserId = Guid.Empty;
+            viewModel.UserId = null;
             return viewModel;
         }
         public ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels)
@@ -57,7 +57,7 @@ namespace Accelerate.Features.Content.Services
                 viewModel.ChannelsDropdown.Items.AddRange(channelItems);
             }
 
-            viewModel.UserId = user != null ? user.Id : Guid.Empty;
+            viewModel.UserId = user != null ? user.Id : null;
             viewModel.FormCreatePost = user != null ? CreatePostForm(user) : null;
             viewModel.ModalCreateChannel = CreateModalChannelForm(user);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);

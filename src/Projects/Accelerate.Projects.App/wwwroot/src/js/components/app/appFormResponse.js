@@ -1,7 +1,6 @@
 
-import mxForm from '/src/js/mixins/mxForm.js';
-import mxModal from '/src/js/mixins/mxModal.js';
-import mxResponsive from '/src/js/mixins/mxResponsive.js';
+import { mxForm, mxModal, mxResponsive } from '/src/js/mixins/index.js';
+const quoteEvent = 'action:post:quote';
 export default function (data) {
     return {
         ...mxForm(data),
@@ -47,8 +46,7 @@ export default function (data) {
 
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
-            var quoteEvents = this.actionEvent + ':quote';
-            this.$events.on(quoteEvents, async (item) => {
+            this.$events.on(quoteEvent, async (item) => {
                 const field = this._mxForm_GetField(this.fields, 'QuoteIds');
                 if (!field) return;
 
@@ -64,6 +62,7 @@ export default function (data) {
                 field.items = threadIds;
                 this._mxForm_SetField(this.fields, field);
             })
+
             this.setHtml(data)
         },
         // GETTERS
@@ -92,6 +91,13 @@ export default function (data) {
                 || (this.imageField.value != null && this.imageField.value.length > 0)
         },
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
+
+        get fixedStyle() {
+            let style = 'display:block;margin-top: 55px;'
+            if (this.mxResponsive_IsMobile)
+                style += "margin-left: calc(var(--pico-spacing)*-1); padding-right: 0px; padding-left: var(--pico-spacing); ";
+            return style;
+        },
         // 
         async submit(fields) {
             try {
@@ -158,10 +164,11 @@ export default function (data) {
             // make ajax request
             const label = data.label || 'Submit'
             const html = `
-            <nav class="floating container"
+            <!--Floating-->
+            <nav class="floating container" 
                     @scroll.window="fixed = isInPosition ? true : false"
-                    style="margin-top: 55px;  padding-left: 0; margin-left: 0; z-index:111;"
-                    :style="fixed ? 'display:block;margin-top: 55px;padding-left: 0px; ' : 'display:none;'"
+                    style="margin-top: 55px; left:0;  padding-left: 0; z-index:111;"
+                    :style="fixed ? fixedStyle : 'display:none;'"
                 >
                       <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%; padding-right: var(--pico-spacing);">
                         <progress x-show="loading"></progress>
@@ -177,10 +184,10 @@ export default function (data) {
                             <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
                             <!--Cancel-->
                             <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
-                            <button  class="secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
+                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
 
-                            <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                            <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
+                            <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                            <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
 
                             <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 
@@ -195,6 +202,7 @@ export default function (data) {
                 edit
             </button>
 
+            <!--Fixed-->
             <article class="dense sticky" x-ref="fixedForm">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->

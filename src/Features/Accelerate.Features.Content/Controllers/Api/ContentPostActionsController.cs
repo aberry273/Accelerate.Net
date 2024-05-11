@@ -114,6 +114,18 @@ namespace Accelerate.Features.Content.Controllers.Api
             if (existingAction != null)
             {
                 this.UpdateValues(existingAction, obj);
+                var switchAgree = existingAction.Disagree == true && obj.Agree == true;
+                var switchDisagree = existingAction.Disagree == true && obj.Agree == true;
+                existingAction.Agree = existingAction.Agree == true && obj.Agree == false ? null : obj.Agree;
+                existingAction.Disagree = existingAction.Disagree == true && obj.Disagree == false ? null : obj.Disagree;
+                if(obj.Agree == true)
+                {
+                    existingAction.Disagree = null;
+                }
+                if (obj.Disagree == true)
+                {
+                    existingAction.Agree = null;
+                }
                 return await this.Put(existingAction.Id, existingAction);
             }
             // else create new
@@ -128,8 +140,8 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             from.UpdatedOn = DateTime.Now;
             from.Like = to.Like != null ? to.Like : null;
-            from.Agree = to.Disagree != null ? !to.Disagree : to.Agree;
-            from.Disagree = to.Agree != null ? !to.Agree : to.Disagree;
+            from.Agree = to.Agree;
+            from.Disagree =  to.Disagree;
         }
         protected override async Task PostUpdateSteps(ContentPostActionsEntity obj)
         {

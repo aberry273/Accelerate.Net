@@ -7,7 +7,6 @@ namespace Accelerate.Features.Content.Models.Views
 {
     public class ChannelsPage : BasePage
     {
-        public Guid UserId { get; set; }
         public NavigationGroup ChannelsDropdown { get; set; }
         public AjaxForm FormCreatePost { get; set; }
         public ModalForm ModalCreateChannel { get; set; }

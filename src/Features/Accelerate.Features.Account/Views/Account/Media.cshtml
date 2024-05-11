@@ -10,75 +10,31 @@
     <div x-data="{
             item: $store.media.getDummyMedia(),
             items: [],
-            userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+            userId: '@Model.UserId',
             filterEvent: 'onFilterChange',
             actionEvent: 'action:post',
             quoteEvent: 'quote:post',
             filterData: [
                 {
-                name: 'Tags',
-                values: ['C#'],
-                selected: 'C#',
-                type: 'Checkbox',
+                    name: 'Tags',
+                    values: ['C#'],
+                    selected: 'C#',
+                    type: 'Checkbox',
                 },
                 {
-                name: 'Type',
-                values: ['All', 'Image', 'Video'],
-                selected: 'All',
-                type: 'Checkbox',
+                    name: 'Type',
+                    values: ['All', 'Image', 'Video'],
+                    selected: 'All',
+                    type: 'Checkbox',
                 },
                 {
-                name: 'Sort',
-                values: ['Created', 'Updated', 'Top Rated', 'Bottom Rating'],
-                selected: 'All',
-                type: 'Radio',
+                    name: 'Sort',
+                    values: ['Created', 'Updated', 'Top Rated', 'Bottom Rating'],
+                    selected: 'All',
+                    type: 'Radio',
                 }
             ],
-            fields: [
-                {
-                name: 'QuoteIds',
-                type: 'list',
-                class: 'flat',
-                placeholder: 'Quotes',
-                autocomplete: null,
-                ariaInvalid: true,
-                hidden: false,
-                isArray: true,
-                helper: '',
-                value: [],
-                items: [],
-                },
-                {
-                name: 'Content',
-                type: 'textarea',
-                placeholder: 'Whats your update?',
-                autocomplete: null,
-                ariaInvalid: true,
-                helper: ''
-                },
-                {
-                name: 'Tags',
-                type: 'chips',
-                placeholder: 'Tag your post',
-                autocomplete: null,
-                ariaInvalid: true,
-                isArray: false,
-                helper: '',
-                value: [],
-                items: ['tag 123', 'tag 234']
-                },
-                {
-                name: 'UserId',
-                type: 'input',
-                disabled: true,
-                hidden: true,
-                placeholder: 'Whats your update?',
-                autocomplete: null,
-                ariaInvalid: true,
-                helper: '',
-                value: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-                },
-            ],
+            fields: [,
             init() {
 
             }
@@ -104,6 +60,7 @@
                 userId: '@Model.UserId',
                 itemEvent: $store.wssContentPosts.getMessageEvent(),
                 items: items
+                initSearch: true,
                 })">
         </div>
     </div>

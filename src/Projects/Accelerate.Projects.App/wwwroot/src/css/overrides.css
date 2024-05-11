@@ -73,6 +73,9 @@ i:disabled {
     margin: 0
 }
 
+.padded {
+    padding: calc(var(--pico-spacing)* 0.5);
+}
 .pa-0 {
     padding: 0
 }
