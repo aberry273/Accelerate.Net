@@ -29,7 +29,7 @@ namespace Accelerate.Features.Content.Services
         {
             var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
             var model = _metaContentService.CreatePageBaseContent(profile);
-            model.ServiceSettings = this.CreateContentServiceSettings(user.Id, model.Url);
+            model.ServiceSettings = this.CreateContentServiceSettings(user?.Id, model.Url);
             return model;
         }
         public ChannelsPage CreateAnonymousChannelsPage()
@@ -156,7 +156,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
             return viewModel;
         }
-        private List<JsServiceSettings> CreateContentServiceSettings(Guid userId, string domainUrl)
+        private List<JsServiceSettings> CreateContentServiceSettings(Guid? userId, string domainUrl)
         {
             return new List<JsServiceSettings>()
             {

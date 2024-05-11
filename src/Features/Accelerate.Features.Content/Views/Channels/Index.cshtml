@@ -50,11 +50,12 @@
     </div>
 </div>
 
-<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
 
 <!-- Edit post -->
 @if (Model.IsAuthenticated)
 {
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
+
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
 
     <!-- Delete post -->
