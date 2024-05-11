@@ -47,25 +47,22 @@ export default function (data) {
 
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
-            this.$events.on(this.actionEvent, async (request) => {
-                if (request.action == 'quote') {
-                    // Don't do anything
-                    const item = request.item;
-                    const field = this._mxForm_GetField(this.fields, 'QuoteIds');
-                    if (!field) return;
+            var quoteEvents = this.actionEvent + ':quote';
+            this.$events.on(quoteEvents, async (item) => {
+                const field = this._mxForm_GetField(this.fields, 'QuoteIds');
+                if (!field) return;
 
-                    let threadIds = field.value || []
+                let threadIds = field.value || []
 
-                    const threadKey = item.threadId;
-                    const index = threadIds.indexOf(threadKey);
-                    if (index > -1) return;
-                    if (index == -1) {
-                        threadIds.push(threadKey)
-                    }
-                    field.value = threadIds;
-                    field.items = threadIds;
-                    this._mxForm_SetField(this.fields, field);
+                const threadKey = item.threadId;
+                const index = threadIds.indexOf(threadKey);
+                if (index > -1) return;
+                if (index == -1) {
+                    threadIds.push(threadKey)
                 }
+                field.value = threadIds;
+                field.items = threadIds;
+                this._mxForm_SetField(this.fields, field);
             })
             this.setHtml(data)
         },

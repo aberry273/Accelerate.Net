@@ -45,6 +45,9 @@ export default function (data) {
             payload[action] = true;
             return payload;
         },
+        async quote() {
+            this.$events.emit(this.actionEvent+':quote', this.selectedPost)
+        },
         async action(action) {
             const payload = this.CreatePostActionPayload(action);
 
@@ -281,7 +284,7 @@ export default function (data) {
                                     -->
                                     
                                     <!--Quotes-->
-                                    <i aria-label="Quote" @click="action('quote')" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
+                                    <i aria-label="Quote" @click="quote()" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
 
                                 </li>
