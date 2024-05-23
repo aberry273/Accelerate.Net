@@ -93,6 +93,8 @@ export default function (data) {
                                             </summary>
                                             <ul dir="rtl">
                                                 <li><a class="click" @click="modalAction('share')">Share</a></li>
+                                                <li><a class="click" @click="modalAction('edit')">Edit</a></li>
+                                                <li><a class="click" @click="modalAction('delete')">Delete</a></li>
                                             </ul>
                                         </details>
                                     </template>
@@ -144,7 +146,7 @@ export default function (data) {
                                                 <small>
                                                     <span x-text="selectedPost.shortThreadId"></span>
                                                     <template x-if="selectedPost.replies > 0">
-                                                        <span x-text="'('+selectedPost.replies+' replies)'"></span>
+                                                        <span x-text="'('+selectedPost.replies+')'"></span>
                                                     </template>
                                                 </small>
                                             </small>

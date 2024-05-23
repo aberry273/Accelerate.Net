@@ -41,6 +41,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public Guid? ParentId { get; set; }
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }
+        // Original posts threadId, all child threads reference the parent threadId which should become the original post
         public string? TargetThread { get; set; }
         public string? TargetChannel { get; set; }
         public string? ChannelName { get; set; }

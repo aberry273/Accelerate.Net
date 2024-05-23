@@ -47,11 +47,15 @@ export default function (settings) {
 
         },
         // Custom logic
-        async Search(filters) {
+        async SearchPosts(filters) {
             let query = this._mxList_GetFilters(filters);
             const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
             if (postQuery == null) return;
-            const result = await this._mxSearch_Post(this.queryUrl, postQuery);
+            return await this._mxSearch_Post(this.queryUrl, postQuery);
+        },
+        // Custom logic
+        async Search(filters) {
+            const result = await this.SearchPosts(filters)
             this.setItems(result.posts);
             this.actions = result.actions;
         },

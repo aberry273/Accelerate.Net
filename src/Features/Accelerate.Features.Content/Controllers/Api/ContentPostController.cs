@@ -85,14 +85,30 @@ namespace Accelerate.Features.Content.Controllers.Api
                     return await base.Post(obj);
                 }
 
-                //Create post
-                var postId = await _service.CreateWithGuid(obj);
-                if (postId == null)
+                //Create post 
+                //If the post has no parent, set the targetThread to be itself
+                /*
+                var result = await _service.Create(obj);
+                if (result == 0)
+                {
+                    return BadRequest("Unable to create post");
+                }
+                var postId = Guid.NewGuid();
+                if (obj.ParentId == null)
+                {
+                    obj.Id = postId;
+                    obj.TargetThread = obj.ThreadId;
+                }
+                */
+                var result = await _service.CreateWithGuid(obj);
+                var postId = result.GetValueOrDefault();
+                if (!result.HasValue)
                 {
                     return BadRequest("Unable to create post");
                 }
 
-                var post = _service.Get(postId.GetValueOrDefault());
+                var post = _service.Get(result.GetValueOrDefault());
+
 
                 if (quotes.Any())
                 {

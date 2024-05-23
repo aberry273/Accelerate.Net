@@ -68,6 +68,7 @@
     <Content Remove="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
     <Content Remove="wwwroot\src - Copy (2)\js\stores\index.js" />
     <Content Remove="wwwroot\src - Copy (2)\js\stores\tabs.js" />
+    <Content Remove="wwwroot\src\js\components\lists\listThreadCards.js" />
     <Content Remove="wwwroot\src\js\data\contentPosts.js" />
   </ItemGroup>
 
@@ -109,12 +110,12 @@
     <Folder Include="Data\" />
     <Folder Include="Services\" />
     <Folder Include="Views\Home\" />
-    <Folder Include="wwwroot\src\js\components\forms\" />
     <Folder Include="wwwroot\src\js\mixins\components\" />
     <Folder Include="wwwroot\src\js\mixins\composite\" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\src\js\components\lists\listThreadCards.js" />
     <None Include="wwwroot\src\js\components\lists\listCards.js" />
   </ItemGroup>
 

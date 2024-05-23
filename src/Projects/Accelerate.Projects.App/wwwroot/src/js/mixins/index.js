@@ -1,5 +1,7 @@
 
 // Component mixins
+import mxCardPost from './components/cards/mxCardPost.js'
+// Shared component mixins
 import mxTemplate from './mxTemplate.js'
 import mxForm from './mxForm.js'
 import mxModal from './mxModal.js'
@@ -13,13 +15,17 @@ import mxEvents from './global/mxEvents.js'
 import mxSearch from './global/mxSearch.js'
 
 export {
+    // Components
+    mxCardPost,
+    // Shared
     mxWebsockets,
     mxAlert,
     mxResponsive,
-    // Component
+  
     mxForm,
     mxModal,
     mxList,
+
     // Global
     mxFetch,
     mxEvents,

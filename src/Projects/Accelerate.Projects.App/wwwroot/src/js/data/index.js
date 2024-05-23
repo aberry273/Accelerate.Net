@@ -9,5 +9,5 @@ export {
     dropdown,
     html,
     contentPostsManager,
-    authManager
+    authManager,
 }

@@ -277,6 +277,11 @@ namespace Accelerate.Features.Content.Services
             }
             return model;
         }
+        private string GetContentPostReplyValue(ContentPostDocument post)
+        {
+            var content = post.Content.Length > 64 ? post.Content.Substring(0, 64)+ "..." : post.Content;
+            return $"Reply to [{post.ShortThreadId}]: {content}";
+        }
         public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post)
         {
             var model = new AjaxForm()
@@ -288,6 +293,16 @@ namespace Accelerate.Features.Content.Services
                 Label = "Reply",
                 Fields = new List<FormField>()
                 {
+                    new FormField()
+                    {
+                        Name = "ReplyTo",
+                        FieldType = FormFieldTypes.quote,
+                        Hidden = false,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        ClearOnSubmit = false,
+                        Value = GetContentPostReplyValue(post),
+                    },
                     new FormField()
                     {
                         Name= "QuoteIds",
@@ -380,7 +395,7 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         ClearOnSubmit = false,
-                        Value = post.ThreadId,
+                        Value = post.TargetThread,
                     },
                     new FormField()
                     {
