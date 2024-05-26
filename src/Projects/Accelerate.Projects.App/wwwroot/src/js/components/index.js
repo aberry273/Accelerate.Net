@@ -1,7 +1,7 @@
 // CARDS
 import card from './cards/card.js'
 import cardPost from './cards/cardPost.js'
-import cardPostThread from './cards/cardPostThread.js'
+import cardPostReply from './cards/cardPostReply.js'
 import cardImage from './cards/cardImage.js'
 import cardVideo from './cards/cardVideo.js'
 // CONTENT
@@ -41,7 +41,7 @@ export {
     // CARDS
     card,
     cardPost,
-    cardPostThread,
+    cardPostReply,
     cardImage,
     cardVideo,
     

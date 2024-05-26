@@ -56,11 +56,6 @@
         userId: '@Model.UserId',
         })"></div>
 
-    <!-- Response Form -->
-    @if (Model.IsAuthenticated)
-    {
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    }
      <!-- Filters -->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -82,7 +77,12 @@
         items: @JsonSerializerHelper.SerializeObject(Model.Replies)
     })">
     </div>
-  
+
+    <!-- Response Form -->
+    @if (Model.IsAuthenticated)
+    {
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
 
 </div>
 

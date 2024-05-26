@@ -9,6 +9,7 @@ export default function (settings) {
         queryUrl: 'wssContentPosts.queryUrl',
         actions: [],
         quotes: [],
+        //cachedFilters: {},
         // mixins
         ...mxAlert(settings),
         ...mxList(settings),
@@ -36,6 +37,8 @@ export default function (settings) {
                 this.actions = this.updateItems(this.actions, data);
             })
             // Listen of post quoting
+            // Not used right now - to be used as state for editForm t
+            /*
             this._mxEvents_On(quoteEvent, async (item) => {
                 const threadKey = item.threadId;
                 const index = this.quotes.indexOf(threadKey);
@@ -44,7 +47,7 @@ export default function (settings) {
                     this.quotes.push(threadKey)
                 }  
             })
-
+            */
         },
         // Custom logic
         async SearchPosts(filters) {
@@ -54,10 +57,31 @@ export default function (settings) {
             return await this._mxSearch_Post(this.queryUrl, postQuery);
         },
         // Custom logic
-        async Search(filters) {
+        /*
+        async Filter(filters) {
+            const key = this.CreateFilterKey(filters);
             const result = await this.SearchPosts(filters)
-            this.setItems(result.posts);
-            this.actions = result.actions;
+            this.cachedFilters[key] = result;
+
+            this.items = this.insertOrUpdateItems(this.items, result.posts);
+            this.actions = this.insertOrUpdateItems(this.actions, result.actions);
+        },
+        */
+        CreateFilterKey(filters) {
+            let query = this._mxList_GetFilters(filters);
+            const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
+            return JSON.stringify(postQuery);
+        },
+        async Search(filters, replace = false) {
+            const result = await this.SearchPosts(filters)
+            if (replace) {
+                this.items = result.posts;
+                this.actions = result.actions;
+            }
+            else {
+                this.items = this.insertOrUpdateItems(this.items, result.posts);
+                this.actions = this.insertOrUpdateItems(this.actions, result.actions);
+            }
         },
         GetPostAction(postId, userId) {
             const actions = this.actions.filter(x => x.userId == userId && x.contentPostId == postId);

@@ -1,5 +1,6 @@
 const defaults = {}
 const quoteEvent = 'action:post:quote';
+const replyEvent = 'action:post:reply';
 export default function (data) {
     return {
         currentPage: 0,
@@ -44,6 +45,9 @@ export default function (data) {
             payload[action] = this._mxCardPost_userSelectedAction(action, item) ? false : true;
             return payload;
         },
+        async _mxCardPost_reply(item) {
+            this.$events.emit(replyEvent, item)
+        },
         async _mxCardPost_quote(item) {
             this.$events.emit(quoteEvent, item)
         },
@@ -56,21 +60,17 @@ export default function (data) {
             const ev = `redirect-${action}`;
             this.$events.emit(ev, this.mxCardPost_selectedPost)
         },
-        _mxCardPost_modalAction(action) {
+        _mxCardPost_modalAction(action, item) {
             const ev = `modal-${action}-post`;
             const payload = {
                 // route to append to postbackUrl 
-                postbackUrlRoute: this.mxCardPost_selectedPost.id,
+                postbackUrlRoute: item.id,
                 // postback type
                 postbackType: 'PUT',
                 // content post item
-                item: this.mxCardPost_selectedPost,
+                item: item,
             }
             this.$events.emit(ev, payload)
-        },
-        get mxCardPost_quotedPosts() {
-            if (this.mxCardPost_selectedPost == null || this.mxCardPost_selectedPost.quoteIds == null) return [];
-            return this.mxCardPost_selectedPost.quoteIds.filter(x => x != this.mxCardPost_selectedPost.shortThreadId);
         },
         _mxCardPost_scrollTo(id) {
             const el = document.getElementById(id);

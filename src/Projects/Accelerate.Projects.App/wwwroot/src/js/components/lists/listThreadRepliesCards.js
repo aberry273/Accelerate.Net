@@ -20,6 +20,7 @@ export default function (data) {
         searchUrl: '',
         filterEvent: '',
         actionEvent: '',
+        parentId: '',
         itemEvent: '',
         quoteEvent: '',
 
@@ -32,7 +33,7 @@ export default function (data) {
             this.itemEvent = data.itemEvent;
             this.searchUrl = data.searchUrl;
             this.userId = data.userId;
-            this.targetThread = data.targetThread;
+            this.parentId = data.parentId;
             this.targetChannel = data.targetChannel;
             this.quoteEvent = data.quoteEvent;
             this.filters = data.filters;
@@ -45,8 +46,10 @@ export default function (data) {
         },
         async initSearch() {
             let queryData = this.filters || {}
-            const results = await this.$store.wssContentPosts.SearchPosts(queryData);
-            this.items = results.posts;
+            await this.$store.wssContentPosts.Search(queryData);
+        },
+        get threadItems() {
+            return this.$store.wssContentPosts.items.filter(x => x.parentId == this.parentId);
         },
 
         // METHODS
@@ -54,20 +57,23 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in items" :key="item.id || i" >
-                <div x-data="cardPostThread({
+              <template x-for="(item, i) in threadItems" :key="item.id || i" >
+              <div>
+              <div class="line-in"></div>
+                <div class="primary"  x-data="cardPostReply({
                   item: item,
                   userId: userId,
                   actionEvent: actionEvent,
                   updateEvent: item.id,
                 })"></div>
               </template>
-              <template x-if="$store.wssContentPosts.items == null || $store.wssContentPosts.items.length == 0">
+              <template x-if="threadItems == null || threadItems.length == 0">
                 <article>
                   <header><strong>No replies!</strong></header>
                   It looks not there are no replies
                 </article>
               </template>
+              </div
             </div>
             `
             this.$nextTick(() => {

@@ -25,6 +25,13 @@ nav.floating {
     top: 0;
     z-index: 11;
 }
+nav.floating.bottom {
+    position: fixed;
+    background-color: var(--pico-background-color);
+    bottom: 0;
+    top:initial;
+    z-index: 11;
+}
 
 .show {
     display: block;
@@ -176,6 +183,21 @@ i:disabled {
 
 .transparent {
     background-color: transparent;
+}
+
+.line-in {
+    border-color: var(--pico-background-color);
+    border-left: 2px solid;
+    border-bottom-left-radius: 20px;
+    border-bottom: 2px solid;
+    min-height: 20px;
+    width:18px;
+    margin-top:10px;
+    position:absolute;
+    margin-left:-2px;
+}
+.line-in.primary {
+    border-color: var(--pico-primary);
 }
 
 .line {
@@ -395,22 +417,26 @@ button.img {
 
 /*COLOURS*/
 
+button.flat {
+    color: var(--pico-color-inverse);
+}
 .flat {
     background-color: transparent;
     border-color: transparent;
+    color: var(--pico-color-inverse);
 }
 
-    .flat.primary {
-        color: var(--pico-primary);
-    }
+.flat.primary {
+    color: var(--pico-primary);
+}
 
-    .flat.secondary {
-        color: var(--pico-secondary);
-    }
+.flat.secondary {
+    color: var(--pico-secondary);
+}
 
-    .flat.contrast {
-        color: var(--pico-contrast);
-    }
+.flat.contrast {
+    color: var(--pico-contrast);
+}
 
 /*BUTTONS*/
 
@@ -557,8 +583,13 @@ button.floating-previous {
 
 /* CHIPS */
 button.chip {
-    margin: calc(var(--pico-block-spacing-vertical)* .1) calc(var(--pico-block-spacing-horizontal)* .25);
-    padding: calc(var(--pico-block-spacing-vertical)* .1) calc(var(--pico-block-spacing-horizontal)* .25);
+    margin: calc(var(--pico-block-spacing-vertical)* .1) calc(var(--pico-block-spacing-horizontal)* .1);
+    padding: calc(var(--pico-block-spacing-vertical) * .1) calc(var(--pico-block-spacing-horizontal)* .1);
+    display: inline-block;
+    padding:0px;
+}
+button.chip sup{
+    margin-left: 2px;
 }
 /* TAGS */
 button.tag {

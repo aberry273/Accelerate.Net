@@ -22,6 +22,7 @@ export default function (data) {
         filterEvent: '',
         actionEvent: '',
         itemEvent: '',
+        parentId: '',
         quoteEvent: '',
 
         async init() {
@@ -33,7 +34,8 @@ export default function (data) {
             this.itemEvent = data.itemEvent;
             this.searchUrl = data.searchUrl;
             this.userId = data.userId;
-            this.targetThread = data.targetThread;
+            //this.targetThread = data.targetThread;
+            this.parentId = data.parentId;
             this.targetChannel = data.targetChannel;
             this.quoteEvent = data.quoteEvent;
             this.filters = data.filters;
@@ -42,15 +44,35 @@ export default function (data) {
              
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
-                await this.$store.wssContentPosts.Search(filterUpdates);
+                // If not filters are applied, use default filters
+                if (!this.hasFiltersApplied(filterUpdates)) {
+                    await this.initSearch();
+                }
+                else {
+                    await this.$store.wssContentPosts.Search(filterUpdates, true);
+                }
+                
             })
             await this.initSearch();
 
             this.setHtml(data);
         },
+        hasFiltersApplied(filters) {
+            const keys = Object.keys(filters);
+            for (let i = 0; i < keys.length; i++) {
+                if (filters[keys[i]].length > 0) {
+                    return true;
+                }
+            }
+            return false;
+        },
         async initSearch() {
             let queryData = this.filters || {}
             await this.$store.wssContentPosts.Search(queryData);
+        },
+
+        get threadItems() {
+            return this.$store.wssContentPosts.items.filter(x => x.parentId == this.parentId);
         },
 
         toggleReplies(post) {
@@ -74,9 +96,9 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in $store.wssContentPosts.items" :key="item.id || i" >
+              <template x-for="(item, i) in threadItems" :key="item.id || i" >
                     <div>
-                        <div x-data="cardPostThread({
+                        <div x-data="cardPostReply({
                             item: item,
                             userId: userId,
                             actionEvent: actionEvent,
@@ -93,14 +115,18 @@ export default function (data) {
                             
                         })"></div>
 
-                        <a class="line click" @click="toggleReplies(item)" x-show="item.replies > 1 && !showReplies(item)">
-                            <small class="pl">
-                                <small>
-                                    <span>View replies</span>
+                        <div x-show="item.replies > 0 && !showReplies(item)">
+                            <a class="line click" @click="toggleReplies(item)" >
+                                <small class="pl">
+                                    <small>
+                                        <span>Show <span x-text="item.replies"></span> replies</span>
+                                    </small>
                                 </small>
-                            </small>
-                        </a>
-                         
+                            </a>
+
+                            <hr />
+                        </div>
+
                         <!-- Replies -->
                         <template x-if="showReplies(item)">
                             <div>
@@ -112,7 +138,7 @@ export default function (data) {
                                     </small>
                                 </a>
 
-                                <div class="line primary mt-0"
+                                <div class="line mt-0"
                                     x-data="listThreadRepliesCards( {
                                     searchUrl: searchUrl,
                                     filterEvent: filterEvent,
@@ -130,7 +156,7 @@ export default function (data) {
 
                     </div>
               </template>
-              <template x-if="$store.wssContentPosts.items == null || $store.wssContentPosts.items.length == 0">
+              <template x-if="threadItems == null || threadItems.length == 0">
                 <article>
                   <header><strong>No results!</strong></header>
                   It looks not there are no posts here yet, try create your own!

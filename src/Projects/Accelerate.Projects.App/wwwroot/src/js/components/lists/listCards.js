@@ -41,7 +41,8 @@ export default function (data) {
              
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
-                await this.$store.wssContentPosts.Search(filterUpdates);
+                console.log(filterUpdates);
+                await this.$store.wssContentPosts.Search(filterUpdates, true);
             })
             await this.initSearch();
 
@@ -51,13 +52,16 @@ export default function (data) {
             let queryData = this.filters || {}
             await this.$store.wssContentPosts.Search(queryData);
         },
+        get parentItems() {
+            return this.$store.wssContentPosts.items.filter(x => x.parentId == null);
+        },
 
         // METHODS
         setHtml(data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in $store.wssContentPosts.items" :key="item.id || i" >
+              <template x-for="(item, i) in parentItems" :key="item.id || i" >
                 <div x-data="cardPost({
                   item: item,
                   userId: userId,
@@ -65,7 +69,7 @@ export default function (data) {
                   updateEvent: item.id,
                 })"></div>
               </template>
-              <template x-if="$store.wssContentPosts.items == null || $store.wssContentPosts.items.length == 0">
+              <template x-if="parentItems == null || parentItems.length == 0">
                 <article>
                   <header><strong>No results!</strong></header>
                   It looks not there are no posts here yet, try create your own!

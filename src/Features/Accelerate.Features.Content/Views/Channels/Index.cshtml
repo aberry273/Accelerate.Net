@@ -23,14 +23,6 @@
                 }
             </ul>
         </nav>
-        @if (Model.IsAuthenticated)
-        {
-            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
-        }
-        else
-        {
-            <article>Login to respond</article>
-        }
         <!--Filter-->
         <div x-data="appNavFilters({
             filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -47,6 +39,14 @@
           })">
         </div>
 
+        @if (Model.IsAuthenticated)
+        {
+            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
+        }
+        else
+        {
+            <article>Login to respond</article>
+        }
     </div>
 </div>
 

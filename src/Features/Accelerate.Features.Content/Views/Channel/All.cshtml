@@ -8,10 +8,6 @@
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
 }
 <div>
-    @if (Model.IsAuthenticated)
-    {
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    }
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -31,4 +27,8 @@
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">
     </div>
+    @if (Model.IsAuthenticated)
+    {
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
 </div>

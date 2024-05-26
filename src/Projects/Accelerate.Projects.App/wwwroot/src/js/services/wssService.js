@@ -32,6 +32,17 @@ export default function (settings) {
         setItems(items) {
             this.items = items;
         },
+        insertOrUpdateItems(originalItems, updateitems) { 
+            const originalItemIds = originalItems.map(x => x.id) || []
+            const updateItemIds = updateitems.map(x => x.id) || []
+            for (let i = 0; i < updateItemIds.length; i++) {
+                const index = updateItemIds[i];
+                if (originalItemIds.indexOf(index) == -1) {
+                    originalItems.push(updateitems[i])
+                } 
+            }
+            return originalItems
+        },
         updateItems(items, wssMessage) {
             var item = wssMessage.data;
             let emptyItems = false;
@@ -41,7 +52,7 @@ export default function (settings) {
             }
             if (wssMessage.update == 'Created') {
                 const index = items.map(x => x.id).indexOf(item.id);
-                if (index == -1) items.unshift(item);
+                if (index == -1) items.push(item);
                 else items[index] = item
             }
             if (wssMessage.update == 'Updated') {

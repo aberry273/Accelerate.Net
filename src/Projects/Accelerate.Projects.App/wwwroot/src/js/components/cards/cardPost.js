@@ -28,19 +28,19 @@ export default function (data) {
             return this.mxCardPost_thread.reduce((sum, item) => sum + item.likes, 0);
         },
         get quotedPosts() {
-            if (this.mxCardPost_selectedPost == null || this.mxCardPost_selectedPost.quoteIds == null) return [];
-            return this.mxCardPost_selectedPost.quoteIds.filter(x => x != this.mxCardPost_selectedPost.shortThreadId);
+            if (this.selectedPost == null || this.selectedPost.quoteIds == null) return [];
+            return this.selectedPost.quoteIds.filter(x => x != this.selectedPost.shortThreadId);
         },
         load(data) {
             const html = `
             <article  class="dense padless" :class="articleClass" :id="selectedPost.threadId">
 
                 <!--End Header-->
-                <template x-if="mxCardPost_quotedPosts.length > 0">
+                <template x-if="quotedPosts.length > 0">
                     <div class=" blockquote dense" style="padding-left:4px;">
                         <summary class="primary">
 
-                            <template x-for="quote in mxCardPost_quotedPosts">
+                            <template x-for="quote in quotedPosts">
                                 <a style="text-decoration:none" @click="_mxCardPost_filterByThreadId(quote)">
                                     <sup class="primary">
                                         <strong x-text="quote"></strong>,
@@ -51,7 +51,7 @@ export default function (data) {
                     </div>
                 </template>
 
-                <div :class="mxCardPost_quotedPosts.length > 0 ? ' content' : 'content'">
+                <div :class="quotedPosts.length > 0 ? ' content' : 'content'">
                 <!--Header-->
                     <header class="padded">
                         <nav>
@@ -92,7 +92,7 @@ export default function (data) {
                                                 <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                                             </summary>
                                             <ul dir="rtl">
-                                                <li><a class="click" @click="modalAction('share')">Share</a></li>
+                                                <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
                                             </ul>
                                         </details>
                                     </template>
@@ -143,9 +143,6 @@ export default function (data) {
                                             <small>
                                                 <small>
                                                     <span x-text="selectedPost.shortThreadId"></span>
-                                                    <template x-if="selectedPost.replies > 0">
-                                                        <span x-text="'('+selectedPost.replies+' replies)'"></span>
-                                                    </template>
                                                 </small>
                                             </small>
                                         </a>
@@ -154,27 +151,36 @@ export default function (data) {
                             </ul> 
                             <ul>
                                 <li>
+                                    
                                     <!--Agree-->
-                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Agree">expand_less</i>
-                                    <i x-show="userId" aria-label="Agree" :href="selectedPost.id" @click="_mxCardPost_action('agree', selectedPost)" :class="_mxCardPost_userSelectedAction('agree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
-                                    <sup class="noselect" rel="prev" x-text="selectedPost.agrees || 0"></sup>
-                                   
+                                    <button :disabled="!userId" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('agree', selectedPost) ? 'flat primary': 'flat'" >
+                                        <i aria-label="Agree" class="icon material-icons">expand_less</i>
+                                        <sup class="noselect" x-text="selectedPost.agrees || 0"></sup>
+                                    </button>
+
                                     <!--Disagree-->
-                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Disagree">expand_more</i>
-                                    <i x-show="userId" aria-label="Disagree" @click="_mxCardPost_action('disagree', selectedPost)" :class="_mxCardPost_userSelectedAction('disagree', selectedPost) ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
-                                    <sup class="noselect" rel="prev"x-text="selectedPost.disagrees || 0"></sup>
-                                 
+                                    <button :disabled="!userId" @click="_mxCardPost_action('disagree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('disagree', selectedPost) ? 'flat primary': 'flat'" >
+                                        <i aria-label="Disagree" class="icon material-icons">expand_more</i>
+                                        <sup class="noselect" x-text="selectedPost.disagrees || 0"></sup>
+                                    </button>
+
                                     <!--Likes-->
                                     <!--
                                     <i @click="_mxCardPost_action('like', selectedPost)" aria-label="Liked" :class="_mxCardPost_userSelectedAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
                                     <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup>
                                     -->
-                                    
-                                    <!--Quotes-->
-                                    <i x-show="!userId" style="padding: 4px" aria-label="Agree" class="icon material-icons" rel="Quote">format_quote</i>
-                                    <i x-show="userId" aria-label="Quote" @click="_mxCardPost_quote(selectedPost)" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">format_quote</i>
-                                    <sup class="noselect" rel="prev" x-text="selectedPost.quotes || 0"></sup>
 
+                                    <!--Quotes-->
+                                    <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >
+                                        <i aria-label="Quote" class="icon material-icons">format_quote</i>
+                                        <sup class="noselect" x-text="selectedPost.quotes || 0"></sup>
+                                    </button>
+
+                                    <!--Reply-->
+                                    <button :disabled="!userId" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
+                                        <i aria-label="Reply" class="icon material-icons">chat</i>
+                                        <sup class="noselect" x-text="selectedPost.replies || 0"></sup>
+                                    </button>
                                 </li>
                             </ul>
                         </nav>
