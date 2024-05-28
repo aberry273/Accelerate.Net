@@ -23,21 +23,6 @@
                 }
             </ul>
         </nav>
-        <!--Filter-->
-        <div x-data="appNavFilters({
-            filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-            event: '@Model.FilterEvent'
-        })"></div>
-        <!--Feed-->
-        <div x-data="listCards( {
-            actionUrl: '@Model.ActionsApiUrl',
-            searchUrl: '@Model.PostsApiUrl',
-            filterEvent: null,
-            userId: '@Model.UserId',
-            actionEvent: 'action:post',
-            itemEvent: $store.wssContentPosts.getMessageEvent(),
-          })">
-        </div>
 
         @if (Model.IsAuthenticated)
         {
@@ -47,6 +32,23 @@
         {
             <article>Login to respond</article>
         }
+        <!--Filter-->
+        <div x-data="appNavFilters({
+            filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+            event: '@Model.FilterEvent'
+        })"></div>
+        <!--Feed-->
+        <div x-data="listCards( {
+            actionUrl: '@Model.ActionsApiUrl',
+            searchUrl: '@Model.PostsApiUrl',
+            filterEvent: '@Model.FilterEvent',
+            userId: '@Model.UserId',
+            actionEvent: 'action:post',
+            filters: {
+            },
+            itemEvent: $store.wssContentPosts.getMessageEvent(),
+          })">
+        </div>
     </div>
 </div>
 

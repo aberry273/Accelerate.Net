@@ -33,12 +33,13 @@ export default function (data) {
         },
         load(data) {
             const html = `
-            <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
+            <article  class="dense padless" :class="articleClass" :id="selectedPost.threadId">
 
                 <!--End Header-->
                 <template x-if="quotedPosts.length > 0">
                     <div class=" blockquote dense" style="padding-left:4px;">
                         <summary class="primary">
+
                             <template x-for="quote in quotedPosts">
                                 <a style="text-decoration:none" @click="_mxCardPost_filterByThreadId(quote)">
                                     <sup class="primary">
@@ -91,12 +92,7 @@ export default function (data) {
                                                 <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                                             </summary>
                                             <ul dir="rtl">
-                                                <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
-                                                <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
-
                                                 <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
-                                                <li><a class="click" @click="_mxCardPost_modalAction('edit', selectedPost)">Edit</a></li>
-                                                <li><a class="click" @click="_mxCardPost_modalAction('delete', selectedPost)">Delete</a></li>
                                             </ul>
                                         </details>
                                     </template>
@@ -147,7 +143,6 @@ export default function (data) {
                                             <small>
                                                 <small>
                                                     <span x-text="selectedPost.shortThreadId"></span>
-                                                  
                                                 </small>
                                             </small>
                                         </a>
@@ -155,37 +150,6 @@ export default function (data) {
                                 </li>
                             </ul> 
                             <ul>
-                                <li>
-                                    <!--Agree-->
-                                    <button :disabled="!userId" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('agree', selectedPost) ? 'flat primary': 'flat'" >
-                                        <i aria-label="Agree" class="icon material-icons">expand_less</i>
-                                        <sup class="noselect" x-text="selectedPost.agrees || 0"></sup>
-                                    </button>
-
-                                    <!--Disagree-->
-                                    <button :disabled="!userId" @click="_mxCardPost_action('disagree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('disagree', selectedPost) ? 'flat primary': 'flat'" >
-                                        <i aria-label="Disagree" class="icon material-icons">expand_more</i>
-                                        <sup class="noselect" x-text="selectedPost.disagrees || 0"></sup>
-                                    </button>
-
-                                    <!--Likes-->
-                                    <!--
-                                    <i @click="_mxCardPost_action('like', selectedPost)" aria-label="Liked" :class="_mxCardPost_userSelectedAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
-                                    <sup class="noselect" rel="prev" x-text="selectedPost.likes || 0 "></sup>
-                                    -->
-                                    
-                                    <!--Quotes-->
-                                    <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >
-                                        <i aria-label="Quote" class="icon material-icons">format_quote</i>
-                                        <sup class="noselect" x-text="selectedPost.quotes || 0"></sup>
-                                    </button>
-
-                                    <!--Reply-->
-                                    <button :disabled="!userId" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
-                                        <i aria-label="Reply" class="icon material-icons">chat</i>
-                                        <sup class="noselect" x-text="selectedPost.replies || 0"></sup>
-                                    </button>
-                                </li>
                             </ul>
                         </nav>
                         <nav x-show="showMetadata && selectedPost.tags">

@@ -46,7 +46,7 @@ export default function (data) {
         },
         async initSearch() {
             let queryData = this.filters || {}
-            await this.$store.wssContentPosts.Search(queryData);
+            await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData);
         },
         get threadItems() {
             return this.$store.wssContentPosts.items.filter(x => x.parentId == this.parentId);
@@ -56,11 +56,11 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div x-transition>
+            <div x-transition class="list">
               <template x-for="(item, i) in threadItems" :key="item.id || i" >
               <div>
               <div class="line-in"></div>
-                <div class="primary"  x-data="cardPostReply({
+                <div class="primary" x-data="cardPostReply({
                   item: item,
                   userId: userId,
                   actionEvent: actionEvent,

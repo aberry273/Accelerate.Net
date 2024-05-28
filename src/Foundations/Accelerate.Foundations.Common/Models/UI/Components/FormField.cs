@@ -10,7 +10,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public enum FormFieldTypes
     {
-        input, email, textarea, number, password, file, list, quote, select, chips
+        input, email, textarea, number, password, file, list, quotes, select, chips
     }
     public class FormField
     {

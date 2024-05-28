@@ -62,11 +62,12 @@ export default function (data) {
         },
         _mxCardPost_modalAction(action, item) {
             const ev = `modal-${action}-post`;
+            const requestType = action == 'delete' ? 'DELETE' : 'PUT';
             const payload = {
                 // route to append to postbackUrl 
                 postbackUrlRoute: item.id,
                 // postback type
-                postbackType: 'PUT',
+                postbackType: requestType,
                 // content post item
                 item: item,
             }

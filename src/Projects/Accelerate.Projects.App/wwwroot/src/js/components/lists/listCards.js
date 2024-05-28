@@ -60,7 +60,7 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div x-transition>
+            <div x-transition class="list">
               <template x-for="(item, i) in parentItems" :key="item.id || i" >
                 <div x-data="cardPost({
                   item: item,

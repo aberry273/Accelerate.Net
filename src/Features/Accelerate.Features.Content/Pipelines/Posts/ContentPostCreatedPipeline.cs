@@ -112,15 +112,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 indexModel.QuoteIds = GetQuoteIds(args);
                 indexModel.Media = GetMedia(args);
                 // If a reply
+                
                 if (args.Value.ParentId != null)
                 {
                     var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
                     var parentDoc = parentResponse.Source;
                     await UpdateParentDocument(parentDoc, indexModel, args);
-
+                   /*
                     var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
                     parentIdThread.Add(parentDoc.Id);
                     indexModel.ParentIds = parentIdThread;
+                   */
                 }
                 await _elasticService.Index(indexModel);
             }

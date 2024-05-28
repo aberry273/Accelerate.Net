@@ -17,6 +17,10 @@ using Elastic.Clients.Elasticsearch.IndexManagement;
 using Accelerate.Foundations.Common.Extensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using Elastic.Clients.Elasticsearch.Core.TermVectors;
+using Microsoft.Data.SqlClient;
+using Accelerate.Foundations.Content.Models.Entities;
+using static Elastic.Clients.Elasticsearch.JoinField;
+using System.Threading;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -139,9 +143,8 @@ namespace Accelerate.Foundations.Content.Services
             model.Posts = results.Documents.ToList();
             return model;
         }
-        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
-        {
-            var elasticQuery = BuildSearchQuery(Query);
+        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, QueryDescriptor<ContentPostDocument> elasticQuery)
+        { 
             //TODO: remove
             Query.ItemsPerPage = 100;
 
@@ -150,7 +153,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * Query.Page;
 
             var model = new ContentSearchResults();
-            var results = await Search(elasticQuery, skip, take);
+            var results = await Search(elasticQuery, skip, take, Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder.Desc);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
                 return model;
@@ -162,13 +165,32 @@ namespace Accelerate.Foundations.Content.Services
             model.Actions = postActionResults.ToList();
             return model;
         }
+        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
+        {
+            var elasticQuery = BuildSearchQuery(Query);
+            return await SearchPosts(Query, elasticQuery);
+        }
+        public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query)
+        {
+            var elasticQuery = BuildSearchRepliesQuery(Query);
+            return await SearchPosts(Query, elasticQuery);
+        }
+        public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId)
+        {
+            var response = await this.GetDocument<ContentPostDocument>(postId.ToString());
+            var item = response.Source;
+            var elasticQuery = BuildAscendantsSearchQuery(item);
+            var results = await SearchPosts(Query, elasticQuery);
+            results.Posts = results.Posts.OrderBy(x => x.CreatedOn.GetValueOrDefault());
+            return results;
+        }
 
         public RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId)
         {
 
             var filters = new List<QueryFilter>()
             {
-                Filter(Foundations.Content.Constants.Fields.ParentId, threadId)
+                Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, threadId)
             };
 
             var aggregates = new List<string>()
@@ -299,21 +321,49 @@ namespace Accelerate.Foundations.Content.Services
             //Query.Filters.Add(PublicPosts());
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
-            // If searching for threads
-            if (Query.Filters.Any(x => x.Name == Foundations.Content.Constants.Fields.ParentId))
-            {
-                //Filter any post where the poster is replying to themselves from the results
-                var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
-                Query.Filters.Add(filter);
-            }
-            else
-            {
-                Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
-            }
+            Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
+           
             return CreateQuery(Query);
         }
-         
-        public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId)
+
+        public  QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query)
+        {
+
+            if (Query == null) Query = new RequestQuery();
+
+            //Query.Filters.Add(PublicPosts());
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+            var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
+            Query.Filters.Add(filter);
+           
+            return CreateQuery(Query);
+        }
+
+        public QueryDescriptor<ContentPostDocument> BuildAscendantsSearchQuery(ContentPostDocument item)
+        {
+            var Query = new RequestQuery()
+            {
+                Filters = new List<QueryFilter>()
+            };
+
+            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+
+            //Query.Filters.Add(Filter(Constants.Fields.ThreadId, item.TargetThread, true)); 
+            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.MustNot, item.Id));
+            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.Must, item.ParentId));
+
+            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, item.ParentId, true));
+            Query.Filters.Add(FilterValues(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, item.ParentIds.Select(x => x.ToString()), true));
+            
+            //Query.Filters.Add(Filter(Constants.Fields.ParentIds, ElasticCondition.Filter, QueryOperator.Equals, item.ParentIds, true));
+
+            return CreateQuery(Query);
+        }
+        public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string parentId)
         {
             var Query = new RequestQuery()
             {
@@ -326,7 +376,7 @@ namespace Accelerate.Foundations.Content.Services
             //Filter any post where the poster is replying to themselves from the results
             Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.MustNot, ContentPostType.Page));
            
-            Query.Filters.Add(Filter(Constants.Fields.ParentId, threadId));
+            Query.Filters.Add(Filter(Constants.Fields.ParentId, parentId));
            
             return CreateQuery(Query);
         }

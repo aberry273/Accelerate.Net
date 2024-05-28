@@ -11,17 +11,20 @@
     quoteEvent: 'quote:post',
     init() {}
   }">
-     
+
+    <summary class="primary">
+        <a href="/" style="text-decoration:none;">
+            <i class="material-icons">expand_less</i>
+            <sup class="primary">
+                <strong>
+                    Return to all
+                </strong>
+            </sup>
+        </a>
+    </summary>
     @if (Model.ChannelLink != null)
     {
-        <nav>
-            <header>
-                <hgroup>
-                    <h1>@Model.ChannelLink.Text</h1>
-                </hgroup>
-            </header>
-        </nav>
-        <div class="dense " style="border: 0px">
+        <div class="dense" style="border: 0px">
             <summary class="primary">
                 <a href="@Model.ChannelLink.Href" style="text-decoration:none;">
                     <i class="material-icons">chevron_left</i>
@@ -34,31 +37,26 @@
             </summary>
         </div>
     }
-    @if(Model.ParentLink != null)
+    @if (Model.Item.ParentId != null)
     {
-        <div class="dense ">
-            <summary class="primary">
-                <a href="@Model.ParentLink.Href" style="text-decoration:none;">
-                    <i class="material-icons">expand_less</i>
-                    <sup class="primary">
-                        <strong>
-                            @Model.ParentLink.Text
-                        </strong>
-                    </sup>
-                </a>
-            </summary>
-        </div>
+        <!-- Replies -->
+        <div x-data="listThreadAscendantCards( {
+            userId: '@Model.UserId',
+            searchUrl: '@Model.ParentPostsApiUrl'
+        })">
+        </div> 
     }
-
     <!-- Original Post -->
     <div x-data="cardPost({
         item:  @JsonSerializerHelper.SerializeObject(Model.Item),
         userId: '@Model.UserId',
-        })"></div>
+    })"></div>
+    <hr/>
 
      <!-- Filters -->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        header: 'Replies',
         event: '@Model.FilterEvent'
     })"></div>
 
@@ -78,6 +76,7 @@
     })">
     </div>
 
+    <hr />
     <!-- Response Form -->
     @if (Model.IsAuthenticated)
     {

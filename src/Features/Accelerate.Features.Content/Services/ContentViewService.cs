@@ -12,6 +12,7 @@ using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
+using Microsoft.IdentityModel.Tokens;
 using System.Drawing;
 using System.Security.Principal;
 
@@ -120,29 +121,33 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null)
+        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, ContentPostDocument parent, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
             viewModel.Item = item;
             #pragma warning disable CS8601 // Possible null reference assignment.
-            viewModel.ParentLink = GetThreadLink(item.TargetThread, item.ParentId);
+            viewModel.ParentLink = GetThreadLink(item.ParentId);
             #pragma warning restore CS8601 // Possible null reference assignment.
             viewModel.ChannelLink = GetChannelLink(channel);
 
             // Get replies
             //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
-            viewModel.Replies = replies.IsValidResponse && replies.IsSuccess() ? replies.Documents?.ToList() : null;
+           // viewModel.Replies = replies.IsValidResponse && replies.IsSuccess() ? replies.Documents?.ToList() : null;
             if(user != null)
             {
                 viewModel.UserId = user.Id;
-                viewModel.FormCreateReply = CreateReplyForm(user, item);
+                viewModel.FormCreateReply = CreateReplyForm(user, item, parent);
                 viewModel.ModalEditReply = CreateModalEditReplyForm(user);
                 viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             }
 
             viewModel.ActionsApiUrl = "/api/contentpostactions";
-            viewModel.PostsApiUrl = "/api/contentsearch/posts";
+            viewModel.PostsApiUrl = "/api/contentsearch/posts/replies";
+            if(item.ParentId != null)
+            {
+                viewModel.ParentPostsApiUrl = $"/api/contentsearch/posts/{item.Id}/parents";
+            }
             // Add filters
             viewModel.Filters = CreateSearchFilters(aggregateResponse);
 
@@ -156,10 +161,11 @@ namespace Accelerate.Features.Content.Services
             viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
             return viewModel;
         }
-        public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null)
+        public ContentSubmitForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null)
         {
-            var model = new AjaxForm()
+            var model = new ContentSubmitForm()
             {
+                FixTop = true,
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
@@ -170,7 +176,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name= "QuoteIds",
-                        FieldType = FormFieldTypes.list,
+                        FieldType = FormFieldTypes.quotes,
                         Class = "flat",
                         Placeholder = "Quotes",
                         IsArray = true,
@@ -249,7 +255,7 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = user.Id,
+                        Value = user?.Id,
                     },
                     new FormField()
                     {
@@ -279,12 +285,15 @@ namespace Accelerate.Features.Content.Services
         }
         private string GetContentPostReplyValue(ContentPostDocument post)
         {
+            if (post == null || string.IsNullOrEmpty(post.Content)) return string.Empty;
             var content = post.Content.Length > 64 ? post.Content.Substring(0, 64)+ "..." : post.Content;
             return $"Reply to [{post.ShortThreadId}]: {content}";
         }
-        public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post)
+        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostDocument post, ContentPostDocument parent)
         {
-            var model = new AjaxForm()
+            var parentIdThread = post.ParentIds != null ? post.ParentIds : new List<Guid>();
+            parentIdThread.Add(post.Id);
+            var model = new ContentSubmitForm()
             {
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
@@ -296,7 +305,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "ReplyTo",
-                        FieldType = FormFieldTypes.quote,
+                        FieldType = FormFieldTypes.list,
                         Hidden = false,
                         Disabled = true,
                         AriaInvalid = false,
@@ -306,7 +315,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name= "QuoteIds",
-                        FieldType = FormFieldTypes.list,
+                        FieldType = FormFieldTypes.quotes,
                         Class = "flat",
                         Placeholder = "Quotes",
                         IsArray = true,
@@ -370,6 +379,16 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name = "ParentIds",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        ClearOnSubmit = false,
+                        Value = string.Join(',', parentIdThread),
+                    },
+                    new FormField()
+                    {
                         Name = "ParentId",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
@@ -389,23 +408,13 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "TargetThread",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        ClearOnSubmit = false,
-                        Value = post.TargetThread,
-                    },
-                    new FormField()
-                    {
                         Name = "TargetChannel",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
                         Value = post.TargetChannel,
-                    }, 
+                    },
                     new FormField()
                     {
                         Name = "Category",
@@ -425,7 +434,7 @@ namespace Accelerate.Features.Content.Services
                         Value = ContentPostEntityStatus.Public,
                     },
                 }
-            };
+            }; 
             return model;
         }
 
@@ -857,12 +866,12 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
          
-        public NavigationItem? GetThreadLink(string parentName, Guid? parentId)
+        public NavigationItem? GetThreadLink(Guid? parentId)
         {
             if(parentId  == null) { return null; }
             return new NavigationItem()
             {
-                Text = parentName,
+                Text = $"Return to parent",
                 Href = this._metaContentService.GetActionUrl(nameof(ThreadsController.Thread), ControllerHelper.NameOf<ThreadsController>(), new { id = parentId })
             };
         }
@@ -871,7 +880,7 @@ namespace Accelerate.Features.Content.Services
             if (x == null) { return null; }
             return new NavigationItem()
             {
-                Text = x.Name,
+                Text = $"Return to channel: {x.Name}",
                 Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new {id = x.Id })
             };
         }

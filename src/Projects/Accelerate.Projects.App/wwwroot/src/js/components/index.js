@@ -1,6 +1,7 @@
 // CARDS
 import card from './cards/card.js'
 import cardPost from './cards/cardPost.js'
+import cardPostActionless from './cards/cardPostActionless.js'
 import cardPostReply from './cards/cardPostReply.js'
 import cardImage from './cards/cardImage.js'
 import cardVideo from './cards/cardVideo.js'
@@ -26,6 +27,7 @@ import modalFormFile from './modals/modalFormFile.js'
 // LISTS
 import listCards from './lists/listCards.js'
 import listThreadCards from './lists/listThreadCards.js'
+import listThreadAscendantCards from './lists/listThreadAscendantCards.js'
 import listThreadRepliesCards from './lists/listThreadRepliesCards.js'
 import listAccordionCard from './lists/listAccordionCard.js'
 // Grid
@@ -42,6 +44,7 @@ export {
     card,
     cardPost,
     cardPostReply,
+    cardPostActionless,
     cardImage,
     cardVideo,
     
@@ -66,6 +69,7 @@ export {
     // LISTS
     listCards,
     listThreadCards,
+    listThreadAscendantCards,
     listAccordionCard,
     listThreadRepliesCards,
 

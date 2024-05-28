@@ -27,5 +27,6 @@ namespace Accelerate.Foundations.Content.Models.Entities
             }
         }
         public string? Value { get; set; }
+        public string? Response { get; set; }
     }
 }

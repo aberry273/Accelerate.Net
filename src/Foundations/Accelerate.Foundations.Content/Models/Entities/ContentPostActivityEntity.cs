@@ -13,8 +13,18 @@ namespace Accelerate.Foundations.Content.Models.Entities
     public enum ContentPostActivityTypes
     {
         Like,
+        // TODO
+        Unlike,
         Agree,
+        // TODO
+        Unagree,
         Disagree,
+        // TODO
+        Undisagree,
+        // TODO
+        Quote,
+        // TODO
+        Reply,
         Vote,
         Share,
     }

@@ -14,14 +14,12 @@ namespace Accelerate.Features.Content.Services
         NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);
         ChannelsPage CreateChannelsPage(AccountUser user, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
-        ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, SearchResponse<ContentPostDocument> replies, ContentChannelDocument? channel = null);
+        ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, ContentPostDocument parent, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
         ChannelsPage CreateAnonymousChannelsPage();
         string GetFilterKey(string key);
         List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters);
 
-        public AjaxForm CreatePostForm(AccountUser user, ContentChannelDocument channel = null);
-        public AjaxForm CreateReplyForm(AccountUser user, ContentPostDocument post);
-        public AjaxForm CreateChannelForm(AccountUser user);
+         public AjaxForm CreateChannelForm(AccountUser user);
         public ModalForm CreateModalChannelForm(AccountUser user);
         public ModalForm CreateModalEditReplyForm(AccountUser user);
         public AjaxForm CreateFormEditReply(AccountUser user);

@@ -25,8 +25,10 @@ export default function (data) {
         showImage: false,
         actionEvent: null,
         showFloatingPanel: false,
-        fixed: true,
+        fixed: false,
+        fixTop: false,
         boundingRect: null,
+        initYPos: 0,
         imageModal: 'upload-media-image-modal',
         // INIT
         init() {
@@ -37,6 +39,7 @@ export default function (data) {
             this.postbackType = data.postbackType
             this.fields = data.fields,
             this.actionEvent = data.actionEvent;
+            this.fixTop = data.fixTop || false;
 
             var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
             this.showTags = tagField = null ? !tagField.hidden : true
@@ -63,6 +66,7 @@ export default function (data) {
                 field.items = threadIds;
                 this._mxForm_SetField(this.fields, field);
                 this.showFloatingPanel = false;
+                this.fixed = true;
             })
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
@@ -81,16 +85,25 @@ export default function (data) {
 
                 this._mxForm_SetField(this.fields, replyToField);
                 this.showFloatingPanel = false;
+                this.fixed = true;
             })
 
-            this.setHtml(data)
+            this.setHtml(data);
         },
         // GETTERS
         get isInPosition() {
-            return true;
-
-            //if (this.$refs.fixedForm == null) return false;
-            //return this.$refs.fixedForm.getBoundingClientRect().y <= 0
+            let inPosition = false;
+            if (this.fixTop) {
+                inPosition = this.yPosition <= 70
+            }
+            else {
+                inPosition = this.yPosition >= 0
+            }
+            return inPosition;
+        },
+        get yPosition() {
+            if (this.$refs.fixedElement == null) return 0;
+            return this.$refs.fixedElement.getBoundingClientRect().y;
         },
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
@@ -118,6 +131,12 @@ export default function (data) {
             let style = 'display:block;margin-top: 55px;'
             if (this.mxResponsive_IsMobile)
                 style += "left: 0; width: 100%;";
+            if (this.fixTop) {
+                style += "top: 0; bottom: initial;";
+            }
+            else {
+                style += "bottom: 0; top: initial;";
+            }
             return style;
         },
         // 
@@ -186,10 +205,11 @@ export default function (data) {
             // make ajax request
             const label = data.label || 'Submit'
             const html = `
+            <span x-ref="fixedElement"><span>
             <!--Floating-->
             <nav class="floating bottom container" 
                     @scroll.window="fixed = isInPosition ? true : false"
-                    style="bottom: 0; left:0; border: 1px solid #CCC; padding-left: 0; z-index:111;"
+                    style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111;"
                     :style="fixed ? fixedStyle : 'display:none;'">
                       <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);">
                         <progress x-show="loading"></progress>
@@ -227,6 +247,7 @@ export default function (data) {
                         </fieldset> 
                     </article>
             </nav>
+            <!--Floating button-->
             <button
                 x-show="(showFloatingPanel)"
                 @click="hideFloatingPanel(false)"
@@ -234,25 +255,17 @@ export default function (data) {
                 style="y-index:1111; position: fixed; bottom: 76px; right: calc(var(--pico-spacing)*1);">
                 chat
             </button>
-            <article class="dense sticky" style="height: 150px" x-show="!showFloatingPanel">
 
-            </article>
-        `
-            this.$nextTick(() => {
-                this.$root.innerHTML = html
-            });
-        },
-    }
-}
-/*
-                    
-            <!--Fixed-->
+            <!--Padded element for bottom fixed form-->
             
-            <article class="dense sticky" x-ref="fixedForm">
+            <div class="sticky"  style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
+            </div>
+
+            <article class="dense sticky"  x-show="!showFloatingPanel && !fixed">
                 <progress x-show="loading"></progress>
                 <!--Quotes-->
                 <fieldset class="padded" x-data="formFields({fields})"></fieldset>
-                
+
                 <fieldset role="group">
                     <!--Toggle fields-->
                     <!--
@@ -262,21 +275,27 @@ export default function (data) {
                     <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
                     <!--Cancel-->
                     <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
-                    
+
                     <!--Type formats-->
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_bulleted</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_numbered</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">link</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_quote</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">code</button>
-                    
+
                     <input name="Tag" disabled type="text" placeholder="" />
-                    
+
                     <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
                     <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
-                    
+
                     <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 
                 </fieldset> 
             </article>
-            */
+        `
+            this.$nextTick(() => {
+                this.$root.innerHTML = html
+            });
+        },
+    }
+}

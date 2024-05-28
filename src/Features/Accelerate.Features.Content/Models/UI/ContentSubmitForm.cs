@@ -4,6 +4,6 @@ namespace Accelerate.Features.Content.Models.UI
 {
     public class ContentSubmitForm : AjaxForm
     {
-        public string ActionEvent { get; set; }
+        public bool FixTop { get; set; }
     }
 }

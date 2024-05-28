@@ -24,26 +24,26 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<UpdateResponse<T>> UpdateOrCreateDocument<T>(T document, string id);
         Task<DeleteResponse> DeleteDocument<T>(string id);
         Task<MultiSearchResponse<T>> Multisearch<T>(MultiSearchRequestDescriptor<T> request);
-        Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
-        Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
-        Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn);
+        Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
+        Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
+        Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
         Task<IndexResponse> Index(T doc);
         Task<CountResponse> Count<T>(Action<CountRequestDescriptor<T>> request);
 
         Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query); 
         Task<SearchResponse<T>> Find(RequestQuery<T> query);
-        Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn);
+        Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
 
         // Custom
         FieldValue GetFieldValue(QueryFilter filter, object? value);
         FieldValue GetFieldValue(QueryFilter filter);
         Query CreateTermsQuery(QueryFilter filter);
         Query CreateTermQuery(QueryFilter filter);
-        Query CreatExistsQuery(QueryFilter filter);
+        Query CreateExistsQuery(QueryFilter filter);
         Query CreateTerm(QueryFilter filter); 
         QueryDescriptor<T> CreateQuery(RequestQuery request);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op);
-        QueryFilter Filter(string field, object? value);
+        QueryFilter Filter(string field, object? value, bool? keyword = false);
         QueryFilter Filter(string field, ElasticCondition cond, object? value);
         QueryFilter Filter(string field, ElasticCondition cond, QueryOperator op, object? value, bool? keyword);
         QueryFilter FilterValues(string field, ElasticCondition cond, QueryOperator op, IEnumerable<object>? values, bool? keyword);

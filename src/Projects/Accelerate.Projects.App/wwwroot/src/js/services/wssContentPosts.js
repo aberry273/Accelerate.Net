@@ -50,11 +50,11 @@ export default function (settings) {
             */
         },
         // Custom logic
-        async SearchPosts(filters) {
+        async SearchPosts(filters, searchUrl) {
             let query = this._mxList_GetFilters(filters);
             const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
             if (postQuery == null) return;
-            return await this._mxSearch_Post(this.queryUrl, postQuery);
+            return await this._mxSearch_Post(searchUrl || this.queryUrl, postQuery);
         },
         // Custom logic
         /*
@@ -71,6 +71,17 @@ export default function (settings) {
             let query = this._mxList_GetFilters(filters);
             const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
             return JSON.stringify(postQuery);
+        },
+        async SearchByUrl(searchUrl, filters, replace = false) {
+            const result = await this.SearchPosts(filters, searchUrl)
+            if (replace) {
+                this.items = result.posts;
+                this.actions = result.actions;
+            }
+            else {
+                this.items = this.insertOrUpdateItems(this.items, result.posts);
+                this.actions = this.insertOrUpdateItems(this.actions, result.actions);
+            }
         },
         async Search(filters, replace = false) {
             const result = await this.SearchPosts(filters)

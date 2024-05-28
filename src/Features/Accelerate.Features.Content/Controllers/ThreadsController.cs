@@ -35,7 +35,7 @@ namespace Accelerate.Features.Content.Controllers
         IEntityService<AccountProfile> _profileService;
         IContentViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
-        private const string _notFoundRazorFile = "~/Views/Content/NotFound.cshtml";
+        private const string _notFoundRazorFile = "~/Views/Threads/NotFound.cshtml";
         public ThreadsController(
             IMetaContentService service,
             IContentViewService contentViewService,
@@ -54,6 +54,20 @@ namespace Accelerate.Features.Content.Controllers
             _contentElasticSearchService = postElasticSearchService;
             _channelSearchService = channelService;
         }
+        [HttpGet("ThreadNotFound")]
+        public async Task<IActionResult> ThreadNotFound()
+        {
+            var user = await GetUserWithProfile(this.User);
+            var title = "Post not found";
+            var description = "We are unable to retrieve this post, this may have been deleted or made private.";
+            var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
+            return View(_notFoundRazorFile, viewModel);
+        }
+        [HttpGet]
+        public IActionResult NotFound(NotFoundPage viewModel)
+        {
+            return View(viewModel);
+        }
         [HttpGet("Threads/{id}")]
         //[RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Thread([FromRoute]Guid id)
@@ -64,28 +78,46 @@ namespace Accelerate.Features.Content.Controllers
 
             var item = response.Source;
 
-            if (item == null) return RedirectToAction(nameof(PostNotFound));
+            if (item == null)
+            {
+                return RedirectToAction(nameof(ThreadNotFound));
+            }
+            ContentPostDocument parent = null;
+            if (item.ParentId != null)
+            {
+                var parentResponse = await _postSearchService.GetDocument<ContentPostDocument>(item.ParentId.ToString());
+                parent = parentResponse.Source;
+            }
 
-            var replies = await _channelSearchService.Search(this._contentElasticSearchService.BuildRepliesSearchQuery(item.Id.ToString()), 0, 100);
-            var filterFields = _contentViewService.GetFilterOptions().Values.ToList();
+             var filterFields = _contentViewService.GetFilterOptions().Values.ToList();
 
             var filters = new List<QueryFilter>()
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, id)
             };
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateAggregateQuery(item.Id, filters, filterFields));
+
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
             var channelResponse = item.TargetChannel != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.TargetChannel) : null;
-            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, replies, channelResponse?.Source);
+            var viewModel = _contentViewService.CreateThreadPage(user, item, parent, aggResponse, channelResponse?.Source);
             //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
             //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare
-            viewModel.Parents = new List<ContentPostDocument>();
+            /*
+            if (item.ParentIds != null && item.ParentIds.Any())
+            {
+                var ascendants = await _postSearchService.Search(this._contentElasticSearchService.BuildAscendantsSearchQuery(item), 0, 100);
+
+                viewModel.Parents = ascendants.IsSuccess()
+                    ? ascendants.Documents.OrderBy(x => x.CreatedOn).ToList()
+                    : new List<ContentPostDocument>();
+            }
+            */
             return View(viewModel);
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return RedirectToAction("NotFound");
+            return RedirectToAction("ThreadNotFound");
         }
 
         private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
@@ -103,20 +135,6 @@ namespace Accelerate.Features.Content.Controllers
             query.MatchAll();
             query.Term(x => x.TargetThread.Suffix("keyword"), item.ThreadId.ToString());
             return query;
-        }
-        [HttpGet]
-        public async Task<IActionResult> PostNotFound()
-        {
-            var user = await GetUserWithProfile(this.User);
-            var title = "Post not found";
-            var description = "We are unable to retrieve this post, this may have been deleted or made private.";
-            var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
-            return View(_notFoundRazorFile, viewModel);
-        }
-        [HttpGet]
-        public IActionResult NotFound(NotFoundPage viewModel)
-        {
-            return View(viewModel);
         }
 
     }

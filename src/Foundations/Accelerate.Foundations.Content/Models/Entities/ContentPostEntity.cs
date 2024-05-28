@@ -24,13 +24,32 @@ namespace Accelerate.Foundations.Content.Models.Entities
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
         // Replying to another thread
+        [NotMapped]
+        public IEnumerable<Guid>? ParentIdItems
+        {
+            get
+            {
+                return ParentIds?.Split(',')?.Select(x => Guid.Parse(x)).ToList();
+            }
+            set
+            {
+                if (value != null) ParentIds = string.Join(',', value?.Select(x => x.ToString()));
+            }
+        }
+        public string? ParentIds { get; set; }
         public Guid? ParentId { get; set; } 
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Hidden;
         public string? Content { get; set; }
         // Which thread this message should be sent to
+        /// <summary>
+        /// OBSOLETE
+        /// </summary>
         public string? TargetThread { get; set; }
+        /// <summary>
+        /// TO CHANGE TO JOIN TABLE
+        /// </summary>
         // Which channel the user wants to send this message to
         public string? TargetChannel { get; set; }
         // For personal classification of the user

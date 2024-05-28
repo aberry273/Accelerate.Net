@@ -13,7 +13,7 @@ export default () => {
             return await this._mxFetch_Put(url, data, headers, isJson);
         },
         async DELETE(url, data, headers) {
-            return await this._mxFetch_Put(url, data, headers);
+            return await this._mxFetch_Delete(url, data, headers);
         }
     }
 }

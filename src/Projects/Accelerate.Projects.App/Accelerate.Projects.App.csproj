@@ -68,6 +68,7 @@
     <Content Remove="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
     <Content Remove="wwwroot\src - Copy (2)\js\stores\index.js" />
     <Content Remove="wwwroot\src - Copy (2)\js\stores\tabs.js" />
+    <Content Remove="wwwroot\src\js\components\lists\listThreadAscendantCards.js" />
     <Content Remove="wwwroot\src\js\components\lists\listThreadCards.js" />
     <Content Remove="wwwroot\src\js\data\contentPosts.js" />
   </ItemGroup>
@@ -115,6 +116,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\src\js\components\lists\listThreadAscendantCards.js" />
     <None Include="wwwroot\src\js\components\lists\listThreadCards.js" />
     <None Include="wwwroot\src\js\components\lists\listCards.js" />
   </ItemGroup>

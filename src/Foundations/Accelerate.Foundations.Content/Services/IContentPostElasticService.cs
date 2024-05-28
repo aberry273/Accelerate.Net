@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch.IndexManagement;
+using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -17,10 +18,13 @@ namespace Accelerate.Foundations.Content.Services
         Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query);
         Task<ContentSearchResults> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10);
         Task<ContentSearchResults> SearchPosts(RequestQuery Query);
+        Task<ContentSearchResults> SearchPostReplies(RequestQuery Query);
         Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
+        Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);
-        
+        QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query);
+        QueryDescriptor<ContentPostDocument> BuildAscendantsSearchQuery(ContentPostDocument item);
         QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query);
         Query CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
@@ -28,5 +32,6 @@ namespace Accelerate.Foundations.Content.Services
         RequestQuery<ContentPostDocument> CreateChannelsAggregateQuery();
         RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields);
         RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId);
+        RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId);
     }
 }

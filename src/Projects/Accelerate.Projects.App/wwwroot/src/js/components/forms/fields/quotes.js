@@ -8,7 +8,6 @@ export default function (data) {
             x-model="field.value"
             :hidden="true"
             ></input>
-
             <template x-for="item in field.items || []">
                 <div class="blockquote">
                     <summary class="primary">

@@ -188,14 +188,15 @@ i:disabled {
 .line-in {
     border-color: var(--pico-background-color);
     border-left: 2px solid;
-    border-bottom-left-radius: 20px;
+    border-bottom-left-radius: 8px;
     border-bottom: 2px solid;
     min-height: 20px;
-    width:18px;
-    margin-top:10px;
-    position:absolute;
-    margin-left:-2px;
+    width: 12px;
+    margin-top: 10px;
+    position: absolute;
+    margin-left: -2px;
 }
+
 .line-in.primary {
     border-color: var(--pico-primary);
 }
@@ -203,10 +204,20 @@ i:disabled {
 .line {
     position: relative;
     bottom: 0px;
-    margin-left: 24px;
     border-color: var(--pico-background-color);
     border-left: 2px solid;
     min-height: 20px;
+}
+.line-background {
+    margin-left: 24px;
+    bottom: 0;
+    border-color: var(--pico-background-color);
+    border-left: 2px solid;
+    min-height: 20px;
+}
+
+.line.child {
+    margin-left: 24px;
 }
 .line.primary {
     border-color: var(--pico-primary);
@@ -493,9 +504,11 @@ nav details.dropdown summary.flat:not([role]) {
         background-color: RGBA(0,0,0, 0.25);
     }
 /*CARDS*/
-article {
+.list article {
     margin-bottom: calc(var(--pico-block-spacing-vertical)*0.25);
-
+}
+article {
+    margin-bottom: calc(var(--pico-block-spacing-vertical)*0);
 }
 article header {
     background-color: transparent;
@@ -623,14 +636,15 @@ fieldset button.small {
 
 /* ALERTS */
 article.snackbar-container {
-    padding: 22px;
+    padding: 0px;
     bottom: 4px; /* 30px from the bottom */
     display: flex;
     position: fixed; /* Sit on top of the screen */
     z-index: 11;
-    margin-bottom: 4;
     right: 0;
-    margin-right: var(--pico-block-spacing-horizontal);
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
 }
 
 article.snackbar {
@@ -642,8 +656,6 @@ article.snackbar {
 article.snackbar-container ul, article.snackbar-container {
     margin-left: 0;
     padding-left: 0;
-    background-color: transparent;
-    border-color: transparent;
 }
 
 article.snackbar.standalone {

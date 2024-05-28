@@ -17,6 +17,7 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.PostType = entity.Type;
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
+            document.ParentIds = entity.ParentIdItems?.ToList();
             document.TargetChannel = entity.TargetChannel;
             document.Tags = entity.TagItems;
             document.Category = entity.Category;

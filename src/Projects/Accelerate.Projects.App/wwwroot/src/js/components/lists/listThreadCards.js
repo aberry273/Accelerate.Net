@@ -49,7 +49,7 @@ export default function (data) {
                     await this.initSearch();
                 }
                 else {
-                    await this.$store.wssContentPosts.Search(filterUpdates, true);
+                    await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, filterUpdates, true);
                 }
                 
             })
@@ -67,8 +67,8 @@ export default function (data) {
             return false;
         },
         async initSearch() {
-            let queryData = this.filters || {}
-            await this.$store.wssContentPosts.Search(queryData);
+            let queryData = this.filters || {} 
+            await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData);
         },
 
         get threadItems() {
@@ -95,7 +95,7 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div x-transition>
+            <div class="list">
               <template x-for="(item, i) in threadItems" :key="item.id || i" >
                     <div>
                         <div x-data="cardPostReply({
@@ -116,21 +116,19 @@ export default function (data) {
                         })"></div>
 
                         <div x-show="item.replies > 0 && !showReplies(item)">
-                            <a class="line click" @click="toggleReplies(item)" >
+                            <a class="line child click" @click="toggleReplies(item)">
                                 <small class="pl">
                                     <small>
                                         <span>Show <span x-text="item.replies"></span> replies</span>
                                     </small>
                                 </small>
                             </a>
-
-                            <hr />
                         </div>
 
                         <!-- Replies -->
                         <template x-if="showReplies(item)">
                             <div>
-                               <a class="line click" @click="toggleReplies(item)">
+                               <a class="line child click" @click="toggleReplies(item)">
                                     <small class="pl">
                                         <small>
                                             <span>Hide replies</span>
@@ -138,7 +136,7 @@ export default function (data) {
                                     </small>
                                 </a>
 
-                                <div class="line mt-0"
+                                <div class="line child mt-0"
                                     x-data="listThreadRepliesCards( {
                                     searchUrl: searchUrl,
                                     filterEvent: filterEvent,
@@ -149,7 +147,7 @@ export default function (data) {
                                         parentId: [item.id]
                                     },
                                     userId: userId,
-                                })"></div>
+                                })"></div> 
                                 <hr />
                             </div>
                         </template>

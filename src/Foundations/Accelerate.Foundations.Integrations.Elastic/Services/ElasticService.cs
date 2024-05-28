@@ -157,13 +157,13 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         {
             return await _client.DeleteAsync(_indexName, id);
         }
-        private FieldSort GetSortField()
+        private FieldSort GetSortField(SortOrder sortOrder = SortOrder.Asc)
         {
             var fieldSort = new FieldSort();
-            fieldSort.Order = SortOrder.Asc;
+            fieldSort.Order = sortOrder;
             return fieldSort;
         }
-        public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             await CreateIndex();
             return await _client.SearchAsync<T>(s => s
@@ -171,10 +171,10 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField()))
+                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
             );
         }
-        public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             await CreateIndex();
             return await _client.SearchAsync<T>(s => s
@@ -182,11 +182,11 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField()))
+                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
             );
         }
 
-        public async Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Search<T>(Action<QueryDescriptor<T>> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             await CreateIndex();
             return await _client.SearchAsync<T>(s => s
@@ -194,10 +194,10 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField()))
+                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
             );
         }
-        public async Task<SearchResponse<T>> Find(QueryDescriptor<T> query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Find(QueryDescriptor<T> query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             //Create if not existing
             await CreateIndex();
@@ -209,9 +209,10 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 query,
                 skip,
                 take,
-                sortByField);
+                sortByField,
+                sortOrder);
         }
-        public async Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn)
+        public async Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             //Create if not existing
             await CreateIndex();
@@ -224,7 +225,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(skip)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField()))
+                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
             );
         }
         // Overrides
@@ -311,7 +312,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             };
             return tq;
         }
-        public Query? CreatExistsQuery(QueryFilter filter)
+        public Query? CreateExistsQuery(QueryFilter filter)
         {
             var name = filter.Name.ToCamelCase();
             var field = new Field(name);
@@ -320,12 +321,13 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             q.Suffix("keyword");
             return q;
         }
-        public QueryFilter Filter(string field, object? value)
+        public QueryFilter Filter(string field, object? value, bool? keyword = false)
         {
             return new QueryFilter()
             {
                 Name = field,
-                Value = value
+                Value = value,
+                Keyword = keyword.GetValueOrDefault(),
             };
         }
         public QueryFilter Filter(string field, ElasticCondition cond, object? value)
@@ -381,7 +383,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             }
             else if (filter.Operator == QueryOperator.Exist)
             {
-                return CreatExistsQuery(filter);
+                return CreateExistsQuery(filter);
             }
             else
             {

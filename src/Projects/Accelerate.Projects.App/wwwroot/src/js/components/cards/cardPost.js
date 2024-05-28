@@ -92,6 +92,9 @@ export default function (data) {
                                                 <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                                             </summary>
                                             <ul dir="rtl">
+                                                <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
+                                                <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
+
                                                 <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
                                             </ul>
                                         </details>

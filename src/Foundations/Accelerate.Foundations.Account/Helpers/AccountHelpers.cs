@@ -14,7 +14,13 @@ namespace Accelerate.Foundations.Account.Helpers
                 Username = user.UserName,
                 UserId = user?.Id,
                 Image = user?.AccountProfile?.Image
-            } : null;
+            } : new UserProfile()
+            {
+                IsAuthenticated = false,
+                Username = "Anonymous",
+                UserId = null,
+                Image = null
+            };
         }
         public static string CreatePassword(int length)
         {

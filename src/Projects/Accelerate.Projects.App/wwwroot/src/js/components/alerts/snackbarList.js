@@ -64,21 +64,21 @@ export default function (data = {}) {
           <template x-if="show">
             <article class="is-fixed dense page-modal snackbar-container" >
                 <ul>
-                    <div align="right">
+                    <div align="right" x-show="snackbars.length > 1">
                         <span x-text="remainingNotifications"></span>
                         <i aria-label="Close" class="click material-icons flat" rel="prev" @click="closeAll">close</i>
                     </div>
-                <div >
-                    <template x-for="(snackbar, i) in topSnackbars" :key="i">
-                        <article class="dense snackbar" :class="snackbar.type" x-transition>
-                            <nav>
-                            <i class="material-icons" x-text="snackbar.icon"></i>
-                            <p x-text="snackbar.text"></p>
-                            <i class="flat click material-icons" aria-label="Close" @click="removeSnackbar(i)" rel="prev">close</i>
-                            </nav>
-                        </article>
-                    </template
-                </div>
+                    <div >
+                        <template x-for="(snackbar, i) in topSnackbars" :key="i">
+                            <article class="dense snackbar" :class="snackbar.type" x-transition>
+                                <nav>
+                                <i class="material-icons" x-text="snackbar.icon"></i>
+                                <p x-text="snackbar.text"></p>
+                                <i class="flat click material-icons" aria-label="Close" @click="removeSnackbar(i)" rel="prev">close</i>
+                                </nav>
+                            </article>
+                        </template
+                    </div>
                 <ul>
             </article>
           </template>`
