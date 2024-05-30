@@ -205,17 +205,16 @@ namespace Accelerate.Foundations.Content.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("QuotedContentPostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("QuoterContentPostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Response")
@@ -226,9 +225,6 @@ namespace Accelerate.Foundations.Content.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    [Migration("20240501182320_InitialCreate_Content7")]
-    partial class InitialCreate_Content7
+    [Migration("20240530003932_InitialCreate_Content2")]
+    partial class InitialCreate_Content2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,43 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentChannels");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionsEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool?>("Agree")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("Disagree")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Like")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Reaction")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentPostId");
+
+                    b.ToTable("ContentPostActions");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActivityEntity", b =>
@@ -109,6 +146,9 @@ namespace Accelerate.Foundations.Content.Migrations
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ParentIds")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -168,18 +208,17 @@ namespace Accelerate.Foundations.Content.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("QuotedContentPostId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("QuoterContentPostId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Response")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -195,38 +234,15 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.ToTable("ContentPostQuotes");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionsEntity", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
+                        .WithMany("Actions")
+                        .HasForeignKey("ContentPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<bool?>("Agree")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ContentPostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("Disagree")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Like")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentPostId");
-
-                    b.ToTable("ContentPostAction");
+                    b.Navigation("ContentPost");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActivityEntity", b =>
@@ -240,22 +256,11 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Navigation("ContentPost");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionEntity", b =>
-                {
-                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
-                        .WithMany("Actions")
-                        .HasForeignKey("ContentPostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ContentPost");
-                });
-
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", b =>
                 {
-                    b.Navigation("Activities");
-
                     b.Navigation("Actions");
+
+                    b.Navigation("Activities");
                 });
 #pragma warning restore 612, 618
         }

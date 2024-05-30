@@ -41,6 +41,7 @@
     {
         <!-- Replies -->
         <div x-data="listThreadAscendantCards( {
+            item: @JsonSerializerHelper.SerializeObject(Model.Item),
             userId: '@Model.UserId',
             searchUrl: '@Model.ParentPostsApiUrl'
         })">
@@ -72,7 +73,7 @@
             parentId: ['@Model.Item.Id']
         },
         userId: '@Model.UserId',
-        items: @JsonSerializerHelper.SerializeObject(Model.Replies)
+        items: []
     })">
     </div>
 

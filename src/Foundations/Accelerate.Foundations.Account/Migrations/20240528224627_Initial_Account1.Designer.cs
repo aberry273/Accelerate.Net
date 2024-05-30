@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Account.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20240410192230_Initial_Account2")]
-    partial class Initial_Account2
+    [Migration("20240528224627_Initial_Account1")]
+    partial class Initial_Account1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

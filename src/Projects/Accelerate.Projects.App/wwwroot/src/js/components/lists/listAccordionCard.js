@@ -23,7 +23,7 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div x-transition>
-              <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
+                <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
                 <details class="dense blockquote" @click="item._selected = !item._selected" :class="item._selected ? 'selected' : ''">
                     <summary>
                         <i x-show="i > 0" class="material-icons">subdirectory_arrow_right</i>
@@ -35,7 +35,7 @@ export default function (data) {
                     })"></div>
                 </details>
                 <hr />
-              </template>
+                </template>
             </div>
             `
             this.$nextTick(() => {

@@ -78,13 +78,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             }).ToList();
             return mediaItems;
         }
-        private List<string> GetQuoteIds(IPipelineArgs<ContentPostEntity> args)
+        private List<ContentPostQuoteSubdocument> GetQuotes(IPipelineArgs<ContentPostEntity> args)
         {
-            var quotes = _quoteService.Find(x => x.QuoterContentPostId == args.Value.Id);
-            var quotedPosts = quotes.Select(x => x.Value).ToList();
-            // add the quoter to the list of quotes so it is returned while searching
-            quotedPosts.Add(Foundations.Common.Extensions.GuidExtensions.ShortenBase64(args.Value.ThreadId));
-            return quotedPosts;
+            var quotes = _quoteService.Find(x => x.ContentPostId == args.Value.Id);
+            
+            return quotes.Select(x => new ContentPostQuoteSubdocument()
+            {
+                ContentPostQuoteThreadId = GuidExtensions.ShortenBase64(x.QuotedContentPostId.ToBase64()),
+                ContentPostQuoteId = x.QuotedContentPostId.ToString(),
+                Content = x.Content,
+                Response = x.Response
+            }).ToList();
         }
         private string? GetChannelName(IPipelineArgs<ContentPostEntity> args)
         {
@@ -109,7 +113,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 args.Value.Hydrate(indexModel, profile);
 
                 indexModel.ChannelName = GetChannelName(args);
-                indexModel.QuoteIds = GetQuoteIds(args);
+                indexModel.QuotedPosts = GetQuotes(args);
                 indexModel.Media = GetMedia(args);
                 // If a reply
                 

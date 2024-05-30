@@ -75,7 +75,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
-                var quotes = (obj.QuoteIds != null) ? obj.QuoteIds.Where(x => !string.IsNullOrEmpty(x) && x != "null").ToList() : new List<string>();
+                var quotes = (obj.QuotedItems != null) ? obj.QuotedItems.Where(x => x != null).ToList() : new List<string>();
                 var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
                 var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
                 var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
@@ -113,7 +113,8 @@ namespace Accelerate.Features.Content.Controllers.Api
                 if (quotes.Any())
                 {
                     var quotesItems = obj
-                        .QuoteIds
+                        .QuotedItems
+                        .Select(x => Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostQuoteRequest>(x))
                         .Select(x => CreateQuoteLink(post, x))
                         .ToList();
 
@@ -213,18 +214,15 @@ namespace Accelerate.Features.Content.Controllers.Api
 
             return fileResults.ToList();
         }
-        private ContentPostQuoteEntity CreateQuoteLink(ContentPostEntity post, string threadId)
+        private ContentPostQuoteEntity CreateQuoteLink(ContentPostEntity post, ContentPostQuoteRequest quote)
         {
-            var quotedId = Foundations.Common.Extensions.GuidExtensions.FromBase64(threadId);
-            // append current thread to path of new quote, or set as default path
-            var value = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(threadId);
-            var path = $"{Foundations.Common.Extensions.GuidExtensions.ShortenBase64(post.ThreadId)}, {Foundations.Common.Extensions.GuidExtensions.ShortenBase64(threadId)}";
+            // append current thread to path of new quote, or set as default path 
             return new ContentPostQuoteEntity()
             {
-                QuotedContentPostId = quotedId,
-                QuoterContentPostId = post.Id,
-                Path = path,
-                Value = value,
+                QuotedContentPostId = quote.QuotedContentPostId,
+                ContentPostId = post.Id,
+                Content = quote.Content,
+                Response = quote.Response
             };
         }
 

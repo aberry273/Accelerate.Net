@@ -12,8 +12,9 @@ namespace Accelerate.Foundations.Content.Models.Data
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public Guid? UserId { get; set; }
-        public Guid QuoterContentPostId { get; set; }
+        public Guid ContentPostId { get; set; }
         public Guid QuotedContentPostId { get; set; }
-        public string? Value { get; set; }
+        public string? Content { get; set; }
+        public string? Response { get; set; }
     }
 }

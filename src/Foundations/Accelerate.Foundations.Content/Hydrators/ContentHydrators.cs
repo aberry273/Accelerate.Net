@@ -63,9 +63,10 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
-            document.QuoterContentPostId = entity.QuoterContentPostId;
+            document.ContentPostId = entity.ContentPostId;
             document.QuotedContentPostId = entity.QuotedContentPostId;
-            document.Value = entity.Value;
+            document.Content = entity.Content;
+            document.Response = entity.Response;
             document.Id = entity.Id;
         }
     }

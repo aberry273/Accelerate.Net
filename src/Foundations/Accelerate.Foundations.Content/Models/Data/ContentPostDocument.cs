@@ -9,6 +9,13 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         Post, Reply, Page
     }
+    public class ContentPostQuoteSubdocument
+    {
+        public string ContentPostQuoteThreadId { get; set; }
+        public string ContentPostQuoteId { get; set; }
+        public string? Content { get; set; }
+        public string? Response { get; set; }
+    }
     public class ContentPostMediaSubdocument
     {
         public string Name { get; set; }
@@ -47,7 +54,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? ChannelName { get; set; }
         public string? Category { get; set; }
         public IEnumerable<string>? Tags { get; set; }
-        public IEnumerable<string>? QuoteIds { get; set; }
+        public IEnumerable<ContentPostQuoteSubdocument>? QuotedPosts { get; set; }
         public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
         // Computed
         public ContentPostActionsSummaryDocument ActionsTotals { get; set; }

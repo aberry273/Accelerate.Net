@@ -1,13 +1,17 @@
 const defaults = {}
 import { mxCardPost } from '/src/js/mixins/index.js';
-import { header, content, media, quotes, pagination, footer } from './shared.js';
+import { headerQuote, content, media, footerQuote } from './shared.js';
+
 export default function (data) {
     return {
         // mixins
         ...mxCardPost(data),
         // properties
         html: '',
+        post: {},
+        quotePost: {},
         init() {
+            this.quotePost = data.quotePost;
             this.item = data.item;
             this._mxCardPost_init();
             const self = this;
@@ -34,19 +38,15 @@ export default function (data) {
         },
         load(data) {
             const html = `
-            <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
+            <article class="quote" :id="selectedPost.threadId">
                 <div class="content">
-                    ${header()}
+                    ${headerQuote()}
 
                     ${content()}
 
                     ${media()}
-                     
-                    ${quotes()}  
-
-                    ${pagination()}
                     
-                    ${footer()}
+                    ${footerQuote()}
                 </div>
             </article>
         `

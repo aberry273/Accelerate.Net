@@ -175,7 +175,7 @@ namespace Accelerate.Features.Content.Services
                 {
                     new FormField()
                     {
-                        Name= "QuoteIds",
+                        Name= "QuotedItems",
                         FieldType = FormFieldTypes.quotes,
                         Class = "flat",
                         Placeholder = "Quotes",
@@ -314,7 +314,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name= "QuoteIds",
+                        Name= "QuotedItems",
                         FieldType = FormFieldTypes.quotes,
                         Class = "flat",
                         Placeholder = "Quotes",

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Media.Migrations
 {
     [DbContext(typeof(MediaDbContext))]
-    [Migration("20240501182303_InitialCreate_Media3")]
-    partial class InitialCreate_Media3
+    [Migration("20240528224619_InitialCreate_Media1")]
+    partial class InitialCreate_Media1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

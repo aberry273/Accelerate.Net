@@ -8,7 +8,7 @@ export default function (settings) {
         postbackUrl: 'wssContentPosts.postbackUrl',
         queryUrl: 'wssContentPosts.queryUrl',
         actions: [],
-        quotes: [],
+        quotedPosts: [],
         //cachedFilters: {},
         // mixins
         ...mxAlert(settings),
@@ -74,23 +74,22 @@ export default function (settings) {
         },
         async SearchByUrl(searchUrl, filters, replace = false) {
             const result = await this.SearchPosts(filters, searchUrl)
-            if (replace) {
-                this.items = result.posts;
-                this.actions = result.actions;
-            }
-            else {
-                this.items = this.insertOrUpdateItems(this.items, result.posts);
-                this.actions = this.insertOrUpdateItems(this.actions, result.actions);
-            }
+            this.setSearchResults(result, replace);
         },
         async Search(filters, replace = false) {
             const result = await this.SearchPosts(filters)
+            this.setSearchResults(result, replace);
+        },
+        setSearchResults(result, replace = false) {
             if (replace) {
+                console.log('replacing items');
                 this.items = result.posts;
+                this.quotedPosts = result.quotedPosts;
                 this.actions = result.actions;
             }
             else {
                 this.items = this.insertOrUpdateItems(this.items, result.posts);
+                this.quotedPosts = this.insertOrUpdateItems(this.items, result.quotedPosts);
                 this.actions = this.insertOrUpdateItems(this.actions, result.actions);
             }
         },
@@ -98,6 +97,12 @@ export default function (settings) {
             const actions = this.actions.filter(x => x.userId == userId && x.contentPostId == postId);
             if (actions == null || actions.length == 0) return null;
             return actions[0];
+        },
+        GetQuotePost(quotedPostId) {
+            return this.quotedPosts.filter(x => x.id == quotedPostId)[0];
+        },
+        FilterPostsById(postIds) {
+            return this.items.filter(x => postIds.indexOf(x.id) > -1);
         },
         CheckUserPostAction(postId, userId, actionType) {
             const action = this.GetPostAction(postId, userId);

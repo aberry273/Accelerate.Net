@@ -67,11 +67,11 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
         {
             // fetch Actions
             var ActionsDoc = ContentPostQuoteUtilities.GetTotalQuotes(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuoterContentPostId.ToString());
+            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
 
             contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.QuoterContentPostId.ToString());
+            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 
             // Send websocket request
             await ContentPostQuoteUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);

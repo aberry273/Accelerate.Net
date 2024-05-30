@@ -21,6 +21,7 @@ using Microsoft.Data.SqlClient;
 using Accelerate.Foundations.Content.Models.Entities;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.Threading;
+using Azure;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -159,6 +160,14 @@ namespace Accelerate.Foundations.Content.Services
                 return model;
             }
             model.Posts = results.Documents.ToList();
+
+            //quotes
+            var quotedPostIds = model.Posts.
+                SelectMany(x => x.QuotedPosts.
+                    Select(y => y.ContentPostQuoteId))
+                .ToList();
+            model.QuotedPosts = quotedPostIds.Any() ? await SearchPostQuotes(Query, quotedPostIds) : new List<ContentPostDocument>();
+
             //actions
             var postIds = model.Posts.Select(x => x.Id.ToString()).ToList();
             var postActionResults = await SearchPostActions(Query, postIds);
@@ -168,6 +177,13 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
         {
             var elasticQuery = BuildSearchQuery(Query);
+            return await SearchPosts(Query, elasticQuery);
+        }
+        public async Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId)
+        {
+            Query.Page = 0;
+            Query.ItemsPerPage = 1;
+            var elasticQuery = BuildSearchPostQuery(Query, postId);
             return await SearchPosts(Query, elasticQuery);
         }
         public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query)
@@ -205,6 +221,30 @@ namespace Accelerate.Foundations.Content.Services
         {
               return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = fields };
         }
+        #region Quotes
+        public async Task<List<ContentPostDocument>> SearchPostQuotes(RequestQuery Query, List<string> ids)
+        {
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
+            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int skip = take * Query.Page;
+            var searchquery = BuildPostQuotesSearchQuery(Query, ids);
+            var results = await this.Search(searchquery, skip, take);
+            if (!results.IsValidResponse || !results.IsSuccess())
+            {
+                return new List<ContentPostDocument>();
+            }
+            return results.Documents.ToList();
+        }
+        public QueryDescriptor<ContentPostDocument> BuildPostQuotesSearchQuery(RequestQuery query, List<string> postIds)
+        {
+            var Query = new RequestQuery();
+            Query.Filters = new List<QueryFilter>()
+            {
+                FilterValues(Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, postIds, true)
+            };
+            return this.CreateQuery(Query);
+        }
+        #endregion
         #region Actions
 
         public async Task<List<ContentPostActionsDocument>> SearchPostActions(RequestQuery Query, List<string> ids)
@@ -326,7 +366,22 @@ namespace Accelerate.Foundations.Content.Services
             return CreateQuery(Query);
         }
 
-        public  QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query)
+        public QueryDescriptor<ContentPostDocument> BuildSearchPostQuery(RequestQuery Query, Guid postId)
+        {
+
+            if (Query == null) Query = new RequestQuery();
+
+            //Query.Filters.Add(PublicPosts());
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+            var filter = Filter(Constants.Fields.Id, ElasticCondition.Filter, postId);
+            Query.Filters.Add(filter);
+
+            return CreateQuery(Query);
+        }
+
+        public QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query)
         {
 
             if (Query == null) Query = new RequestQuery();

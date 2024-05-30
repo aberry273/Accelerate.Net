@@ -62,6 +62,14 @@ namespace Accelerate.Features.Content.Controllers.Api
             var docs = await _searchService.SearchUserActions(query);
             return Ok(docs);
         }
+        [Route("Post/{postId}")]
+        [HttpPost]
+        public async Task<IActionResult> SearchPost([FromBody] RequestQuery query, [FromRoute] Guid postId)
+        {
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
+            var result = await _searchService.SearchPost(query, postId);
+            return Ok(result);
+        }
         [Route("Posts/{userId}")]
         [HttpPost]
         public async Task<IActionResult> SearchUserPosts([FromBody] RequestQuery query, [FromRoute] Guid userId)

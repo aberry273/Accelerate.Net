@@ -85,6 +85,8 @@ namespace Accelerate.Foundations.Account.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BannerImage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecondaryEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SecondaryNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),

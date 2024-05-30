@@ -64,8 +64,8 @@ namespace Accelerate.Foundations.Content.Services
         {
             var descriptor = new QueryDescriptor<ContentPostQuoteDocument>();
             descriptor.MatchAll();
-            if (!string.IsNullOrEmpty(request?.Query?.Value))
-                descriptor.Term(x => x.Value, request?.Query?.Value);
+            if (!string.IsNullOrEmpty(request?.Query?.Content))
+                descriptor.Term(x => x.Content, request?.Query?.Content);
 
             return descriptor;
         }

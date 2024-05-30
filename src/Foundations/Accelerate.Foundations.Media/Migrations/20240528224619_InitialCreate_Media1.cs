@@ -12,11 +12,12 @@ namespace Accelerate.Foundations.Media.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ContentChannels",
+                name: "MediaBlobs",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -26,7 +27,7 @@ namespace Accelerate.Foundations.Media.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ContentChannels", x => x.Id);
+                    table.PrimaryKey("PK_MediaBlobs", x => x.Id);
                 });
         }
 
@@ -34,7 +35,7 @@ namespace Accelerate.Foundations.Media.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ContentChannels");
+                name: "MediaBlobs");
         }
     }
 }

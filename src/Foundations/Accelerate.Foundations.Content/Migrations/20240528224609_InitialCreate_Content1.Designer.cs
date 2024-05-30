@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    [Migration("20240528191349_InitialCreate_Content10")]
-    partial class InitialCreate_Content10
+    [Migration("20240528224609_InitialCreate_Content1")]
+    partial class InitialCreate_Content1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

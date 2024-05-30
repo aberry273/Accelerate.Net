@@ -56,6 +56,9 @@ export default function (data) {
 
             const result = await this.$store.wssContentPostActions._wssContentActions_HandlePost(payload);
         },
+        _mxCardPost_getQuotePost(id) {
+            return this.$store.wssContentPosts.GetQuotePost(id);
+        },
         _mxCardPost_redirectAction(action) {
             const ev = `redirect-${action}`;
             this.$events.emit(ev, this.mxCardPost_selectedPost)

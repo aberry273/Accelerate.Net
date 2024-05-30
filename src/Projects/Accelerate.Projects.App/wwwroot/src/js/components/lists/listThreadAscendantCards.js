@@ -15,6 +15,7 @@ export default function (data) {
         ...mxAlert(data),
 
         // PROPERTIES
+        item: {},
         items: [],
         userId: '',
         parentId: '',
@@ -23,6 +24,7 @@ export default function (data) {
         async init() {
             const self = this;
             data = data != null ? data : {}
+            this.item = data.item;
             this.items = data.items;
             this.userId = data.userId;
             this.filters = data.filters;
@@ -33,10 +35,19 @@ export default function (data) {
             this.setHtml(data);
             await this.initSearch();
         },
+        orderByDate(items) {
+            items.sort(function (a, b) {
+                return new Date(a.createdOn) - new Date(b.createdOn);
+            });
+        },
         async initSearch() {
             let queryData = this.filters || {}
-            const results = await this.$store.wssContentPosts.SearchPosts(queryData, this.searchUrl);
-            this.items = results.posts;
+            await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData, false);
+            const items = this.$store.wssContentPosts.FilterPostsById(this.item.parentIds);
+            this.orderByDate(items);
+            this.items = items;
+            //const results = await this.$store.wssContentPosts.SearchPosts(queryData, this.searchUrl);
+            //this.items = results.posts;
         },
         // METHODS
         setHtml(data) {
