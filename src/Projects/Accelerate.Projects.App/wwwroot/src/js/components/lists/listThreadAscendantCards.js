@@ -20,6 +20,7 @@ export default function (data) {
         userId: '',
         parentId: '',
         searchUrl: '',
+        loading: false,
 
         async init() {
             const self = this;
@@ -31,9 +32,23 @@ export default function (data) {
             this.searchUrl = data.searchUrl;
 
             component = data.component || component
-
             this.setHtml(data);
-            await this.initSearch();
+            this.loading = true;
+
+            if(this.items.length == 0) await this.initSearch();
+             
+            this.$nextTick(() => {
+                const el = document.getElementById('ascendants');
+                const el2 = document.getElementById(this.item.threadId);
+                const top = window.pageYOffset + (el2.getBoundingClientRect().bottom - window.pageYOffset);
+                window.scrollTo({
+                    top: el2.getBoundingClientRect().y - 110,
+                    left: 0,
+                    behavior: 'instant'
+                });
+
+            })
+            this.loading = false;
         },
         orderByDate(items) {
             items.sort(function (a, b) {
@@ -46,16 +61,39 @@ export default function (data) {
             const items = this.$store.wssContentPosts.FilterPostsById(this.item.parentIds);
             this.orderByDate(items);
             this.items = items;
-            //const results = await this.$store.wssContentPosts.SearchPosts(queryData, this.searchUrl);
-            //this.items = results.posts;
+        },
+        skipScroll(e) {
+            const el = document.getElementById('ascendants');
+            const el2 = document.getElementById(this.item.threadId);
+            console.log(el.getBoundingClientRect());
+            /*
+            e.preventDefault();
+
+                const el = document.getElementById('ascendants');
+                const el2 = document.getElementById(this.item.threadId);
+                const el3 = document.getElementById('lastLine');
+                console.log(el);
+                console.log(el.getBoundingClientRect());
+                console.log(el2);
+                console.log(el2.getBoundingClientRect());
+                console.log(el3.getBoundingClientRect());
+                document.getElementById(this.item.threadId).focus();
+                */
+                /*
+                window.scrollTo({
+                    top: el3.getBoundingClientRect().bottom - 75,
+                    left: 0,
+                    behavior: 'instant',
+                });
+                */
         },
         // METHODS
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div class="">
+            <div id="ascendants">
                 <template x-for="(item, i) in items" :key="item.id || i" >
-                    <div>
+                    <div @scroll.window="skipScroll">
                         <div x-data="cardPost({
                             item: item,
                             userId: userId,
@@ -66,7 +104,7 @@ export default function (data) {
                             itemEvent: $store.wssContentPosts.getMessageEvent(),
                             parentId: item.id
                         })"></div>
-                        <div class="line-background"></div>
+                        <div class="line-background" :id="i == items.length-1 ? 'lastLine' : null"></div>
                     </div>
                 </template>
             </div>

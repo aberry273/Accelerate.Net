@@ -1,6 +1,6 @@
 const defaults = {}
 import { mxCardPost } from '/src/js/mixins/index.js';
-import { headerQuote, content, media, footerQuote } from './shared.js';
+import { headerQuote, contentQuote, media, footerQuote } from './shared.js';
 
 export default function (data) {
     return {
@@ -42,7 +42,7 @@ export default function (data) {
                 <div class="content">
                     ${headerQuote()}
 
-                    ${content()}
+                    ${contentQuote()}
 
                     ${media()}
                     

@@ -95,7 +95,7 @@ export default function (data) {
         setHtml(data) {
             // make ajax request 
             const html = `
-            <div class="list">
+            <div class="list replies">
               <template x-for="(item, i) in threadItems" :key="item.id || i" >
                     <div>
                         <div x-data="cardPost({

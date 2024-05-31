@@ -178,6 +178,15 @@ export function footer(data) {
 }
 
 /// Quote specific
+export function contentQuote(data) {
+    return `
+    <template x-for="(post, i) in mxCardPost_thread" :key="i">
+        <div x-show="i == currentPage" class="content truncated">
+            <div class="padded pt-0 pb-0" x-html="post.content"></div>
+        </div>
+    </template>
+    `
+}
 export function headerQuote(data) {
     return `
     <header class="padded pb-0">

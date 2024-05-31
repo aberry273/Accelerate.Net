@@ -101,6 +101,7 @@ namespace Accelerate.Features.Content.Controllers
             var viewModel = _contentViewService.CreateThreadPage(user, item, parent, aggResponse, channelResponse?.Source);
             //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
             //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare
+          
             /*
             if (item.ParentIds != null && item.ParentIds.Any())
             {
@@ -111,6 +112,7 @@ namespace Accelerate.Features.Content.Controllers
                     : new List<ContentPostDocument>();
             }
             */
+         
             return View(viewModel);
         }
 

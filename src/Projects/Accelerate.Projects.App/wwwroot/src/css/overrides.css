@@ -19,9 +19,12 @@ html {
     scroll-behavior: smooth;
 }
 
+nav.topnav {
+    background-color: var(--pico-background-color);
+}
+
 nav.floating {
     position: fixed;
-    background-color: var(--pico-background-color);
     top: 0;
     z-index: 11;
 }
@@ -31,6 +34,14 @@ nav.floating.bottom {
     bottom: 0;
     top:initial;
     z-index: 11;
+}
+
+.ascendants {
+    overflow-anchor: none
+}
+
+.replies {
+    min-height: 1000px;
 }
 
 .show {
@@ -545,6 +556,17 @@ article.dense {
 article .content {
     padding: 0 calc(var(--pico-block-spacing-horizontal)* .33) 0 calc(var(--pico-block-spacing-horizontal)* .33);
 }
+
+article .content.truncated {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+    display: inline-block;
+    max-height: 140px;
+    max-width: 100%;
+    padding-right: 4px; /* adjust based on font size */
+}
+
 
 article.dense ul {
     margin: 0;

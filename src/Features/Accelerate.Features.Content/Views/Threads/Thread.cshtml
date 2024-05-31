@@ -5,11 +5,12 @@
 @using Microsoft.AspNetCore.Http 
 @model ThreadPage
 
-<div x-data="{
+<div class="fixed-scroll-container" x-data="{
     filterEvent: 'onFilterChange',
     actionEvent: 'action:post',
     quoteEvent: 'quote:post',
-    init() {}
+    init() {
+    }
   }">
 
     <summary class="primary">
@@ -42,6 +43,7 @@
         <!-- Replies -->
         <div x-data="listThreadAscendantCards( {
             item: @JsonSerializerHelper.SerializeObject(Model.Item),
+            items: @JsonSerializerHelper.SerializeObject(Model.Parents),
             userId: '@Model.UserId',
             searchUrl: '@Model.ParentPostsApiUrl'
         })">
