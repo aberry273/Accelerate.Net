@@ -21,6 +21,7 @@ export default function (data) {
         parentId: '',
         searchUrl: '',
         loading: false,
+        lastScrollHeight: 0,
 
         async init() {
             const self = this;
@@ -35,18 +36,9 @@ export default function (data) {
             this.setHtml(data);
             this.loading = true;
 
-            if(this.items.length == 0) await this.initSearch();
-             
+            if (this.items.length == 0) await this.initSearch();
             this.$nextTick(() => {
-                const el = document.getElementById('ascendants');
-                const el2 = document.getElementById(this.item.threadId);
-                const top = window.pageYOffset + (el2.getBoundingClientRect().bottom - window.pageYOffset);
-                window.scrollTo({
-                    top: el2.getBoundingClientRect().y - 110,
-                    left: 0,
-                    behavior: 'instant'
-                });
-
+                this.$events.emit('ancestors-loaded')
             })
             this.loading = false;
         },
@@ -62,38 +54,13 @@ export default function (data) {
             this.orderByDate(items);
             this.items = items;
         },
-        skipScroll(e) {
-            const el = document.getElementById('ascendants');
-            const el2 = document.getElementById(this.item.threadId);
-            console.log(el.getBoundingClientRect());
-            /*
-            e.preventDefault();
-
-                const el = document.getElementById('ascendants');
-                const el2 = document.getElementById(this.item.threadId);
-                const el3 = document.getElementById('lastLine');
-                console.log(el);
-                console.log(el.getBoundingClientRect());
-                console.log(el2);
-                console.log(el2.getBoundingClientRect());
-                console.log(el3.getBoundingClientRect());
-                document.getElementById(this.item.threadId).focus();
-                */
-                /*
-                window.scrollTo({
-                    top: el3.getBoundingClientRect().bottom - 75,
-                    left: 0,
-                    behavior: 'instant',
-                });
-                */
-        },
         // METHODS
         setHtml(data) {
             // make ajax request 
             const html = `
             <div id="ascendants">
-                <template x-for="(item, i) in items" :key="item.id || i" >
-                    <div @scroll.window="skipScroll">
+                <template x-for="(item, i) in items" :key="item.id || i">
+                    <div>
                         <div x-data="cardPost({
                             item: item,
                             userId: userId,
@@ -104,7 +71,7 @@ export default function (data) {
                             itemEvent: $store.wssContentPosts.getMessageEvent(),
                             parentId: item.id
                         })"></div>
-                        <div class="line-background" :id="i == items.length-1 ? 'lastLine' : null"></div>
+                        <div class="line-background" :id="i == items.length-1 ? 'parentline' : null"></div>
                     </div>
                 </template>
             </div>

@@ -16,7 +16,6 @@
   */
 /*Misc*/
 html {
-    scroll-behavior: smooth;
 }
 
 nav.topnav {
@@ -35,12 +34,24 @@ nav.floating.bottom {
     top:initial;
     z-index: 11;
 }
-
-.ascendants {
-    overflow-anchor: none
+.loading-overlay {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 1;
+    background-color: var(--pico-background-color);
 }
-
-.replies {
+.loading-spinner {
+    height: 100%;
+    align-content: center;
+}
+.fixed-scroll-container {
+    scroll-behavior: revert;
+}
+.reply-padding {
     min-height: 1000px;
 }
 

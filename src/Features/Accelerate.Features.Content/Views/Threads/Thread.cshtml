@@ -6,14 +6,34 @@
 @model ThreadPage
 
 <div class="fixed-scroll-container" x-data="{
+    isScrollSet: false,
     filterEvent: 'onFilterChange',
     actionEvent: 'action:post',
     quoteEvent: 'quote:post',
-    init() {
+     init() {
+        if('@Model.Item.ParentId' == '') {
+            this.isScrollSet=true;
+        }
+        this.$events.on('ancestors-loaded', () => {
+            this.setScroll()
+        })
+    },
+    setScroll() {
+        this.$nextTick(() => {
+            this.isScrollSet = true;
+            const el2 = document.getElementById('@Model.Item.ThreadId');
+            const headerOffset = 105;
+            const y = el2.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            window.scrollTo({
+                top: y,
+                left: 0,
+                behavior: 'instant'
+            });
+        })
     }
   }">
 
-    <summary class="primary">
+    <summary class="primary" >
         <a href="/" style="text-decoration:none;">
             <i class="material-icons">expand_less</i>
             <sup class="primary">
@@ -40,8 +60,9 @@
     }
     @if (Model.Item.ParentId != null)
     {
-        <!-- Replies -->
-        <div x-data="listThreadAscendantCards( {
+        <!-- Parents -->
+        <div
+            x-data="listThreadAscendantCards( {
             item: @JsonSerializerHelper.SerializeObject(Model.Item),
             items: @JsonSerializerHelper.SerializeObject(Model.Parents),
             userId: '@Model.UserId',
@@ -53,8 +74,8 @@
     <div x-data="cardPost({
         item:  @JsonSerializerHelper.SerializeObject(Model.Item),
         userId: '@Model.UserId',
-    })"></div>
-    <hr/>
+    })" ></div>
+    <hr id="reply-line" />
 
      <!-- Filters -->
     <div x-data="appNavFilters({
@@ -86,6 +107,11 @@
         <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
     }
 
+    <div class="reply-padding"></div>
+  
+    <div class="loading-overlay" x-show="!isScrollSet">
+        <article class="loading-spinner" aria-busy="true"></article>
+    </div>
 </div>
 
 <!-- Modals -->
