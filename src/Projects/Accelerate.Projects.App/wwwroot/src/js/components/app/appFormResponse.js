@@ -81,11 +81,11 @@ export default function (data) {
                 parentIdField.value = item.id;
                 this._mxForm_SetField(this.fields, parentIdField);
 
+
                 const replyToField = this._mxForm_GetField(this.fields, 'ReplyTo');
                 if (!replyToField) return;
 
-                var content = item.content.length > 64 ? item.content.Substring(0, 64) + "..." : item.content;
-                replyToField.value = `Reply to [${item.shortThreadId}]: ${content}`
+                replyToField.value = this.createReplyPostSummary(item);
 
                 this._mxForm_SetField(this.fields, replyToField);
                 this.showFloatingPanel = false;
@@ -95,6 +95,9 @@ export default function (data) {
 
             this.setHtml(data);
         },
+        // Content editable field
+        //https://stackoverflow.com/questions/46000233/how-is-formatting-in-textarea-being-done
+
         // GETTERS
         get isInPosition() {
             let inPosition = false;
@@ -144,8 +147,12 @@ export default function (data) {
             }
             return style;
         },
+        createReplyPostSummary(item) {
+            const content = item.content.length > 64 ? item.content.slice(0, 64) + "..." : item.content;
+            return `Reply to [${item.shortThreadId}]: ${content}`
+        },
         createSingleLineQuotePost(item) {
-            return `@${item.shortThreadId}: ${item.content.substring(0, 64)}`
+            return `@${item.shortThreadId}: ${item.content.slice(0, 64)}`
         },
         createQuoteRequestItem(item) {
             const quote = {

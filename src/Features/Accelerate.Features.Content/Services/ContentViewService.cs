@@ -305,7 +305,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "ReplyTo",
-                        FieldType = FormFieldTypes.list,
+                        FieldType = FormFieldTypes.input,
                         Hidden = false,
                         Disabled = true,
                         AriaInvalid = false,
@@ -329,7 +329,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "Content",
-                        FieldType = FormFieldTypes.textarea,
+                        FieldType = FormFieldTypes.wysiwyg,
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
                         AriaInvalid = false

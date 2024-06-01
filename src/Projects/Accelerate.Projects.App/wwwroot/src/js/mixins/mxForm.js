@@ -101,6 +101,27 @@ export default function (data) {
 			field.value = value;
 		},
 
+		_mxForm_ProcessHtml(value) {
+			// text
+			value = value.replace(/[\n]{2}/, '</p><p>');
+			// line break
+			value = value.replace(/[\n]{1}/, '<br/>');
+			// bold
+			value = value.replace(/\*\*(.+)\*\*/, '<strong>$1</strong>');
+			// italic
+			value = value.replace(/\*(.+)\*/, '<em>$1</em>');
+			// links
+			value = value.replace(/(https?:\/\/[^\s]+)/g, "<a href=\'$1\'>$1</a>");
+			// quote
+			value = value.replace(/> {1}/, '</blockquote><blockquote>');
+			// code
+			value = value.replace(/>`{1}`/, '</code><code>');
+
+			//bullet
+			//list
+			
+			return value;
+		},
 		_mxForm_IsImage(file) {
 			if (file == null || file.type == null) return false;
 			return file.type.startsWith('image/');

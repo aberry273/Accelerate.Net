@@ -10,7 +10,6 @@ export default function (data) {
             ></input>
             <template x-for="(item, i) in field.items || []"> 
                 <!--Single line quote--> 
-                <div >
                     <summary class="primary blockquote">
                         <div>
                         <i class="material-icons icon-click" @click="() => {
