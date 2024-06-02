@@ -190,7 +190,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "Content",
-                        FieldType = FormFieldTypes.textarea,
+                        FieldType = FormFieldTypes.wysiwyg,
                         Placeholder = "Post an update",
                         ClearOnSubmit = true,
                         AriaInvalid = false
