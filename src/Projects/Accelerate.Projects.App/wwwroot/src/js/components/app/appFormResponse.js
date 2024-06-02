@@ -242,6 +242,12 @@ export default function (data) {
                         <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
                         <fieldset role="group">
+
+                            <!--Hide-->
+                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">expand_more</button>
+
+                            <input class="flat" hide disabled type="text" placeholder="" />
+
                             <!--Toggle fields-->
                             <!--Format-->
                             <!--
@@ -264,8 +270,6 @@ export default function (data) {
                             <!--
                             <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
                             -->
-                            <!--Hide-->
-                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">expand_more</button>
                             <!--Submit-->
                             <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 
@@ -283,7 +287,7 @@ export default function (data) {
 
             <!--Padded element for bottom fixed form-->
             
-            <div class="sticky"  style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
+            <div class="sticky" style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
             </div>
 
             <article class="dense sticky"  x-show="!showFloatingPanel && !fixed">
@@ -291,7 +295,10 @@ export default function (data) {
                 <!--Quotes-->
                 <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
-                <fieldset role="group">
+                <fieldset class="padded" role="group">
+                
+                    <input class="flat" hide disabled type="text" placeholder="" />
+
                     <!--Toggle fields-->
                     <!--
                     <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideTextField(false)" :disabled="loading">text_format</button>
@@ -302,16 +309,15 @@ export default function (data) {
                     <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
 
                     <!--Type formats-->
+                    <!--
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_bulleted</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_numbered</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">link</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_quote</button>
                     <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">code</button>
-
-                    <input name="Tag" disabled type="text" placeholder="" />
-
-                    <button x-show="showTags == true" class="secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                    <button x-show="showTags == false" class="secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
+                    -->
+                    <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                    <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
 
                     <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 

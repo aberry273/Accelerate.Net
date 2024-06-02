@@ -228,7 +228,7 @@ i:disabled {
     font-family: inherit;
     letter-spacing: inherit;
     padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
-}
+
 }
 
 .transparent {
@@ -788,14 +788,13 @@ fieldset {
     margin-bottom: 0;
 }
 
-    fieldset.form-input {
-        margin-top: var(--pico-form-element-spacing-horizontal);
-        padding-left: var(--pico-form-element-spacing-horizontal);
-    }
+fieldset.form-input {
+    margin-top: var(--pico-form-element-spacing-horizontal);
+}
 
-        fieldset.form-input.chips {
-            border-color: transparent;
-        }
+fieldset.form-input.chips {
+    border-color: transparent;
+}
 
 
 label[for="Content"] {
@@ -815,39 +814,16 @@ textarea[name="Content"] {
     /*text-align: center;
 */
     &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
-
-{
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-&:is(:active, :focus) {
-    color: var(--pico-secondary);
-}
+    {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &:is(:active, :focus) {
+        color: var(--pico-secondary);
+    }
 
 }
 
-input[name="Tag"] {
-    margin: 0;
-    border: none;
-    padding: 4px;
-    ;
-    background: none;
-    box-shadow: none;
-    font-size: 1rem;
-    font-variant-numeric: tabular-nums;
-    &::-webkit-outer-spin-button, &::-webkit-inner-spin-button
-
-{
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-&:is(:active, :focus) {
-    color: var(--pico-secondary);
-}
-
-}
 
 input[name="Thread"] {
     margin: 0;

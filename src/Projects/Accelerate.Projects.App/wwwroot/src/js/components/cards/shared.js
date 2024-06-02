@@ -97,6 +97,9 @@ export function header(data) {
                                 <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
 
                                 <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
+                                <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
+                                <li><a class="click" @click="_mxCardPost_modalAction('edit', selectedPost)">Edit</a></li>
+                                <li><a class="click" @click="_mxCardPost_modalAction('delete', selectedPost)">Delete</a></li>
                             </ul>
                         </details>
                     </template>

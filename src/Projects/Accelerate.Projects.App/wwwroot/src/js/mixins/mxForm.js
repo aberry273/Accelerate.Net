@@ -113,9 +113,10 @@ export default function (data) {
 			// links
 			value = value.replace(/(https?:\/\/[^\s]+)/g, "<a href=\'$1\'>$1</a>");
 			// quote
-			value = value.replace(/> {1}/, '</blockquote><blockquote>');
+			value = value.replace(/^>(.*?)(\n|$)+/gm, '<blockquote>$1</blockquote><br/>');
 			// code
-			value = value.replace(/>`{1}`/, '</code><code>');
+			value = value.replace(/`(.+)`/, '<code>$1</code><br/>');
+			value = value.replace(/`[*]\s\d\.\s[A-z]`/, '<br />\u2022 $1');
 
 			//bullet
 			//list

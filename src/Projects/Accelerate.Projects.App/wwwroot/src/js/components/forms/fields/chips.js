@@ -12,19 +12,9 @@ export default function (data) {
         </input>
         <fieldset x-data role="group" class="form-input chips">
         
-            <div class="grid" role="group">
-                <div class="container">
-                    <template x-for="(item, i) in field.value || []">
-                        <button class="tag outline secondary small" x-text="item" @click="()=> { 
-                            const index = field.value.indexOf(item);
-                            field.value.splice(index, 1)
-                        }"></button>
-                    </template>
-                </div>
-            </div>    
             <input :style="mxResponsive_IsSmall ? 'width:30%' : 'width: 100%'" name="Tag" type="text" x-model="field.newtag" placeholder="tag your post.." />
             
-            <button class="small flat secondary material-icons" @click="()=> {
+            <button class="material-icons" @click="()=> {
                 if(field.value == null) field.value = [];
                 const index = field.value.indexOf(field.newtag);
                 if (index == -1) {
@@ -37,6 +27,17 @@ export default function (data) {
                 }
             }" :disabled="field.newtag == null">add</button>
         </fieldset>
+
+        <div class="grid" role="group">
+            <div class="container">
+                <template x-for="(item, i) in field.value || []">
+                    <button class="tag outline secondary small" x-text="item" @click="()=> {
+                        const index = field.value.indexOf(item);
+                        field.value.splice(index, 1)
+                    }"></button>
+                </template>
+            </div>
+        </div>
         
         
         <small 

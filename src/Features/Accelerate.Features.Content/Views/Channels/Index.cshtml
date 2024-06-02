@@ -26,7 +26,7 @@
 
         @if (Model.IsAuthenticated)
         {
-            <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
+            <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
         }
         else
         {
