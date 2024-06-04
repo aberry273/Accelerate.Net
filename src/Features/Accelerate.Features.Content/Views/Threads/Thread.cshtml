@@ -11,22 +11,23 @@
     actionEvent: 'action:post',
     quoteEvent: 'quote:post',
     init() {
-        this.$events.on('setThreadPosition', () => {
-            this.$nextTick(() => {
-                this.setScrollPosition();
-            })
-        })
+        const self = this;
+        setTimeout(function() {
+            self.setScrollPosition();
+        }, 250);
     },
-
     setScrollPosition() {
-        const el = document.getElementById('@Model.Item.ThreadId');
-        const headerOffset = 75;
-        console.log(el);
-        const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-        window.scrollTo({
-            top: y,
-            left: 0,
-            behavior: 'instant'
+        this.$nextTick(() => {
+            const el = document.getElementById('@Model.Item.ThreadId');
+            console.log('@Model.Item.ThreadId');
+            const headerOffset = 75;
+            console.log(el);
+            const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            window.scrollTo({
+                top: y,
+                left: 0,
+                behavior: 'instant'
+            });
         });
     },
   }">

@@ -38,7 +38,6 @@ export default function (data) {
 
             component = data.component || component
             this.setHtml(data);
-            this.$events.emit('setThreadPosition')
         },
         // METHODS
         setHtml(data) {
@@ -61,7 +60,6 @@ export default function (data) {
                             x-show="i < items.length-1"
                             :id="i == items.length-2 ? 'parentline' : null"
                             class="line-background" ></div>
-                        
                     </div>
                 </template>
             </div>
