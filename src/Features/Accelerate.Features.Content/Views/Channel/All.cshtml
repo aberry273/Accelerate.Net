@@ -11,6 +11,7 @@
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        header: 'Posts',
         event: '@Model.FilterEvent'
     })"></div>
          

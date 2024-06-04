@@ -82,7 +82,6 @@ export default function (settings) {
         },
         setSearchResults(result, replace = false) {
             if (replace) {
-                console.log('replacing items');
                 this.items = result.posts;
                 this.quotedPosts = result.quotedPosts;
                 this.actions = result.actions;

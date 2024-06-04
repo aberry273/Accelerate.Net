@@ -7,7 +7,7 @@ export default function (data) {
             timer: null,
             init() {
                 this.rawValue = field.value || '';
-                this.processedValue = _mxForm_ProcessHtml(this.rawValue);
+                this.processedValue = _mxForm_ProcessBasicHtml(this.rawValue);
             },
         }">
             <span x-text="field.label"></span>
@@ -35,7 +35,7 @@ export default function (data) {
                 @keyup="($event) => {
                     clearTimeout(timer)
                     //if (!parsed) return;
-                    const parsed = _mxForm_ProcessHtml($event.target.innerText);
+                    const parsed = _mxForm_ProcessBasicHtml($event.target.innerText);
                     processedValue = parsed;
                     timer = setTimeout(function() {
                         if(processedValue) _mxForm_OnFieldChange(field, processedValue);

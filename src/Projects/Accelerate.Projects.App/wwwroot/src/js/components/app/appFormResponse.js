@@ -244,7 +244,7 @@ export default function (data) {
                         <fieldset role="group">
 
                             <!--Hide-->
-                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">expand_more</button>
+                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
 
                             <input class="flat" hide disabled type="text" placeholder="" />
 

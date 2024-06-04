@@ -190,7 +190,7 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "Content",
-                        FieldType = FormFieldTypes.wysiwyg,
+                        FieldType = FormFieldTypes.basicWysiwyg,
                         Placeholder = "Post an update",
                         ClearOnSubmit = true,
                         AriaInvalid = false
@@ -295,6 +295,7 @@ namespace Accelerate.Features.Content.Services
             parentIdThread.Add(post.Id);
             var model = new ContentSubmitForm()
             {
+                FixTop = true,
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",

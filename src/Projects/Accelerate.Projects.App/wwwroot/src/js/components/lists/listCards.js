@@ -41,7 +41,6 @@ export default function (data) {
              
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
-                console.log(filterUpdates);
                 await this.$store.wssContentPosts.Search(filterUpdates, true);
             })
             await this.initSearch();

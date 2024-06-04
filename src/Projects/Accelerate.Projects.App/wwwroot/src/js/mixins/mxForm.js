@@ -100,7 +100,19 @@ export default function (data) {
 		_mxForm_OnFieldChange(field, value) {
 			field.value = value;
 		},
-
+		_mxForm_ProcessAHref(value) {
+			var links = value.match(/(!<a[^>]+>)|(https?:\/\/[^\s]+)(?!<\/a>)/gi);
+			if (links != null && links.length > 0) {
+				var url = links;
+				if (url == "") return value;
+				value = value.replace(/(<a[^>]+>)|(https?:\/\/[^\s]+)(?!<\/a>)/gi, "<a href=\'$2\'>$2 </a>");
+			}
+			// links
+			return value;
+		},
+		_mxForm_ProcessBasicHtml(value) { 
+			return value;
+		},
 		_mxForm_ProcessHtml(value) {
 			// text
 			value = value.replace(/[\n]{2}/, '</p><p>');
@@ -111,14 +123,13 @@ export default function (data) {
 			// italic
 			value = value.replace(/\*(.+)\*/, '<em>$1</em>');
 			// links
-			value = value.replace(/(https?:\/\/[^\s]+)/g, "<a href=\'$1\'>$1</a>");
+			value = this._mxForm_ProcessAHref(value);
 			// quote
 			value = value.replace(/^>(.*?)(\n|$)+/gm, '<blockquote>$1</blockquote><br/>');
 			// code
 			value = value.replace(/`(.+)`/, '<code>$1</code><br/>');
-			value = value.replace(/`[*]\s\d\.\s[A-z]`/, '<br />\u2022 $1');
-
 			//bullet
+			value = value.replace(/`[*]\s\d\.\s[A-z]`/, '<br />\u2022 $1');
 			//list
 			
 			return value;
