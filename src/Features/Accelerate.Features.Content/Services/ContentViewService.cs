@@ -121,13 +121,11 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, ContentPostDocument parent, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
+        public ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ThreadPage(model);
             viewModel.Item = item;
-            #pragma warning disable CS8601 // Possible null reference assignment.
-            viewModel.ParentLink = GetThreadLink(item.ParentId);
             #pragma warning restore CS8601 // Possible null reference assignment.
             viewModel.ChannelLink = GetChannelLink(channel);
 
@@ -137,17 +135,19 @@ namespace Accelerate.Features.Content.Services
             if(user != null)
             {
                 viewModel.UserId = user.Id;
-                viewModel.FormCreateReply = CreateReplyForm(user, item, parent);
+                viewModel.FormCreateReply = CreateReplyForm(user, item);
                 viewModel.ModalEditReply = CreateModalEditReplyForm(user);
                 viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             }
 
             viewModel.ActionsApiUrl = "/api/contentpostactions";
             viewModel.PostsApiUrl = "/api/contentsearch/posts/replies";
+            /*
             if(item.ParentId != null)
             {
                 viewModel.ParentPostsApiUrl = $"/api/contentsearch/posts/{item.Id}/parents";
             }
+            */
             // Add filters
             viewModel.Filters = CreateSearchFilters(aggregateResponse);
 
@@ -165,7 +165,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new ContentSubmitForm()
             {
-                FixTop = true,
+                //FixTop = true,
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
@@ -289,13 +289,13 @@ namespace Accelerate.Features.Content.Services
             var content = post.Content.Length > 64 ? post.Content.Substring(0, 64)+ "..." : post.Content;
             return $"Reply to [{post.ShortThreadId}]: {content}";
         }
-        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostDocument post, ContentPostDocument parent)
+        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostDocument post)
         {
             var parentIdThread = post.ParentIds != null ? post.ParentIds : new List<Guid>();
             parentIdThread.Add(post.Id);
             var model = new ContentSubmitForm()
             {
-                FixTop = true,
+                //FixTop = true,
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",

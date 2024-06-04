@@ -1,6 +1,6 @@
 ﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
-<nav class="topnav article">
-<div x-data="{fixed: false}" class="container">
+<nav x-data="{fixed: false}" class="topnav article">
+<div  class="container">
     <nav style="height:50px" :class="fixed ? 'show' : 'hide'"><ul></ul></nav>
 
     <!-- Header -->
@@ -8,7 +8,7 @@
     {
 
             <nav :class="fixed ? 'floating container topnav' : 'topnav'"
-             :style="fixed ?  'padding-left:0px; width: 95.75%; padding: 0px 8px;' : 'padding: 0px 8px;'"
+             :style="fixed ?  'padding-left:0px; width: 91.45%; padding: 0px 8px;' : 'padding: 0px 8px;'"
              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
             <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
             <ul>

@@ -10,27 +10,25 @@
     filterEvent: 'onFilterChange',
     actionEvent: 'action:post',
     quoteEvent: 'quote:post',
-     init() {
-        if('@Model.Item.ParentId' == '') {
-            this.isScrollSet=true;
-        }
-        this.$events.on('ancestors-loaded', () => {
-            this.setScroll()
+    init() {
+        this.$events.on('setThreadPosition', () => {
+            this.$nextTick(() => {
+                this.setScrollPosition();
+            })
         })
     },
-    setScroll() {
-        this.$nextTick(() => {
-            this.isScrollSet = true;
-            const el2 = document.getElementById('@Model.Item.ThreadId');
-            const headerOffset = 105;
-            const y = el2.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-            window.scrollTo({
-                top: y,
-                left: 0,
-                behavior: 'instant'
-            });
-        })
-    }
+
+    setScrollPosition() {
+        const el = document.getElementById('@Model.Item.ThreadId');
+        const headerOffset = 75;
+        console.log(el);
+        const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+        window.scrollTo({
+            top: y,
+            left: 0,
+            behavior: 'instant'
+        });
+    },
   }">
 
     <summary class="primary" >
@@ -58,23 +56,17 @@
             </summary>
         </div>
     }
-    @if (Model.Item.ParentId != null)
-    {
-        <!-- Parents -->
-        <div
-            x-data="listThreadAscendantCards( {
-            item: @JsonSerializerHelper.SerializeObject(Model.Item),
-            items: @JsonSerializerHelper.SerializeObject(Model.Parents),
-            userId: '@Model.UserId',
-            searchUrl: '@Model.ParentPostsApiUrl'
-        })">
-        </div> 
-    }
-    <!-- Original Post -->
-    <div x-data="cardPost({
-        item:  @JsonSerializerHelper.SerializeObject(Model.Item),
+   
+    <!-- Threadline -->
+    <div
+        x-data="listThreadAscendantCards( {
+        item: @JsonSerializerHelper.SerializeObject(Model.Item),
+        results: @JsonSerializerHelper.SerializeObject(Model.ThreadData),
         userId: '@Model.UserId',
-    })" ></div>
+        searchUrl: '@Model.ParentPostsApiUrl'
+    })">
+    </div> 
+    
     <hr id="reply-line" />
 
     <!-- Response Form -->
@@ -107,12 +99,13 @@
     </div>
 
     <hr />
-    <!--
+     
     <div class="reply-padding"></div>
-    -->
+    <!--
     <div class="loading-overlay" x-show="!isScrollSet">
         <article class="loading-spinner" aria-busy="true"></article>
     </div>
+    -->
 </div>
 
 <!-- Modals -->

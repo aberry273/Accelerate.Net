@@ -19,6 +19,7 @@ export default function (data) {
         imageFieldName: 'Images',
         videoFieldName: 'Videos',
         textFieldName: 'Content',
+        originalYPosition: 0,
         showTags: false,
         showText: false,
         showVideo: false,
@@ -70,7 +71,7 @@ export default function (data) {
                 this.showFloatingPanel = false;
 
                 // If form is in scrollState, show
-                if (this.isInPosition) this.fixed = true;
+                this.fixed = true;
             })
             // On updates from cards
             // Move this and all content/post based logic to page level js instead
@@ -90,29 +91,41 @@ export default function (data) {
                 this._mxForm_SetField(this.fields, replyToField);
                 this.showFloatingPanel = false;
                 // If form is in scrollState, show
-                if (this.isInPosition) this.fixed = true;
+                this.fixed = true;
             })
 
             this.setHtml(data);
+            /*
+            this.$nextTick(() => {
+                this.originalYPosition = this.yPosition;
+                console.log(this.originalYPosition);
+                console.log(window.scrollY)
+            })
+            */
         },
         // Content editable field
         //https://stackoverflow.com/questions/46000233/how-is-formatting-in-textarea-being-done
 
         // GETTERS
+        /*
         get isInPosition() {
             let inPosition = false;
+            return inPosition;
+            console.log(this.originalYPosition);
             if (this.fixTop) {
-                inPosition = this.yPosition <= 70
+                inPosition = window.scrollY >= this.originalYPosition
             }
             else {
-                inPosition = this.yPosition >= 0
+                inPosition = window.scrollY <= this.originalYPosition
             }
             return inPosition;
         },
         get yPosition() {
-            if (this.$refs.fixedElement == null) return 0;
-            return this.$refs.fixedElement.getBoundingClientRect().y;
+            const el = document.getElementById('fixedPosition');
+            const y = el.getBoundingClientRect().top - 60;
+            return y;
         },
+        */
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
         },
@@ -139,12 +152,15 @@ export default function (data) {
             let style = 'display:block;margin-top: 55px;'
             if (this.mxResponsive_IsMobile)
                 style += "left: 0; width: 100%;";
+            /*
             if (this.fixTop) {
                 style += "top: 0; bottom: initial;";
             }
             else {
                 style += "bottom: 0; top: initial;";
             }
+            */
+            style += "bottom: 0; top: initial;";
             return style;
         },
         createReplyPostSummary(item) {
@@ -228,12 +244,12 @@ export default function (data) {
         },
         setHtml(data) {
             // make ajax request
+            //@scroll.window="fixed = isInPosition ? true : false"
             const label = data.label || 'Submit'
             const html = `
-            <span x-ref="fixedElement"><span>
+            <span id="fixedPosition"><span>
             <!--Floating-->
-            <nav class="floating bottom container" 
-                    @scroll.window="fixed = isInPosition ? true : false"
+                <nav class="floating bottom container"
                     style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111;"
                     :style="fixed ? fixedStyle : 'display:none;'">
                       <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);">
@@ -242,12 +258,12 @@ export default function (data) {
                         <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
                         <fieldset role="group">
+                            <button  class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
 
                             <!--Hide-->
+                            <!--
                             <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
-
-                            <input class="flat" hide disabled type="text" placeholder="" />
-
+                            -->
                             <!--Toggle fields-->
                             <!--Format-->
                             <!--
@@ -281,14 +297,15 @@ export default function (data) {
                 x-show="(showFloatingPanel)"
                 @click="hideFloatingPanel(false)"
                 class="material-icons round xsmall"
-                style="y-index:1111; position: fixed; bottom: 76px; right: calc(var(--pico-spacing)*1);">
+                style="y-index:1111; position: fixed; top: 65px; right: calc(var(--pico-spacing)*0.225);">
                 chat
             </button>
 
             <!--Padded element for bottom fixed form-->
-            
+            <!--
             <div class="sticky" style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
             </div>
+            -->
 
             <article class="dense sticky"  x-show="!showFloatingPanel && !fixed">
                 <progress x-show="loading"></progress>
@@ -296,7 +313,8 @@ export default function (data) {
                 <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
                 <fieldset class="padded" role="group">
-                
+                    <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button>
+
                     <input class="flat" hide disabled type="text" placeholder="" />
 
                     <!--Toggle fields-->

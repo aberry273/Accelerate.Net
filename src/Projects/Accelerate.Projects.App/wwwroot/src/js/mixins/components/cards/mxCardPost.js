@@ -33,6 +33,7 @@ export default function (data) {
         },
         _mxCardPost_getThreadItems(op) {
             // flatten parent and child hierarchy into single array
+            if (op == null) return [];
             let postThreads = (op.threads == null) ? [] : op.threads;
             let thread = [op].concat(postThreads)
             return thread;

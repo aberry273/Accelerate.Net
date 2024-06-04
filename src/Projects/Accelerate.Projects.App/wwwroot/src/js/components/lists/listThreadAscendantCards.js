@@ -17,49 +17,35 @@ export default function (data) {
         // PROPERTIES
         item: {},
         items: [],
+        results: {},
         userId: '',
         parentId: '',
         searchUrl: '',
         loading: false,
         lastScrollHeight: 0,
+        inPosition: false,
 
         async init() {
             const self = this;
             data = data != null ? data : {}
             this.item = data.item;
-            this.items = data.items;
+            this.results = data.results;
+            this.$store.wssContentPosts.setSearchResults(this.results);
+            this.items = this.results.posts;
             this.userId = data.userId;
             this.filters = data.filters;
             this.searchUrl = data.searchUrl;
 
             component = data.component || component
             this.setHtml(data);
-            this.loading = true;
-
-            if (this.items.length == 0) await this.initSearch();
-            this.$nextTick(() => {
-                this.$events.emit('ancestors-loaded')
-            })
-            this.loading = false;
-        },
-        orderByDate(items) {
-            items.sort(function (a, b) {
-                return new Date(a.createdOn) - new Date(b.createdOn);
-            });
-        },
-        async initSearch() {
-            let queryData = this.filters || {}
-            await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData, false);
-            const items = this.$store.wssContentPosts.FilterPostsById(this.item.parentIds);
-            this.orderByDate(items);
-            this.items = items;
+            this.$events.emit('setThreadPosition')
         },
         // METHODS
         setHtml(data) {
             // make ajax request 
             const html = `
             <div id="ascendants">
-                <template x-for="(item, i) in items" :key="item.id || i">
+                <template x-for="(item, i) in items" :key="item.id">
                     <div>
                         <div x-data="cardPost({
                             item: item,
@@ -71,7 +57,11 @@ export default function (data) {
                             itemEvent: $store.wssContentPosts.getMessageEvent(),
                             parentId: item.id
                         })"></div>
-                        <div class="line-background" :id="i == items.length-1 ? 'parentline' : null"></div>
+                        <div
+                            x-show="i < items.length-1"
+                            :id="i == items.length-2 ? 'parentline' : null"
+                            class="line-background" ></div>
+                        
                     </div>
                 </template>
             </div>

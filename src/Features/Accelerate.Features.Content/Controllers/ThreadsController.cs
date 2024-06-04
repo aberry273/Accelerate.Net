@@ -82,12 +82,14 @@ namespace Accelerate.Features.Content.Controllers
             {
                 return RedirectToAction(nameof(ThreadNotFound));
             }
+            /*
             ContentPostDocument parent = null;
             if (item.ParentId != null)
             {
                 var parentResponse = await _postSearchService.GetDocument<ContentPostDocument>(item.ParentId.ToString());
                 parent = parentResponse.Source;
             }
+            */
 
              var filterFields = _contentViewService.GetFilterOptions().Values.ToList();
 
@@ -98,21 +100,16 @@ namespace Accelerate.Features.Content.Controllers
 
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
             var channelResponse = item.TargetChannel != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.TargetChannel) : null;
-            var viewModel = _contentViewService.CreateThreadPage(user, item, parent, aggResponse, channelResponse?.Source);
-            //var parents = await _channelSearchService.GetDocuments<ContentPostDocument>(item.ParentIds);
-            //viewModel.Parents = parents.IsValidResponse && parents.IsSuccess ? pare
-          
-            /*
-            if (item.ParentIds != null && item.ParentIds.Any())
+            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
+           
+            var query = new RequestQuery()
             {
-                var ascendants = await _postSearchService.Search(this._contentElasticSearchService.BuildAscendantsSearchQuery(item), 0, 100);
-
-                viewModel.Parents = ascendants.IsSuccess()
-                    ? ascendants.Documents.OrderBy(x => x.CreatedOn).ToList()
-                    : new List<ContentPostDocument>();
-            }
-            */
-         
+                Page = 0,
+                ItemsPerPage = 100
+            };
+            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id);
+            viewModel.ThreadData = parentResults ?? new ContentSearchResults();
+               
             return View(viewModel);
         }
 

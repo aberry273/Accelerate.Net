@@ -11,7 +11,14 @@ namespace Accelerate.Features.Content.Models.Views
     {
         public Guid UserId { get; set; }
         public ContentPostDocument Item { get; set; }
+
+        public ContentSearchResults ThreadData { get; set; }
+
+        /*
+        public List<ContentPostActionsDocument> Actions { get; set; } = new List<ContentPostActionsDocument>();
+        public List<ContentPostDocument> Quotes { get; set; } = new List<ContentPostDocument>();
         public List<ContentPostDocument> Parents { get; set; } = new List<ContentPostDocument>();
+        */
         public List<ContentPostDocument> Replies { get; set; } = new List<ContentPostDocument>();
         public string FilterEvent { get; set; } = "filter:update";
         public string ActionEvent { get; set; } = "action:post";

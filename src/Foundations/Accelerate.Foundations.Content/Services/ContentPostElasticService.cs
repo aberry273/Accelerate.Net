@@ -30,7 +30,7 @@ namespace Accelerate.Foundations.Content.Services
     {
         IElasticService<ContentPostActionsDocument> _actionSearchService;
         public ContentPostElasticService(
-            IOptions<ElasticConfiguration> options, 
+            IOptions<ElasticConfiguration> options,
             IOptions<ContentConfiguration> config,
             IElasticService<ContentPostActionsDocument> actionSearchService) : base(options)
         {
@@ -47,7 +47,7 @@ namespace Accelerate.Foundations.Content.Services
         {
             var mapping = new TypeMapping();
             return mapping;
-        } 
+        }
         public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request)
         {
             return await base.GetAggregates(request);
@@ -89,7 +89,7 @@ namespace Accelerate.Foundations.Content.Services
                 Name = Foundations.Content.Constants.Fields.Status,
                 Value = "public"
             };
-        } 
+        }
         public QueryFilter TargetThread(ElasticCondition cond, QueryOperator op)
         {
             return new QueryFilter()
@@ -104,7 +104,7 @@ namespace Accelerate.Foundations.Content.Services
             return new QueryFilter()
             {
                 Name = Foundations.Content.Constants.Fields.PostType,
-                Condition = ElasticCondition.Must, 
+                Condition = ElasticCondition.Must,
                 Value = ContentPostType.Page
             };
         }
@@ -145,7 +145,7 @@ namespace Accelerate.Foundations.Content.Services
             return model;
         }
         public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, QueryDescriptor<ContentPostDocument> elasticQuery)
-        { 
+        {
             //TODO: remove
             Query.ItemsPerPage = 100;
 
@@ -191,13 +191,19 @@ namespace Accelerate.Foundations.Content.Services
             var elasticQuery = BuildSearchRepliesQuery(Query);
             return await SearchPosts(Query, elasticQuery);
         }
+        private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
         public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId)
         {
+            if (_parentThreadCache.ContainsKey(postId)) return _parentThreadCache[postId];
+            
             var response = await this.GetDocument<ContentPostDocument>(postId.ToString());
             var item = response.Source;
             var elasticQuery = BuildAscendantsSearchQuery(item);
             var results = await SearchPosts(Query, elasticQuery);
             results.Posts = results.Posts.OrderBy(x => x.CreatedOn.GetValueOrDefault());
+
+            _parentThreadCache.Add(postId, results);
+
             return results;
         }
 
@@ -406,13 +412,11 @@ namespace Accelerate.Foundations.Content.Services
             Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             //Filter any post where the poster is replying to themselves from the results
+            var ids = item.ParentIds != null ? item.ParentIds.Select(x => x.ToString()).ToList() : new List<string>();
+            // add current item as well to retrieve associated properties (quotes/etc) of item
+            ids.Add(item.Id.ToString());
 
-            //Query.Filters.Add(Filter(Constants.Fields.ThreadId, item.TargetThread, true)); 
-            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.MustNot, item.Id));
-            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.Must, item.ParentId));
-
-            //Query.Filters.Add(Filter(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, item.ParentId, true));
-            Query.Filters.Add(FilterValues(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, item.ParentIds.Select(x => x.ToString()), true));
+            Query.Filters.Add(FilterValues(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, ids, true));
             
             //Query.Filters.Add(Filter(Constants.Fields.ParentIds, ElasticCondition.Filter, QueryOperator.Equals, item.ParentIds, true));
 
