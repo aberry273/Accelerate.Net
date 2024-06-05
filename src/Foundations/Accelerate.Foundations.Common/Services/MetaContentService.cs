@@ -86,6 +86,13 @@ namespace Accelerate.Foundations.Common.Services
                     WssEvent = "wss:mediaBlobs",
                     Url = $"{domainUrl}/MediaBlobs",
                 },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPostActionsSummary",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPostActionsSummary",
+                    Url = $"{domainUrl}/ContentPostActionsSummary",
+                },
             };
         }
         public BasePage CreateUnauthenticatedContent()

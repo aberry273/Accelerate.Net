@@ -30,6 +30,7 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostActivityEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostActionsEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostActionsSummaryEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostQuoteEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostMediaEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             //Services
@@ -39,9 +40,9 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostActionsEntity>, EntityService<ContentPostActionsEntity>>();
             services.AddTransient<IEntityService<ContentPostQuoteEntity>, EntityService<ContentPostQuoteEntity>>();
             services.AddTransient<IEntityService<ContentPostMediaEntity>, EntityService<ContentPostMediaEntity>>();
+            services.AddTransient<IEntityService<ContentPostActionsSummaryEntity>, EntityService<ContentPostActionsSummaryEntity>>();
             //Parent context for mappings
             services.AddDbContext<ContentDbContext>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
-
 
             services.AddTransient<IContentPostElasticService, ContentPostElasticService>();
             services.AddTransient<IElasticService<ContentPostDocument>, ContentPostElasticService>();
@@ -49,6 +50,7 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IElasticService<ContentPostActivityDocument>, ContentActivityElasticService>();
             services.AddTransient<IElasticService<ContentChannelDocument>, ContentChannelElasticService>();
             services.AddTransient<IElasticService<ContentPostMediaDocument>, ContentPostMediaElasticService>();
+            services.AddTransient<IElasticService<ContentPostActionsSummaryDocument>, ContentPostActionsSummaryElasticService>();
 
             services.AddTransient<IElasticService<ContentPostQuoteDocument>, ContentPostQuoteElasticService>();
         }

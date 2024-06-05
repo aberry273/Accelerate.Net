@@ -22,6 +22,7 @@ namespace Accelerate.Features.Content
         {
             public const string ContentPostsHubName = "ContentPosts";
             public const string ContentPostActionsHubName = "ContentPostActions";
+            public const string ContentPostActionsSummaryHubName = "ContentPostActionsSummary";
             public const string ContentChannelsHubName = "ContentChannels";
             public const string ContentPostActivitiesHubName = "ContentPostActivities";
             public const string ContentPostQuotesHubName = "ContentPostQuotes";

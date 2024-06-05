@@ -50,6 +50,11 @@ namespace Accelerator.Foundation.Content.Database
                   .WithOne(x => x.ContentPost)
                   .HasForeignKey(x => x.ContentPostId)
                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ContentPostEntity>()
+                .HasOne(e => e.Summary)
+                  .WithOne(x => x.ContentPost)
+                  .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

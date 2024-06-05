@@ -72,41 +72,7 @@
 
     <script>
         let wssSettings = @Html.Raw(JsonSerializerHelper.SerializeObject(Model.ServiceSettings))
-        /*
-        let wssSettings = [
-            {
-                serviceName: 'wssContentChannels',
-                userId: '@Model.UserId',
-                wssEvent: 'wss:contentChannels',
-                url: "@Model.Url/ContentChannels",
-                postbackUrl: '/api/contentchannels',
-                queryUrl: '/api/contentsearch/channels',
-            },
-            {
-                serviceName: 'wssContentPosts',
-                userId: '@Model.UserId',
-                wssEvent: 'wss:contentPosts',
-                url: "@Model.Url/ContentPosts",
-                postbackUrl: '/api/contentpostactions',
-                queryUrl: '/api/contentsearch/posts',
-            },
-            {
-                serviceName: 'wssContentPostActions',
-                userId: '@Model.UserId',
-                wssEvent: 'wss:contentPostActions',
-                url: "@Model.Url/ContentPostActions",
-                postbackUrl: '/api/contentpostactions',
-                queryUrl: '/api/contentsearch/actions',
-            },
-            {
-                serviceName: 'wssMediaBlobs',
-                userId: '@Model.UserId',
-                wssEvent: 'wss:mediaBlobs',
-                url: "@Model.Url/MediaBlobs",
-            }, 
-        ];
-        */
-       
+        
     </script>
     <!-- For componentizing and lazy loading Alpine -->
     <script type="module" src="~/src/js/init.js"></script>

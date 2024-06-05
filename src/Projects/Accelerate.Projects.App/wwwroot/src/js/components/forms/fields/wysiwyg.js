@@ -8,6 +8,7 @@ export default function (data) {
             init() {
                 this.rawValue = field.value || '';
                 this.processedValue = _mxForm_ProcessHtml(this.rawValue);
+                this.showEditor = true;
             },
         }">
             <span x-text="field.label"></span>
@@ -32,14 +33,16 @@ export default function (data) {
                 @click.outside="() => {
                     _mxForm_OnFieldChange(field, processedValue);
                 }"
+                @keydown.tab="() => {
+                    _mxForm_OnFieldChange(field, processedValue);
+                }"
+                @input.debounce.1000ms="() => {
+                    _mxForm_OnFieldChange(field, processedValue);
+                }"
                 @keyup="($event) => {
-                    clearTimeout(timer)
                     //if (!parsed) return;
                     const parsed = _mxForm_ProcessHtml($event.target.innerText);
                     processedValue = parsed;
-                    timer = setTimeout(function() {
-                        if(processedValue) _mxForm_OnFieldChange(field, processedValue);
-                    }, 750);
                 }"
                 contenteditable
                 class="wysiwyg"

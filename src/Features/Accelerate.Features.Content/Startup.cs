@@ -24,6 +24,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Twilio.TwiML.Voice;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
+using Accelerate.Features.Content.Pipelines.ActionsSummary;
+using Accelerate.Foundations.EventPipelines.Consumers;
 
 namespace Accelerate.Features.Content
 {
@@ -41,6 +43,7 @@ namespace Accelerate.Features.Content
             app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostActionsDocument>>($"/{Constants.Settings.ContentPostActionsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
+            app.MapHub<BaseHub<ContentPostActionsSummaryDocument>>($"/{Constants.Settings.ContentPostActionsSummaryHubName}");
             //app.MapHub<BaseHub<ContentPostActivity>>($"/{Constants.Settings.ContentPostActivities}");
 
         }
@@ -51,6 +54,7 @@ namespace Accelerate.Features.Content
 
             services.AddTransient<BaseHub<ContentPostDocument>, ContentPostHub>();
             services.AddTransient<BaseHub<ContentPostActionsDocument>, ContentPostActionsHub>();
+            services.AddTransient<BaseHub<ContentPostActionsSummaryDocument>, ContentPostActionsSummaryHub>();
             services.AddTransient<BaseHub<ContentChannelDocument>, ContentChannelHub>();
             services.AddTransient<BaseHub<ContentPostActivityDocument>, ContentPostActivityHub>();
             services.AddTransient<BaseHub<ContentPostQuoteDocument>, ContentPostQuoteHub>();
@@ -62,8 +66,82 @@ namespace Accelerate.Features.Content
 
             // Actions
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedPipeline, ContentPostActionUpdatedPipeline, ContentPostActionsDeletedPipeline>(services);
+            // other
+            services.AddTransient<IDataEventPipeline<ContentPostActionsEntity>, ContentPostActionsSummaryListenerPipeline>();
+
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedCompletedPipeline, ContentPostActionsUpdatedCompletedPipeline, ContentPostActionsDeletedCompletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
+            //Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
+            services.AddMassTransit<IContentActionsBus>(x =>
+            {
+                // Posts
+                x.AddConsumer<DataCreateConsumer<ContentPostActionsEntity, IContentActionsBus>>();
+                x.AddConsumer<DataCreateCompleteConsumer<ContentPostActionsEntity>>();
+                x.AddConsumer<DataUpdateConsumer<ContentPostActionsEntity, IContentActionsBus>>();
+                x.AddConsumer<DataUpdateCompleteConsumer<ContentPostActionsEntity>>();
+                x.AddConsumer<DataDeleteConsumer<ContentPostActionsEntity, IContentActionsBus>>();
+                x.AddConsumer<DataDeleteCompleteConsumer<ContentPostActionsEntity>>();
+                
+                // Other 
+                x.AddConsumer<Foundations.EventPipelines.Consumers.EventListenerConsumer<ContentPostActionsEntity, IContentActionsBus>>();
+
+
+                x.UsingInMemory((context, cfg) =>
+                {
+                    cfg.ReceiveEndpoint("event-listener", e =>
+                    {
+                        // Content Posts
+                        e.ConfigureConsumer<DataCreateConsumer<ContentPostActionsEntity, IContentActionsBus>>(context);
+                        e.ConfigureConsumer<DataCreateCompleteConsumer<ContentPostActionsEntity>>(context);
+
+                        e.ConfigureConsumer<DataUpdateConsumer<ContentPostActionsEntity, IContentActionsBus>>(context);
+                        e.ConfigureConsumer<DataUpdateCompleteConsumer<ContentPostActionsEntity>>(context);
+
+                        e.ConfigureConsumer<DataDeleteConsumer<ContentPostActionsEntity, IContentActionsBus>>(context);
+                        e.ConfigureConsumer<DataDeleteCompleteConsumer<ContentPostActionsEntity>>(context);
+
+                        // other
+                        e.ConfigureConsumer<EventListenerConsumer<ContentPostActionsEntity, IContentActionsBus>>(context);
+                    });
+                });
+            });
+
+
+            // ActionSummary
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsSummaryEntity, ContentPostActionsSummaryCreatedPipeline, ContentPostActionsSummaryUpdatedPipeline, ContentPostActionsSummaryDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActionsSummaryEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
+
+            // On create of action, Create or update action summary
+            // On update of action, Create or update summary
+            // On delete of action, update summary
+            //Foundations.EventPipelines.Startup.ConfigureMassTransitListenerServices<ContentPostActionsEntity, ContentPostActionsSummaryCreatedPipeline>(services);
+            /*
+            try
+            {
+
+                services.AddMassTransit<IContentActionsBus>(x =>
+                {
+                    // Posts
+                    x.AddConsumer<Foundations.EventPipelines.Consumers.EventListenerConsumer<ContentPostActionsEntity, IContentActionsBus>>();
+                    // Entities 
+
+                    x.UsingInMemory((context, cfg) =>
+                    {
+                        cfg.ReceiveEndpoint("event-listener", e =>
+                        {
+                            // Content Posts
+                            e.ConfigureConsumer<EventListenerConsumer<ContentPostActionsEntity, IContentActionsBus>>(context);
+                        });
+                    });
+                });
+            }
+            catch(Exception ex)
+            {
+                var a = ex;
+            }
+            */
+
+
             // Activities
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActivityEntity, ContentPostActivityCreatedPipeline, ContentPostActivityUpdatedPipeline, ContentPostActivityDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActivityEntity>(services);

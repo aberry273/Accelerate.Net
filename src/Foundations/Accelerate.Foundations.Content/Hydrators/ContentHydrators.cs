@@ -39,6 +39,19 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.Disagree = entity.Disagree;
             document.Like = entity.Like;
         }
+        public static void Hydrate(this ContentPostActionsSummaryEntity entity, ContentPostActionsSummaryDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.ContentPostId = entity.ContentPostId;
+            document.Id = entity.Id;
+            document.Agrees = entity.Agrees;
+            document.Disagrees = entity.Disagrees;
+            document.Quotes = entity.Quotes;
+            document.Replies = entity.Replies;
+        }
+
+
+        
         public static void Hydrate(this ContentChannelEntity entity, ContentChannelDocument document)
         {
             document.UserId = entity.UserId;

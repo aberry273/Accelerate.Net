@@ -7,6 +7,9 @@ namespace Accelerate.Foundations.Content.Models.Data
 {
     public class ContentPostActionsSummaryDocument
     {
+        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ContentPostId { get; set; }
         public int? Agrees { get; set; }
         public int? Disagrees { get; set; }
         public int? Likes { get; set; }

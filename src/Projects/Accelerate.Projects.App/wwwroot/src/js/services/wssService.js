@@ -44,6 +44,7 @@ export default function (settings) {
             return originalItems
         },
         updateItems(items, wssMessage) {
+            console.log(wssMessage);
             var item = wssMessage.data;
             let emptyItems = false;
             if (items == null) {

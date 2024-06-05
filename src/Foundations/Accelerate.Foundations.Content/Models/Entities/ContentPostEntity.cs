@@ -68,6 +68,8 @@ namespace Accelerate.Foundations.Content.Models.Entities
         }
         public string? Tags { get; set; }
         [NotMapped]
+        public virtual ContentPostActionsSummaryEntity? Summary { get; set; }
+        [NotMapped]
         public virtual ICollection<ContentPostQuoteEntity>? Quotes { get; set; }
         [NotMapped]
         public virtual ICollection<ContentPostActivityEntity>? Activities { get; set; }
