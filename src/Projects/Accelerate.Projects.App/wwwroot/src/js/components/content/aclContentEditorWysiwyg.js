@@ -207,18 +207,18 @@ export default function header(data) {
                             <details class="dropdown flat simple" style="margin-top:0px">
                                 <summary class="material-icons flat small">more_horiz</summary>
                               <ul dir="ltr" style="text-align:left">
-                                <li @click="performAction('code')"><a href="#">
+                                <li @click="performAction('code')"><a href="javascript:;">
                                     <i class="material-icons flat small">code</i>
                                     Code
                                 </a></li>
-                                <li @click="performAction('formatBlock')"><a href="#">
+                                <li @click="performAction('formatBlock')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_quote</i>
                                     Quote
                                 </a></li>
-                                <li @click="performAction('bold')"><a href="#">
+                                <li @click="performAction('bold')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_bold</i>Bold
                                 </a></li>
-                                <li @click="performAction('italic')"><a href="#">
+                                <li @click="performAction('italic')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_italic</i>Bold
                                     Italics
                                 </a></li>

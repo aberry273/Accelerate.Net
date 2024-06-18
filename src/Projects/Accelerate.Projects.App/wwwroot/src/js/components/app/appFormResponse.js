@@ -341,7 +341,7 @@ export default function (data) {
                     <!--Quotes-->
                     <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
-                    <fieldset class="padded" role="group">
+                    <fieldset class="padded py-0" role="group">
                         <button x-show="fixed" class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
                         <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button>
                         <!--
@@ -365,14 +365,24 @@ export default function (data) {
                         <details class="dropdown flat simple" style="margin-top:0px">
                             <summary role="button" class="material-icons secondary flat small">more_horiz</summary>
                             <ul dir="ltr" style="text-align:left">
-                                <li x-show="showTags == true" @click="hideTagField(false)"><a href="#">
-                                    <i class="material-icons flat small">sell</i>
-                                    Tag
-                                </a></li>
-                                <li x-show="showTags == false" @click="hideTagField(true)"><a href="#">
-                                    <i class="material-icons flat small">cancel</i>
-                                    Tag
-                                </a></li>
+                                <li x-show="showTags == true" @click="hideTagField(false)">
+                                    <a href="javascript:;">
+                                        <i class="material-icons flat small">sell</i>
+                                        Show tags
+                                    </a>
+                                </li>
+                                <li x-show="showTags == false" @click="hideTagField(true)">
+                                    <a href="javascript:;">
+                                        <i class="material-icons flat small">cancel</i>
+                                        Hide tags
+                                    </a>
+                                </li>
+                                <li >
+                                    <a href="javascript:;">
+                                        <i class="material-icons flat small">settings</i>
+                                        Settings
+                                    </a>
+                                </li>
                             </ul>
                         </details>
 
