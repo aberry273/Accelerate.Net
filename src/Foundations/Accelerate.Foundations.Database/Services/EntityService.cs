@@ -144,7 +144,7 @@ namespace Accelerate.Foundations.Database.Services
         {
             try
             {
-                _dbContext.AddRange(entities);
+                _dbContext.AddRangeAsync(entities);
                 return _dbContext.SaveChanges();
             }
             catch (Exception ex)

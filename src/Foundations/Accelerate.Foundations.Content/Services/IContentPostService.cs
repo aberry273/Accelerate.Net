@@ -12,7 +12,7 @@ namespace Accelerate.Foundations.Content.Services
 {
     public interface IContentPostService
     {
-
+        Task<ContentPostEntity> CreateWithPipeline(ContentPostEntity obj);
         Task<ContentPostEntity> Create(ContentPostEntity obj);
         Task<ContentPostEntity> Update(Guid id, ContentPostEntity obj);
         Task<int> Delete([FromRoute] Guid id);

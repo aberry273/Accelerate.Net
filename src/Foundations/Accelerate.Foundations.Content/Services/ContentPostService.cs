@@ -76,6 +76,26 @@ namespace Accelerate.Foundations.Content.Services
                 }
                 //To override
                 var entity = _servicePosts.Get(id.GetValueOrDefault());
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                throw ex;
+            }
+        }
+        public async Task<ContentPostEntity> CreateWithPipeline(ContentPostEntity obj)
+        {
+            try
+            {
+                var id = await _servicePosts.CreateWithGuid(obj);
+
+                if (id == null)
+                {
+                    return null;
+                }
+                //To override
+                var entity = _servicePosts.Get(id.GetValueOrDefault());
                 await this.RunCreatePipeline(entity);
                 return entity;
             }

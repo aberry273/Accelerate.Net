@@ -214,16 +214,14 @@ namespace Accelerate.Features.Content.Controllers.Api
                 // Upload formfiles, create entities from formfiles, add to request
                 if (images.Any())
                 {
-                    var user = await _userManager.FindByIdAsync(obj.UserId.ToString());
-                    var mediaFiles = await UploadImagesFromFiles(user, obj.Images);
+                    var mediaFiles = await UploadImagesFromFiles(obj.UserId.GetValueOrDefault(), obj.Images);
                     
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }
                 // Upload formfiles, create entities from formfiles, add to request
                 if (videos.Any())
                 {
-                    var user = await _userManager.FindByIdAsync(obj.UserId.ToString());
-                    var mediaFiles = await UploadVideosFromFiles(user, obj.Videos);
+                    var mediaFiles = await UploadVideosFromFiles(obj.UserId.GetValueOrDefault(), obj.Videos);
 
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }
@@ -237,6 +235,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                     var quoteResults = _postMediaService.AddRange(mediaItems);
                 }
 
+                await _postService.RunCreatePipeline(post);
                 return Ok(new
                 {
                     message = "Created Successfully",
@@ -341,14 +340,14 @@ namespace Accelerate.Features.Content.Controllers.Api
             }
         }
 
-        private async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(AccountUser user, List<IFormFile> files)
+        private async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(Guid userId,  List<IFormFile> files)
         {
             if (files == null) return new List<MediaBlobUploadResult>();
 
             // upload file 
             var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
             // bulk upload with preset ids
-            var fileResults = await _mediaFileService.UploadImages(user.Id, newFiles);
+            var fileResults = await _mediaFileService.UploadImages(userId, newFiles);
 
             // bulk create entities
             var mediaBlobEntities = newFiles.Select(x =>
@@ -358,7 +357,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                     Id = x.Id,
                     FilePath = _mediaFileService.GetFileUrl(x.Id.ToString()),
                     Name = x.File.FileName,
-                    UserId = user.Id,
+                    UserId = userId,
                     Type = MediaBlobFileType.Image
                 };
             }).ToList();
@@ -368,14 +367,14 @@ namespace Accelerate.Features.Content.Controllers.Api
             return fileResults.ToList();
         }
 
-        private async Task<List<MediaBlobUploadResult>> UploadVideosFromFiles(AccountUser user, List<IFormFile> files)
+        private async Task<List<MediaBlobUploadResult>> UploadVideosFromFiles(Guid userId, List<IFormFile> files)
         {
             if (files == null) return new List<MediaBlobUploadResult>();
 
             // upload file 
             var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
             // bulk upload with preset ids
-            var fileResults = await _mediaFileService.UploadVideos(user.Id, newFiles);
+            var fileResults = await _mediaFileService.UploadVideos(userId, newFiles);
 
             // bulk create entities
             var mediaBlobEntities = newFiles.Select(x =>
@@ -385,7 +384,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                     Id = x.Id,
                     FilePath = _mediaFileService.GetFileUrl(x.Id.ToString()),
                     Name = x.File.FileName,
-                    UserId = user.Id,
+                    UserId = userId,
                     Type = MediaBlobFileType.Video
                 };
             }).ToList();
