@@ -1,5 +1,6 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Integrations.Elastic.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -9,12 +10,38 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         Post, Reply, Page
     }
+    public class ContentPostLinkSubdocument
+    {
+        public string? Url { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public string? Image { get; set; }
+        public string? ShortUrl { get; set; }
+    }
     public class ContentPostQuoteSubdocument
     {
         public string ContentPostQuoteThreadId { get; set; }
         public string ContentPostQuoteId { get; set; }
         public string? Content { get; set; }
         public string? Response { get; set; }
+    }
+    public class ContentPostFormatSubdocument
+    {
+        public int Start { get; set; }
+        public int End { get; set; }
+        public string Value { get; set; }
+        public string Format { get; set; }
+    }
+    public class ContentPostSettingsSubdocument
+    {
+        public string ContentPostSettingsId { get; set; }
+        public string? Access { get; set; }
+        public int? CharLimit { get; set; }
+        public int? PostLimit { get; set; }
+        public int? ImageLimit { get; set; }
+        public int? VideoLimit { get; set; }
+        public int? QuoteLimit { get; set; }
+        public List<ContentPostSettingsFormat> Formats { get; set; }
     }
     public class ContentPostMediaSubdocument
     {
@@ -28,12 +55,9 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string Username { get; set; }
         public string Image { get; set; }
     }
-    public class ContentPostDocument
+    public class ContentPostDocument : EntityDocument
     {
         // Core properties
-        public Guid Id { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public DateTime? UpdatedOn { get; set; }
         public string Href 
         { 
             get
@@ -57,6 +81,8 @@ namespace Accelerate.Foundations.Content.Models.Data
         public IEnumerable<ContentPostQuoteSubdocument>? QuotedPosts { get; set; }
         public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
         // Computed
+        public ContentPostSettingsSubdocument Settings { get; set; }
+        public ContentPostLinkSubdocument Link { get; set; }
         public ContentPostActionsSummaryDocument ActionsTotals { get; set; }
         public ContentPostType PostType { get; set; } = ContentPostType.Post;
         //TODO: Replace with mapping 

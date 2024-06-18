@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.EventBus;
+﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.Common.Extensions;
@@ -22,11 +22,13 @@ using Accelerate.Foundations.Database.Services;
 using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Foundations.Content.Hydrators;
 using Accelerate.Foundations.Media.Models.Entities;
+using Accelerate.Foundations.Content.Services;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostCreatedPipeline : DataCreateEventPipeline<ContentPostEntity>
     {
+        IContentPostService _contentPostService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
@@ -37,6 +39,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
         public ContentPostCreatedPipeline(
+            IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
             IEntityService<ContentChannelEntity> channelService,
             IEntityService<ContentPostEntity> entityService,
@@ -46,6 +49,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
+            _contentPostService = contentPostService;
             _entityService = entityService;
             _elasticService = elasticService;
             _messageHub = messageHub;
@@ -78,6 +82,36 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             }).ToList();
             return mediaItems;
         }
+        private ContentPostSettingsSubdocument GetSettings(IPipelineArgs<ContentPostEntity> args)
+        {
+            var settings = _contentPostService.GetSettings(args.Value.Id);
+            if (settings == null) return null;
+         
+            return new ContentPostSettingsSubdocument()
+            {
+                Access = settings.Access,
+                CharLimit = settings.CharLimit,
+                PostLimit = settings.PostLimit,
+                Formats = settings.FormatItems,
+                ImageLimit = settings.ImageLimit,
+                //QuoteLimit = settings.QuoteLimit,
+                VideoLimit = settings.VideoLimit,
+            };
+        }
+        private ContentPostLinkSubdocument GetLink(IPipelineArgs<ContentPostEntity> args)
+        {
+            var link = _contentPostService.GetLink(args.Value.Id);
+            if (link == null) return null;
+
+            return new ContentPostLinkSubdocument()
+            {
+                Title = link.Title,
+                Description = link.Description,
+                Image = link.Image,
+                ShortUrl = link.ShortUrl,
+                Url = link.Url
+            };
+        }
         private List<ContentPostQuoteSubdocument> GetQuotes(IPipelineArgs<ContentPostEntity> args)
         {
             var quotes = _quoteService.Find(x => x.ContentPostId == args.Value.Id);
@@ -90,10 +124,13 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 Response = x.Response
             }).ToList();
         }
+        private ContentPostParentEntity? GetParent(IPipelineArgs<ContentPostEntity> args)
+        {
+            return _contentPostService.GetPostParent(args.Value);
+        }
         private string? GetChannelName(IPipelineArgs<ContentPostEntity> args)
         {
-            if (string.IsNullOrEmpty(args.Value.TargetChannel)) return null;
-            var channel = _channelService.Get(Guid.Parse(args.Value.TargetChannel));
+            var channel = _contentPostService.GetPostChannel(args.Value);
             return channel?.Name;
         }
         // ASYNC PROCESSORS
@@ -115,18 +152,16 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 indexModel.ChannelName = GetChannelName(args);
                 indexModel.QuotedPosts = GetQuotes(args);
                 indexModel.Media = GetMedia(args);
+                indexModel.Link = GetLink(args);
+                indexModel.Settings = GetSettings(args);
                 // If a reply
-                
-                if (args.Value.ParentId != null)
+                var postParent = GetParent(args);
+                if (postParent != null && postParent.ParentId != null)
                 {
-                    var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
-                    var parentDoc = parentResponse.Source;
-                    await UpdateParentDocument(parentDoc, indexModel, args);
-                   /*
-                    var parentIdThread = parentDoc.ParentIds ?? new List<Guid>();
-                    parentIdThread.Add(parentDoc.Id);
-                    indexModel.ParentIds = parentIdThread;
-                   */
+                    indexModel.ParentId = postParent.ParentId;
+                    indexModel.ParentIds = postParent.ParentIdItems.ToList();
+
+                    await UpdateParentDocument(postParent, indexModel, args);
                 }
                 await _elasticService.Index(indexModel);
             }
@@ -136,12 +171,15 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             }
         }
 
-        private async Task UpdateParentDocument(ContentPostDocument parentDoc, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
+        private async Task UpdateParentDocument(ContentPostParentEntity parentEntity, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
         {
+            var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(parentEntity.ParentId?.ToString());
+            var parentDoc = parentResponse.Source;
             if (parentDoc == null) return;
+
             // Update reply count
-            var replies = ContentPostUtilities.GetReplies(_entityService, args);
-            parentDoc.Replies = replies ?? 0;
+            parentDoc.Replies = _contentPostService.GetReplyCount(parentEntity.ParentId.GetValueOrDefault());
+
             // Update threads
             if (args.Value.Type == ContentPostType.Page)
             {

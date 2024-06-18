@@ -5,6 +5,17 @@ namespace Accelerate.Foundations.Content.Hydrators
 {
     public static class ContentHydrators
     {
+        public static void Hydrate(this ContentPostEntity document, ContentPostEntity entity)
+        {
+            document.Status = entity.Status;
+            document.Content = entity.Content;
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            //document.Tags = entity.Tags;
+            //document.Category = entity.Category;
+            document.Id = entity.Id;
+        }
         public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document, ContentPostUserSubdocument profile)
         {
             document.Status = entity.Status;
@@ -15,12 +26,15 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.ThreadId = entity.ThreadId;
             document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
             document.PostType = entity.Type;
+            /*
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
             document.ParentIds = entity.ParentIdItems?.ToList();
             document.TargetChannel = entity.TargetChannel;
+            
             document.Tags = entity.TagItems;
             document.Category = entity.Category;
+            */
             document.Id = entity.Id;
             document.Profile = profile ?? 
                 new ContentPostUserSubdocument()
@@ -41,7 +55,6 @@ namespace Accelerate.Foundations.Content.Hydrators
         }
         public static void Hydrate(this ContentPostActionsSummaryEntity entity, ContentPostActionsSummaryDocument document)
         {
-            document.UserId = entity.UserId;
             document.ContentPostId = entity.ContentPostId;
             document.Id = entity.Id;
             document.Agrees = entity.Agrees;
@@ -51,7 +64,19 @@ namespace Accelerate.Foundations.Content.Hydrators
         }
 
 
-        
+
+        public static void Hydrate(this ContentPostLinkEntity entity, ContentPostLinkDocument document)
+        {
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.Title = entity.Title;
+            document.Description = entity.Description;
+            document.ShortUrl = entity.ShortUrl;
+            document.Image = entity.Image;
+            document.Url = entity.Url;
+            document.Id = entity.Id;
+        }
+
         public static void Hydrate(this ContentChannelEntity entity, ContentChannelDocument document)
         {
             document.UserId = entity.UserId;

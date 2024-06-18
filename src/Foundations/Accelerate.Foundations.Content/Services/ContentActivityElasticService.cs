@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentActivityElasticService :  ElasticService<ContentPostActivityDocument>
+    public class ContentActivityElasticService : ElasticService<ContentPostActivityDocument>
     {
 
         public ContentActivityElasticService(IOptions<ElasticConfiguration> options) : base(options)

@@ -37,9 +37,29 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 return _indexName;
             }
         }
+        public int ItemsPerPage
+        {
+            get
+            {
+                return Integrations.Elastic.Constants.Search.DefaultPerPage;
+            }
+        }
+        public int MaxQueryable
+        {
+            get
+            {
+                return Integrations.Elastic.Constants.Search.MaxQueryable;
+            }
+        }
         protected string _indexName { get; set; }
         protected TypeMapping _mapping { get; set; } = new TypeMapping();
         protected IndexSettings _settings { get; set; } = new IndexSettings();
+        public ElasticService(IOptions<ElasticConfiguration> options, string indexName)
+        {
+            this._indexName = indexName;
+            _config = options.Value;
+            _client = new ElasticsearchClient(_config.CloudId, new ApiKey(_config.ApiKey));
+        }
         public ElasticService(IOptions<ElasticConfiguration> options)
         {
             _config = options.Value;
@@ -299,6 +319,17 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             };
             return q;
         }
+        public Query? CreateTextQuery(QueryFilter filter)
+        {
+            var name = filter.Name.ToCamelCase();
+            var field = new Field(name);
+            var tq = new TermQuery(field)
+            {
+                Value = GetFieldValue(filter),
+                CaseInsensitive = true
+            };
+            return tq;
+        }
         public Query? CreateTermQuery(QueryFilter filter)
         {
             var name = filter.Name.ToCamelCase();
@@ -373,6 +404,26 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
 
         public Query? CreateTerm(QueryFilter? filter)
         {
+            /*
+            if (filter.Value != null)
+            {
+                return CreateTermQuery(filter);
+            }
+
+            else if (filter.Values != null && filter.Values.Any())
+            {
+                return CreateTermsQuery(filter);
+            }
+            */
+            if (filter.Operator == QueryOperator.Contains)
+            {
+                return CreateTextQuery(filter);
+            }
+            else if (filter.Operator == QueryOperator.Exist)
+            {
+                return CreateExistsQuery(filter);
+            }
+
             if (filter.Value != null)
             {
                 return CreateTermQuery(filter);
@@ -381,14 +432,8 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             {
                 return CreateTermsQuery(filter);
             }
-            else if (filter.Operator == QueryOperator.Exist)
-            {
-                return CreateExistsQuery(filter);
-            }
-            else
-            {
-                return null;
-            }
+
+            return CreateTermQuery(filter);
         }
         public Query[] GetQueries(List<QueryFilter> filters, ElasticCondition condition)
         {

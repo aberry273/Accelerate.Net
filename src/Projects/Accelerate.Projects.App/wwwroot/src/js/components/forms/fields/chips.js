@@ -31,7 +31,7 @@ export default function (data) {
         <div class="grid" role="group">
             <div class="container">
                 <template x-for="(item, i) in field.value || []">
-                    <button class="tag outline secondary small" x-text="item" @click="()=> {
+                    <button class="tag flat primary small" x-text="item" @click="()=> {
                         const index = field.value.indexOf(item);
                         field.value.splice(index, 1)
                     }"></button>

@@ -20,6 +20,9 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\ContentOldController.cs" />
+    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryCreatedPipeline.cs" />
+    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryDeletedPipeline.cs" />
+    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryUpdatedPipeline.cs" />
     <Compile Remove="Pipelines\IContentPostCreatedPipeline.cs" />
     <Compile Remove="Services\ContentActivityElasticService.cs" />
     <Compile Remove="Services\ContentElasticService.cs" />

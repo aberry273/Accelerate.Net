@@ -1,6 +1,7 @@
 const defaults = {}
 import { mxCardPost } from '/src/js/mixins/index.js';
-
+/*
+Previously content was paginated, now only quotes
 export function content(data) {
     return `
     <template x-for="(post, i) in mxCardPost_thread" :key="i">
@@ -10,6 +11,13 @@ export function content(data) {
     </template>
     `
 }
+*/
+export function content(data) {
+    return `
+        <div class="padded pt-0 pb-0" x-html="_mxCardPost_ParseEncodedTextElements(selectedPost.content)"></div>
+    `
+}
+
 export function media(data) {
     return `
     <template x-if="selectedPost.media != null && selectedPost.media.length > 0">
@@ -27,31 +35,61 @@ export function media(data) {
 
 export function quotes(data) {
     return `
-    <template x-for="quotedPost in quotedPosts">
-        <div class="padded">
-                <div x-data="cardPostQuote({
-                    quotePost: quotedPost,
-                    item: _mxCardPost_getQuotePost(quotedPost.contentPostQuoteId)
-                })"></div>
+    <template x-for="(quotedPost, i) in quotedPosts" :key="i">
+        <div class="padded" x-show="i == currentPage">
+            <div x-data="cardPostQuote({
+                quotePost: quotedPost,
+                item: _mxCardPost_getQuotePost(quotedPost.contentPostQuoteId)
+            })"></div>
             <div x-show="quotedPost.response" x-html="quotedPost.response" class="pt"></div>
         </div>
     </template>
     `
 }
-
 export function pagination(data) {
     return `
-   <template x-if="mxCardPost_thread.length > 1">
+   <template x-if="quotedPosts.length > 0">
         <div class="grid" align="center">
             <ul>
-            <template x-for="page in mxCardPost_thread.length">
-                <i @click="currentPage = page-1" :class="currentPage == page-1 ? 'primary': ''" class="icon material-iconss icon-click">•</i>
-            </template>
+                <template x-for="page in quotedPosts.length">
+                    <i @click="currentPage = page-1" :class="currentPage == page-1 ? 'primary': ''" class="icon material-iconss icon-click">•</i>
+                </template>
             </ul>
         </div>
     </template>
     `
 }
+export function link(data) {
+    return `
+    <template x-if="selectedPost.link">
+        <article @click="" class="link" style="padding: 0px;" x-show="!selectedPost.link.hide">
+            <header class="padless"><button style="position:absolute" class="small secondary material-icons flat" @click="selectedPost.link.hide = true">clear</button></header>
+            <div>
+                <hr />
+                <figure style="text-align:center;">
+                    <a style="text-decoration:none" :href="selectedPost.link.url">
+                        <img
+                            style="max-height: 200px; border-radius: 8px"
+                            :src="selectedPost.link.image"
+                            :alt="selectedPost.link.title"
+                        />
+                    </a>
+                </figure>
+                <div class="padless" style="padding: 0px 8px;">
+                    <a style="text-decoration:none" :href="selectedPost.link.url">
+                        <sup x-text="selectedPost.link.url"></sup>
+                    </a>
+                    <div>
+                        <b x-text="selectedPost.link.title"></b>
+                        <p x-text="selectedPost.link.description"></p>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </template>
+    `
+}
+
 export function header(data) {
     return `
     <header class="padded pb-0">

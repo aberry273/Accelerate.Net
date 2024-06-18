@@ -1,19 +1,24 @@
 
-import { mxForm, mxModal, mxResponsive } from '/src/js/mixins/index.js';
-const quoteEvent = 'action:post:quote';
-const replyEvent = 'action:post:reply';
+import { mxForm, mxEvents, mxFetch, mxModal, mxResponsive, mxCardPost } from '/src/js/mixins/index.js';
+ 
+const linkEvent = 'form:input:link';
+const wysiwygUserSearchEvent = 'form:input:user';
 export default function (data) {
     return {
+        ...mxFetch(data),
+        ...mxFetch(data),
+        ...mxEvents(data),
         ...mxForm(data),
         ...mxModal(data),
         ...mxResponsive(data),
+        ...mxCardPost(data),
         // PROPERTIES
         loading: false,
         fields: [],
         item: null,
-        label: 'Submit',
-        quoteEvent: 'quote:post',
+        label: 'Submit', 
         tagStr: null,
+        userId: null,
         tags: [],
         tagFieldName: 'Tags',
         imageFieldName: 'Images',
@@ -29,7 +34,10 @@ export default function (data) {
         fixed: false,
         fixTop: false,
         boundingRect: null,
+        fetchMetadataUrl: null,
+        searchUsersUrl: null,
         initYPos: 0,
+        charLimit: 256,
         imageModal: 'upload-media-image-modal',
         // INIT
         init() {
@@ -37,7 +45,11 @@ export default function (data) {
             this.label = data.label;
             this.event = data.event;
             this.item = data.item;
-            this.postbackType = data.postbackType
+            this.userId = data.userId;
+            this.postbackType = data.postbackType;
+            this.postbackUrl = data.postbackUrl;
+            this.fetchMetadataUrl = data.fetchMetadataUrl;
+            this.searchUsersUrl = data.searchUsersUrl;
             this.fields = data.fields,
             this.actionEvent = data.actionEvent;
             this.fixTop = data.fixTop || false;
@@ -49,83 +61,40 @@ export default function (data) {
             var videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
             this.showVideo = videoField != null ? !videoField.hidden : null
 
+
+            const contentField = this._mxForm_GetField(this.fields, 'Content');
+            this.charLimit = contentField.max || 256;
             // On updates from cards
-            // Move this and all content/post based logic to page level js instead
-            this.$events.on(quoteEvent, async (item) => {
-                const field = this._mxForm_GetField(this.fields, 'QuotedItems');
-                if (!field) return;
-
-                let threadIds = field.value || []
-                
-                const quotedItem = this.createQuoteRequestItem(item);
-                
-                const quotedIds = threadIds.map(x => x.quotedContentPostId);
-                const index = quotedIds.indexOf(item.id)
-                if (index > -1) return;
-                
-                threadIds.push(quotedItem)
-                
-                field.value = threadIds;
-                field.items = threadIds;
-                this._mxForm_SetField(this.fields, field);
-                this.showFloatingPanel = false;
-
-                // If form is in scrollState, show
-                this.fixed = true;
+            // Move this and all content/post based logic to mixin/geneirc logic
+            this.$events.on(this.mxCardPost_quoteEvent, async (item) => {
+                this.updateQuoteField(item);
             })
             // On updates from cards
-            // Move this and all content/post based logic to page level js instead
-            this.$events.on(replyEvent, async (item) => {
-                const parentIdField = this._mxForm_GetField(this.fields, 'ParentId');
-                if (!parentIdField) return;
+            // Move this and all content/post based logic to mixin/generic logic
+            this.$events.on(this.mxCardPost_replyEvent, async (item) => {
+                this.updateReplyField(item);
+            }) 
 
-                parentIdField.value = item.id;
-                this._mxForm_SetField(this.fields, parentIdField);
-
-
-                const replyToField = this._mxForm_GetField(this.fields, 'ReplyTo');
-                if (!replyToField) return;
-
-                replyToField.value = this.createReplyPostSummary(item);
-
-                this._mxForm_SetField(this.fields, replyToField);
-                this.showFloatingPanel = false;
-                // If form is in scrollState, show
-                this.fixed = true;
+            this.$events.on(linkEvent, async (url) => {
+                this.updateLinkField(url);
             })
 
+            this.$events.on(this.mxCardPost_mentionsEvent, async (item) => {
+                this.updateMentionsField(item);
+            }) 
+
+            this.$events.on(this.mxCardPost_formatsEvent, async (item) => { 
+                this.updateSettingsField(item);
+            }) 
+            this.$events.on(wysiwygUserSearchEvent, async (query) => {
+                this.searchUsers(query);
+            })
             this.setHtml(data);
-            /*
-            this.$nextTick(() => {
-                this.originalYPosition = this.yPosition;
-                console.log(this.originalYPosition);
-                console.log(window.scrollY)
-            })
-            */
         },
         // Content editable field
         //https://stackoverflow.com/questions/46000233/how-is-formatting-in-textarea-being-done
 
         // GETTERS
-        /*
-        get isInPosition() {
-            let inPosition = false;
-            return inPosition;
-            console.log(this.originalYPosition);
-            if (this.fixTop) {
-                inPosition = window.scrollY >= this.originalYPosition
-            }
-            else {
-                inPosition = window.scrollY <= this.originalYPosition
-            }
-            return inPosition;
-        },
-        get yPosition() {
-            const el = document.getElementById('fixedPosition');
-            const y = el.getBoundingClientRect().top - 60;
-            return y;
-        },
-        */
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
         },
@@ -141,10 +110,22 @@ export default function (data) {
         get typeSelected() {
             return this.showImage || this.showVideo || this.showText
         },
+        get inputAmount() {
+            return this.textField != null && this.textField.value != null
+                ? this.textField.value.length
+                : 0;
+        },
+        get characterCount() {
+            return `${this.inputAmount} / ${this.charLimit}`;
+        },
+        get underLimit() {
+            return this.inputAmount < this.charLimit;
+        },
         get isValid() {
-            return (this.textField.value != null && this.textField.value.length > 0)
+            return this.underLimit
+                && ((this.textField.value != null && this.textField.value.length > 0)
                 || (this.videoField.value != null && this.videoField.value.length > 0)
-                || (this.imageField.value != null && this.imageField.value.length > 0)
+                || (this.imageField.value != null && this.imageField.value.length > 0))
         },
         get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
 
@@ -152,16 +133,101 @@ export default function (data) {
             let style = 'display:block;margin-top: 55px;'
             if (this.mxResponsive_IsMobile)
                 style += "left: 0; width: 100%;";
-            /*
-            if (this.fixTop) {
-                style += "top: 0; bottom: initial;";
-            }
-            else {
-                style += "bottom: 0; top: initial;";
-            }
-            */
             style += "bottom: 0; top: initial;";
             return style;
+        },
+        updateQuoteField(item) {
+            const field = this._mxForm_GetField(this.fields, 'QuotedItems');
+            if (!field) return;
+
+            let threadIds = field.value || []
+
+            const quotedItem = this.createQuoteRequestItem(item);
+
+            const quotedIds = threadIds.map(x => x.quotedContentPostId);
+            const index = quotedIds.indexOf(item.id)
+            if (index > -1) return;
+
+            threadIds.push(quotedItem)
+
+            field.value = threadIds;
+            field.items = threadIds;
+            this._mxForm_SetField(this.fields, field);
+            this.showFloatingPanel = false;
+        },
+        updateMentionsField(item) {
+            const field = this._mxForm_GetField(this.fields, 'Mentions');
+            if (!field) return;
+
+             
+            this._mxForm_SetField(this.fields, field);
+            this.showFloatingPanel = false;
+        },
+        updateReplyField(item) {
+            const parentIdField = this._mxForm_GetField(this.fields, 'ParentId');
+            if (!parentIdField) return;
+
+            parentIdField.value = item.id;
+            this._mxForm_SetField(this.fields, parentIdField);
+
+            const replyToField = this._mxForm_GetField(this.fields, 'ReplyTo');
+            if (!replyToField) return;
+
+            replyToField.value = this.createReplyPostSummary(item);
+
+            this._mxForm_SetField(this.fields, replyToField);
+            this.showFloatingPanel = false;
+            // If form is in scrollState, show
+            //this.fixed = true;
+        },
+        async updateLinkField(url) {
+            const linkField = this._mxForm_GetField(this.fields, 'Link');
+            if (!linkField) return;
+
+            if (linkField.value != null) return;
+
+            this.loading = true;
+
+            const item = await this._mxFetch_Post(this.fetchMetadataUrl, { url })
+
+            linkField.value = item;
+            linkField.hidden = false;
+            this._mxForm_SetField(this.fields, linkField);
+            this.loading = false;
+
+            //this.fixed = true;
+        },
+        async updateSettingsField(items) {
+            const settingsField = this._mxForm_GetField(this.fields, 'Settings');
+            if (!settingsField) return;
+
+            var settings = settingsField.value || {};
+
+            settings.formats = items;
+
+            settingsField.value = settings;
+            this._mxForm_SetField(this.fields, settingsField);
+        },
+        async searchUsers(queryText) {
+            if (!queryText) return;
+            this.loading = false;
+            var request = {
+                text: `*${queryText}*`,
+                userId: this.userId,
+                page: 0,
+                itemPerPage: 8,
+                filters: [],
+                aggregates: []
+            }
+            const { users } = await this._mxFetch_Post(this.searchUsersUrl, request)
+            const userItems = users.map(x => {
+                return {
+                    name: x.username,
+                    id: x.id
+                }
+            })
+            var resultsEvents = `${wysiwygUserSearchEvent}:results`;
+            this.$events.emit(resultsEvents, userItems);
         },
         createReplyPostSummary(item) {
             const content = item.content.length > 64 ? item.content.slice(0, 64) + "..." : item.content;
@@ -248,53 +314,11 @@ export default function (data) {
             const label = data.label || 'Submit'
             const html = `
             <span id="fixedPosition"><span>
-            <!--Floating-->
-                <nav class="floating bottom container"
-                    style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111;"
-                    :style="fixed ? fixedStyle : 'display:none;'">
-                      <article x-show="showFloatingPanel == false" class="dense sticky" style="width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);">
-                        <progress x-show="loading"></progress>
-                        <!--Quotes-->
-                        <fieldset class="padded" x-data="formFields({fields})"></fieldset>
-
-                        <fieldset role="group">
-                            <button  class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
-
-                            <!--Hide-->
-                            <!--
-                            <button class="small secondary material-icons flat" @click="hideFloatingPanel(true)" :disabled="loading">close</button>
-                            -->
-                            <!--Toggle fields-->
-                            <!--Format-->
-                            <!--
-                            <button class="small secondary material-icons flat" x-show="!showText" @click="hideTextField(false)" :disabled="loading">text_format</button>
-                            <button class="small secondary material-icons flat" x-show="showText" @click="hideTextField(true)" :disabled="loading">cancel</button>
-                            -->
-                            <!--Video-->
-                            <button class="small secondary material-icons flat" x-show="!showVideo" @click="hideVideoField(false)" :disabled="loading">videocam</button>
-                            <button class="small secondary material-icons flat" x-show="showVideo" @click="hideVideoField(true)" :disabled="loading">cancel</button>
-
-                            <!--Image-->
-                            <button class="small secondary material-icons flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
-                            <button class="small secondary material-icons flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
-
-                            <!--Tags-->
-                            <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                            <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
-
-                            <!--Cancel-->
-                            <!--
-                            <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
-                            -->
-                            <!--Submit-->
-                            <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
-
-                        </fieldset> 
-                    </article>
-            </nav>
+            <!--Floating--> 
+             
             <!--Floating button-->
             <button
-                x-show="(showFloatingPanel)"
+                x-show="showFloatingPanel"
                 @click="hideFloatingPanel(false)"
                 class="material-icons round xsmall"
                 style="y-index:1111; position: fixed; top: 65px; right: calc(var(--pico-spacing)*0.225);">
@@ -306,41 +330,47 @@ export default function (data) {
             <div class="sticky" style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
             </div>
             -->
+            <!-- to update to teleporting between fixed/nonfixed elements-->
+                <article  
+                :class="fixed ? 'floating bottom container dense sticky' : 'dense sticky'"
+                
+                style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"
+                :style="fixed ? fixedStyle : ''"
+>
+                    <progress x-show="loading"></progress>
+                    <!--Quotes-->
+                    <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
-            <article class="dense sticky"  x-show="!showFloatingPanel && !fixed">
-                <progress x-show="loading"></progress>
-                <!--Quotes-->
-                <fieldset class="padded" x-data="formFields({fields})"></fieldset>
+                    <fieldset class="padded" role="group">
+                        <button x-show="fixed" class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
+                        <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button>
+                        <!--
+                        <input class="flat" hide disabled type="text" placeholder="" />
+                        -->
+                        <!--Toggle fields-->
+                    
+                        <!--
+                        <button class="small secondary material-icons flat" x-show="!showText" @click="hideTextField(false)" :disabled="loading">text_format</button>
+                        <button class="small secondary material-icons flat" x-show="showText" @click="hideTextField(true)" :disabled="loading">cancel</button>
+                        -->
+                        <!--Video-->
+                        <button class="small secondary material-icons flat" x-show="!showVideo" @click="hideVideoField(false)" :disabled="loading">videocam</button>
+                        <button class="small secondary material-icons flat" x-show="showVideo" @click="hideVideoField(true)" :disabled="loading">cancel</button>
 
-                <fieldset class="padded" role="group">
-                    <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button>
+                        <!--Image-->
+                        <button class="small secondary material-icons flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
+                        <button class="small secondary material-icons flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
 
-                    <input class="flat" hide disabled type="text" placeholder="" />
+                        <!--Tags-->
+                        <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
+                        <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
 
-                    <!--Toggle fields-->
-                    <!--
-                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideTextField(false)" :disabled="loading">text_format</button>
-                    -->
-                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideVideoField(false)" :disabled="loading">videocam</button>
-                    <button class="small secondary material-icons flat" x-show="!typeSelected" @click="hideImageField(false)" :disabled="loading">image</button>
-                    <!--Cancel-->
-                    <button class="small secondary material-icons flat" x-show="typeSelected" @click="cancelTypes" :disabled="loading">cancel</button>
+                        <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
+                        <button class="flat primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 
-                    <!--Type formats-->
-                    <!--
-                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_bulleted</button>
-                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_list_numbered</button>
-                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">link</button>
-                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">format_quote</button>
-                    <button class="small secondary material-icons flat small" x-show="showText" @click="showText = !showText" :disabled="loading">code</button>
-                    -->
-                    <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                    <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
-
-                    <button class="" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
-
-                </fieldset> 
-            </article>
+                    </fieldset> 
+                </article>
+            </template>
         `
             this.$nextTick(() => {
                 this.$root.innerHTML = html

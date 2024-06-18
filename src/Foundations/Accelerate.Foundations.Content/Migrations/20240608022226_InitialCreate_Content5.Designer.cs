@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    [Migration("20240604231619_InitialCreate_Content4")]
-    partial class InitialCreate_Content4
+    [Migration("20240608022226_InitialCreate_Content5")]
+    partial class InitialCreate_Content5
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -113,7 +113,7 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Disagree")
+                    b.Property<int>("Disagrees")
                         .HasColumnType("int");
 
                     b.Property<int>("Quotes")
@@ -124,9 +124,6 @@ namespace Accelerate.Foundations.Content.Migrations
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -167,6 +164,29 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.ToTable("ContentPostActivity");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostChannelEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChannelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostChannel");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -182,22 +202,10 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("ParentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ParentIds")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Tags")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TargetChannel")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TargetThread")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
@@ -212,6 +220,42 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentPosts");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostLinkEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Image")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentPostId")
+                        .IsUnique();
+
+                    b.ToTable("ContentPostLink");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostMediaEntity", b =>
@@ -238,6 +282,35 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentPostMedia");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostParentEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ParentIds")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostParent");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostQuoteEntity", b =>
@@ -269,7 +342,74 @@ namespace Accelerate.Foundations.Content.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContentPostId");
+
                     b.ToTable("ContentPostQuotes");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostSettingsEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Access")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CharLimit")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Formats")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ImageLimit")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostLimit")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("VideoLimit")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostSettings");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostSettingsPostEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostSettingsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentPostSettingsId");
+
+                    b.ToTable("ContentPostSettingsPost");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionsEntity", b =>
@@ -305,14 +445,55 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Navigation("ContentPost");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostLinkEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
+                        .WithOne("Link")
+                        .HasForeignKey("Accelerate.Foundations.Content.Models.Entities.ContentPostLinkEntity", "ContentPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContentPost");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostQuoteEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
+                        .WithMany("Quotes")
+                        .HasForeignKey("ContentPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContentPost");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostSettingsPostEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostSettingsEntity", "ContentPostSettings")
+                        .WithMany("ContentPosts")
+                        .HasForeignKey("ContentPostSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContentPostSettings");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", b =>
                 {
                     b.Navigation("Actions");
 
                     b.Navigation("Activities");
 
-                    b.Navigation("Summary")
-                        .IsRequired();
+                    b.Navigation("Link");
+
+                    b.Navigation("Quotes");
+
+                    b.Navigation("Summary");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostSettingsEntity", b =>
+                {
+                    b.Navigation("ContentPosts");
                 });
 #pragma warning restore 612, 618
         }

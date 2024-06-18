@@ -1,6 +1,5 @@
 ﻿using Accelerate.Foundations.Account.Attributes;
 using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Features.Account.Models.Views;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;

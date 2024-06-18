@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.EventBus;
+﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;

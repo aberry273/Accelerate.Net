@@ -38,10 +38,5 @@ namespace Accelerate.Foundations.Content
             public const string Status = "status";
             public const string Content = "content";
         }
-        public struct Search
-        {
-            public const int MaxQueryable = 100;
-            public const int DefaultPerPage = 10;
-        }
     }
 }

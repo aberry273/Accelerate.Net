@@ -39,7 +39,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
                 DeleteDocument,
-                UpdatePostIndex
+                //UpdatePostIndex
             };
         }
         // ASYNC PROCESSORS

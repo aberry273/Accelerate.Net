@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.EventBus;
+﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Models.Data;
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Account.Models.Entities;
@@ -32,9 +32,24 @@ using MassTransit.Initializers;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
 using Accelerate.Foundations.Media.Models.Data;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+using Accelerate.Foundations.Content.Services;
+using static Elastic.Clients.Elasticsearch.JoinField;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
+    public class MetadataRequest
+    {
+        public string Url { get; set; }
+    }
+    public class MetadataResponse
+    {
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Image { get; set; }
+    }
     [Route("api/[controller]")]
     [ApiController]
     public class ContentPostController : BaseApiController<ContentPostEntity>
@@ -45,10 +60,12 @@ namespace Accelerate.Features.Content.Controllers.Api
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentPostMediaEntity> _postMediaService;
+        IContentPostService _postService;
         IMediaService _mediaFileService;
         IEntityService<MediaBlobEntity> _mediaService;
         public ContentPostController(
             IMetaContentService contentService,
+            IContentPostService postService,
             IEntityService<ContentPostEntity> service,
             IEntityService<ContentPostQuoteEntity> quoteService,
             IEntityService<ContentPostMediaEntity> postMediaService,
@@ -59,6 +76,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             UserManager<AccountUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
+            this._postService = postService;
             _userManager = userManager;
             _contentService = contentService;
             _searchService = searchService;
@@ -66,6 +84,54 @@ namespace Accelerate.Features.Content.Controllers.Api
             _postMediaService = postMediaService;
             _mediaFileService = mediaFileService;
             _mediaService = mediaService;
+        }
+        //<meta\b[^>]*\bname=["]keywords["][^>]*\bcontent=(['"]?)((?:[^,>"'],?){1,})\1[>]
+        private string UrlTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:url[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
+        private string TitleTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:title[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
+        private string DescriptionTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:description[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
+        private string ImageTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:image[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
+        private string GetTagMetadata(string input, string regex)
+        {
+            var result = Regex.Match(input, regex, RegexOptions.IgnoreCase);
+            if (result == null) return null;
+            return result.Groups[2].Value;
+            
+        }
+        [Route("metadata")]
+        [HttpPost]
+        public async Task<IActionResult> GetUrlContents([FromBody] MetadataRequest data)
+        {
+            try
+            {
+
+                const int bytesToRead = 12000;
+                using (var client = new HttpClient())
+                using (var response = await client.GetAsync(data.Url))
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var buffer = new byte[stream.Length];
+                    stream.Read(buffer, 0, buffer.Length);
+                    var partialHtml = Encoding.UTF8.GetString(buffer);
+
+                    var title = GetTagMetadata(partialHtml, TitleTagRegex);
+                    var description = GetTagMetadata(partialHtml, DescriptionTagRegex);
+                    var image = GetTagMetadata(partialHtml, ImageTagRegex);
+                    var url = GetTagMetadata(partialHtml, UrlTagRegex);
+
+                    var model = new MetadataResponse()
+                    {
+                        Url = url,
+                        Title = title,
+                        Description = description,
+                        Image = image,
+                    };
+                    return Ok(model);
+                }
+            }
+            catch(Exception e)
+            {
+                return Problem();
+            }
         }
 
         [Route("mixed")]
@@ -75,41 +141,66 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
+                var parentId = obj.ParentId.GetValueOrDefault();
+                var link = obj.Link;
+                var settingsStr = obj.Settings;
                 var quotes = (obj.QuotedItems != null) ? obj.QuotedItems.Where(x => x != null).ToList() : new List<string>();
                 var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
                 var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
                 var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
+                var mentions = (obj.Mentions != null) ? obj.Mentions.Where(x => x != null).ToList() : new List<string>();
 
-                if (!quotes.Any() && !media.Any() && !images.Any() && !videos.Any())
+                // IF only a direct content post, just run the create fuction
+                if (parentId == Guid.Empty && settingsStr == null && link == null && !quotes.Any() && !media.Any() && !images.Any() && !videos.Any() && !mentions.Any())
                 {
-                    return await base.Post(obj);
+                    return await this.Post(obj);
                 }
 
-                //Create post 
-                //If the post has no parent, set the targetThread to be itself
-                /*
-                var result = await _service.Create(obj);
-                if (result == 0)
-                {
-                    return BadRequest("Unable to create post");
-                }
-                var postId = Guid.NewGuid();
-                if (obj.ParentId == null)
-                {
-                    obj.Id = postId;
-                    obj.TargetThread = obj.ThreadId;
-                }
-                */
-                var result = await _service.CreateWithGuid(obj);
-                var postId = result.GetValueOrDefault();
-                if (!result.HasValue)
+                var post = await _postService.Create(obj);
+                if (post == null)
                 {
                     return BadRequest("Unable to create post");
                 }
 
-                var post = _service.Get(result.GetValueOrDefault());
+                // Parents
+                if(parentId != null)
+                {
+                    var ancestorIds = obj.ParentIdItems.Any() ? obj.ParentIdItems.ToList() : new List<Guid>();
+                    await _postService.CreateParentPost(obj, parentId, ancestorIds);
+                }
+                // Links
+                if (link != null)
+                {
+                    var linkObj = Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<MetadataResponse>(link);
+                    var linkEntity = new ContentPostLinkEntity()
+                    {
+                        ContentPostId = post.Id,
+                        Title = linkObj.Title,
+                        Description = linkObj.Description,
+                        Image = linkObj.Image,
+                        Url = linkObj.Url,
+                    };
+                    await _postService.CreateLink(linkEntity);
+                }
+                // Parents
+                if (settingsStr != null)
+                {
+                    var settingsRequest = Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostSettingsRequest>(settingsStr);
+                    
+                    var settings = new ContentPostSettingsEntity()
+                    {
+                        Access = settingsRequest.Access ?? "All",
+                        CharLimit = settingsRequest.CharLimit.GetValueOrDefault(),
+                        ImageLimit = settingsRequest.ImageLimit.GetValueOrDefault(),
+                        VideoLimit = settingsRequest.VideoLimit.GetValueOrDefault(),
+                        FormatItems = settingsRequest.Formats.ToList(),
+                        PostLimit = settingsRequest.PostLimit.GetValueOrDefault(),
+                        UserId = post.UserId.GetValueOrDefault(),
+                    };
+                    await _postService.CreateSettings(post.Id, settings);
+                }
 
-
+                // Quotes
                 if (quotes.Any())
                 {
                     var quotesItems = obj
@@ -140,18 +231,107 @@ namespace Accelerate.Features.Content.Controllers.Api
                 if (media.Any())
                 {
                     var mediaItems = media
-                        .Select(x => CreateMediaLink(post, x))
+                        .Select(x => _postService.CreateMediaLink(post, x))
                         .ToList();
 
                     var quoteResults = _postMediaService.AddRange(mediaItems);
                 }
 
-                await PostCreateSteps(post);
-
                 return Ok(new
                 {
                     message = "Created Successfully",
-                    id = postId
+                    id = post.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
+
+        //Override with elastic search instead of db query
+        [HttpGet]
+        public override async Task<IActionResult> Get([FromQuery] int Page = 0, [FromQuery] int ItemsPerPage = 10, [FromQuery] string? Text = null)
+        {
+            int take = ItemsPerPage > 0 ? ItemsPerPage : 10;
+            if (take > 100) take = 100;
+            int skip = take * Page;
+            var results = await _searchService.Search(GetPostsQuery(), skip, take);
+            return Ok(results.Documents);
+        }
+
+        [HttpPost]
+        public override async Task<IActionResult> Post(ContentPostEntity obj)
+        {
+            try
+            {
+                var entity = await _postService.Create(obj);
+
+                if (entity == null)
+                {
+                    return ValidationProblem();
+                } 
+                return Ok(new
+                {
+                    message = "Created Successfully",
+                    id = entity.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public override async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] ContentPostEntity obj)
+        {
+            try
+            {
+                var entity = await _postService.Update(id, obj);
+                if (entity == null)
+                {
+                    return NotFound();
+                }
+                return Ok(new
+                {
+                    message = "Updated Successfully",
+                    id = id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public override async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            try
+            {
+                var result = await _postService.Delete(id);
+                if (result == -1)
+                {
+                    return NotFound();
+                }
+                if(result > 0)
+                {
+                    return Ok(new
+                    {
+                        message = "Delete Successfully",
+                        id = id
+                    });
+                }
+                return BadRequest(new
+                {
+                    message = "Delete unsuccessful",
+                    id = id
                 });
             }
             catch (Exception ex)
@@ -226,41 +406,16 @@ namespace Accelerate.Features.Content.Controllers.Api
             };
         }
 
-        private ContentPostMediaEntity CreateMediaLink(ContentPostEntity post, Guid mediaId)
-        {
-            return new ContentPostMediaEntity()
-            {
-                MediaBlobId = mediaId,
-                ContentPostId = post.Id,
-                //FilePath = _mediaFileService.GetFileUrl(mediaId.ToString()),
-            };
-        }
 
-        //Override with elastic search instead of db query
-        [HttpGet]
-        public override async Task<IActionResult> Get([FromQuery] int Page = 0, [FromQuery] int ItemsPerPage = 10, [FromQuery] string? Text = null)
-        {
-            int take = ItemsPerPage > 0 ? ItemsPerPage : 10;
-            if (take > 100) take = 100;
-            int skip = take * Page;
-            var results = await _searchService.Search(GetPostsQuery(), skip, take);
-            return Ok(results.Documents);
-        }
         private QueryDescriptor<ContentPostDocument> GetPostsQuery()
         {
             var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
             return query;
-        }
-        private string GetTarget(ContentPostEntity obj) => obj.TargetThread ?? obj.TargetChannel;
+        } 
         protected override async Task PostCreateSteps(ContentPostEntity obj)
-        { 
-            await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
+        {
+            await _postService.RunCreatePipeline(obj);
         }
         protected override void UpdateValues(ContentPostEntity from, dynamic to)
         {
@@ -268,21 +423,11 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override async Task PostUpdateSteps(ContentPostEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
+            await _postService.RunUpdatePipeline(obj);
         }
         protected override async Task PostDeleteSteps(ContentPostEntity obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<ContentPostEntity>()
-            {
-                Data = obj,
-                Target = GetTarget(obj),
-                UserId = obj.UserId
-            });
+            await _postService.RunDeletePipeline(obj);
         }
     }
 }

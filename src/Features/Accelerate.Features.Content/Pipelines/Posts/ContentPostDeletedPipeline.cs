@@ -4,6 +4,7 @@ using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -16,14 +17,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostDeletedPipeline : DataDeleteEventPipeline<ContentPostEntity>
     {
+        IContentPostService _contentPostService;
         IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         IEntityService<ContentPostEntity> _entityService;
         public ContentPostDeletedPipeline(
+            IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
             IEntityService<ContentPostEntity> entityService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
+            _contentPostService = contentPostService;
             _elasticService = elasticService;
             _entityService = entityService;
             _messageHub = messageHub;
@@ -39,18 +43,18 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var response = await _elasticService.DeleteDocument<ContentPostEntity>(args.Value.Id.ToString());
             if (!response.IsValidResponse) return;
 
-            // If a reply
-            if (args.Value.ParentId == null) return;
             await UpdateParentDocument(args);
         }
         private async Task UpdateParentDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+            var parentPost = _contentPostService.GetPostParent(args.Value);
+            // If a reply
+            if (parentPost == null || parentPost.ParentId == null) return;
+            var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(parentPost.ParentId.ToString());
             var parentDoc = parentResponse.Source;
             if (!parentResponse.IsValidResponse || parentDoc == null) return;
             // Update reply count
-            var replies = ContentPostUtilities.GetReplies(_entityService, args);
-            parentDoc.Replies = replies ?? 0;
+            parentDoc.Replies = _contentPostService.GetReplyCount(parentPost.ParentId.GetValueOrDefault());
             // Update threads
             if (parentDoc.UserId == args.Value.UserId)
             {

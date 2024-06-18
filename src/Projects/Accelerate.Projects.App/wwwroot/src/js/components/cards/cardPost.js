@@ -1,6 +1,6 @@
 const defaults = {}
 import { mxCardPost } from '/src/js/mixins/index.js';
-import { header, content, media, quotes, pagination, footer } from './shared.js';
+import { header, content, media, quotes, link, pagination, footer } from './shared.js';
 export default function (data) {
     return {
         // mixins
@@ -14,6 +14,7 @@ export default function (data) {
             this.load(this.data)
         },
         get selectedPost() {
+            return this.item;
             return this.mxCardPost_thread[this.currentPage] || {}
         },
         get totalAgrees() {
@@ -35,19 +36,21 @@ export default function (data) {
         load(data) {
             const html = `
             <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
+               
+                ${header()}
                 <div class="content">
-                    ${header()}
-
                     ${content()}
-
-                    ${media()}
-                     
-                    ${quotes()}  
-
-                    ${pagination()}
-                    
-                    ${footer()}
                 </div>
+                ${media()}
+                     
+                ${quotes()}  
+
+                ${pagination()}
+
+                ${link()}  
+                    
+                ${footer()}
+               
             </article>
         `
             this.html = html;

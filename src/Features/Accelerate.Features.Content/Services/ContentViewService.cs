@@ -166,6 +166,9 @@ namespace Accelerate.Features.Content.Services
             var model = new ContentSubmitForm()
             {
                 //FixTop = true,
+                UserId = user.Id,
+                SearchUsersUrl = "/api/accountsearch/users",
+                FetchMetadataUrl = "/api/contentpost/metadata",
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
@@ -189,8 +192,35 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name= "Mentions",
+                        FieldType = FormFieldTypes.input,
+                        Class = "flat",
+                        Placeholder = "Mentions",
+                        IsArray = true,
+                        Autocomplete = null,
+                        Multiple = true,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Disabled = true,
+                        Hidden = true,
+                        Helper = "",
+                    },
+                    new FormField()
+                    {
+                        Name= "Settings",
+                        FieldType = FormFieldTypes.input,
+                        Class = "flat",
+                        Placeholder = "Settings",
+                        Autocomplete = null,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Hidden = true,
+                    },
+                    new FormField()
+                    {
                         Name = "Content",
                         FieldType = FormFieldTypes.basicWysiwyg,
+                        Event = "form:input:user",
                         Placeholder = "Post an update",
                         ClearOnSubmit = true,
                         AriaInvalid = false
@@ -203,6 +233,16 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         Value = ContentPostEntityStatus.Public,
+                    },
+                    new FormField()
+                    {
+                        Name = "Link",
+                        FieldType = FormFieldTypes.link,
+                        Placeholder = "Post a reply",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = true,
+                        Disabled = true
                     },
                     new FormField()
                     {
@@ -295,7 +335,9 @@ namespace Accelerate.Features.Content.Services
             parentIdThread.Add(post.Id);
             var model = new ContentSubmitForm()
             {
-                //FixTop = true,
+                UserId = user.Id,
+                SearchUsersUrl = "/api/accountsearch/users",
+                FetchMetadataUrl = "/api/contentpost/metadata",
                 PostbackUrl = "/api/contentpost/mixed",
                 Type = PostbackType.POST,
                 Event = "post:created",
@@ -315,6 +357,21 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name= "Mentions",
+                        FieldType = FormFieldTypes.input,
+                        Class = "flat",
+                        Placeholder = "Mentions",
+                        IsArray = true,
+                        Autocomplete = null,
+                        Multiple = true,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Disabled = true,
+                        Hidden = true,
+                        Helper = "",
+                    },
+                    new FormField()
+                    {
                         Name= "QuotedItems",
                         FieldType = FormFieldTypes.quotes,
                         Class = "flat",
@@ -329,11 +386,34 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
+                        Name= "Settings",
+                        FieldType = FormFieldTypes.input,
+                        Class = "flat",
+                        Placeholder = "Settings",
+                        Autocomplete = null,
+                        ClearOnSubmit = true,
+                        AriaInvalid = true,
+                        Hidden = true,
+                    },
+                    new FormField()
+                    {
                         Name = "Content",
                         FieldType = FormFieldTypes.wysiwyg,
+                        Event = "form:input:user",
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
-                        AriaInvalid = false
+                        AriaInvalid = false,
+                        Max = 1024,
+                    },
+                    new FormField()
+                    {
+                        Name = "Link",
+                        FieldType = FormFieldTypes.link,
+                        Placeholder = "Post a reply",
+                        ClearOnSubmit = true,
+                        AriaInvalid = false,
+                        Hidden = true,
+                        Disabled = true
                     },
                     new FormField()
                     {

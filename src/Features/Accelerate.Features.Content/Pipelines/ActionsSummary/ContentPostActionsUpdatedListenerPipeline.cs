@@ -21,9 +21,9 @@ using System;
 
 namespace Accelerate.Features.Content.Pipelines.ActionsSummary
 {
-    public class ContentPostActionsSummaryListenerPipeline : DataEventPipeline<ContentPostActionsEntity>
+    public class ContentPostActionsUpdatedListenerPipeline : DataUpdateEventPipeline<ContentPostActionsEntity>
     {
-        public ContentPostActionsSummaryListenerPipeline()
+        public ContentPostActionsUpdatedListenerPipeline()
         {
             // run summary update of action event
 

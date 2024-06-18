@@ -19,7 +19,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using MassTransit.DependencyInjection;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Accelerate.Features.Content.EventBus;
+using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Content.Hydrators;
 

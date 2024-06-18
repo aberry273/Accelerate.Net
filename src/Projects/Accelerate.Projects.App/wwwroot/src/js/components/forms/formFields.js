@@ -7,6 +7,7 @@ import quotes from './fields/quotes.js'
 import wysiwyg from './fields/wysiwyg.js'
 import basicWysiwyg from './fields/basicWysiwyg.js'
 import chips from './fields/chips.js'
+import link from './fields/link.js'
 import mxResponsive from '/src/js/mixins/mxResponsive.js';
 
 export default function (data) {
@@ -29,6 +30,7 @@ export default function (data) {
       if(field.type == 'select') return select(field)
       if(field.type == 'list') return list(field)
       if(field.type == 'chips') return chips(field)
+      if (field.type == 'link') return link(field)
       if(field.type == 'quotes') return quotes(field)
       if(field.type == 'wysiwyg') return wysiwyg(field)
       if(field.type == 'basicWysiwyg') return basicWysiwyg(field)

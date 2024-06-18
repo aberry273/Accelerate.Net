@@ -104,8 +104,8 @@ namespace Accelerate.Foundations.Content.Services
             //TODO: remove
             Query.ItemsPerPage = 100;
 
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
 
             var results = await Search(elasticQuery, skip, take);
@@ -137,8 +137,8 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query)
         {
             var elasticQuery = GetUserActionsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse || !results.IsSuccess())
@@ -167,8 +167,8 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query)
         {
             var elasticQuery = GetChannelsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse || !results.IsSuccess())

@@ -1,13 +1,27 @@
+
+
 export default function (data) {
     return ` 
-        <div x-data="{
-            showEditor: true,
-            rawValue: '',
-            processedValue: '',
-            timer: null,
+        <div display="position:relative;" x-data="{
+            linkEvent: 'form:input:link',
+            showRender: false,
             init() {
-                this.rawValue = field.value || '';
-                this.processedValue = _mxForm_ProcessBasicHtml(this.rawValue);
+                //On aclDropDown user selecting an option
+                this.$events.on('editor-wisyiwyg-plaintext', (val) => {
+                    field.value = val;
+                })
+                this.$events.on(mxCardPost.formatsEvent, (val) => {
+                    field.items = val;
+                })
+            },  
+            addLinkCard(text) {
+                this.showRender = true;
+                const hasUrl = _mxForm_ValueHasUrl(text)
+                if (hasUrl) {
+                    const value = _mxForm_ValueGetUrl(text);
+                    _mxEvents_Emit(this.linkEvent, value)
+                } 
+               this.showRender = true; 
             },
         }">
             <span x-text="field.label"></span>
@@ -26,36 +40,13 @@ export default function (data) {
                 :autocomplete="field.autocomplete"
                 :aria-invalid="field.ariaInvalid == true"
                 :aria-describedby="field.id || field.name+i"
-                ></input>
-            <div
-                x-show="showEditor"
-                @click.outside="() => {
-                    _mxForm_OnFieldChange(field, processedValue);
-                }"
-                @keyup="($event) => {
-                    clearTimeout(timer)
-                    //if (!parsed) return;
-                    const parsed = _mxForm_ProcessBasicHtml($event.target.innerText);
-                    processedValue = parsed;
-                    timer = setTimeout(function() {
-                        if(processedValue) _mxForm_OnFieldChange(field, processedValue);
-                    }, 750);
-                }"
-                contenteditable
-                class="wysiwyg"
-                x-html="rawValue">
-            </div>
-
-            <div
-                @click="showEditor = !showEditor"
-                x-show="!showEditor"
-                class="wysiwyg"
-                x-html="processedValue"></div>
-
-            <small
-                x-show="field.helper != null && field.helper.length > 0"
-                :id="field.id || field.name+i"  x-text="field.helper"></small>
+                ></textarea>
+          
+            <div x-data="aclContentEditorWysiwyg({
+                searchEvent: field.event,
+                showRichText: false,
+                elementsEvent: mxCardPost_formatsEvent
+            })"></div>
         </div>
-      
     `
 }

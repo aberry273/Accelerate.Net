@@ -1,16 +1,24 @@
 ﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
 <nav x-data="{fixed: false}" class="topnav article">
-<div  class="container">
-    <nav style="height:50px" :class="fixed ? 'show' : 'hide'"><ul></ul></nav>
+<div class="container">
+    <nav style="height:66px" x-show="fixed"><ul></ul></nav>
 
     <!-- Header -->
     @if (Model.Authenticated)
     {
-
             <nav :class="fixed ? 'floating container topnav' : 'topnav'"
              :style="fixed ?  'padding-left:0px; width: 91.45%; padding: 0px 8px;' : 'padding: 0px 8px;'"
              @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
-            <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+            <ul>
+                <li>
+                    <strong>
+                        <a href="@Model.Href" style="text-decoration:none;">
+                            <img src="@Model.Logo" style="max-width:35px" />
+                            @Model.Title
+                        </a>
+                    </strong>
+                </li>
+            </ul>
             <ul>
                 @foreach(var link in Model.Items)
                 {

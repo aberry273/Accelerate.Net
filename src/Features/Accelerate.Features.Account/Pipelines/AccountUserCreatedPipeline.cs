@@ -33,9 +33,14 @@ namespace Accelerate.Features.Account.Pipelines
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new AccountUserDocument()
             {
+                CreatedOn = args.Value.CreatedOn,
+                UpdatedOn = args.Value.UpdatedOn,
                 Domain = args.Value.Domain,
-                Id = args.Value.Id.ToString(),
-                Username = args.Value.UserName
+                Id = args.Value.Id,
+                Username = args.Value.UserName,
+                Firstname = args.Value?.AccountProfile?.Firstname,
+                Lastname = args.Value?.AccountProfile?.Lastname,
+                Image = args.Value?.AccountProfile?.Image,
             };
             await _elasticService.Index(indexModel);
         }

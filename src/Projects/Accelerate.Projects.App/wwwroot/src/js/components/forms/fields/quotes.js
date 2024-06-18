@@ -21,14 +21,16 @@ export default function (data) {
                             <i><strong x-text="item.preview"></strong></i>
                         
                         </sup>
+                        <!--
                             <label>
                                 <input name="Partial" type="checkbox" role="switch" checked x-model="item.partial" :value="item.partial" />
                                 Partial quote
                             </label>
+                            -->
                         </div>
                     </summary>
                   
-
+                    <!--
                     <div x-show="item.partial">
                         <div>
                             <span>Quote</span>
@@ -48,6 +50,7 @@ export default function (data) {
                                 ></input>
                         </div>
                     </div>
+                    -->
                 </div> 
             </template>
         

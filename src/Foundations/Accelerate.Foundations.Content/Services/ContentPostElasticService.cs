@@ -113,8 +113,8 @@ namespace Accelerate.Foundations.Content.Services
             var elasticQuery = BuildRelatedSearchQuery(channel, query);
             //TODO: remove
 
-            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = itemsPerPage > 0 ? itemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * page;
 
             var model = new ContentSearchResults();
@@ -131,8 +131,8 @@ namespace Accelerate.Foundations.Content.Services
             var elasticQuery = BuildUserSearchQuery(userId);
             //TODO: remove
 
-            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = itemsPerPage > 0 ? itemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * page;
 
             var model = new ContentSearchResults();
@@ -149,8 +149,8 @@ namespace Accelerate.Foundations.Content.Services
             //TODO: remove
             Query.ItemsPerPage = 100;
 
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
 
             var model = new ContentSearchResults();
@@ -200,7 +200,7 @@ namespace Accelerate.Foundations.Content.Services
             var item = response.Source;
             var elasticQuery = BuildAscendantsSearchQuery(item);
             var results = await SearchPosts(Query, elasticQuery);
-            results.Posts = results.Posts.OrderBy(x => x.CreatedOn.GetValueOrDefault());
+            results.Posts = results.Posts.OrderBy(x => x.CreatedOn);
 
             _parentThreadCache.Add(postId, results);
 
@@ -230,8 +230,8 @@ namespace Accelerate.Foundations.Content.Services
         #region Quotes
         public async Task<List<ContentPostDocument>> SearchPostQuotes(RequestQuery Query, List<string> ids)
         {
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var searchquery = BuildPostQuotesSearchQuery(Query, ids);
             var results = await this.Search(searchquery, skip, take);
@@ -255,8 +255,8 @@ namespace Accelerate.Foundations.Content.Services
 
         public async Task<List<ContentPostActionsDocument>> SearchPostActions(RequestQuery Query, List<string> ids)
         {
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var searchquery = BuildPostActionsSearchQuery(Query, ids);
             var results = await _actionSearchService.Search<ContentPostActionsDocument>(searchquery, skip, take);
@@ -279,8 +279,8 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query)
         {
             var elasticQuery = GetUserActionsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse || !results.IsSuccess())
@@ -309,8 +309,8 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query)
         {
             var elasticQuery = GetChannelsQuery(Query);
-            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : Foundations.Content.Constants.Search.DefaultPerPage;
-            if (take > Foundations.Content.Constants.Search.MaxQueryable) take = Foundations.Content.Constants.Search.MaxQueryable;
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
             int skip = take * Query.Page;
             var results = await Search(elasticQuery, skip, take);
             if (!results.IsValidResponse || !results.IsSuccess())

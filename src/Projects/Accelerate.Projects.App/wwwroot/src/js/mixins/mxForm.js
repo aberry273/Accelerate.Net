@@ -113,6 +113,15 @@ export default function (data) {
 		_mxForm_ProcessBasicHtml(value) { 
 			return value;
 		},
+		_mxForm_ValueHasUrl(value) {
+			const reg = value.match(/(!<a[^>]+>)|(https?:\/\/[^\s]+)(?!<\/a>)/gi);
+			return reg != null && reg.length > 0
+		},
+		_mxForm_ValueGetUrl(value) {
+			if (!value) return '';
+			const reg = value.match(/(!<a[^>]+>)|(https?:\/\/[^\s]+)(?!<\/a>)/gi);
+			return reg[0]
+		},
 		_mxForm_ProcessHtml(value) {
 			// text
 			value = value.replace(/[\n]{2}/, '</p><p>');

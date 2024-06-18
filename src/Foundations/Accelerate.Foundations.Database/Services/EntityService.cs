@@ -45,8 +45,7 @@ namespace Accelerate.Foundations.Database.Services
             try
             {
                 _dbContext.RemoveRange(entities);
-                _dbContext.ChangeTracker.DetectChanges();
-                return await _dbContext.SaveChangesAsync();
+                return _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -88,8 +87,7 @@ namespace Accelerate.Foundations.Database.Services
             try
             {
                 _dbContext.UpdateRange(entities);
-                _dbContext.ChangeTracker.DetectChanges();
-                return await _dbContext.SaveChangesAsync();
+                return _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -147,8 +145,7 @@ namespace Accelerate.Foundations.Database.Services
             try
             {
                 _dbContext.AddRange(entities);
-                _dbContext.ChangeTracker.DetectChanges();
-                return await _dbContext.SaveChangesAsync();
+                return _dbContext.SaveChanges();
             }
             catch (Exception ex)
             {

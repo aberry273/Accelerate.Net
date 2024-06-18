@@ -311,6 +311,14 @@ a.avatar, button.avatar, .dropdown.avatar {
 nav details.dropdown.avatar summary::after {
     display: none;
 }
+nav details.dropdown.simple summary::after {
+    display: none;
+}
+nav details.dropdown.flat {
+    height:initial;
+    background-color:none;
+    border-color: none;
+}
 
 a.avatar img, button.avatar img, nav details.dropdown.avatar img {
     border-top-left-radius: 50% 50%;
@@ -532,6 +540,11 @@ button.tab, a.tab {
         box-shadow: transparent;
     }
 /*DROPDOWN*/
+.dropdownMenu {
+    z-index: 11111;
+    position: absolute;
+    min-width: 250px;
+}
 details.dropdown.no-chevron summary::after, details.dropdown.no-chevron > a::after, details.dropdown.no-chevron > button::after {
     display: none;
 }
@@ -554,8 +567,65 @@ nav details.dropdown summary.flat:not([role]) {
     background-color: RGBA(0,0,0, 0.25);
 }
 /*CARDS*/
+
+article.floating {
+    position: fixed;
+    top: 0;
+    z-index: 11;
+}
+article a {
+    text-decoration:none;
+}
+article .wysiwyg span {
+    cursor: pointer;
+    --pico-color: var(--pico-primary);
+    --pico-background-color: rgba(0,0,0,0);
+    --pico-underline: var(--pico-primary-underline);
+    outline: none;
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
+    text-decoration: var(--pico-text-decoration);
+    text-decoration-color: var(--pico-underline);
+    text-underline-offset: .125em;
+    transition: background-color var(--pico-transition), color var(--pico-transition), box-shadow var(--pico-transition);
+    transition: background-color var(--pico-transition), color var(--pico-transition), text-decoration var(--pico-transition), box-shadow var(--pico-transition);
+    transition: background-color var(--pico-transition), color var(--pico-transition), text-decoration var(--pico-transition), box-shadow var(--pico-transition);
+}
+
+article span.item {
+    cursor: pointer;
+    --pico-background-color: rgba(0,0,0,0);
+    --pico-underline: var(--pico-primary-underline);
+    outline: none;
+    background-color: var(--pico-background-color);
+    color: var(--pico-color);
+    text-decoration: var(--pico-text-decoration);
+    text-decoration-color: var(--pico-underline);
+    text-underline-offset: .125em;
+    transition: background-color var(--pico-transition), color var(--pico-transition), box-shadow var(--pico-transition);
+    transition: background-color var(--pico-transition), color var(--pico-transition), text-decoration var(--pico-transition), box-shadow var(--pico-transition);
+    transition: background-color var(--pico-transition), color var(--pico-transition), text-decoration var(--pico-transition), box-shadow var(--pico-transition);
+}
+article span.u {
+    --pico-color: var(--pico-secondary);
+    font-weight: 600;
+}
+article span.u::before {
+    content: "\0040";
+}
+
+article span.p {
+    --pico-color: var(--pico-secondary);
+}
+
 .list article {
     margin-bottom: calc(var(--pico-block-spacing-vertical)*0.25);
+}
+article.link {
+    margin: 0px;
+    padding: 0 calc(var(--pico-block-spacing-vertical)*0.25);
+    box-shadow: none;
+    background-color: var(--pico-blockquote-border-color);
 }
 article.quote {
     margin: 0px;
@@ -611,6 +681,7 @@ article.dense ul {
     margin: 0;
     margin-bottom: 0;
     padding-left: 0;
+    padding-right: 0;
 }
 article.dense ul li {
     margin-bottom: 0;
@@ -852,18 +923,18 @@ input[name="Thread"] {
     height: auto
 }
 
-    .file-field img {
-        width: 250px;
-        height: auto
-    }
+.file-field img {
+    width: 250px;
+    height: auto
+}
 
-    .file-field i {
-        font-size: 32px;
-    }
+.file-field i {
+    font-size: 32px;
+}
 
-    .file-field article {
-        text-align: center;
-    }
+.file-field article {
+    text-align: center;
+}
 
 .file-picker {
     border: 1px solid #ccc;

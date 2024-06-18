@@ -2,6 +2,7 @@
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
@@ -12,13 +13,6 @@ namespace Accelerate.Features.Content.Pipelines.Actions
 {
     public static class ContentPostUtilities
     {
-        public static int? GetReplies(IEntityService<ContentPostEntity> entityService, IPipelineArgs<ContentPostEntity> args)
-        {
-            return entityService
-               .Find(x => x.ParentId == args.Value.ParentId && x.Type != ContentPostType.Page)
-               .GroupBy(g => 1)
-               .Select(x => x.Count())?.SingleOrDefault();
-        } 
         public static async Task SendWebsocketPostUpdate(IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, string userId, ContentPostDocument doc, DataRequestCompleteType type)
         {
             var payload = new WebsocketMessage<ContentPostDocument>()
@@ -33,16 +27,5 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
             await messageHubPosts.Clients.Clients(userConnections).SendMessage(userId, payload);
         }
-        public static async Task IndexOwnReplies(IElasticService<ContentPostDocument> elasticService, IEntityService<ContentPostEntity> entityService, IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, IPipelineArgs<ContentPostEntity> args)
-        {
-            // Get total replies
-            var parentResponse = await elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
-            if (!parentResponse.IsValidResponse) return;
-            var parentDoc = parentResponse.Source;
-            var replies = ContentPostUtilities.GetReplies(entityService, args);
-            parentDoc.Replies = replies ?? 0;
-            await elasticService.UpdateDocument<ContentPostDocument>(parentDoc, parentDoc.Id.ToString());
-            //SendWebsocketPostUpdate(messageHubPosts, parentDoc.UserId.ToString(), parentDoc, DataRequestCompleteType.Updated);
-        } 
     }
 }

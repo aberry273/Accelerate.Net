@@ -14,19 +14,23 @@ using Accelerate.Foundations.Websockets.Models;
 using Elastic.Clients.Elasticsearch.Ingest;
 using Accelerate.Foundations.Content.Hydrators;
 using Microsoft.AspNetCore.SignalR;
+using Accelerate.Foundations.Content.Services;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostUpdatedPipeline : DataUpdateEventPipeline<ContentPostEntity>
     {
+        IContentPostService _contentPostService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         public ContentPostUpdatedPipeline(
+            IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
             IElasticService<AccountUserDocument> accountElasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
+            _contentPostService = contentPostService;
             _elasticService = elasticService;
             _accountElasticService = accountElasticService;
             _messageHub = messageHub;
@@ -50,8 +54,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 
             args.Value.Hydrate(indexModel, profile);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
-            // If a reply
-            if (args.Value.ParentId == null) return;
+           
             await UpdateParentDocument(indexModel, args);
         }
 
@@ -59,7 +62,10 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             try
             {
-                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(args.Value.ParentId.ToString());
+                var parentPost = _contentPostService.GetPostParent(args.Value);
+                // If a reply
+                if (parentPost == null || parentPost.ParentId == null) return;
+                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(parentPost.ParentId.ToString());
                 var parentDoc = parentResponse.Source;
                 if (!parentResponse.IsValidResponse || parentDoc == null) return;
 

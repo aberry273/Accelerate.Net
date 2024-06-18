@@ -18,6 +18,7 @@ namespace Accelerate.Foundations.Common.Models.Views
     }
     public class NavigationBar : NavigationGroup
     {
+        public string Logo { get; set; }
 
         [JsonProperty("href")]
         public string Href { get; set; }

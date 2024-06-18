@@ -11,26 +11,6 @@ namespace Accelerate.Foundations.EventPipelines
 {
     public static class Startup
     {
-        public static void ConfigureMassTransitListenerServices<T, B>(IServiceCollection services) where T : IBaseEntity where B : class, IDataBus<T>
-        {
-            services.AddMassTransit<B>(x =>
-            {
-                // Posts
-                x.AddConsumer<EventListenerConsumer<T, B>>();
-                // Entities
-
-
-                x.UsingInMemory((context, cfg) =>
-                {
-                    cfg.ReceiveEndpoint("event-listener", e =>
-                    {
-                        // Content Posts
-                        e.ConfigureConsumer<DataCreateConsumer<T, B>>(context);
-                        e.ConfigureConsumer<EventListenerConsumer<T, B>>(context);
-                    });
-                });
-            });
-        }
         public static void ConfigureMassTransitServices<T, B>(IServiceCollection services) where T : IBaseEntity where B : class, IDataBus<T>
         {
             services.AddMassTransit<B>(x =>

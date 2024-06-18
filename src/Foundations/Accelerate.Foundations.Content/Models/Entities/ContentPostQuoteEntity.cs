@@ -14,6 +14,8 @@ namespace Accelerate.Foundations.Content.Models.Entities
     public class ContentPostQuoteEntity : BaseEntity
     {
         public Guid QuotedContentPostId { get; set; }
+        [NotMapped]
+        public ContentPostEntity ContentPost { get; set; }
         public Guid ContentPostId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }

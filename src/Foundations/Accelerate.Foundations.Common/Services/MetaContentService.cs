@@ -132,6 +132,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new NavigationBar()
             {
+                Logo = "/src/images/logo.png",
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
                 Subtitle = "The new bird in town",
@@ -156,6 +157,7 @@ namespace Accelerate.Foundations.Common.Services
             return new NavigationBar()
             {
                 Authenticated = true,
+                Logo = "/src/images/logo.png",
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
                 Subtitle = "The new bird in town",

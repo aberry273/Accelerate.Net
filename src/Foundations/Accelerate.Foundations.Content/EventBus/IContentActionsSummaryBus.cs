@@ -2,9 +2,9 @@
 using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.EventPipelines.EventBus;
 
-namespace Accelerate.Features.Content.EventBus
+namespace Accelerate.Foundations.Content.EventBus
 {
-    public interface IContentPostBus: IDataBus<ContentPostEntity>
+    public interface IContentActionsSummaryBus: IDataBus<ContentPostActionsSummaryEntity>
     {
     }
 }

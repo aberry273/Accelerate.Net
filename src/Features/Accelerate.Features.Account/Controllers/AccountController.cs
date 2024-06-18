@@ -426,51 +426,76 @@ namespace Accelerate.Features.Account.Controllers
         public async Task<IActionResult> Register(RegisterForm request, string returnUrl = null)
         {
             var viewModel = _accountViewService.GetRegisterPage(request.Username, request.Email);
+
+            var existingUserName = await _userManager.FindByNameAsync(request.Username);
+            if(existingUserName != null)
+            {
+                viewModel.Form.Response = "A user with that username already exists";
+                return View(_accountFormRazorFile, viewModel);
+            }
+            var existingEmail = await _userManager.FindByEmailAsync(request.Email);
+            if (existingEmail != null)
+            {
+                viewModel.Form.Response = "A user with that email already exists";
+                return View(_accountFormRazorFile, viewModel);
+            }
+
+            var user = new AccountUser { UserName = request.Username, Email = request.Email, Domain = "Public" };
+            //Create user
             try
             {
                 ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
                 {
-                    var user = new AccountUser { UserName = request.Username, Email = request.Email, Domain = "Public" };
+                    
                     var result = await _userManager.CreateAsync(user, request.Password);
                     if (result.Succeeded)
                     {
                         // Create profile
                         var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
                         // Get user and update with profile id
-                        var accountUser = await _userManager.FindByNameAsync(request.Username);
-                        accountUser.AccountProfileId = profileId.GetValueOrDefault();
-                        await _userManager.UpdateAsync(accountUser);
-
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-                        //TODO: Move this to the pipeline
-                        var callbackUrl = EmailConfirmationLink(user.UserName, code, Request.Scheme);
-                        await _emailSender.SendConfirmationLinkAsync(user, user.Email, callbackUrl);
-
-                        await _signInManager.PasswordSignInAsync(user, request.Password, isPersistent: false, lockoutOnFailure: false);
-                        //Run pipeline
-                        await PostCreateSteps(user);
-                        StaticLoggingService.Log("User created a new account with password.");
-
-                        return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                        user = await _userManager.FindByNameAsync(request.Username);
+                        user.AccountProfileId = profileId.GetValueOrDefault();
+                        await _userManager.UpdateAsync(user); 
                     }
-                    viewModel.Form.Response = result.Errors.FirstOrDefault().Description;
-                    StaticLoggingService.LogError(result.Errors.FirstOrDefault().Description);
+                    else if(result.Errors != null && result.Errors.Any())
+                    {
+                        viewModel.Form.Response = result.Errors.FirstOrDefault().Description;
+                        StaticLoggingService.LogError(result.Errors.FirstOrDefault().Description);
+                    }
                 }
                 else
                 {
                     var errors = ModelState.Select(x => x.Value?.Errors?.FirstOrDefault()?.ErrorMessage);
                     viewModel.Form.Response = string.Join(",", errors);
                 }
-                // If execution got this far, something failed, redisplay the form.
-                return View(_accountFormRazorFile, viewModel);
             }
             catch (Exception ex)
             {
                 viewModel.Form.Response = "There was an error processing your request";
+                StaticLoggingService.LogError(ex);
                 return View(_accountFormRazorFile, viewModel);
             }
+
+            //Send Email
+            try
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                //TODO: Move this to the pipeline
+                var callbackUrl = EmailConfirmationLink(user.UserName, code, Request.Scheme);
+                await _emailSender.SendConfirmationLinkAsync(user, user.Email, callbackUrl);
+            }
+            catch(Exception ex)
+            {
+                viewModel.Form.Response = "There was an send you the confirmation email, we will try again shortly";
+                StaticLoggingService.LogError(ex);
+            }
+            await _signInManager.PasswordSignInAsync(user, request.Password, isPersistent: false, lockoutOnFailure: false);
+            //Run pipeline
+            await PostCreateSteps(user);
+            StaticLoggingService.Log("User created a new account with password.");
+
+            return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
 
         }
         #endregion

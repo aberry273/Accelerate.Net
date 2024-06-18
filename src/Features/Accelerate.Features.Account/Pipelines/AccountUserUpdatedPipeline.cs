@@ -34,9 +34,12 @@ namespace Accelerate.Features.Content.Pipelines
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new AccountUserDocument()
             {
+                CreatedOn = args.Value.CreatedOn,
+                UpdatedOn = args.Value.UpdatedOn,
                 Domain = args.Value.Domain,
-                Id = args.Value.Id.ToString(),
+                Id = args.Value.Id,
                 Username = args.Value.UserName,
+
                 Image = profile.Image,
                 Firstname = profile.Firstname,
                 Lastname = profile.Lastname,

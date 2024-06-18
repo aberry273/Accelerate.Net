@@ -43,13 +43,16 @@ namespace Accelerate.Foundations.Account
             // SERVICES
             services.AddTransient<IEntityService<AccountProfile>, EntityService<AccountProfile>>();
 
-            services.AddTransient<IElasticService<AccountUserDocument>, AccountElasticService>();
+            services.AddTransient<IAccountUserSearchService, AccountUserSearchService>();
+
+            services.AddTransient<IElasticService<AccountUserDocument>, AccountUserSearchService>();
             // services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
 
             // CONFIGURATION
             services.AddIdentity<AccountUser, AccountRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
+                options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<AccountDbContext>()
                 .AddDefaultTokenProviders();

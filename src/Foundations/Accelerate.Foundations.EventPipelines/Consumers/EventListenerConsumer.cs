@@ -13,13 +13,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Accelerate.Foundations.EventPipelines.Consumers
 { 
-    public class EventListenerConsumer<T, B> : IConsumer<DataContract<T>> where B : IDataBus<T>
+    public class EventListenerConsumer<T, E, B> : IConsumer<DataContract<T>> where B : IDataBus<T>
     {
-        readonly ILogger<EventListenerConsumer<T, B>> _logger;
+        readonly ILogger<EventListenerConsumer<T, E, B>> _logger;
         readonly Bind<B, IPublishEndpoint> _publishEndpoint;
         public EventListenerConsumer(
             Bind<B, IPublishEndpoint> publishEndpoint,
-            ILogger<EventListenerConsumer<T, B>> logger)
+            ILogger<EventListenerConsumer<T, E, B>> logger)
         {
             _logger = logger;
             _publishEndpoint = publishEndpoint;
@@ -40,7 +40,7 @@ namespace Accelerate.Foundations.EventPipelines.Consumers
             catch (Exception ex)
             {
 
-                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                Foundations.Common.Services.StaticLoggingService.LogError($"EventListenerConsumer [Finished]]");
             }
             Foundations.Common.Services.StaticLoggingService.Log($"EventListenerConsumer [Finished]]");
         }

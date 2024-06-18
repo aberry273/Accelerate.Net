@@ -10,12 +10,13 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public enum FormFieldTypes
     {
-        input, email, textarea, wysiwyg, basicWysiwyg, number, password, file, list, quotes, select, chips
+        input, email, textarea, wysiwyg, basicWysiwyg, link, number, password, file, list, quotes, select, chips
     }
     public class FormField
     {
         public string Id { get; set; }
         public string Label { get; set; }
+        public string Event { get; set; }
         public string Name { get; set; }
         public string Type => Enum.GetName(FieldType);
         [JsonIgnore]
@@ -30,6 +31,8 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public string? Icon { get; set; }
         public string? Class { get; set; }
         public string Placeholder { get; set; }
+        public int? Min { get; set; }
+        public int? Max { get; set; }
         public bool? Autocomplete { get; set; }
         public bool? AriaInvalid { get; set; }
         public bool? ClearOnSubmit { get; set; }

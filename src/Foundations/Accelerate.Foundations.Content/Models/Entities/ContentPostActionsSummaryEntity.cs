@@ -16,8 +16,6 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public virtual ContentPostEntity? ContentPost { get; set; }
         [ForeignKey("ContentPost")]
         public Guid ContentPostId { get; set; }
-        [ForeignKey("User")]
-        public Guid UserId { get; set; }
         /// <summary>
         /// Post replies set this as the root node
         /// </summary>

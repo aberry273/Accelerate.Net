@@ -8,6 +8,10 @@ namespace Accelerate.Foundations.Account
 {
     public struct Constants
     {
+        public struct Fields
+        {
+            public const string Username = "username";
+        }
         public struct Config
         {
             public const string ConfigName = "AccountConfiguration";

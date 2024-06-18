@@ -19,7 +19,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using MassTransit.DependencyInjection;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
-using Accelerate.Features.Content.EventBus;
+using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Content.Hydrators;
 
@@ -51,7 +51,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
                 IndexDocument,
-                UpdatePostIndex,
+                //UpdatePostIndex,
                // PublishPostUpdatedMessage
             };
             _processors = new List<PipelineProcessor<ContentPostActionsEntity>>()

@@ -18,6 +18,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Content.Hydrators;
 using System;
+using Accelerate.Foundations.Content.EventBus;
+using MassTransit.DependencyInjection;
+using MassTransit;
+using Accelerate.Foundations.EventPipelines.Models.Contracts;
 
 namespace Accelerate.Features.Content.Pipelines.Actions
 {
@@ -44,7 +48,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
                 IndexDocument,
-                UpdatePostIndex,
+                //UpdatePostIndex,
             };
             _processors = new List<PipelineProcessor<ContentPostActionsEntity>>()
             {
@@ -75,7 +79,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
 
             // Send websocket request
             await ContentPostUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
-        } 
+        }
           
 
         // SYNC PROCESSORS
