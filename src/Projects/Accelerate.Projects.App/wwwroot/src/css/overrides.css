@@ -311,13 +311,26 @@ a.avatar, button.avatar, .dropdown.avatar {
 nav details.dropdown.avatar summary::after {
     display: none;
 }
-nav details.dropdown.simple summary::after {
+details.dropdown.simple summary::after {
     display: none;
 }
-nav details.dropdown.flat {
-    height:initial;
-    background-color:none;
+details.dropdown.flat {
+    background-color: none;
     border-color: none;
+
+}
+details.dropdown.small {
+    margin: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* .25);
+    padding: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* .25);
+}
+details [role=button].small {
+    height: 100%;
+    min-height: 100%;
+    display: grid;
+    align-items: center;
+    text-align: center;
+    margin: 0 calc(var(--pico-block-spacing-horizontal)* .25);
+    padding: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* .25);
 }
 
 a.avatar img, button.avatar img, nav details.dropdown.avatar img {

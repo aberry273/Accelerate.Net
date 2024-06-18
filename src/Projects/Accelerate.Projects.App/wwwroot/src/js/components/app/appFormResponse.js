@@ -361,9 +361,21 @@ export default function (data) {
                         <button class="small secondary material-icons flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
                         <button class="small secondary material-icons flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
 
-                        <!--Tags-->
-                        <button x-show="showTags == true" class="small secondary material-icons flat" @click="hideTagField(false)" :disabled="loading">sell</button>
-                        <button x-show="showTags == false" class="small secondary material-icons flat" @click="hideTagField(true)" :disabled="loading">cancel</button>
+                        
+                        <details class="dropdown flat simple" style="margin-top:0px">
+                            <summary role="button" class="material-icons secondary flat small">more_horiz</summary>
+                            <ul dir="ltr" style="text-align:left">
+                                <li x-show="showTags == true" @click="hideTagField(false)"><a href="#">
+                                    <i class="material-icons flat small">sell</i>
+                                    Tag
+                                </a></li>
+                                <li x-show="showTags == false" @click="hideTagField(true)"><a href="#">
+                                    <i class="material-icons flat small">cancel</i>
+                                    Tag
+                                </a></li>
+                            </ul>
+                        </details>
+
 
                         <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
                         <button class="flat primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>

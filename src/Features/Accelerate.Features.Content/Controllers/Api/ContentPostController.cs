@@ -265,7 +265,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
-                var entity = await _postService.Create(obj);
+                var entity = await _postService.CreateWithPipeline(obj);
 
                 if (entity == null)
                 {
