@@ -22,7 +22,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public Guid? UserId { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Hidden;
+        public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Private;
         public string Name { get; set; }
         public string? Description { get; set; }
         // For personal classification of the user
