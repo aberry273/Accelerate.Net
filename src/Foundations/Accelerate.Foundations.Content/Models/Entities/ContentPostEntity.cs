@@ -25,7 +25,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public Guid? UserId { get; set; }
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Hidden;
+        public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Private;
         public string? Content { get; set; }
         [NotMapped]
         public virtual ContentPostTaxonomyEntity? Taxonomy { get; set; }
