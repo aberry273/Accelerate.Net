@@ -15,6 +15,7 @@ using Elastic.Clients.Elasticsearch.Aggregations;
 using Microsoft.IdentityModel.Tokens;
 using System.Drawing;
 using System.Security.Principal;
+using System.Threading.Channels;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -192,7 +193,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name= "Mentions",
+                        Name= "MentionItems",
                         FieldType = FormFieldTypes.input,
                         Class = "flat",
                         Placeholder = "Mentions",
@@ -207,13 +208,15 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name= "Settings",
-                        FieldType = FormFieldTypes.input,
+                        Name = "CharLimit",
+                        FieldType = FormFieldTypes.number,
                         Class = "flat",
-                        Placeholder = "Settings",
+                        Placeholder = "Character Limit",
                         Autocomplete = null,
                         ClearOnSubmit = true,
                         AriaInvalid = true,
+                        Min = 1,
+                        Max = 1028,
                         Hidden = true,
                     },
                     new FormField()
@@ -228,15 +231,20 @@ namespace Accelerate.Features.Content.Services
                     new FormField()
                     {
                         Name = "Status",
-                        FieldType = FormFieldTypes.input,
+                        FieldType = FormFieldTypes.select,
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = ContentPostEntityStatus.Public,
+                        Items = new List<string>()
+                        {
+                            Enum.GetName(ContentPostEntityStatus.Private),
+                            Enum.GetName(ContentPostEntityStatus.Public)
+                        },
+                        Value = Enum.GetName(ContentPostEntityStatus.Public),
                     },
                     new FormField()
                     {
-                        Name = "Link",
+                        Name = "LinkValue",
                         FieldType = FormFieldTypes.link,
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
@@ -248,7 +256,7 @@ namespace Accelerate.Features.Content.Services
                     {
                         Name = "Category",
                         FieldType = FormFieldTypes.input,
-                        Placeholder = "Add tag",
+                        Placeholder = "Category",
                         ClearOnSubmit = false,
                         AriaInvalid = false,
                         Hidden = true,
@@ -357,7 +365,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name= "Mentions",
+                        Name= "MentionItems",
                         FieldType = FormFieldTypes.input,
                         Class = "flat",
                         Placeholder = "Mentions",
@@ -386,12 +394,14 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name= "Settings",
-                        FieldType = FormFieldTypes.input,
+                        Name= "CharLimit",
+                        FieldType = FormFieldTypes.number,
                         Class = "flat",
-                        Placeholder = "Settings",
+                        Placeholder = "Character Limit",
                         Autocomplete = null,
                         ClearOnSubmit = true,
+                        Min = 1,
+                        Max = 1028,
                         AriaInvalid = true,
                         Hidden = true,
                     },
@@ -407,7 +417,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "Link",
+                        Name = "LinkValue",
                         FieldType = FormFieldTypes.link,
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
@@ -447,6 +457,16 @@ namespace Accelerate.Features.Content.Services
                         AriaInvalid = false,
                         Hidden = true,
                         Value = post.Tags
+                    },
+                    new FormField()
+                    {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Category",
+                        ClearOnSubmit = false,
+                        AriaInvalid = false,
+                        Hidden = true,
+                        Value = post?.Category
                     },
                     new FormField()
                     {
@@ -512,7 +532,7 @@ namespace Accelerate.Features.Content.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = ContentPostEntityStatus.Public,
+                        Value = post.Status,
                     },
                 }
             }; 

@@ -10,6 +10,8 @@ export default function (data) {
                 x-model="field.value"
                 :read-only="field.readonly"
                 :role="field.role"
+                :min="field.min"
+                :max="field.max"
                 :checked="field.checked"
                 :placeholder="field.placeholder"
                 :autocomplete="field.autocomplete"

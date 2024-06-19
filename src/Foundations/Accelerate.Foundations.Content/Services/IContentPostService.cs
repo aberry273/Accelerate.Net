@@ -36,5 +36,8 @@ namespace Accelerate.Foundations.Content.Services
 
         Task<int> CreateSettings(Guid postId, ContentPostSettingsEntity entity);
         ContentPostSettingsEntity GetSettings(Guid postId);
+
+        Task<Guid?> CreateTaxonomy(Guid postId, ContentPostTaxonomyEntity entity);
+        ContentPostTaxonomyEntity GetTaxonomy(Guid postId);
     }
 }

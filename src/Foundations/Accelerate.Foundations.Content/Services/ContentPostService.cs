@@ -29,6 +29,7 @@ namespace Accelerate.Foundations.Content.Services
         IEntityService<ContentPostChannelEntity> _servicePostChannel { get; set; }
         IEntityService<ContentPostLinkEntity> _servicePostLink { get; set; }
         IEntityService<ContentPostSettingsEntity> _servicePostSettings { get; set; }
+        IEntityService<ContentPostTaxonomyEntity> _servicePostTaxonomy { get; set; }
         IEntityService<ContentPostSettingsPostEntity> _servicePostSettingPost { get; set; }
         IEntityService<ContentChannelEntity> _serviceChannels { get; set; }
         public ContentPostService(
@@ -42,7 +43,8 @@ namespace Accelerate.Foundations.Content.Services
             IEntityService<ContentPostParentEntity> servicePostParents, 
             IEntityService<ContentPostChannelEntity> servicePostChannel, 
             IEntityService<ContentPostLinkEntity> servicePostLink, 
-            IEntityService<ContentPostSettingsEntity> servicePostSettings, 
+            IEntityService<ContentPostSettingsEntity> servicePostSettings,
+            IEntityService<ContentPostTaxonomyEntity> servicePostTaxonomy,
             IEntityService<ContentPostSettingsPostEntity> servicePostSettingPost, 
             IEntityService<ContentChannelEntity> serviceChannels)
         {
@@ -59,6 +61,7 @@ namespace Accelerate.Foundations.Content.Services
             this._servicePostSettings = servicePostSettings;
             this._servicePostSettingPost = servicePostSettingPost;
             this._serviceChannels = serviceChannels;
+            this._servicePostTaxonomy = servicePostTaxonomy;
         }
 
 
@@ -208,7 +211,17 @@ namespace Accelerate.Foundations.Content.Services
         {
             return _servicePostParents.Find(x => x.ParentId == postId).Count();
         }
+        #region Taxonomy
 
+        public async Task<Guid?> CreateTaxonomy(Guid postId, ContentPostTaxonomyEntity entity)
+        {
+           return await _servicePostTaxonomy.CreateWithGuid(entity);
+        }
+        public ContentPostTaxonomyEntity GetTaxonomy(Guid postId)
+        {
+            return _servicePostTaxonomy.Find(x => x.ContentPostId == postId)?.FirstOrDefault();
+        }
+        #endregion
         #region Settings
 
         public async Task<int> CreateSettings(Guid postId, ContentPostSettingsEntity entity)

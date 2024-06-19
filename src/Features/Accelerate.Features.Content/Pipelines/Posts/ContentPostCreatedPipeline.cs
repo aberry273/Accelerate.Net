@@ -82,6 +82,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             }).ToList();
             return mediaItems;
         }
+        private ContentPostTaxonomySubdocument GetTaxonomy(IPipelineArgs<ContentPostEntity> args)
+        {
+            var taxonomy = _contentPostService.GetTaxonomy(args.Value.Id);
+            if (taxonomy == null) return null;
+
+            return new ContentPostTaxonomySubdocument()
+            {
+                Category = taxonomy.Category,
+                Tags = taxonomy.TagItems?.ToList()
+            };
+        }
         private ContentPostSettingsSubdocument GetSettings(IPipelineArgs<ContentPostEntity> args)
         {
             var settings = _contentPostService.GetSettings(args.Value.Id);
@@ -154,12 +165,16 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 indexModel.Media = GetMedia(args);
                 indexModel.Link = GetLink(args);
                 indexModel.Settings = GetSettings(args);
+                indexModel.Taxonomy = GetTaxonomy(args);
                 // If a reply
                 var postParent = GetParent(args);
                 if (postParent != null && postParent.ParentId != null)
                 {
                     indexModel.ParentId = postParent.ParentId;
-                    indexModel.ParentIds = postParent.ParentIdItems.ToList();
+
+                    indexModel.ParentIds = postParent.ParentIdItems != null && postParent.ParentIdItems.Any()
+                        ? postParent.ParentIdItems.ToList()
+                        : null;
 
                     await UpdateParentDocument(postParent, indexModel, args);
                 }

@@ -1,6 +1,7 @@
 @use "sass:map";
 @use "../../../node_modules/@picocss/pico/scss/settings" as *;
 
+/*
 label[for="amount"] {
   margin-bottom: calc(var(#{$css-var-prefix}spacing) * -0.25);
   text-align: center;
@@ -46,3 +47,4 @@ input[type="number"] {
     }
   }
 }
+*/

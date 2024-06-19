@@ -29,8 +29,8 @@ namespace Accelerate.Features.Content.Models.Data
     }
     public class ContentPostMixedRequest : ContentPostEntity
     {
-        public string? Settings { get; set; }
-        public string? Link { get; set; }
+        public string? SettingsValue { get; set; }
+        public string? LinkValue { get; set; }
         public Guid? ChannelId { get; set; }
         public IEnumerable<Guid>? ParentIdItems
         {
@@ -48,7 +48,9 @@ namespace Accelerate.Features.Content.Models.Data
         public List<IFormFile>? Videos { get; set; }
         public List<IFormFile>? Images { get; set; }
         public List<Guid>? MediaIds { get; set; }
-        public List<string>? Mentions { get; set; }
+        public List<string>? MentionItems { get; set; }
         public List<string>? QuotedItems { get; set; }
+        public List<string>? Tags { get; set; }
+        public string? Category { get; set; }
     }
 }

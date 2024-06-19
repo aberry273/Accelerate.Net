@@ -142,16 +142,17 @@ namespace Accelerate.Features.Content.Controllers.Api
             try
             {
                 var parentId = obj.ParentId.GetValueOrDefault();
-                var link = obj.Link;
-                var settingsStr = obj.Settings;
+                var link = obj.LinkValue;
+                var settingsStr = obj.SettingsValue;
                 var quotes = (obj.QuotedItems != null) ? obj.QuotedItems.Where(x => x != null).ToList() : new List<string>();
                 var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
                 var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
                 var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
-                var mentions = (obj.Mentions != null) ? obj.Mentions.Where(x => x != null).ToList() : new List<string>();
+                var mentions = (obj.MentionItems != null) ? obj.MentionItems.Where(x => x != null).ToList() : new List<string>();
+                var tags = (obj.Tags != null) ? obj.Tags.Where(x => x != null).ToList() : new List<string>();
 
                 // IF only a direct content post, just run the create fuction
-                if (parentId == Guid.Empty && settingsStr == null && link == null && !quotes.Any() && !media.Any() && !images.Any() && !videos.Any() && !mentions.Any())
+                if (parentId == Guid.Empty && settingsStr == null && link == null && !quotes.Any() && !media.Any() && !images.Any() && !videos.Any() && !mentions.Any() && !tags.Any())
                 {
                     return await this.Post(obj);
                 }
@@ -163,9 +164,11 @@ namespace Accelerate.Features.Content.Controllers.Api
                 }
 
                 // Parents
-                if(parentId != null)
+                if(parentId != null && parentId != Guid.Empty)
                 {
-                    var ancestorIds = obj.ParentIdItems.Any() ? obj.ParentIdItems.ToList() : new List<Guid>();
+                    var ancestorIds = obj.ParentIdItems != null && obj.ParentIdItems.Any() 
+                        ? obj.ParentIdItems.ToList() 
+                        : new List<Guid>();
                     await _postService.CreateParentPost(obj, parentId, ancestorIds);
                 }
                 // Links
@@ -182,7 +185,18 @@ namespace Accelerate.Features.Content.Controllers.Api
                     };
                     await _postService.CreateLink(linkEntity);
                 }
-                // Parents
+                // Tags
+                if (tags != null && tags.Any())
+                {
+                    var taxonomy = new ContentPostTaxonomyEntity()
+                    {
+                        TagItems = tags.ToList(),
+                        Category = obj.Category,
+                        ContentPostId = post.Id,
+                    };
+                    await _postService.CreateTaxonomy(post.Id, taxonomy);
+                }
+                // Settings
                 if (settingsStr != null)
                 {
                     var settingsRequest = Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostSettingsRequest>(settingsStr);
@@ -416,10 +430,6 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             await _postService.RunCreatePipeline(obj);
         }
-        protected override void UpdateValues(ContentPostEntity from, dynamic to)
-        {
-            from.Content = to.Content;
-        }
         protected override async Task PostUpdateSteps(ContentPostEntity obj)
         {
             await _postService.RunUpdatePipeline(obj);
@@ -427,6 +437,10 @@ namespace Accelerate.Features.Content.Controllers.Api
         protected override async Task PostDeleteSteps(ContentPostEntity obj)
         {
             await _postService.RunDeletePipeline(obj);
+        }
+        protected override void UpdateValues(ContentPostEntity from, dynamic to)
+        {
+            from.Content = to.Content;
         }
     }
 }

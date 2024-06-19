@@ -15,11 +15,16 @@ export default function (data) {
         // PROPERTIES
         loading: false,
         fields: [],
+        taxonomyFields: [],
+        settingsFields: [],
         item: null,
         label: 'Submit', 
         tagStr: null,
         userId: null,
         tags: [],
+        statusFieldName: 'Status',
+        categoryFieldName: 'Category',
+        charLimitFieldName: 'CharLimit',
         tagFieldName: 'Tags',
         imageFieldName: 'Images',
         videoFieldName: 'Videos',
@@ -53,6 +58,9 @@ export default function (data) {
             this.fields = data.fields,
             this.actionEvent = data.actionEvent;
             this.fixTop = data.fixTop || false;
+
+            this.taxonomyFields = this.getTaxonomyFields();
+            this.settingsFields = this.getSettingsFields();
 
             var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
             this.showTags = tagField = null ? !tagField.hidden : true
@@ -95,6 +103,18 @@ export default function (data) {
         //https://stackoverflow.com/questions/46000233/how-is-formatting-in-textarea-being-done
 
         // GETTERS
+        get taxonomyFieldNames() {
+            return [
+                this.tagFieldName,
+                this.categoryFieldName,
+            ]
+        },
+        get settingsFieldNames() {
+            return [
+                this.statusFieldName,
+                this.charLimitFieldName,
+            ]
+        },
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
         },
@@ -135,6 +155,28 @@ export default function (data) {
                 style += "left: 0; width: 100%;";
             style += "bottom: 0; top: initial;";
             return style;
+        },
+        getTaxonomyFields() {
+            const fields = this.fields
+                .filter(x => this.taxonomyFieldNames.indexOf(x.name) > -1)
+                .map(x => { return { ...x } });
+
+            const updatedFields = fields.map(x => {
+                x.hidden = false;
+                return x;
+            })
+            return updatedFields;
+        },
+        getSettingsFields() {
+            const fields = this.fields
+                .filter(x => this.settingsFieldNames.indexOf(x.name) > -1)
+                .map(x => { return { ...x } });
+
+            const updatedFields = fields.map(x => {
+                x.hidden = false;
+                return x;
+            })
+            return updatedFields;
         },
         updateQuoteField(item) {
             const field = this._mxForm_GetField(this.fields, 'QuotedItems');
@@ -292,6 +334,9 @@ export default function (data) {
         hideFloatingPanel(val) {
             this.showFloatingPanel = val;
         },
+        setFieldVisibility(fieldName, val) {
+            this._mxForm_SetFieldVisibility(this.fields, fieldName, val)
+        },
         hideTagField(val) {
             this.showTags = val;
             this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, val)
@@ -308,13 +353,57 @@ export default function (data) {
             this.showVideo = !val;
             this._mxForm_SetFieldVisibility(this.fields, this.videoFieldName, val)
         },
+        // modal
+        toggle() {
+            this._mxModal_Toggle('formSettings');
+        },
+        applyAdditionalFieldUpdates() {
+            //taxonomy
+            for (var i = 0; i < this.fields.length; i++)
+            {
+                let field = this.taxonomyFields.filter(y => y.name == this.fields[i].name)[0];
+                if (field == null) continue;
+                this.fields[i].value = field.value;
+            }
+            //settings
+            for (var i = 0; i < this.fields.length; i++) {
+                let field = this.settingsFields.filter(y => y.name == this.fields[i].name)[0];
+                if (field == null) continue;
+                this.fields[i].value = field.value;
+            }
+            this.toggle();
+        },
         setHtml(data) {
             // make ajax request
             //@scroll.window="fixed = isInPosition ? true : false"
             const label = data.label || 'Submit'
             const html = `
+            <!--Additional settings-->
+            <dialog id="formSettings">
+                <article>
+                  <header>
+                    <button
+                      aria-label="Close"
+                      rel="prev"
+                      data-target="formSettings"
+                      @click="toggle"
+                    ></button>
+                    <h3 x-text="'Settings'"></h3>
+                  </header>
+
+                  <h4>Taxonomy</h4>
+                  <div x-data="formFields({ fields: taxonomyFields })"></div>
+
+                  <h4>Settings</h4>
+                  <div x-data="formFields({ fields: settingsFields })"></div>
+
+                  <footer>
+                    <button @click="applyAdditionalFieldUpdates()">Apply changes</button>
+                  </footer>
+                </article>
+            </dialog>
+
             <span id="fixedPosition"><span>
-            <!--Floating--> 
              
             <!--Floating button-->
             <button
@@ -361,32 +450,8 @@ export default function (data) {
                         <button class="small secondary material-icons flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
                         <button class="small secondary material-icons flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
 
-                        
-                        <details class="dropdown flat simple" style="margin-top:0px">
-                            <summary role="button" class="material-icons secondary flat small">more_horiz</summary>
-                            <ul dir="ltr" style="text-align:left">
-                                <li x-show="showTags == true" @click="hideTagField(false)">
-                                    <a href="javascript:;">
-                                        <i class="material-icons flat small">sell</i>
-                                        Show tags
-                                    </a>
-                                </li>
-                                <li x-show="showTags == false" @click="hideTagField(true)">
-                                    <a href="javascript:;">
-                                        <i class="material-icons flat small">cancel</i>
-                                        Hide tags
-                                    </a>
-                                </li>
-                                <li >
-                                    <a href="javascript:;">
-                                        <i class="material-icons flat small">settings</i>
-                                        Settings
-                                    </a>
-                                </li>
-                            </ul>
-                        </details>
-
-
+                        <button class="small secondary material-icons flat" @click="toggle" :disabled="loading">settings</button>
+                      
                         <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
                         <button class="flat primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
 

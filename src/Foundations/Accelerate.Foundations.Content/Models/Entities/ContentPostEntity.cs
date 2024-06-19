@@ -13,7 +13,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
 {
     public enum ContentPostEntityStatus
     {
-        Hidden, Public, Archived
+        Private, Public, Archived
     }
     [Table("ContentPosts")]
     public class ContentPostEntity : BaseEntity
@@ -23,7 +23,6 @@ namespace Accelerate.Foundations.Content.Models.Entities
 
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
-       
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Hidden;

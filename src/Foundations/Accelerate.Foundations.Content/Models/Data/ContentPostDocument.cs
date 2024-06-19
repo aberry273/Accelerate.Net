@@ -32,8 +32,14 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string Value { get; set; }
         public string Format { get; set; }
     }
+    public class ContentPostTaxonomySubdocument
+    {
+        public string? Category { get; set; }
+        public List<string> Tags { get; set; }
+    }
     public class ContentPostSettingsSubdocument
     {
+        public ContentPostEntityStatus Status { get; set; }
         public string ContentPostSettingsId { get; set; }
         public string? Access { get; set; }
         public int? CharLimit { get; set; }
@@ -70,17 +76,32 @@ namespace Accelerate.Foundations.Content.Models.Data
         public Guid? UserId { get; set; }
         public List<Guid> ParentIds { get; set; }
         public Guid? ParentId { get; set; }
+        // TODO: Update to a getter returning the settings.status
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }
         // Original posts threadId, all child threads reference the parent threadId which should become the original post
         public string? TargetThread { get; set; }
         public string? TargetChannel { get; set; }
         public string? ChannelName { get; set; }
-        public string? Category { get; set; }
-        public IEnumerable<string>? Tags { get; set; }
+        // TODO: Update to a getter returning the settings.status
+        public string? Category
+        {
+            get
+            {
+                return Taxonomy?.Category;
+            }
+        }
+        public IEnumerable<string>? Tags 
+        {
+            get
+            {
+                return Taxonomy?.Tags;
+            }
+        }
         public IEnumerable<ContentPostQuoteSubdocument>? QuotedPosts { get; set; }
         public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
         // Computed
+        public ContentPostTaxonomySubdocument Taxonomy { get; set; }
         public ContentPostSettingsSubdocument Settings { get; set; }
         public ContentPostLinkSubdocument Link { get; set; }
         public ContentPostActionsSummaryDocument ActionsTotals { get; set; }
