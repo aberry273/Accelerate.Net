@@ -23,6 +23,7 @@ export default function (data) {
         tagStr: null,
         userId: null,
         tags: [],
+        quoteFieldName: 'QuotedItems',
         statusFieldName: 'Status',
         categoryFieldName: 'Category',
         charLimitFieldName: 'CharLimit',
@@ -30,6 +31,7 @@ export default function (data) {
         imageFieldName: 'Images',
         videoFieldName: 'Videos',
         textFieldName: 'Content',
+        validationMessage: '',
         originalYPosition: 0,
         showTags: false,
         showText: false,
@@ -127,6 +129,9 @@ export default function (data) {
         get textField() {
             return this._mxForm_GetField(this.fields, this.textFieldName);
         },
+        get quoteField() {
+            return this._mxForm_GetField(this.fields, this.quoteFieldName);
+        },
         get typeSelected() {
             return this.showImage || this.showVideo || this.showText
         },
@@ -138,11 +143,35 @@ export default function (data) {
         get characterCount() {
             return `${this.inputAmount} / ${this.charLimit}`;
         },
-        get underLimit() {
+        get underTextLimit() {
             return this.inputAmount < this.charLimit;
         },
+        underMediaLimit() {
+            const images = this.imageField.value != null ? this.imageField.value.length : 0;
+            const videos = this.videoField.value != null ? this.videoField.value.length : 0;
+            const total = images + videos
+            if (total > 4) {
+                this.validationMessage = "You can't add more than 4 images and videos";
+            }
+            else {
+                this.validationMessage = ""
+            }
+            return total <= 4;
+        },
+        underQuoteLimit() {
+            const total = this.quoteField.value != null ? this.quoteField.value.length : 0;
+            if (total > 4) { 
+                this.validationMessage = "You can't quote more than 4 posts"; 
+            }
+            else {
+                this.validationMessage = ""
+            }
+            return total <= 4;
+        },
         get isValid() {
-            return this.underLimit
+            return this.underTextLimit
+                && this.underMediaLimit()
+                && this.underQuoteLimit()
                 && ((this.textField.value != null && this.textField.value.length > 0)
                 || (this.videoField.value != null && this.videoField.value.length > 0)
                 || (this.imageField.value != null && this.imageField.value.length > 0))
@@ -180,7 +209,7 @@ export default function (data) {
         },
         updateQuoteField(item) {
             const field = this._mxForm_GetField(this.fields, 'QuotedItems');
-            if (!field) return;
+            if (!field) return; 
 
             let threadIds = field.value || []
 
@@ -429,6 +458,11 @@ export default function (data) {
                     <progress x-show="loading"></progress>
                     <!--Quotes-->
                     <fieldset class="padded" x-data="formFields({fields})"></fieldset>
+
+
+                    <div style="text-align:center" x-show="validationMessage">
+                        <em x-text="validationMessage"></em>
+                    </div>
 
                     <fieldset class="padded py-0" role="group">
                         <button x-show="fixed" class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>

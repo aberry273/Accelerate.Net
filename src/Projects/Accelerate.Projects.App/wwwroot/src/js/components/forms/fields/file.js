@@ -33,30 +33,32 @@ export default function (data) {
                 </article>
             </template>
             <!--multiple-->
-            <template x-if="field.multiple && field.value">
+            <template x-if="field.multiple && field.value && field.value.length > 0">
                 <div class="grid">
-                    <div class="file-pickers">
-                        <i aria-label="File" class="icon material-icons" x-text="field.icon || 'attach_file'"></i>
-                        <label x-text="field.label || 'Upload file'"></label>
+                    <div class="file-pickers" x-show="field.value.length < (field.max || 4)">
+                        <article aria-label="File" style="height: 100%;">
+                            <i aria-label="File" class="icon material-icons" x-text="field.icon || 'attach_file'"></i>
+                            <label x-text="field.label || 'Upload file'"></label>
+                        </article>
                     </div>
                     <template x-for="(file, i) in field.value">
                         <div>
                             <!--Video-->
                             <template x-if="_mxForm_IsVideo(file)">
-                                <div class="padless">
+                                <div class="padless" style="display: inline-grid;">
                                     <video width="320" height="240" controls>
                                       <source :src="_mxForm_GetFilePreview(file)" type="video/mp4">
                                      Your browser does not support the video tag.
                                     </video>
-                                    <label @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</label>
+                                    <button class="flat" @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</button>
                                 </div>
                             </template>
 
                             <!--Image-->
                             <template x-if="_mxForm_IsImage(file)">
-                                <div class="padless">
+                                <div class="padless" style="display: inline-grid;">
                                     <img :src="_mxForm_GetFilePreview(file)" />
-                                    <label @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</label>
+                                    <button class="flat" @click="(ev)=>{ ev.preventDefault(); field.value.splice(i, 1); }">Remove</button>
                                 </div>
                             </template>
                         </div>
@@ -91,6 +93,8 @@ export default function (data) {
             :placeholder="field.placeholder"
             :autocomplete="field.autocomplete"
             :aria-invalid="field.ariaInvalid == true"
+            :max="field.max"
+            :min="field.min"
             :aria-describedby="field.id || field.name+i"
             :accept="field.accept || '.png'"
             ></input>

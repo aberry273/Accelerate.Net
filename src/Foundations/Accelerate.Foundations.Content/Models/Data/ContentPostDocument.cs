@@ -79,6 +79,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         // TODO: Update to a getter returning the settings.status
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }
+        public string? Date { get; set; }
         // Original posts threadId, all child threads reference the parent threadId which should become the original post
         public string? TargetThread { get; set; }
         public string? TargetChannel { get; set; }

@@ -14,7 +14,7 @@ export function content(data) {
 */
 export function content(data) {
     return `
-        <div class="padded pt-0 pb-0" x-html="_mxCardPost_ParseEncodedTextElements(selectedPost.content)"></div>
+        <div class="pt-0 pb-0" x-html="_mxCardPost_ParseEncodedTextElements(selectedPost.content)"></div>
     `
 }
 
@@ -110,21 +110,21 @@ export function header(data) {
                             <strong class="pb-0">
                                 <span x-text="selectedPost.profile.username"></span>
                             </strong>
+                            <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
                         </li>
-                        </aside>
+                    </aside>
                 </ul>
             </template>
             <ul>
                 <li>
+                    <i class="material-icons muted noselect" x-show="selectedPost.status == 0">visibility_off</i>
                     <strong x-show="selectedPost.channelName">
                         <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.targetChannel">
                             <sup x-text="selectedPost.channelName"></sup>
                         </a>
                     </strong>
 
-                    <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_more</i>
-                    <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">expand_less</i>
-                    <!--Show more-->
+                     <!--Show more-->
                     <template x-if="selectedPost.userId == userId">
                         <details class="dropdown flat no-chevron">
                             <summary role="outline">
@@ -169,6 +169,9 @@ export function footer(data) {
             </ul>
             <ul>
                 <li>
+                    <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_more</i>
+                    <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_less</i>
+
                     <!--Agree-->
                     <button :disabled="!userId" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('agree', selectedPost) ? 'flat primary': 'flat'" >
                         <i aria-label="Agree" class="icon material-icons">expand_less</i>
@@ -201,18 +204,27 @@ export function footer(data) {
                 </li>
             </ul>
         </nav>
-        <nav x-show="showMetadata && selectedPost.tags">
-            <ul>
-                <li>
-                    <div class=" chips">
-                        <template x-for="(tag, i) in selectedPost.tags">
-                            <a @click="_mxCardPost_filterByTag(tag)" style="text-decoration:none" class="tag flat closable primary small">
-                                <strong><sup x-text="tag"</sup></strong>
-                            </a>
-                        </template>
-                    </div>
-                </li>
-            </ul>
+        <hr x-show="showMetadata" />
+        <nav x-show="showMetadata">
+                <ul style="width: 100%" >
+                    <li class="pl">
+                        <label><sup>Category</sup></label>
+                        <a href="#" style="text-decoration:none" class="tag flat closable primary small">
+                            <strong><sup x-text="selectedPost.category"</sup></strong>
+                        </a>
+                    </li>
+             
+                    <li class="pl">
+                        <div class=" chips">
+                            <label><sup>Tags</sup></label>
+                            <template x-for="(tag, i) in selectedPost.tags">
+                                <a @click="_mxCardPost_filterByTag(tag)" style="text-decoration:none" class="tag closable secondary small">
+                                    <strong><sup x-text="tag"</sup></strong>
+                                </a>
+                            </template>
+                        </div>
+                    </li>
+                </ul>
         </nav>
     </footer>
     `

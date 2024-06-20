@@ -1,5 +1,6 @@
 ﻿using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Common.Extensions;
 
 namespace Accelerate.Foundations.Content.Hydrators
 {
@@ -23,6 +24,7 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
+            document.Date = entity.UpdatedOn.ToTimeSinceString();
             document.ThreadId = entity.ThreadId;
             document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
             document.PostType = entity.Type;

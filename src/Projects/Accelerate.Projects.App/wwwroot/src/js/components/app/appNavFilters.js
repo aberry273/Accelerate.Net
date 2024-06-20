@@ -142,24 +142,25 @@ export default function (data) {
             </ul> 
           </nav>
           <!--Selected filters-->
-        
-           <div class="container" x-if="stateValues.length > 0">
-                <div class="grid">
-                    <template x-for="filter in stateValues">
-                        <div x-show="filter.values.length > 0">
-                            <sup x-text="filter.name"></sup>
-                            <div class="chips">
-                                <template x-for="(item, i) in filter.values">
-                                    <a style="text-decoration:none" class="tag flat closable primary small"
-                                    @click="selectMany(item, filter.name)">
-                                        <strong><sup x-text="item"</sup></strong>
-                                    </a>
-                                </template>
+           <template x-if="stateValues.length > 0">
+               <div class="container" >
+                    <div class="grid">
+                        <template x-for="filter in stateValues">
+                            <div x-show="filter.values.length > 0">
+                                <sup x-text="filter.name"></sup>
+                                <div class="chips">
+                                    <template x-for="(item, i) in filter.values">
+                                        <a style="text-decoration:none" class="tag flat closable primary small"
+                                        @click="selectMany(item, filter.name)">
+                                            <strong><sup x-text="item"</sup></strong>
+                                        </a>
+                                    </template>
+                                </div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
-            </div>
+            </template>
          
       `
             this.$nextTick(() => {
