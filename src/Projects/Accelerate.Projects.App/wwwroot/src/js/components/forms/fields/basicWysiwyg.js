@@ -5,6 +5,8 @@ export default function (data) {
         <div display="position:relative;" x-data="{
             linkEvent: 'form:input:link',
             showRender: false,
+            value: '',
+            wysiwyg: null,
             init() {
                 //On aclDropDown user selecting an option
                 this.$events.on('editor-wisyiwyg-plaintext', (val) => {
@@ -12,6 +14,11 @@ export default function (data) {
                 })
                 this.$events.on(mxCardPost.formatsEvent, (val) => {
                     field.items = val;
+                })
+                this.$watch('field.value', (newVal) => {
+                    if(!newVal) {
+                        this.$events.emit('wysiwyg:clear')
+                    }
                 })
             },  
             addLinkCard(text) {
@@ -45,6 +52,7 @@ export default function (data) {
             <div x-data="aclContentEditorWysiwyg({
                 searchEvent: field.event,
                 showRichText: false,
+                value: value,
                 elementsEvent: mxCardPost_formatsEvent
             })"></div>
         </div>

@@ -3,6 +3,7 @@ import { mxForm, mxEvents, mxFetch, mxModal, mxResponsive, mxCardPost } from '/s
  
 const linkEvent = 'form:input:link';
 const wysiwygUserSearchEvent = 'form:input:user';
+const encoder = new TextEncoder();
 export default function (data) {
     return {
         ...mxFetch(data),
@@ -69,7 +70,6 @@ export default function (data) {
             var videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
             this.showVideo = videoField != null ? !videoField.hidden : null
 
-
             const contentField = this._mxForm_GetField(this.fields, 'Content');
             this.charLimit = contentField.max || 256;
             // On updates from cards
@@ -132,7 +132,7 @@ export default function (data) {
         },
         get inputAmount() {
             return this.textField != null && this.textField.value != null
-                ? this.textField.value.length
+                ? encoder.encode(this.textField.value).byteLength
                 : 0;
         },
         get characterCount() {

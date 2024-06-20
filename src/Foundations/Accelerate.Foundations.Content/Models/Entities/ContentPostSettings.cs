@@ -29,19 +29,24 @@ namespace Accelerate.Foundations.Content.Models.Entities
         /// <summary>
         /// How many responses each person can make
         /// </summary>
-        public int PostLimit { get; set; }
+        public int? PostLimit { get; set; }
         /// <summary>
         /// How many characters each response can have
         /// </summary>
-        public int CharLimit { get; set; }
+        public int? CharLimit { get; set; }
         /// <summary>
         /// How many images are allowed in each response
         /// </summary>
-        public int ImageLimit { get; set; }
+        public int? ImageLimit { get; set; }
         /// <summary>
         /// How many videos are allowed in each response
         /// </summary>
-        public int VideoLimit { get; set; }
+        public int? VideoLimit { get; set; }
+        /// <summary>
+        /// How many quotes are allowed in each response
+        /// </summary>
+        public int? QuoteLimit { get; set; }
+        /*
         /// <summary>
         /// What text formatting is allowed in each response
         /// </summary>
@@ -59,6 +64,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
                 if (value != null) this.Formats = Foundations.Common.Helpers.JsonSerializerHelper.SerializeMinimalObject(value);
             }
         }
+        */
         [NotMapped]
         public List<ContentPostSettingsPostEntity> ContentPosts { get; set; }
     }

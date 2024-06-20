@@ -36,6 +36,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Accelerate.Foundations.Content.Services;
 using static Elastic.Clients.Elasticsearch.JoinField;
+using System.ComponentModel;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -142,17 +143,34 @@ namespace Accelerate.Features.Content.Controllers.Api
             try
             {
                 var parentId = obj.ParentId.GetValueOrDefault();
-                var link = obj.LinkValue;
-                var settingsStr = obj.SettingsValue;
+                var channelId = obj.ChannelId.GetValueOrDefault();
+                var link = obj.LinkValue; 
                 var quotes = (obj.QuotedItems != null) ? obj.QuotedItems.Where(x => x != null).ToList() : new List<string>();
                 var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
                 var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
                 var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
                 var mentions = (obj.MentionItems != null) ? obj.MentionItems.Where(x => x != null).ToList() : new List<string>();
                 var tags = (obj.Tags != null) ? obj.Tags.Where(x => x != null).ToList() : new List<string>();
+                var hasSettings =
+                    obj.CharLimit != null
+                    || obj.WordLimit != null
+                    || obj.ImageLimit != null
+                    || obj.VideoLimit != null
+                    || obj.QuoteLimit != null
+                    || obj.Access != null;
 
                 // IF only a direct content post, just run the create fuction
-                if (parentId == Guid.Empty && settingsStr == null && link == null && !quotes.Any() && !media.Any() && !images.Any() && !videos.Any() && !mentions.Any() && !tags.Any())
+                if (parentId == Guid.Empty 
+                    && channelId == Guid.Empty
+                    && !hasSettings
+                    && link == null 
+                    && !quotes.Any() 
+                    && !media.Any() 
+                    && !images.Any() 
+                    && !videos.Any() 
+                    && !mentions.Any() 
+                    && !tags.Any()
+                    && obj.Category == null)
                 {
                     return await this.Post(obj);
                 }
@@ -163,6 +181,20 @@ namespace Accelerate.Features.Content.Controllers.Api
                     return BadRequest("Unable to create post");
                 }
 
+                if(hasSettings)
+                {
+                    var settings = new ContentPostSettingsEntity()
+                    {
+                        Access = obj.Access ?? "ALL",
+                        UserId = obj.UserId,
+                        CharLimit = obj.CharLimit,
+                        ImageLimit = obj.ImageLimit,
+                        VideoLimit = obj.VideoLimit,
+                        QuoteLimit = obj.QuoteLimit,
+                    };
+                    await _postService.CreateSettings(post.Id, settings);
+                }
+
                 // Parents
                 if(parentId != null && parentId != Guid.Empty)
                 {
@@ -170,6 +202,11 @@ namespace Accelerate.Features.Content.Controllers.Api
                         ? obj.ParentIdItems.ToList() 
                         : new List<Guid>();
                     await _postService.CreateParentPost(obj, parentId, ancestorIds);
+                }
+                // Channel
+                if (channelId != null && channelId != Guid.Empty)
+                { 
+                    await _postService.CreateChannelPost(obj, channelId);
                 }
                 // Links
                 if (link != null)
@@ -196,23 +233,6 @@ namespace Accelerate.Features.Content.Controllers.Api
                     };
                     await _postService.CreateTaxonomy(post.Id, taxonomy);
                 }
-                // Settings
-                if (settingsStr != null)
-                {
-                    var settingsRequest = Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostSettingsRequest>(settingsStr);
-                    
-                    var settings = new ContentPostSettingsEntity()
-                    {
-                        Access = settingsRequest.Access ?? "All",
-                        CharLimit = settingsRequest.CharLimit.GetValueOrDefault(),
-                        ImageLimit = settingsRequest.ImageLimit.GetValueOrDefault(),
-                        VideoLimit = settingsRequest.VideoLimit.GetValueOrDefault(),
-                        FormatItems = settingsRequest.Formats.ToList(),
-                        PostLimit = settingsRequest.PostLimit.GetValueOrDefault(),
-                        UserId = post.UserId.GetValueOrDefault(),
-                    };
-                    await _postService.CreateSettings(post.Id, settings);
-                }
 
                 // Quotes
                 if (quotes.Any())
@@ -228,14 +248,14 @@ namespace Accelerate.Features.Content.Controllers.Api
                 // Upload formfiles, create entities from formfiles, add to request
                 if (images.Any())
                 {
-                    var mediaFiles = await UploadImagesFromFiles(obj.UserId.GetValueOrDefault(), obj.Images);
+                    var mediaFiles = await UploadImagesFromFiles(obj.UserId, obj.Images);
                     
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }
                 // Upload formfiles, create entities from formfiles, add to request
                 if (videos.Any())
                 {
-                    var mediaFiles = await UploadVideosFromFiles(obj.UserId.GetValueOrDefault(), obj.Videos);
+                    var mediaFiles = await UploadVideosFromFiles(obj.UserId, obj.Videos);
 
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }

@@ -43,7 +43,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         // ASYNC PROCESSORS
         public async Task UpdateDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
+            var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
             var indexModel = new ContentPostDocument();
             
             var profile = new ContentPostUserSubdocument()

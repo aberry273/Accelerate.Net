@@ -21,6 +21,9 @@ export default function (data) {
             const keys = Object.keys(data);
             for(let i = 0; i < keys.length; i++) {
                 const key = keys[i];
+                // if empty array, skip
+                if (Array.isArray(data[key]) && data[key].length == 0) continue;
+
                 const filter = {
                     name: key,
                     //Equals, NotEquals, Null, NotNull, GreaterThan, LessThan

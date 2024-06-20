@@ -203,6 +203,13 @@ i:disabled {
     margin-bottom: calc(var(--pico-spacing)* 0.5);
 }
 
+input, select, textarea {
+    border:none;
+}
+details.dropdown summary:not([role]) {
+    border:none;
+}
+
 .wysiwyg {
     text-align: left;
     --pico-outline-width: 0.0625rem;
@@ -213,7 +220,6 @@ i:disabled {
     --pico-border-color: var(--pico-form-element-border-color);
     --pico-color: var(--pico-form-element-color);
     --pico-box-shadow: none;
-    border: var(--pico-border-width) solid var(--pico-border-color);
     border-radius: var(--pico-border-radius);
     outline: none;
     background-color: var(--pico-background-color);
@@ -228,7 +234,6 @@ i:disabled {
     font-family: inherit;
     letter-spacing: inherit;
     padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
-
 }
 
 .transparent {

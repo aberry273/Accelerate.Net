@@ -22,7 +22,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public string ThreadId => Id.ToBase64();
 
         [ForeignKey("User")]
-        public Guid? UserId { get; set; }
+        public Guid UserId { get; set; }
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Private;

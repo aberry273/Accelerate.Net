@@ -321,7 +321,7 @@ namespace Accelerate.Features.Content.Services
                 model.Fields.Add(
                     new FormField()
                     {
-                        Name = "TargetChannel",
+                        Name = "ChannelId",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
@@ -413,7 +413,7 @@ namespace Accelerate.Features.Content.Services
                         Placeholder = "Post a reply",
                         ClearOnSubmit = true,
                         AriaInvalid = false,
-                        Max = 1024,
+                        Max = post.Settings?.CharLimit ?? 1024,
                     },
                     new FormField()
                     {

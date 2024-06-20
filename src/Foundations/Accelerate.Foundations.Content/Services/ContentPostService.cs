@@ -188,7 +188,29 @@ namespace Accelerate.Foundations.Content.Services
         }
 
         #endregion
-
+        #region Channel
+        public async Task<int> CreateChannelPost(ContentPostEntity post, Guid channelId)
+        {
+            var entity = new ContentPostChannelEntity()
+            {
+                ContentPostId = post.Id,
+                ChannelId = channelId,
+            };
+            return await _servicePostChannel.Create(entity);
+        }
+        /// <summary>
+        /// Returns the channel if the post has a channel
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        public ContentChannelEntity GetPostChannel(ContentPostEntity post)
+        {
+            var postChannel = _servicePostChannel.Find(x => x.ContentPostId == post.Id).FirstOrDefault();
+            if (postChannel == null) return null;
+            return  _serviceChannels.Get(postChannel.ChannelId);
+        }
+        #endregion
         #region Parents
         public async Task<int> CreateParentPost(ContentPostEntity post, Guid parentId, List<Guid> ancestorIds)
         {
@@ -287,21 +309,7 @@ namespace Accelerate.Foundations.Content.Services
             return _servicePostLink.Find(x => x.ContentPostId == postId)?.FirstOrDefault();
         }
         #endregion
-
-        #region
-        /// <summary>
-        /// Returns the channel if the post has a channel
-        /// </summary>
-        /// <param name="post"></param>
-        /// <param name="mediaId"></param>
-        /// <returns></returns>
-        public ContentChannelEntity GetPostChannel(ContentPostEntity post)
-        {
-            var channelPost = _servicePostChannel.Find(x => x.ContentPostId == post.Id)?.FirstOrDefault();
-            if (channelPost == null) return null;
-            return _serviceChannels.Get(channelPost.ChannelId);
-        }
-        #endregion
+         
 
         #region Quotes
         #endregion

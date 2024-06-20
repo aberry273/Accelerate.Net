@@ -1,8 +1,9 @@
 ﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
 <nav x-data="{fixed: false}" class="topnav article">
 <div class="container">
-    <nav style="height:66px" x-show="fixed"><ul></ul></nav>
-
+    <template x-if="fixed">
+        <nav style="height:66px"><ul></ul></nav>
+    </template>
     <!-- Header -->
     @if (Model.Authenticated)
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Accelerate.Foundations.Content.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,14 @@ namespace Accelerate.Foundations.Content
 {
     public struct Constants
     {
+        public struct Defaults
+        {
+            public struct Posts
+            {
+                public const ContentPostEntityStatus Status = ContentPostEntityStatus.Public;
+            }
+            
+        }
         public struct Config
         {
             public const string ConfigName = "ContentConfiguration";

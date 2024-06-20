@@ -57,22 +57,11 @@
     <div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
     <div x-data="snackbarList({event: 'snackbar-add', limit: 5 })" x-on:show:alert.window="show"></div>
     
-    <script defer>
-        let _emojiJson = [];
-        const emojiJsonUrl = "https://unpkg.com/emoji.json@15.1.0/emoji.json";
-        fetch(emojiJsonUrl)
-            .then(res => res.json())
-            .then(out => {
-                _emojiJson = out;
-            })
-            .catch(err => { throw err });
-    </script>
     <!-- JS Libraries -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
 
     <script>
         let wssSettings = @Html.Raw(JsonSerializerHelper.SerializeObject(Model.ServiceSettings))
-        
     </script>
     <!-- For componentizing and lazy loading Alpine -->
     <script type="module" src="~/src/js/init.js"></script>
@@ -84,6 +73,17 @@
             subtitle: 'The new bird in town',
             text: 'parrot.app'
         }
+    </script>
+
+    <script defer>
+        let _emojiJson = [];
+        const emojiJsonUrl = "https://unpkg.com/emoji.json@15.1.0/emoji.json";
+        fetch(emojiJsonUrl)
+            .then(res => res.json())
+            .then(out => {
+                _emojiJson = out;
+            })
+            .catch(err => { throw err });
     </script>
 
 </body>

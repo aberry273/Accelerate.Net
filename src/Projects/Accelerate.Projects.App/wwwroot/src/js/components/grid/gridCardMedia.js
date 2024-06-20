@@ -23,6 +23,7 @@ export default function (data) {
         searchUrl: '',
         filterEvent: '',
         modalEvent: 'open-modal-media',
+        brokenImage: '/src/images/broken.jpg',
         itemEvent: '',
         quoteEvent: '',
         actionUrl: '',
@@ -158,7 +159,13 @@ export default function (data) {
             if (this.items.length <= 3) return 200
             return 200
         },
-
+        onImgError(image) {
+            image.onerror = null;
+            //retry
+            setTimeout(function () {
+                image.src += '?' + +new Date;
+            }, 250);
+        },
 
         // METHODS
         setHtml(data) {
@@ -231,10 +238,10 @@ export default function (data) {
         
                        <figure>
                             <img
-                            :src="selectedItem.filePath"
-                            onerror="this.src='/src/images/broken.jpg'"
-                            :alt="selectedItem.name"
-                          /> 
+                                :src="selectedItem.filePath"
+                                :onerror="onImgError(this)"
+                                :alt="selectedItem.name"
+                              /> 
                         </figure>
 
                         <button aria-label="Next" 

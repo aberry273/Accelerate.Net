@@ -27,10 +27,12 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
             document.PostType = entity.Type;
             /*
+             * TODO: Move these into subdocument updates
             document.TargetThread = entity.TargetThread;
             document.ParentId = entity.ParentId;
             document.ParentIds = entity.ParentIdItems?.ToList();
             document.TargetChannel = entity.TargetChannel;
+
             
             document.Tags = entity.TagItems;
             document.Category = entity.Category;

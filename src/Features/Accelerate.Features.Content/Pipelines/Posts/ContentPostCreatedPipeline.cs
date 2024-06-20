@@ -103,9 +103,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 Access = settings.Access,
                 CharLimit = settings.CharLimit,
                 PostLimit = settings.PostLimit,
-                Formats = settings.FormatItems,
                 ImageLimit = settings.ImageLimit,
-                //QuoteLimit = settings.QuoteLimit,
+                QuoteLimit = settings.QuoteLimit,
                 VideoLimit = settings.VideoLimit,
             };
         }
@@ -149,7 +148,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             try
             {
-                var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.GetValueOrDefault().ToString());
+                var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
                 var indexModel = new ContentPostDocument();
                 var profile = user.Source != null
                     ? new ContentPostUserSubdocument()

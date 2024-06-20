@@ -25,11 +25,10 @@ namespace Accelerate.Features.Content.Models.Data
         public int? ImageLimit { get; set; }
         public int? VideoLimit { get; set; }
         public int? QuoteLimit { get; set; }
-        public List<ContentPostSettingsFormat> Formats { get; set; }
+        //public List<ContentPostSettingsFormat> Formats { get; set; }
     }
     public class ContentPostMixedRequest : ContentPostEntity
-    {
-        public string? SettingsValue { get; set; }
+    { 
         public string? LinkValue { get; set; }
         public Guid? ChannelId { get; set; }
         public IEnumerable<Guid>? ParentIdItems
@@ -50,7 +49,15 @@ namespace Accelerate.Features.Content.Models.Data
         public List<Guid>? MediaIds { get; set; }
         public List<string>? MentionItems { get; set; }
         public List<string>? QuotedItems { get; set; }
+        //Taxonomy
         public List<string>? Tags { get; set; }
         public string? Category { get; set; }
+        //Settings
+        public int? CharLimit { get; set; }
+        public int? WordLimit { get; set; }
+        public int? VideoLimit { get; set; }
+        public int? ImageLimit { get; set; }
+        public int? QuoteLimit { get; set; }
+        public string? Access { get; set; }
     }
 }
