@@ -36,7 +36,7 @@ namespace Accelerate.Projects.App.Controllers
             if(w == null && h == null)
                 return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png"); ;
 
-            var ignoreAspectRatio = h == null || w == null;
+            var ignoreAspectRatio = h != null && w != null;
             var width = w != null ? w.GetValueOrDefault() : h.GetValueOrDefault();
             var height = h != null ? h.GetValueOrDefault() : width;
             var resizedPath = _mediaService.GetParameterPath(file, height, width);

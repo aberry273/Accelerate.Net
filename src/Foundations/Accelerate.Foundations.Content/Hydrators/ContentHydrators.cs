@@ -24,16 +24,15 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
-            document.Date = entity.UpdatedOn.ToTimeSinceString();
             document.ThreadId = entity.ThreadId;
             document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
             document.PostType = entity.Type;
             /*
              * TODO: Move these into subdocument updates
-            document.TargetThread = entity.TargetThread;
+            document.threadId = entity.threadId;
             document.ParentId = entity.ParentId;
             document.ParentIds = entity.ParentIdItems?.ToList();
-            document.TargetChannel = entity.TargetChannel;
+            document.channelId = entity.channelId;
 
             
             document.Tags = entity.TagItems;

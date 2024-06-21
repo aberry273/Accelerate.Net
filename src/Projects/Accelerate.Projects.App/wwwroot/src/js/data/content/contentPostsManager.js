@@ -7,7 +7,7 @@ export default function (data) {
         sourceUrl: '#',
         fetchPostsUrl: '#',
         fetchReviewsUrl: '#',
-        targetThread: null,
+        threadId: null,
         parentId: null,
         expandable: true,
         threadUrl: '/',
@@ -22,7 +22,7 @@ export default function (data) {
             this.channel = data.channel;
             this.reviewUrl = data.reviewUrl;
             this.threadUrl = data.threadUrl;
-            this.targetThread = data.targetThread;
+            this.threadId = data.threadId;
             this.parentId = data.parentId;
             this.fetchPostsUrl = data.fetchPostsUrl;
             this.fetchReviewsUrl = data.fetchReviewsUrl;
@@ -137,7 +137,7 @@ export default function (data) {
         getPageQueryFilters(data) {
             let queryData = {}
             if (data.parentId) queryData.parentId = [data.parentId]
-            if (data.targetChannel) queryData.targetChannel = [data.targetChannel]
+            if (data.channelId) queryData.channelId = [data.channelId]
             return queryData;
         },
         createQueryRequest(data) {

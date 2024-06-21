@@ -16,6 +16,8 @@ namespace Accelerate.Foundations.Media.Hydrators
             document.UpdatedOn = entity.UpdatedOn;
             document.Tags = entity.TagItems;
             document.Id = entity.Id;
+            document.Type = Enum.GetName(entity.Type);
+            document.Tags = entity.TagItems;
             document.User = userProfile ?? 
                 new UserSubdocument()
                 {

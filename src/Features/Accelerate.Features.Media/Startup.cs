@@ -1,9 +1,9 @@
 ﻿
-using Accelerate.Features.Content.EventBus;
 using Accelerate.Features.Content.Hubs;
 using Accelerate.Features.Media.Pipelines.Channels;
 using Accelerate.Features.Media.Services;
 using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Media.EventBus;
 using Accelerate.Foundations.Media.Models.Data;
 using Accelerate.Foundations.Media.Models.Entities;
 using Accelerate.Foundations.Websockets.Hubs;

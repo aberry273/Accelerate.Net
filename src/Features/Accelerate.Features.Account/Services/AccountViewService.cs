@@ -7,6 +7,8 @@ using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
+using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Media.Models.Data;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
@@ -39,6 +41,7 @@ namespace Accelerate.Features.Account.Services
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);
             viewModel.ModalCreateMedia = CreateModalMediaForm(user);
+            viewModel.FilterEvent = "onFilterChange";
             viewModel.Tabs = new List<NavigationItem>()
             {
                 GetPageLink(nameof(AccountController.Profile)),
@@ -48,6 +51,196 @@ namespace Accelerate.Features.Account.Services
             };
             return viewModel;
         }
+
+
+        #region Media Filters
+        public Dictionary<string, string> GetMediaFilterOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                {
+                    Constants.Filters.Media.Tags,
+                    Foundations.Media.Constants.Fields.Tags
+                },
+                {
+                    Constants.Filters.Media.Type,
+                    Foundations.Media.Constants.Fields.Type
+                },
+            };
+        }
+        public List<NavigationFilter> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse)
+        {
+            var filterValues = new Dictionary<string, List<string>>();
+            if (aggregateResponse.IsValidResponse)
+            {
+                var filterOptions = GetMediaFilterOptions();
+                filterValues = filterOptions.Values.ToDictionary(x => x, x => GetValuesFromAggregate(aggregateResponse.Aggregations, x));
+            }
+            return CreateMediaNavigationFilters(filterValues);
+        }
+        private List<NavigationFilter> CreateMediaNavigationFilters(IDictionary<string, List<string>> filters)
+        {
+            if (filters == null) filters = new Dictionary<string, List<string>>();
+            var filter = new List<NavigationFilter>();
+
+            var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Media.Tags));
+            if (Actions.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Media.Tags,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = Actions
+                });
+            }
+            var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Media.Type));
+            if (threads.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Media.Type,
+                    FilterType = NavigationFilterType.Select,
+                    Values = threads
+                });
+            }
+            return filter;
+        }
+        #endregion
+
+        #region Post Filters
+        public Dictionary<string, string> GetPostFilterOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                {
+                    Constants.Filters.Posts.Tags,
+                    Foundations.Content.Constants.Fields.Tags
+                },
+                {
+                    Constants.Filters.Posts.Threads,
+                    Foundations.Content.Constants.Fields.ShortThreadId
+                },
+                {
+                    Constants.Filters.Posts.Quotes,
+                    Foundations.Content.Constants.Fields.QuoteIds
+                }
+            };
+        }
+        // FILTERS - Posts
+        public List<NavigationFilter> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var filterValues = new Dictionary<string, List<string>>();
+            if (aggregateResponse.IsValidResponse)
+            {
+                var filterOptions = GetPostFilterOptions();
+                filterValues = filterOptions.Values.ToDictionary(x => x, x => GetValuesFromAggregate(aggregateResponse.Aggregations, x));
+            }
+            return CreatePostNavigationFilters(filterValues);
+        }
+        private List<string> GetValuesFromAggregate(AggregateDictionary aggregates, string key)
+        {
+            var agg = aggregates.FirstOrDefault(x => x.Key == key);
+            StringTermsAggregate vals = agg.Value as StringTermsAggregate;
+            if (vals == null || vals.Buckets == null || vals.Buckets.Count == 0) return new List<string>();
+
+            var results = vals.Buckets.
+                Select(x => x.Key.Value.ToString()).
+                Where(x => !string.IsNullOrEmpty(x)).
+                ToList();
+            return results;
+        }
+        public List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters)
+        {
+            return Filters?.Select(x =>
+            {
+                x.Name = GetFilterKey(x.Name);
+                return x;
+            }).ToList();
+        }
+        public string GetFilterKey(string key)
+        {
+            var keyVal = this.GetPostFilterOptions().FirstOrDefault(x => x.Key == key);
+            if (keyVal.Value == null) return key.ToCamelCase();
+            return keyVal.Value?.ToCamelCase();
+        }
+        private List<string> GetAggregateValues(IDictionary<string, List<string>> aggFilters, string key)
+        {
+            if (key == null) return new List<string>();
+            return aggFilters.ContainsKey(key) ? aggFilters[key] : new List<string>();
+        }
+        private List<NavigationFilter> CreatePostNavigationFilters(IDictionary<string, List<string>> filters)
+        {
+            if (filters == null) filters = new Dictionary<string, List<string>>();
+            var filter = new List<NavigationFilter>();
+
+            var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Actions));
+            if (Actions.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Actions,
+                    FilterType = NavigationFilterType.Select,
+                    Values = Actions
+                });
+            }
+            var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Threads));
+            if (threads.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Threads,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = threads
+                });
+            }
+            var quotes = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Quotes));
+            if (quotes.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Quotes,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = quotes
+                });
+            }
+
+            var tags = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Tags));
+            if (tags.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Tags,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = tags
+                });
+            }
+
+            var content = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Content));
+            if (content.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Content,
+                    FilterType = NavigationFilterType.Select,
+                    Values = content
+                });
+            }
+
+            var sort = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Sort));
+            if (sort.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Posts.Sort,
+                    FilterType = NavigationFilterType.Select,
+                    Values = sort
+                });
+            }
+
+            return filter;
+        }
+        #endregion
+
         public AjaxForm CreateProfileImageForm(AccountUser user)
         {
             var model = new AjaxForm()

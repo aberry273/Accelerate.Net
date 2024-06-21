@@ -35,7 +35,7 @@ export default function (data) {
             this.searchUrl = data.searchUrl;
             this.userId = data.userId;
             this.parentId = data.parentId;
-            this.targetChannel = data.targetChannel;
+            this.channelId = data.channelId;
             this.quoteEvent = data.quoteEvent;
             this.filters = data.filters;
 

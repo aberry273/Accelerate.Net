@@ -17,8 +17,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.StaticFiles;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
-using Accelerate.Features.Content.EventBus;
 using MassTransit.Transports;
+using Accelerate.Foundations.Media.EventBus;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -48,6 +48,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
+                //TOOD: Move to mediaService function
                 if (model.File != null)
                 { 
                     var user = await _userManager.FindByIdAsync(model.UserId.ToString());

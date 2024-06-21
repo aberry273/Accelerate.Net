@@ -1,17 +1,24 @@
 ﻿
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
+using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
 using Accelerate.Foundations.Integrations.AzureStorage.Services;
+using Accelerate.Foundations.Media.EventBus;
 using Accelerate.Foundations.Media.Models.Data;
+using Accelerate.Foundations.Media.Models.Entities;
 using Azure.Storage.Blobs;
 using Elastic.Clients.Elasticsearch;
 using ImageMagick;
 using ImageMagick.ImageOptimizers;
+using MassTransit;
+using MassTransit.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using System.Drawing;
+using System.Threading.Tasks;
 using static Accelerate.Foundations.Integrations.AzureStorage.Constants;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -24,19 +31,107 @@ namespace Accelerate.Foundations.Media.Services
         private static Dictionary<string, string> _publicFiles = new Dictionary<string, string>();
         IMetaContentService _contentService;
         IBlobStorageService _blobStorageService;
+        IEntityService<MediaBlobEntity> _entityService;
+        Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
         private FileExtensionContentTypeProvider _contentTypeProvider;
         public MediaService(
             IMetaContentService contentService,
             IBlobStorageService blobStorageService,
+            Bind<IMediaBlobEventBus, IPublishEndpoint> publishEndpoint,
+            IEntityService<MediaBlobEntity> entityService,
             IOptions<SiteConfiguration> siteConfig
         )
         {
+            _publishEndpoint = publishEndpoint;
             _contentService = contentService;
             _blobStorageService = blobStorageService;
+            _entityService = entityService;
             _siteConfig = siteConfig.Value;
             this._contentTypeProvider = new FileExtensionContentTypeProvider();
             _optimizer = new ImageOptimizer();
         }
+
+
+        protected async Task PostCreateSteps(MediaBlobEntity obj)
+        {
+            await _publishEndpoint.Value.Publish(new CreateDataContract<MediaBlobEntity>() { Data = obj });
+        }
+        protected async Task PostUpdateSteps(MediaBlobEntity obj)
+        {
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<MediaBlobEntity>() { Data = obj });
+        }
+        protected async Task PostDeleteSteps(MediaBlobEntity obj)
+        {
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<MediaBlobEntity>() { Data = obj });
+        }
+
+        public async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(Guid userId, List<IFormFile> files)
+        {
+            if (files == null) return new List<MediaBlobUploadResult>();
+
+            // upload file 
+            var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
+            // bulk upload with preset ids
+            var fileResults = await this.UploadImages(userId, newFiles);
+
+            // bulk create entities
+            var mediaBlobEntities = newFiles.Select(x =>
+            {
+                return new MediaBlobEntity()
+                {
+                    Id = x.Id,
+                    FilePath = this.GetFileUrl(x.Id.ToString()),
+                    Name = x.File.FileName,
+                    UserId = userId,
+                    Type = MediaBlobFileType.Image
+                };
+            }).ToList();
+            // TODO return IDs of all created entities rather than count
+            var blobEntityGuids = await this._entityService.AddRange(mediaBlobEntities);
+            //Run pipelines
+            var tasks = new List<Task>();
+            for (var i = 0; i < mediaBlobEntities.Count; i++)
+            {
+                tasks.Add(PostCreateSteps(mediaBlobEntities[i]));
+            }
+            await Task.WhenAll(tasks);
+            return fileResults.ToList();
+
+        }
+
+        public async Task<List<MediaBlobUploadResult>> UploadVideosFromFiles(Guid userId, List<IFormFile> files)
+        {
+            if (files == null) return new List<MediaBlobUploadResult>();
+
+            // upload file 
+            var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
+            // bulk upload with preset ids
+            var fileResults = await this.UploadVideos(userId, newFiles);
+
+            // bulk create entities
+            var mediaBlobEntities = newFiles.Select(x =>
+            {
+                return new MediaBlobEntity()
+                {
+                    Id = x.Id,
+                    FilePath = this.GetFileUrl(x.Id.ToString()),
+                    Name = x.File.FileName,
+                    UserId = userId,
+                    Type = MediaBlobFileType.Video
+                };
+            }).ToList();
+            // TODO return IDs of all created entities rather than count
+            var blobEntityGuids = await this._entityService.AddRange(mediaBlobEntities);
+            //Run pipelines
+            var tasks = new List<Task>();
+            for (var i = 0; i < mediaBlobEntities.Count; i++)
+            {
+                tasks.Add(PostCreateSteps(mediaBlobEntities[i]));
+            }
+            await Task.WhenAll(tasks);
+            return fileResults.ToList();
+        }
+
 
         private MediaBlobUploadResult CreateUploadResult(BlobFile file, bool success)
         {

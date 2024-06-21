@@ -178,6 +178,16 @@ namespace Accelerate.Foundations.Common.Services
                         },
                         new NavigationItem()
                         {
+                            Href = Foundations.Common.Constants.Paths.PostsPath,
+                            Text = Foundations.Common.Constants.Paths.PostsLabel,
+                        },
+                        new NavigationItem()
+                        {
+                            Href = Foundations.Common.Constants.Paths.MediaPath,
+                            Text = Foundations.Common.Constants.Paths.MediaLabel,
+                        },
+                        new NavigationItem()
+                        {
                             Href = Foundations.Common.Constants.Paths.LogoutPath,
                             Text = Foundations.Common.Constants.Paths.LogoutLabel,
                         },

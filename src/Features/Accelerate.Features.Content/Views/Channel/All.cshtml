@@ -6,12 +6,15 @@
 @model ChannelPage
 @{
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
+    var paths = Context.Request.Path.Value.Split('/');
+    var selectedDropdown = paths.Length > 2 ? "All" : Context.Request.Path.Value.Split('/').LastOrDefault();
+
 }
-<div>
+<div class="">
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-        header: 'Posts',
+        header: '@selectedDropdown',
         event: '@Model.FilterEvent'
     })"></div>
          
@@ -23,7 +26,7 @@
         actionEvent: '@Model.ActionEvent',
         userId: '@Model.UserId',
         filters: {
-            targetChannel: ['@Model.Item.Id']
+            channelId: ['@Model.Item.Id']
         },
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
+    <ProjectReference Include="..\Accelerate.Foundations.EventPipelines\Accelerate.Foundations.EventPipelines.csproj" />
     <ProjectReference Include="..\Accelerate.Foundations.Integrations.AzureStorage\Accelerate.Foundations.Integrations.AzureStorage.csproj" />
     <ProjectReference Include="..\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
   </ItemGroup>

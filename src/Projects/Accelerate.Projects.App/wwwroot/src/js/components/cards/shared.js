@@ -119,7 +119,7 @@ export function header(data) {
                 <li>
                     <i class="material-icons muted noselect" x-show="selectedPost.status == 0">visibility_off</i>
                     <strong x-show="selectedPost.channelName">
-                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.targetChannel">
+                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.channelId">
                             <sup x-text="selectedPost.channelName"></sup>
                         </a>
                     </strong>
@@ -160,7 +160,6 @@ export function footer(data) {
                             <small>
                                 <small>
                                     <span x-text="selectedPost.shortThreadId"></span>
-
                                 </small>
                             </small>
                         </a>
@@ -267,7 +266,7 @@ export function headerQuote(data) {
             <ul>
                 <li>
                     <strong x-show="selectedPost.channelName">
-                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.targetChannel">
+                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.channelId">
                             <sup x-text="selectedPost.channelName"></sup>
                         </a>
                     </strong>

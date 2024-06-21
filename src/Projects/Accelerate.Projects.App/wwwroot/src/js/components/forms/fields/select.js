@@ -28,6 +28,7 @@ export default function (data) {
                                             const index = field.value.indexOf(item);
                                             if(index == -1) field.value.push(item)
                                             else field.value.splice(index, 1)
+                                            field.open = false;
                                         }" />
                                         <span x-text="item" />
                                     </label>
@@ -39,13 +40,13 @@ export default function (data) {
             <!--Single-->
             <template x-if="!field.multiple">
                 <details class="dropdown">
-                    <summary>
+                    <summary >
                         <span x-show="field.value == null" x-text="field.label"></span>
                         <span x-show="field.value != null" x-text="field.value"></span>
                     </summary>
                     <ul dir="ltr" style="text-align:left">
                         <template x-for="item in field.items">
-                            <li @click="()=> { field.value = item }">
+                            <li @click="()=> { field.value = item; field.open = false; }">
                                 <a href="#"><span x-text="item" /></a>
                             </li>
                         </template>

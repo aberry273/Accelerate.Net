@@ -90,11 +90,11 @@ namespace Accelerate.Foundations.Content.Services
                 Value = "public"
             };
         }
-        public QueryFilter TargetThread(ElasticCondition cond, QueryOperator op)
+        public QueryFilter threadId(ElasticCondition cond, QueryOperator op)
         {
             return new QueryFilter()
             {
-                Name = Foundations.Content.Constants.Fields.TargetThread,
+                Name = Foundations.Content.Constants.Fields.threadId,
                 Condition = cond,
                 Operator = op
             };
@@ -217,7 +217,7 @@ namespace Accelerate.Foundations.Content.Services
 
             var aggregates = new List<string>()
             {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.threadId.ToCamelCase(),
                 Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
             };
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
@@ -337,7 +337,7 @@ namespace Accelerate.Foundations.Content.Services
             var Query = new RequestQuery();
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
-            var notInChannel = Filter(Constants.Fields.TargetChannel, ElasticCondition.MustNot, QueryOperator.Equals, channel.Id, true);
+            var notInChannel = Filter(Constants.Fields.ChannelId, ElasticCondition.MustNot, QueryOperator.Equals, channel.Id, true);
             notInChannel.Filters = new List<QueryFilter>()
             {
                 FilterValues(Constants.Fields.Tags, ElasticCondition.Filter, QueryOperator.Equals, channel.Tags, true)
@@ -357,6 +357,24 @@ namespace Accelerate.Foundations.Content.Services
             Query.Filters.Add(Filter(Constants.Fields.UserId, ElasticCondition.Filter, userId));
              
             return CreateQuery(Query);
+        }
+        public List<string> ContentPostAggregateFields()
+        {
+            return new List<string>()
+            {
+                Foundations.Content.Constants.Fields.threadId.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+            };
+        }
+        public RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId)
+        {
+
+            var filters = new List<QueryFilter>()
+            {
+                this.Filter(Constants.Fields.UserId, ElasticCondition.Filter, userId)
+            };
+            var aggregates = ContentPostAggregateFields();
+            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }
 
         public override QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query)
@@ -444,13 +462,9 @@ namespace Accelerate.Foundations.Content.Services
 
             var filters = new List<QueryFilter>()
             {
-                this.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, channelId)
+                this.Filter(Foundations.Content.Constants.Fields.ChannelId, ElasticCondition.Filter, channelId)
             };
-            var aggregates = new List<string>()
-            {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-            };
+            var aggregates = ContentPostAggregateFields();
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }
 
@@ -458,13 +472,9 @@ namespace Accelerate.Foundations.Content.Services
         {
             var filters = new List<QueryFilter>()
             {
-                //this.Filter(Foundations.Content.Constants.Fields.TargetChannel, ElasticCondition.Filter, channelId)
+                //this.Filter(Foundations.Content.Constants.Fields.channelId, ElasticCondition.Filter, channelId)
             };
-            var aggregates = new List<string>()
-            {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
-            };
+            var aggregates = ContentPostAggregateFields();
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }
 

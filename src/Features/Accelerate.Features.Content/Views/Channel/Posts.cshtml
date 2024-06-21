@@ -7,7 +7,7 @@
 @{
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
 }
-<div>
+<div class="">
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -22,7 +22,7 @@
         userId: '@Model.UserId',
         actionEvent: 'action:post',
         filters: {
-            targetChannel: ['@Model.Item.Id']
+            channelId: ['@Model.Item.Id']
         },
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">

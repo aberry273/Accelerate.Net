@@ -7,7 +7,7 @@
 @{
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
 }
-<div>
+<div class="">
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),

@@ -25,6 +25,10 @@ using System.Security.Claims;
 using Accelerate.Foundations.Common.Helpers;
 using System.Text.Encodings.Web;
 using System.Web;
+using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Media.Models.Data;
+using Accelerate.Foundations.Content.Services;
+using Accelerate.Foundations.Common.Extensions;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -36,8 +40,11 @@ namespace Accelerate.Features.Account.Controllers
         private SignInManager<AccountUser> _signInManager;
         private UserManager<AccountUser> _userManager;
         private IAccountViewService _accountViewService;
+        IContentPostElasticService _contentElasticSearchService;
         private IEmailSender<AccountUser> _emailSender;
         private IMetaContentService _contentService;
+        IElasticService<ContentPostDocument> _postSearchService;
+        IElasticService<MediaBlobDocument> _mediaSearchService;
         private IEntityService<AccountProfile> _profileService;
         public AccountController(
             IMetaContentService contentService,
@@ -46,6 +53,9 @@ namespace Accelerate.Features.Account.Controllers
             IEmailSender<AccountUser> emailSender,
             IAccountViewService accountViewService,
             IEntityService<AccountProfile> profileService,
+            IContentPostElasticService contentElasticSearchService,
+            IElasticService<ContentPostDocument> postSearchService,
+            IElasticService<MediaBlobDocument> mediaSearchService,
             Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
             IElasticService<AccountUserDocument> searchService)
             : base(contentService)
@@ -57,6 +67,9 @@ namespace Accelerate.Features.Account.Controllers
             _profileService = profileService;
             _publishEndpoint = publishEndpoint;
             _searchService = searchService;
+            _contentElasticSearchService = contentElasticSearchService;
+            _postSearchService = postSearchService;
+            _mediaSearchService = mediaSearchService;
             _accountViewService = accountViewService;
         }
 
@@ -130,10 +143,27 @@ namespace Accelerate.Features.Account.Controllers
         {
             var user = await GetUserWithProfile(this.User);
             var viewModel = _accountViewService.GetManagePage(user);
+            viewModel.ActionUrl = "/api/contentpostactivity";
+            viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
+            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
             return View(viewModel);
         }
         #endregion
         #region Media
+        public RequestQuery<MediaBlobDocument> CreateMediasAggregateQuery()
+        {
+            var filters = new List<QueryFilter>()
+            {
+                //this.Filter(Foundations.Content.Constants.Fields.channelId, ElasticCondition.Filter, channelId)
+            };
+            var aggregates = new List<string>()
+            {
+                Foundations.Media.Constants.Fields.Type.ToCamelCase(),
+                Foundations.Media.Constants.Fields.Tags.ToCamelCase(),
+            };
+            return new RequestQuery<MediaBlobDocument>() { Filters = filters, Aggregates = aggregates };
+        }
         [HttpGet]
         [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
@@ -141,6 +171,10 @@ namespace Accelerate.Features.Account.Controllers
         {
             var user = await GetUserWithProfile(this.User);
             var viewModel = _accountViewService.GetManagePage(user);
+            viewModel.ActionUrl = "/api/mediablob";
+            viewModel.SearchUrl = "/api/mediasearch/blobs";
+            var aggResponse = await _mediaSearchService.GetAggregates(this.CreateMediasAggregateQuery());
+            viewModel.Filters = _accountViewService.CreateMediaSearchFilters(aggResponse);
             return View(viewModel);
         }
         #endregion
@@ -165,7 +199,7 @@ namespace Accelerate.Features.Account.Controllers
         #region Pipelines
 
         private string GetTarget(AccountUser obj) => obj.Id.ToString();
-        //private string GetTarget(AccountUser obj) => obj.TargetThread ?? obj.TargetChannel;
+        //private string GetTarget(AccountUser obj) => obj.threadId ?? obj.channelId;
         protected async Task PostCreateSteps(AccountUser obj)
         {
             await _publishEndpoint.Value.Publish(new CreateDataContract<AccountUser>()

@@ -6,7 +6,7 @@
 <div x-data="{
     item: $store.content.getDummyThread(),
     items: $store.content.getDummyPosts(),
-    targetThreadId: $store.content.getDummyThread().threadId,
+    threadIdId: $store.content.getDummyThread().threadId,
     parentId: $store.content.getDummyThread().id,
     threadItem: $store.content.getDummyThread(),
     userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -152,8 +152,8 @@
         actionEvent: actionEvent,
         quoteEvent: quoteEvent,
         itemEvent: $store.wssContentPosts.getMessageEvent(),
-        targetThread: targetThreadId,
-        parentId: targetThreadId,
+        threadId: threadIdId,
+        parentId: threadIdId,
         items: items
       })">
     </div>
@@ -167,8 +167,8 @@
       fetchReviewsUrl: 'https://localhost:7220/api/contentsearch/reviews',
       reviewUrl: 'https://localhost:7220/api/contentpostreview',
       userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      targetThread: targetThreadId,
-      parentId: targetThreadId,
+      threadId: threadIdId,
+      parentId: threadIdId,
       event: 'post:created',
       items: [],
       channel: null,

@@ -427,7 +427,7 @@ export default function (data) {
                   <div x-data="formFields({ fields: settingsFields })"></div>
 
                   <footer>
-                    <button @click="applyAdditionalFieldUpdates()">Apply changes</button>
+                    <button @click="applyAdditionalFieldUpdates()">Update</button>
                   </footer>
                 </article>
             </dialog>

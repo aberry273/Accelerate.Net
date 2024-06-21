@@ -37,7 +37,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = CreateBaseContent(null);
             var viewModel = new ChannelsPage(model);
-            viewModel.ChannelsDropdown = GetChannelsDropdown();
+            viewModel.ChannelsTabs = GetChannelsTabs();
 
             viewModel.UserId = null;
             return viewModel;
@@ -46,8 +46,8 @@ namespace Accelerate.Features.Content.Services
         {
             var model = CreateBaseContent(user);
             var viewModel = new ChannelsPage(model);
-            viewModel.ChannelsDropdown = GetChannelsDropdown();
-
+            viewModel.ChannelsTabs = GetChannelsTabs(channels);
+            /*
             if (channels != null && channels.IsValidResponse)
             {
                 var channelItems = channels.Documents.Select(x => new NavigationItem()
@@ -57,6 +57,7 @@ namespace Accelerate.Features.Content.Services
                 });
                 viewModel.ChannelsDropdown.Items.AddRange(channelItems);
             }
+            */
 
             viewModel.Filters = CreateSearchFilters(aggregateResponse);
             viewModel.UserId = user != null ? user.Id : null;
@@ -76,37 +77,8 @@ namespace Accelerate.Features.Content.Services
             var viewModel = new ChannelPage(model);
 
             viewModel.Item = item;
-            viewModel.Tabs = new List<NavigationItem>()
-            {
-                new NavigationItem()
-                {
-                    Text = "All",
-                    Href = $"{this.GetChannelUrl(item)}/All",
-                },
-                new NavigationItem()
-                {
-                    Text = "Posts",
-                    Href = $"{this.GetChannelUrl(item)}/Posts",
-                },
-                new NavigationItem()
-                {
-                    Text = "Related",
-                    Href = $"{this.GetChannelUrl(item)}/Related",
-                },
-                /*
-                new NavigationItem()
-                {
-                    Text = "Media",
-                    Href = $"{this.GetChannelUrl(item)}/Media",
-                },
-                new NavigationItem()
-                {
-                    Text = "Users",
-                    Href = $"{this.GetChannelUrl(item)}/Users",
-                }*/
-            };
-
-            viewModel.ChannelsDropdown = GetChannelsDropdown(channels, item.Name);
+            viewModel.ChannelsTabs = GetChannelsTabs(channels);
+            viewModel.ChannelDropdown = GetChannelsDropdown(item);
 
             // Add filters
             viewModel.Filters = CreateSearchFilters(aggregateResponse);
@@ -513,12 +485,12 @@ namespace Accelerate.Features.Content.Services
                     },
                     new FormField()
                     {
-                        Name = "TargetChannel",
+                        Name = "ChannelId",
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = post.TargetChannel,
+                        Value = post.ChannelId,
                     },
                     new FormField()
                     {
@@ -949,7 +921,39 @@ namespace Accelerate.Features.Content.Services
             return filter;
         }
 
-        public NavigationGroup GetChannelsDropdown(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
+        public List<NavigationItem> GetChannelsDropdown(ContentChannelDocument item)
+        {
+            return new List<NavigationItem>()
+            {
+                new NavigationItem()
+                {
+                    Text = "All",
+                    Href = $"{this.GetChannelUrl(item)}/All",
+                },
+                new NavigationItem()
+                {
+                    Text = "Posts",
+                    Href = $"{this.GetChannelUrl(item)}/Posts",
+                },
+                new NavigationItem()
+                {
+                    Text = "Related",
+                    Href = $"{this.GetChannelUrl(item)}/Related",
+                },
+                /*
+                new NavigationItem()
+                {
+                    Text = "Media",
+                    Href = $"{this.GetChannelUrl(item)}/Media",
+                },
+                new NavigationItem()
+                {
+                    Text = "Users",
+                    Href = $"{this.GetChannelUrl(item)}/Users",
+                }*/
+            };
+        }
+        public NavigationGroup GetChannelsTabs(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
         {
             var model = new NavigationGroup()
             {
@@ -985,7 +989,7 @@ namespace Accelerate.Features.Content.Services
             if (x == null) { return null; }
             return new NavigationItem()
             {
-                Text = $"Return to channel: {x.Name}",
+                Text = $"{x.Name}",
                 Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new {id = x.Id })
             };
         }

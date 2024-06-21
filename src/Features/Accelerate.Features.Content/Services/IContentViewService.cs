@@ -27,7 +27,6 @@ namespace Accelerate.Features.Content.Services
         public AjaxForm CreateFormDeleteReply(AccountUser user);
         List<NavigationFilter> CreateSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
         Dictionary<string, string> GetFilterOptions();
-        public NavigationGroup GetChannelsDropdown(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null);
         NavigationItem GetChannelLink(ContentChannelDocument x);
     }
 }

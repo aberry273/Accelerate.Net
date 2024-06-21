@@ -80,11 +80,11 @@ namespace Accelerate.Foundations.Content.Services
                 Value = "public"
             };
         } 
-        public QueryFilter TargetThread(ElasticCondition cond, QueryOperator op)
+        public QueryFilter threadId(ElasticCondition cond, QueryOperator op)
         {
             return new QueryFilter()
             {
-                Name = Foundations.Content.Constants.Fields.TargetThread,
+                Name = Foundations.Content.Constants.Fields.threadId,
                 Condition = cond,
                 Operator = op
             };
@@ -126,7 +126,7 @@ namespace Accelerate.Foundations.Content.Services
 
             var aggregates = new List<string>()
             {
-                Foundations.Content.Constants.Fields.TargetThread.ToCamelCase(),
+                Foundations.Content.Constants.Fields.threadId.ToCamelCase(),
                 Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
             };
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };

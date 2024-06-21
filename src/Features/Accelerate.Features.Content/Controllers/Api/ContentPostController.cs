@@ -62,16 +62,14 @@ namespace Accelerate.Features.Content.Controllers.Api
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentPostMediaEntity> _postMediaService;
         IContentPostService _postService;
-        IMediaService _mediaFileService;
-        IEntityService<MediaBlobEntity> _mediaService;
+        IMediaService _mediaService;
         public ContentPostController(
             IMetaContentService contentService,
             IContentPostService postService,
             IEntityService<ContentPostEntity> service,
             IEntityService<ContentPostQuoteEntity> quoteService,
             IEntityService<ContentPostMediaEntity> postMediaService,
-            IMediaService mediaFileService,
-            IEntityService<MediaBlobEntity> mediaService,
+            IMediaService mediaService,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
@@ -83,7 +81,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             _searchService = searchService;
             _quoteService = quoteService;
             _postMediaService = postMediaService;
-            _mediaFileService = mediaFileService;
+            _mediaService = mediaService;
             _mediaService = mediaService;
         }
         //<meta\b[^>]*\bname=["]keywords["][^>]*\bcontent=(['"]?)((?:[^,>"'],?){1,})\1[>]
@@ -248,14 +246,14 @@ namespace Accelerate.Features.Content.Controllers.Api
                 // Upload formfiles, create entities from formfiles, add to request
                 if (images.Any())
                 {
-                    var mediaFiles = await UploadImagesFromFiles(obj.UserId, obj.Images);
+                    var mediaFiles = await _mediaService.UploadImagesFromFiles(obj.UserId, obj.Images);
                     
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }
                 // Upload formfiles, create entities from formfiles, add to request
                 if (videos.Any())
                 {
-                    var mediaFiles = await UploadVideosFromFiles(obj.UserId, obj.Videos);
+                    var mediaFiles = await _mediaService.UploadVideosFromFiles(obj.UserId, obj.Videos);
 
                     media.AddRange(mediaFiles.Select(x => x.Id));
                 }
@@ -374,59 +372,6 @@ namespace Accelerate.Features.Content.Controllers.Api
             }
         }
 
-        private async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(Guid userId,  List<IFormFile> files)
-        {
-            if (files == null) return new List<MediaBlobUploadResult>();
-
-            // upload file 
-            var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
-            // bulk upload with preset ids
-            var fileResults = await _mediaFileService.UploadImages(userId, newFiles);
-
-            // bulk create entities
-            var mediaBlobEntities = newFiles.Select(x =>
-            {
-                return new MediaBlobEntity()
-                {
-                    Id = x.Id,
-                    FilePath = _mediaFileService.GetFileUrl(x.Id.ToString()),
-                    Name = x.File.FileName,
-                    UserId = userId,
-                    Type = MediaBlobFileType.Image
-                };
-            }).ToList();
-            // TODO return IDs of all created entities rather than count
-            var blobEntityGuids = await this._mediaService.AddRange(mediaBlobEntities);
-
-            return fileResults.ToList();
-        }
-
-        private async Task<List<MediaBlobUploadResult>> UploadVideosFromFiles(Guid userId, List<IFormFile> files)
-        {
-            if (files == null) return new List<MediaBlobUploadResult>();
-
-            // upload file 
-            var newFiles = files.Select(x => new MediaBlobUploadRequest(x)).ToList();
-            // bulk upload with preset ids
-            var fileResults = await _mediaFileService.UploadVideos(userId, newFiles);
-
-            // bulk create entities
-            var mediaBlobEntities = newFiles.Select(x =>
-            {
-                return new MediaBlobEntity()
-                {
-                    Id = x.Id,
-                    FilePath = _mediaFileService.GetFileUrl(x.Id.ToString()),
-                    Name = x.File.FileName,
-                    UserId = userId,
-                    Type = MediaBlobFileType.Video
-                };
-            }).ToList();
-            // TODO return IDs of all created entities rather than count
-            var blobEntityGuids = await this._mediaService.AddRange(mediaBlobEntities);
-
-            return fileResults.ToList();
-        }
         private ContentPostQuoteEntity CreateQuoteLink(ContentPostEntity post, ContentPostQuoteRequest quote)
         {
             // append current thread to path of new quote, or set as default path 

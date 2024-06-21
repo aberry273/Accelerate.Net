@@ -138,10 +138,9 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             return _contentPostService.GetPostParent(args.Value);
         }
-        private string? GetChannelName(IPipelineArgs<ContentPostEntity> args)
+        private ContentChannelEntity? GetChannelName(IPipelineArgs<ContentPostEntity> args)
         {
-            var channel = _contentPostService.GetPostChannel(args.Value);
-            return channel?.Name;
+            return _contentPostService.GetPostChannel(args.Value);
         }
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
@@ -158,8 +157,9 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                     } : null;
 
                 args.Value.Hydrate(indexModel, profile);
-
-                indexModel.ChannelName = GetChannelName(args);
+                var channel = GetChannelName(args);
+                indexModel.ChannelName = channel?.Name;
+                indexModel.ChannelId = channel?.Id;
                 indexModel.QuotedPosts = GetQuotes(args);
                 indexModel.Media = GetMedia(args);
                 indexModel.Link = GetLink(args);

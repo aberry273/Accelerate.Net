@@ -99,7 +99,7 @@ namespace Accelerate.Features.Content.Controllers
             };
 
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
-            var channelResponse = item.TargetChannel != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.TargetChannel) : null;
+            var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
             var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
            
             var query = new RequestQuery()
@@ -132,7 +132,7 @@ namespace Accelerate.Features.Content.Controllers
         {
             var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
-            query.Term(x => x.TargetThread.Suffix("keyword"), item.ThreadId.ToString());
+            query.Term(x => x.ThreadId.Suffix("keyword"), item.ThreadId.ToString());
             return query;
         }
 

@@ -78,7 +78,7 @@ export default function (data) {
                             <ul> 
                                 <li>
                                      <strong x-show="selectedPost.channelName">
-                                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.targetChannel">
+                                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.channelId">
                                             <sup x-text="selectedPost.channelName"></sup>
                                         </a>
                                     </strong>

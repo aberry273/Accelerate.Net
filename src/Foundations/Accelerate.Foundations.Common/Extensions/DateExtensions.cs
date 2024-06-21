@@ -26,28 +26,28 @@ namespace Accelerate.Foundations.Common.Extensions
                 return ts.Seconds == 1 ? "Just now" : "Just now";
 
             if (seconds < 60 * MINUTE)
-                return ts.Minutes + " m";
+                return ts.Minutes + "m";
 
             if (seconds < 120 * MINUTE)
-                return " 1 h";
+                return " 1h";
 
             if (seconds < 24 * HOUR)
-                return ts.Hours + " h";
+                return ts.Hours + "h";
 
             if (seconds < 48 * HOUR)
-                return "yesterday";
+                return "1d";
 
             if (seconds < 30 * DAY)
-                return ts.Days + " d";
+                return ts.Days + "d";
 
             if (seconds < 12 * MONTH)
             {
                 int months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
-                return months <= 1 ? " m" : months + " months ago";
+                return months <= 1 ? "m" : months + "m";
             }
 
             int years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
-            return years <= 1 ? "y" : years + " years ago";
+            return years <= 1 ? "y" : years + "y";
         }
     }
 }

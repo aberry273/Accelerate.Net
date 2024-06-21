@@ -1,17 +1,15 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models.Data;
+using Accelerate.Foundations.Integrations.Elastic.Models;
 using Accelerate.Foundations.Media.Models.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Media.Models.Data
 {
-    public class MediaBlobDocument
+    public class MediaBlobDocument : EntityDocument
     {
         // Core properties
-        public Guid Id { get; set; }
-        public DateTime CreatedOn { get; set; }
-        public DateTime? UpdatedOn { get; set; }
         public string Name { get; set; }
         public string Image
         {
@@ -20,6 +18,7 @@ namespace Accelerate.Foundations.Media.Models.Data
                 return this.FilePath;
             }
         }
+        public string Type { get; set; }
         public string FilePath { get; set; }
         public Guid? UserId { get; set; }
         public UserSubdocument User { get; set; }

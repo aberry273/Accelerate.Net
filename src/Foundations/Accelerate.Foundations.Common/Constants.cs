@@ -14,6 +14,10 @@ namespace Accelerate.Foundations.Common
             public const string BrowseLabel = "Browse";
             public const string ProfilePath = "/Account/Profile";
             public const string ProfileLabel = "Profile";
+            public const string PostsPath = "/Account/Posts";
+            public const string PostsLabel = "Posts";
+            public const string MediaPath = "/Account/Media";
+            public const string MediaLabel = "Media";
             public const string LogoutPath = "/Account/Logout";
             public const string LogoutLabel = "Logout";
             public const string LoginPath = "/Account/Login";

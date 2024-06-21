@@ -1,6 +1,7 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Elastic.Models;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -79,10 +80,17 @@ namespace Accelerate.Foundations.Content.Models.Data
         // TODO: Update to a getter returning the settings.status
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }
-        public string? Date { get; set; }
+        
+        public string? Date
+        {
+            get
+            {
+                return this.UpdatedOn.ToTimeSinceString();
+            }
+        }
         // Original posts threadId, all child threads reference the parent threadId which should become the original post
-        public string? TargetThread { get; set; }
-        public string? TargetChannel { get; set; }
+        
+        public Guid? ChannelId { get; set; }
         public string? ChannelName { get; set; }
         // TODO: Update to a getter returning the settings.status
         public string? Category

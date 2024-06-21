@@ -22,6 +22,8 @@ namespace Accelerate.Foundations.Media
         }
         public struct Fields
         {
+            public const string Tags = "Tags";
+            public const string Type = "Type";
         }
     }
 }

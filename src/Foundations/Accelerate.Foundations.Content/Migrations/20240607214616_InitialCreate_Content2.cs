@@ -20,11 +20,11 @@ namespace Accelerate.Foundations.Content.Migrations
                 table: "ContentPosts");
 
             migrationBuilder.DropColumn(
-                name: "TargetChannel",
+                name: "channelId",
                 table: "ContentPosts");
 
             migrationBuilder.DropColumn(
-                name: "TargetThread",
+                name: "threadId",
                 table: "ContentPosts");
         }
 
@@ -44,13 +44,13 @@ namespace Accelerate.Foundations.Content.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "TargetChannel",
+                name: "channelId",
                 table: "ContentPosts",
                 type: "nvarchar(max)",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "TargetThread",
+                name: "threadId",
                 table: "ContentPosts",
                 type: "nvarchar(max)",
                 nullable: true);

@@ -1,4 +1,4 @@
-﻿using Accelerate.Features.Content.EventBus;
+﻿
 using Accelerate.Features.Media.Services;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
@@ -30,15 +30,12 @@ namespace Accelerate.Features.Media.Controllers.Api
     {
         UserManager<AccountUser> _userManager;
         IMediaViewService _contentService;
-        readonly Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<MediaBlobDocument> _searchBlobService;
         public MediaSearchController(
             IMediaViewService contentService, 
-            Bind<IMediaBlobEventBus, IPublishEndpoint> publishEndpoint,
             IElasticService<MediaBlobDocument> searchBlobService,
             UserManager<AccountUser> userManager)
         {
-            _publishEndpoint = publishEndpoint;
             _userManager = userManager;
             _contentService = contentService;
             _searchBlobService = searchBlobService;
@@ -49,9 +46,17 @@ namespace Accelerate.Features.Media.Controllers.Api
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             var searchQuery = this.BuildSearchQuery(query);
-            var results = await _searchBlobService.Search(searchQuery, query.Page, query.ItemsPerPage);
-            var docs = GetDocumentResults(results);
-            return Ok(docs);
+            try
+            {
+                var results = await _searchBlobService.Search(searchQuery, query.Page, query.ItemsPerPage);
+                var docs = GetDocumentResults(results);
+                return Ok(docs);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+            
         }
         private List<MediaBlobDocument> GetDocumentResults(SearchResponse<MediaBlobDocument> results)
         {

@@ -9,10 +9,10 @@ namespace Accelerate.Features.Content.Models.Views
     {
         public Guid UserId { get; set; }
         public ContentChannelDocument Item { get; set; }
-        public NavigationGroup ChannelsDropdown { get; set; }
+        public NavigationGroup ChannelsTabs { get; set; }
+        public List<NavigationItem> ChannelDropdown { get; set; }
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditChannel { get; set; }
-        public List<NavigationItem> Tabs { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
         public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();

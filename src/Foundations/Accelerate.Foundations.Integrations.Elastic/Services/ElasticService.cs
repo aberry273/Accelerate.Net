@@ -107,8 +107,8 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             /*
            var query = new Query(query=> query.Term);
            query.Term(x =>
-                  x.TargetThread.Suffix("keyword"),
-                  request.Filters[Foundations.Content.Constants.Fields.TargetThread]?.FirstOrDefault()
+                  x.threadId.Suffix("keyword"),
+                  request.Filters[Foundations.Content.Constants.Fields.threadId]?.FirstOrDefault()
               );
            */
             Query q = new TermQuery("contentPostId") { Value = "" };

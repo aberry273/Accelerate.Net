@@ -274,9 +274,9 @@ export default function (data) {
             //return this._mxContentActions_GetAction(item, action);
             return this.$store.wssContentPosts.CheckUserPostAction(item.id, this.userId, action);
         },
-        _mxCardPost_cleanTargetThread(post) {
-            if (!post.targetThread) return post.shortThreadId
-            var ids = post.targetThread.split('|')
+        _mxCardPost_cleanthreadId(post) {
+            if (!post.threadId) return post.shortThreadId
+            var ids = post.threadId.split('|')
             if (ids.length == 1) return post.shortThreadId
             // get the actual post id
             var last = ids.shift();

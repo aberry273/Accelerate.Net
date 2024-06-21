@@ -44,11 +44,12 @@ export default function (data) {
 
             component = data.component || component
             // init websockets
+            /*
             await this._mxWebsockets_InitWebsocketEvents(
                 this.$store.wssMediaBlobs,
                 this.userId,
-                this.targetChannel,
-                this.targetThread,
+                this.channelId,
+                this.threadId,
             )
 
             // On updates from the websocket
@@ -58,24 +59,37 @@ export default function (data) {
                 if (data.alert) this._mxAlert_AddAlert(data);
                 this.updateItemUpdate(data);
             })
-
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 await this.search(filterUpdates);
             })
+            */
             this.$events.on(this.modalId, async (item) => {
                 this.$nextTick(() => {
                     this.selectedItem = item;
                     this._mxModal_Open(this.modalId)
                 })
             })
-            if (this.initSearch) await this.initSearch();
+
+            // On updates from filter
+            this.$events.on(this.filterEvent, async (filterUpdates) => {
+                await this.$store.wssMediaBlobs.Search(filterUpdates, true);
+                this.setUserItems();
+            })
+            if (this.initSearch) await this.loadData();
             this.setHtml(data);
         },
-        async initSearch() {
+        async loadData() {
             let queryData = {}
             if (data.userId) queryData.userId = [data.userId]
             await this.search(queryData);
+        },
+        // METHODS
+        async search(filters) {
+            let query = this._mxList_GetFilters(filters);
+            const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId, 0, 100);
+            if (postQuery == null) return;
+            this.items = await this._mxSearch_Post(this.searchUrl, postQuery);
         },
         browseNextMedia() {
             if (this.selectedIndex == this.items.length) return;
@@ -119,31 +133,6 @@ export default function (data) {
             }
         },
 
-        updateItemUpdate(wssMessage) {
-            var item = wssMessage.data;
-            if (this.items == null) this.items = [];
-            if (wssMessage.update == 'Created') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                if (index == -1) this.items.push(item);
-                else this.items[index] = item;
-            }
-            if (wssMessage.update == 'Updated') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items[index] = item
-            }
-            if (wssMessage.update == 'Deleted') {
-                const index = this.items.map(x => x.id).indexOf(item.id);
-                this.items.splice(index, 1);
-            }
-        },
-
-        // METHODS
-        async search(filters) {
-            let query = this._mxList_GetFilters(filters);
-            const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId, 0, 100);
-            if (postQuery == null) return;
-            this.items = await this._mxSearch_Post(this.searchUrl, postQuery);
-        },
 
         get gridCols() {
             if (this.mxResponsive_IsXSmall) return 'col-1'
@@ -172,33 +161,33 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div x-transition class="grid" :class="gridCols">
-              <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
-                <div>
-                    <template x-if="item.type == 'Video'">
-                      <div x-data="cardVideo({
-                          item: item,
-                          userId: userId,
-                          modalEvent: modalId,
-                          imageWidth: imageWidth
-                        })"></div>
-                    </template>
-                    <template x-if="item.type == 'Image'">
-                      <div x-data="cardImage({
-                          item: item,
-                          userId: userId,
-                          modalEvent: modalId,
-                          imageWidth: imageWidth
-                        })"></div>
-                    </template>
-                </div>
-              </template>
-              <!--
-              <template x-if="items == null || items.length == 0">
+                <template x-for="(item, i) in items" :key="item.id+item.updatedOn || i" >
+                    <div>
+                        <template x-if="item.type == 'Video'">
+                            <div x-data="cardVideo({
+                                item: item,
+                                userId: userId,
+                                modalEvent: modalId,
+                                imageWidth: imageWidth
+                            })"></div>
+                        </template>
+                        <template x-if="item.type == 'Image'">
+                            <div x-data="cardImage({
+                                item: item,
+                                userId: userId,
+                                modalEvent: modalId,
+                                imageWidth: imageWidth
+                            })"></div>
+                        </template>
+                    </div>
+                </template>
+                <!--
+                <template x-if="items == null || items.length == 0">
                 <article class="flat">
-                  <header><strong>No images found</strong></header>
+                    <header><strong>No images found</strong></header>
                 </article>
-              </template>
-              -->
+                </template>
+                -->
             </div>
           
             <dialog :id="modalId" class="fullscreen">
@@ -233,26 +222,25 @@ export default function (data) {
                         <button aria-label="Previous" 
                             :disabled="!hasPrevious"
                             @click="browsePreviousMedia" 
-                            class="material-icons floating-previous" 
+                            class="flat material-icons floating-previous" 
                             rel="next">chevron_left</button>
         
-                       <figure>
+                       <figure style="text-align:center">
                             <img
                                 :src="selectedItem.filePath"
                                 :onerror="onImgError(this)"
                                 :alt="selectedItem.name"
-                              /> 
+                              />
                         </figure>
 
                         <button aria-label="Next" 
                             :disabled="!hasNext"
                             @click="browseNextMedia" 
-                            class="material-icons floating-next" 
+                            class="flat material-icons floating-next" 
                             rel="next">chevron_right</button>
     
                     </div>
                 </article>
-              
             </dialog> 
             `
             this.$nextTick(() => {

@@ -7,42 +7,14 @@
     Layout = "/Views/Account/_ManagePageLayout.cshtml";
 }
 <section>
-    <div x-data="{
-            item: $store.media.getDummyMedia(),
-            items: [],
-            userId: '@Model.UserId',
-            filterEvent: 'onFilterChange',
-            actionEvent: 'action:post',
-            quoteEvent: 'quote:post',
-            filterData: [
-                {
-                    name: 'Tags',
-                    values: ['C#'],
-                    selected: 'C#',
-                    type: 'Checkbox',
-                },
-                {
-                    name: 'Type',
-                    values: ['All', 'Image', 'Video'],
-                    selected: 'All',
-                    type: 'Checkbox',
-                },
-                {
-                    name: 'Sort',
-                    values: ['Created', 'Updated', 'Top Rated', 'Bottom Rating'],
-                    selected: 'All',
-                    type: 'Radio',
-                }
-            ],
-            fields: [,
-            init() {
-
-            }
-        }">
+    <div>
         <nav>
             <ul>
+
                 <div x-data="appNavFilters({
-                filters: filterData
+                    filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+                    header: 'Posts',
+                    event: '@Model.FilterEvent'
                 })"></div>
             </ul>
             <ul>
@@ -51,16 +23,15 @@
         </nav>
         <!-- Filters -->
         <div x-data="gridCardMedia( {
-                actionUrl: '/api/mediablob',
-                searchUrl: '/api/mediasearch/blobs',
-                filterEvent: filterEvent,
-                actionEvent: actionEvent,
-                initSearch: true,
-                quoteEvent: quoteEvent,
-                userId: '@Model.UserId',
-                itemEvent: $store.wssContentPosts.getMessageEvent(),
-                items: items
-                initSearch: true,
+                    actionUrl: '@Model.ActionUrl',
+                    searchUrl: '@Model.SearchUrl',
+                    filterEvent: '@Model.FilterEvent',
+                    actionEvent: 'action:post',
+                    initSearch: true,
+                    quoteEvent: 'quote:post',
+                    userId: '@Model.UserId',
+                    itemEvent: $store.wssContentPosts.getMessageEvent(),
+                    items: []
                 })">
         </div>
     </div>

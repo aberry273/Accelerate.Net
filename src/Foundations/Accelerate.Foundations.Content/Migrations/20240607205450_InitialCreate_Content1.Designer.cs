@@ -214,10 +214,10 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<string>("Tags")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TargetChannel")
+                    b.Property<string>("channelId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TargetThread")
+                    b.Property<string>("threadId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")

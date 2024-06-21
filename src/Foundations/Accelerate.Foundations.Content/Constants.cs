@@ -36,8 +36,8 @@ namespace Accelerate.Foundations.Content
             public const string ShortThreadId = "shortThreadId";
             public const string ParentId = "parentId";
             public const string ParentIds = "parentIds";
-            public const string TargetThread = "targetThread";
-            public const string TargetChannel = "targetChannel";
+            public const string threadId = "threadId";
+            public const string ChannelId = "channelId";
             public const string ContentPostId = "contentPostId";
             public const string QuoteIds = "quoteIds";
             public const string Id = "id";

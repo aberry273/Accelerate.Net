@@ -129,9 +129,9 @@ export default function (data) {
               <!--End Header-->
 
               <!--Quote-->
-              <template x-if="selectedPost.targetThread && currentPage == 0">
+              <template x-if="selectedPost.threadId && currentPage == 0">
                   <blockquote class="dense">
-                    <a :href="'#'+selectedPost.targetThread" x-text="'@'+selectedPost.targetThread"></a>
+                    <a :href="'#'+selectedPost.threadId" x-text="'@'+selectedPost.threadId"></a>
                   </blockquote>
               </template>
               <!-- End Quote-->

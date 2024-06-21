@@ -30,7 +30,7 @@ namespace Accelerate.Foundations.Media
             services.AddDbContext<MediaDbContext>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
 
             // SERVICES
-            services.AddSingleton<IMediaService, MediaService>();
+            services.AddTransient<IMediaService, MediaService>();
             services.AddTransient<IElasticService<MediaBlobDocument>, MediaBlobElasticService>();
 
         }

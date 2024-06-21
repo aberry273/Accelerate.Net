@@ -32,8 +32,8 @@ export default function (data) {
             this.itemEvent = data.itemEvent;
             this.searchUrl = data.searchUrl;
             this.userId = data.userId;
-            this.targetThread = data.targetThread;
-            this.targetChannel = data.targetChannel;
+            this.threadId = data.threadId;
+            this.channelId = data.channelId;
             this.quoteEvent = data.quoteEvent;
             this.filters = data.filters;
 

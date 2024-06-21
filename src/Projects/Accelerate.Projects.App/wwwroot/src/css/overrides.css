@@ -989,9 +989,53 @@ input.file-field:is([type="file"]) {
     z-index: -1;
 }
 
+.topnav details.dropdown[open] summary + ul {
+    margin-left: -50px ;
+}
+
+::-webkit-scrollbar {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--pico-form-element-background-color);
+}
+
+html {
+    scrollbar-color: var(--pico-form-element-background-color);
+}
+
 /* RESPONSIVE GRID*/
 @media (min-width: 576px) {
-    /*GRID*/
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container {
+        width: 768px;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container {
+        max-width: 768px;
+    }
+}
+/* RESPONSIVE GRID*/
+@media (min-width: 576px) {
     .grid .panel {
         max-width: 100%;
     }

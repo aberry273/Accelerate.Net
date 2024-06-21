@@ -31,9 +31,9 @@ namespace Accelerate.Foundations.Media.Services
                 take);
         }
 
-        public override Task<SearchResponse<MediaBlobDocument>> GetAggregates(RequestQuery<MediaBlobDocument> query)
+        public override async Task<SearchResponse<MediaBlobDocument>> GetAggregates(RequestQuery<MediaBlobDocument> query)
         {
-            throw new NotImplementedException();
+            return await base.GetAggregates(query);
         }
 
         private QueryDescriptor<MediaBlobDocument> CreateQuery(RequestQuery<MediaBlobDocument> request)

@@ -5,8 +5,8 @@ export default function (data){
         mxWebsockets_Service: null,
         mxWebsockets_Event: '',
         mxWebsockets_UserId: '',
-        mxWebsockets_TargetThread: '',
-        mxWebsockets_TargetChannel: '',
+        mxWebsockets_threadId: '',
+        mxWebsockets_channelId: '',
 
         // GETTERS
         get mxModal_GetOpen() { return this.mxSearch_Open },
@@ -20,7 +20,7 @@ export default function (data){
             this.init();
             this.mxWebsockets_Event = data.event;
         },
-        async _mxWebsockets_InitWebsocketEvents(wssService, userId, targetChannel, targetThread) {
+        async _mxWebsockets_InitWebsocketEvents(wssService, userId, channelId, threadId) {
             this.userId = userId;
 
             // On websocket client initialized, send channel to server
