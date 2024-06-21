@@ -15,13 +15,13 @@ function list(links) {
   return link
 }
 
-export default function navbar(data) {
+export default function navbar(data, options) {
     return {
       init() {
         const header = `<ul>${li(`<strong>${data.title}</strong>`)}</ul>`;
         let links = list(data.items)
         this.$root.innerHTML = `
-        <details class="dropdown">
+        <details class="dropdown ${options.class}">
           <summary>${data.title}</summary>
           <ul>
             ${links}

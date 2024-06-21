@@ -7,8 +7,6 @@
 @model ChannelPage
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
-    var paths = Context.Request.Path.Value.Split('/');
-    var selectedDropdown = paths.Length > 2 ? "All" : Context.Request.Path.Value.Split('/').LastOrDefault();
     var currentTab = Model.Item.Name;
 }
 
@@ -49,10 +47,8 @@
                 <button x-show="showDetails" class="material-icons click flat " @@click="showDetails = false">unfold_less</button>
                 <button x-show="!showDetails" class="material-icons click flat " @@click="showDetails = true">unfold_more</button>
                  
-                <div x-data="dropdown({ title: '@selectedDropdown', items: @JsonSerializerHelper.SerializeObject(Model.ChannelDropdown) })"></div>
             </ul>
         </nav>
-
         <div x-show="showDetails" x-transition>
             <div class="grid">
                 <div>
@@ -96,6 +92,15 @@
             </div>
             <hr />
         </div>
+        <nav class="padded">
+            <ul>
+                <div x-data="dropdown(
+                    { title: '@Model.RouteName', items: @JsonSerializerHelper.SerializeObject(Model.ChannelDropdown) },
+                    {
+                        class: 'flat secondary bold'
+                    })"></div>
+            </ul>
+        </nav>
 
         <!--Feed-->
         <!--

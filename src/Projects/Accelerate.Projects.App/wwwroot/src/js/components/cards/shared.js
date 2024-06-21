@@ -168,9 +168,10 @@ export function footer(data) {
             </ul>
             <ul>
                 <li>
+                    <!--
                     <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_more</i>
                     <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_less</i>
-
+                    -->
                     <!--Agree-->
                     <button :disabled="!userId" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="_mxCardPost_userSelectedAction('agree', selectedPost) ? 'flat primary': 'flat'" >
                         <i aria-label="Agree" class="icon material-icons">expand_less</i>

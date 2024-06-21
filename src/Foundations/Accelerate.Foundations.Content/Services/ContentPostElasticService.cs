@@ -335,9 +335,10 @@ namespace Accelerate.Foundations.Content.Services
         public QueryDescriptor<ContentPostDocument> BuildRelatedSearchQuery(ContentChannelDocument channel, RequestQuery query)
         {
             var Query = new RequestQuery();
-            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
-            var notInChannel = Filter(Constants.Fields.ChannelId, ElasticCondition.MustNot, QueryOperator.Equals, channel.Id, true);
+            var notInChannel = Filter(Constants.Fields.ChannelId, ElasticCondition.MustNot, QueryOperator.NotEquals, channel.Id, true);
+           
             notInChannel.Filters = new List<QueryFilter>()
             {
                 FilterValues(Constants.Fields.Tags, ElasticCondition.Filter, QueryOperator.Equals, channel.Tags, true)

@@ -38,18 +38,23 @@ export default function (data) {
             this.filters = data.filters;
 
             component = data.component || component
-             
+
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
-                await this.$store.wssContentPosts.Search(filterUpdates, true);
+                //await this.$store.wssContentPosts.Search(filterUpdates, true);
+                await this.initSearch(filterUpdates, true);
             })
-            await this.initSearch();
+            await this.initSearch(this.filters || {});
 
             this.setHtml(data);
         },
-        async initSearch() {
-            let queryData = this.filters || {}
-            await this.$store.wssContentPosts.Search(queryData);
+        async initSearch(queryData, replaceItems = false) {
+            if (this.searchUrl) {
+                await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData, replaceItems);
+            }
+            else {
+                await this.$store.wssContentPosts.Search(queryData, replaceItems);
+            }
         },
         get parentItems() {
             return this.$store.wssContentPosts.items.filter(x => x.parentId == null);

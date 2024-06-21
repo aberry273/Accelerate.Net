@@ -7,7 +7,12 @@
 @{
     var currentTab = "All";
 }
-<div class="grid" x-data>
+<div class="grid" x-data="{
+        tabs: $store.wssContentChannels.items,
+        async init() {
+            await $store.wssContentChannels.Search({});
+        }
+    }">
     <!-- Channels panel -->
     <div>
         <nav>
@@ -17,20 +22,19 @@
                 </hgroup>
             </header>
             <ul>
-                @if (Model.ModalCreateChannel != null)
-                {
-                    <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add</button>
-                }
-            </ul>
-        </nav>
-
-        <nav style="width:100%;overflow-x: scroll;">
-            <ul>
                 @foreach (var tab in Model.ChannelsTabs.Items)
                 {
                     var tabClass = currentTab == tab.Text ? "selected" : "";
                     <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
                 }
+            </ul>
+        </nav>
+
+        <nav style="width:100%;overflow-x: scroll;">
+            <ul> 
+                <template x-for="tab in tabs">
+                    <a role="button" style="width: 100%" class="flat primary tab" :class="'@currentTab' == tab.name" href="" x-text="tab.name"></a>
+                </template>
             </ul>
         </nav>
 

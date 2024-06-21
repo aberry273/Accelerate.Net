@@ -6,18 +6,19 @@
 @model ChannelPage
 @{
     Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
-    var paths = Context.Request.Path.Value.Split('/');
-    var selectedDropdown = paths.Length > 2 ? "All" : Context.Request.Path.Value.Split('/').LastOrDefault();
-
 }
 <div class="">
+
+    @if (Model.IsAuthenticated)
+    {
+        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
     <!--Filter-->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-        header: '@selectedDropdown',
+        header: 'Filter By',
         event: '@Model.FilterEvent'
     })"></div>
-         
     <!--Feed-->
     <div x-data="listCards( {
         actionUrl: '@Model.ActionsApiUrl',
@@ -31,8 +32,4 @@
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">
     </div>
-    @if (Model.IsAuthenticated)
-    {
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    }
 </div>

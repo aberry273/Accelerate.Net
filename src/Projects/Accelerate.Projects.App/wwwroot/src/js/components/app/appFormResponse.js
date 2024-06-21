@@ -450,7 +450,7 @@ export default function (data) {
             -->
             <!-- to update to teleporting between fixed/nonfixed elements-->
                 <article  
-                :class="fixed ? 'floating bottom container dense sticky' : 'dense sticky'"
+                :class="fixed ? 'floating bottom container dense sticky py-0' : 'dense sticky'"
                 
                 style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"
                 :style="fixed ? fixedStyle : ''"

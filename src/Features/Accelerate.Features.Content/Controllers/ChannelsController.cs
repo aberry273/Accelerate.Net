@@ -136,6 +136,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
+            viewModel.RouteName = "All";
             return View(this.GetChannelView(nameof(this.All)), viewModel);
         }
         [HttpGet]
@@ -155,6 +156,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
+            viewModel.RouteName = "Posts";
             return View(this.GetChannelView(nameof(this.Posts)), viewModel);
         }
 
@@ -175,6 +177,8 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
+            viewModel.PostsApiUrl = $"{viewModel.PostsApiUrl}/related/{item.Id}";
+            viewModel.RouteName = "Related";
             return View(this.GetChannelView(nameof(this.Related)), viewModel);
         }
         [HttpGet]
@@ -194,6 +198,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
+            viewModel.RouteName = "Media";
             return View(this.GetChannelView(nameof(this.Media)), viewModel);
         }
 
@@ -214,6 +219,7 @@ namespace Accelerate.Features.Content.Controllers
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = _contentViewService.CreateChannelPage(user, item, channels, aggResponse);
+            viewModel.RouteName = "Users";
             return View(this.GetChannelView(nameof(this.Users)), viewModel);
         }
 

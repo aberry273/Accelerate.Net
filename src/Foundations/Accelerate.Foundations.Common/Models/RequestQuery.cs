@@ -10,7 +10,10 @@
     }
     public enum QueryOperator
     {
-        Contains, Equals, NotEquals, Null, NotNull, GreaterThan, LessThan, Exist
+        //Used
+        Exist,
+        //Not used
+        Contains, Equals, NotEquals, Null, NotNull, GreaterThan, LessThan, 
     }
     public class QueryFilter
     {
@@ -25,6 +28,7 @@
         public QueryFilter()
         {
         }
+
         public ElasticCondition Condition { get; set; } = ElasticCondition.Must;
         public required string Name { get; set; }
         public ValueType ValueType { get; set; } = ValueType.String;

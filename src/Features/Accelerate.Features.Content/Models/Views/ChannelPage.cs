@@ -7,6 +7,7 @@ namespace Accelerate.Features.Content.Models.Views
 {
     public class ChannelPage : BasePage
     {
+        public string RouteName { get; set; }
         public Guid UserId { get; set; }
         public ContentChannelDocument Item { get; set; }
         public NavigationGroup ChannelsTabs { get; set; }

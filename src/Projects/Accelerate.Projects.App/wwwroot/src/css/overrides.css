@@ -209,6 +209,19 @@ input, select, textarea {
 details.dropdown summary:not([role]) {
     border:none;
 }
+details.dropdown.flat summary:not([role]) {
+    border: none;
+    background-color: transparent;
+}
+details.dropdown.primary summary:not([role]) {
+    color: var(--pico-primary);
+}
+details.dropdown.secondary summary:not([role]) {
+    color: var(--pico-secondary);
+}
+.bold {
+    font-weight: 600;
+}
 
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */

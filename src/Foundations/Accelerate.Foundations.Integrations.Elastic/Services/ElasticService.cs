@@ -402,6 +402,22 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             };
         }
 
+        public Query? CreateTextOrTermQuery(QueryFilter? filter)
+        {
+            if(!filter.Keyword)
+            {
+                return CreateTextQuery(filter);
+            }
+            else if (filter.Value != null)
+            {
+                return CreateTermQuery(filter);
+            }
+            else if (filter.Values != null && filter.Values.Any())
+            {
+                return CreateTermsQuery(filter);
+            }
+            return CreateTermQuery(filter);
+        }
         public Query? CreateTerm(QueryFilter? filter)
         {
             /*
@@ -415,25 +431,12 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 return CreateTermsQuery(filter);
             }
             */
-            if (filter.Operator == QueryOperator.Contains)
-            {
-                return CreateTextQuery(filter);
-            }
-            else if (filter.Operator == QueryOperator.Exist)
+            if (filter.Operator == QueryOperator.Exist)
             {
                 return CreateExistsQuery(filter);
             }
 
-            if (filter.Value != null)
-            {
-                return CreateTermQuery(filter);
-            }
-            else if (filter.Values != null && filter.Values.Any())
-            {
-                return CreateTermsQuery(filter);
-            }
-
-            return CreateTermQuery(filter);
+            return CreateTextOrTermQuery(filter);
         }
         public Query[] GetQueries(List<QueryFilter> filters, ElasticCondition condition)
         {
@@ -445,22 +448,28 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         }
         public QueryDescriptor<T> CreateQuery(RequestQuery request)
         {
+            return this.CreateQueryFromFilters(request.Filters);
+        }
+        public QueryDescriptor<T> CreateQueryFromFilters(List<QueryFilter> filters)
+        {
             var query = new QueryDescriptor<T>();
             query.MatchAll();
-           // query = CreateQuery(new QueryDescriptor<T>(), request.Filters);
-         
-            var must = GetQueries(request?.Filters, ElasticCondition.Must);
-            if (must.Any()) query.Bool(x => x.Must(must));
-            
-            var mustNot = GetQueries(request?.Filters, ElasticCondition.MustNot);
-            if (mustNot.Any()) query.Bool(x => x.MustNot(mustNot));
 
-            var should = GetQueries(request?.Filters, ElasticCondition.Should);
+            var must = GetQueries(filters, ElasticCondition.Must);
+            if (must.Any()) query.Bool(x => x.Must(must));
+
+            var mustNot = GetQueries(filters, ElasticCondition.MustNot);
+            if (mustNot.Any())
+            {
+                query.Bool(x => x.MustNot(mustNot));
+            }
+
+            var should = GetQueries(filters, ElasticCondition.Should);
             if (should.Any()) query.Bool(x => x.Should(should));
 
-            var filter = GetQueries(request?.Filters, ElasticCondition.Filter);
+            var filter = GetQueries(filters, ElasticCondition.Filter);
             if (filter.Any()) query.Bool(x => x.Filter(filter));
-            
+
             return query;
         }
 
