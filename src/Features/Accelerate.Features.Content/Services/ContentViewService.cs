@@ -86,6 +86,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = user.Id;
             viewModel.FormCreateReply = CreatePostForm(user, item);
             viewModel.ModalEditChannel = EditModalChannelForm(user, item);
+            viewModel.ModalDeleteChannel = CreateModalDeleteChannelForm(user, item);
             viewModel.ModalEditReply = CreateModalEditReplyForm(user);
             viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             viewModel.ActionsApiUrl = "/api/contentpostactions";
@@ -730,6 +731,48 @@ namespace Accelerate.Features.Content.Services
                         Disabled = true,
                         AriaInvalid = false,
                         Value = ContentPostEntityStatus.Public,
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
+                    }
+                }
+            };
+            return model;
+        }
+
+        public ModalForm CreateModalDeleteChannelForm(AccountUser user, ContentChannelDocument channel)
+        {
+            var model = new ModalForm();
+            model.Title = "Delete channel";
+            model.Text = "Testdelete form text";
+            model.Target = "modal-delete-channel";
+            model.Form = CreateFormDeleteChannel(user, channel);
+            return model;
+        }
+        public AjaxForm CreateFormDeleteChannel(AccountUser user, ContentChannelDocument channel)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = "/api/contentchannel/"+channel.Id,
+                Type = PostbackType.DELETE,
+                Event = "channel:deleted:modal",
+                Label = "Delete",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Id",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = channel.Id,
                     },
                     new FormField()
                     {

@@ -1016,9 +1016,9 @@ input.file-field:is([type="file"]) {
 html {
     scrollbar-color: var(--pico-form-element-background-color);
 }
-
 /* RESPONSIVE GRID*/
 @media (min-width: 576px) {
+
     .container {
         max-width: 100%;
     }

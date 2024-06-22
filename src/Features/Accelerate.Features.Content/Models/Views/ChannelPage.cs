@@ -14,6 +14,7 @@ namespace Accelerate.Features.Content.Models.Views
         public List<NavigationItem> ChannelDropdown { get; set; }
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditChannel { get; set; }
+        public ModalForm ModalDeleteChannel { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
         public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();

@@ -7,12 +7,7 @@
 @{
     var currentTab = "All";
 }
-<div class="grid" x-data="{
-        tabs: $store.wssContentChannels.items,
-        async init() {
-            await $store.wssContentChannels.Search({});
-        }
-    }">
+<div class="grid" x-data>
     <!-- Channels panel -->
     <div>
         <nav>
@@ -22,18 +17,38 @@
                 </hgroup>
             </header>
             <ul>
-                @foreach (var tab in Model.ChannelsTabs.Items)
+                @if (Model.ModalCreateChannel != null)
                 {
-                    var tabClass = currentTab == tab.Text ? "selected" : "";
-                    <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
+                    <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateChannel.Target', { target: '@Model.ModalCreateChannel.Target' })">Add</button>
                 }
             </ul>
         </nav>
 
-        <nav style="width:100%;overflow-x: scroll;">
-            <ul> 
+        <nav 
+            style="width:100%;overflow-x: scroll;"
+            x-data="{
+                tabs: @JsonSerializerHelper.SerializeObject(Model.ChannelsTabs.Items),
+                init() { 
+                    this.$events.on($store.wssContentChannels.getMessageEvent(), async (e)=>
+                    {
+                        const data = e.data;
+                        if (!data) return;
+                        
+                        if(data.update == 'Created') {
+                            location.reload();
+                        }
+                    })
+                },
+            }">
+            <ul>
                 <template x-for="tab in tabs">
-                    <a role="button" style="width: 100%" class="flat primary tab" :class="'@currentTab' == tab.name" href="" x-text="tab.name"></a>
+                    <a role="button" 
+                        style="width: 100%" 
+                        class="flat primary tab"
+                        :class="'@currentTab' == tab.text ? 'selected' : ''"
+                        :href="tab.href"
+                        x-text="tab.text">
+                    </a>
                 </template>
             </ul>
         </nav>

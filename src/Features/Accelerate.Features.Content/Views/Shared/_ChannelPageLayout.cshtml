@@ -10,13 +10,26 @@
     var currentTab = Model.Item.Name;
 }
 
-<div class="grid" x-data="{ showDetails: false }">
+<div class="grid" x-data="{ 
+        showDetails: false,
+        init() { 
+            this.$events.on($store.wssContentChannels.getMessageEvent(), async (e)=>
+                {
+                    const data = e.data;
+                    if (!data) return;
+                    
+                    if(data.update == 'Deleted') {
+                        location.reload();
+                    }
+                })
+            },
+        }">
     <!-- Channels panel -->
     <div>
         <nav>
             <header>
                 <hgroup>
-                    <h1>Channels</h1>
+                    <h1 >Channels</h1>
                 </hgroup>
             </header>
         </nav>
@@ -34,19 +47,20 @@
         <hr />
 
         <nav>
-            <header>
-                <hgroup>
-                    <h3>@Model.Item.Name</h3>
-                </hgroup>
+            <header style="width: 50%; white-space: nowrap;">
+               
+                    <h3 style="overflow: hidden;text-overflow: ellipsis;">@Model.Item.Name</h3>
+               
             </header>
             <ul>
-                @if (Model.UserId == Model.Item.UserId)
-                {
-                    <button class="material-icon click flat primary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
-                }
                 <button x-show="showDetails" class="material-icons click flat " @@click="showDetails = false">unfold_less</button>
                 <button x-show="!showDetails" class="material-icons click flat " @@click="showDetails = true">unfold_more</button>
-                 
+
+                @if (Model.UserId == Model.Item.UserId)
+                {
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalDeleteChannel.Target', { target: '@Model.ModalDeleteChannel.Target' })">delete</button>
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
+                }
             </ul>
         </nav>
         <div x-show="showDetails" x-transition>
@@ -125,6 +139,8 @@
 <!-- Edit channel -->
 @if (Model.IsAuthenticated)
 {
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteChannel))"></div>
+
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
 
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>

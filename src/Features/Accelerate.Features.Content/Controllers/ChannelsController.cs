@@ -73,7 +73,7 @@ namespace Accelerate.Features.Content.Controllers
             }
             //if (user == null) return RedirectToAction("Index", "Account");
 
-            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
+            var channels = await _channelSearchService.Search(GetUserChannelsQuery(user), 0, 100);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelsAggregateQuery());
 
             var viewModel = _contentViewService.CreateChannelsPage(user, channels, aggResponse);
@@ -107,7 +107,6 @@ namespace Accelerate.Features.Content.Controllers
             return View(viewModel);
         }
 
-
         [HttpGet]
         [Route("Channels/{id}")]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
@@ -130,7 +129,10 @@ namespace Accelerate.Features.Content.Controllers
             var response = await _channelSearchService.GetDocument<ContentChannelDocument>(id.ToString());
             var item = response.Source;
 
-            if (item == null) return RedirectToAction(nameof(ChannelNotFound));
+            if (item == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
