@@ -23,6 +23,7 @@ export default function (data) {
         tagStr: null,
         userId: null,
         tags: [],
+        belowFold: false,
         quoteFieldName: 'QuotedItems',
         statusFieldName: 'Status',
         categoryFieldName: 'Category',
@@ -225,6 +226,7 @@ export default function (data) {
             field.items = threadIds;
             this._mxForm_SetField(this.fields, field);
             this.showFloatingPanel = false;
+            if (this.belowFold) this.fixed = true;
         },
         updateMentionsField(item) {
             const field = this._mxForm_GetField(this.fields, 'Mentions');
@@ -249,7 +251,7 @@ export default function (data) {
             this._mxForm_SetField(this.fields, replyToField);
             this.showFloatingPanel = false;
             // If form is in scrollState, show
-            //this.fixed = true;
+            if (this.belowFold) this.fixed = true;
         },
         async updateLinkField(url) {
             const linkField = this._mxForm_GetField(this.fields, 'Link');
@@ -302,10 +304,10 @@ export default function (data) {
         },
         createReplyPostSummary(item) {
             const content = item.content.length > 64 ? item.content.slice(0, 64) + "..." : item.content;
-            return `Reply to [${item.shortThreadId}]: ${content}`
+            return `Reply to @${item.profile.username}:${content} [${item.shortThreadId}]`
         },
         createSingleLineQuotePost(item) {
-            return `@${item.shortThreadId}: ${item.content.slice(0, 64)}`
+            return `@${item.profile.username}: ${item.content.slice(0, 64)} [${item.shortThreadId}]`
         },
         createQuoteRequestItem(item) {
             const quote = {
@@ -432,8 +434,8 @@ export default function (data) {
                 </article>
             </dialog>
 
-            <span id="fixedPosition"><span>
-             
+            <span id="fixedPosition" @scroll.window="belowFold = (window.pageYOffset < 500) ? false: true"><span>
+          
             <!--Floating button-->
             <button
                 x-show="showFloatingPanel"

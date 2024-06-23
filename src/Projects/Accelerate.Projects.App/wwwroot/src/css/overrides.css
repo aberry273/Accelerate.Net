@@ -772,6 +772,10 @@ article .media figure {
     border-radius: 12px;
 }
 
+.post-media .media figure  {
+    text-align:center;
+}
+
 article .media figure img {
     object-fit: cover;
     height:200px;

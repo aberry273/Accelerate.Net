@@ -21,9 +21,8 @@ export function content(data) {
 export function media(data) {
     return `
     <template x-if="selectedPost.media != null && selectedPost.media.length > 0">
-        <div x-data="gridCardMedia( {
+        <div x-data="cardMedia( {
                 userId: selectedPost.userId,
-                itemEvent: $store.wssContentPosts.getMessageEvent(),
                 items: selectedPost.media,
                 modalId: 'media-modal'+selectedPost.id,
                 cols: 3

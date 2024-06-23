@@ -308,9 +308,23 @@ namespace Accelerate.Features.Content.Services
         }
         private string GetContentPostReplyValue(ContentPostDocument post)
         {
-            if (post == null || string.IsNullOrEmpty(post.Content)) return string.Empty;
-            var content = post.Content.Length > 64 ? post.Content.Substring(0, 64)+ "..." : post.Content;
-            return $"Reply to [{post.ShortThreadId}]: {content}";
+            var content = string.Empty;
+            if (post == null || string.IsNullOrEmpty(post.Content))
+            {
+                if (post.Media.Count() > 0)
+                {
+                    content = $"<{post.Media.Count()} Media>";
+                }
+                else if (post.QuotedPosts.Count() > 0)
+                {
+                    content = $"<{post.QuotedPosts.Count()} Quote>";
+                }
+            }
+            else
+            {
+                content = post.Content.Length > 64 ? post.Content.Substring(0, 64) + "..." : post.Content;
+            }
+            return $"Reply to @{post?.Profile?.Username}: {content} [{post.ShortThreadId}]";
         }
         public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostDocument post)
         {

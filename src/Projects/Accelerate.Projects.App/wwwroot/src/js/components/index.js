@@ -10,6 +10,7 @@ import cardPost from './cards/cardPost.js'
 import cardPostActionless from './cards/cardPostActionless.js'
 import cardPostReply from './cards/cardPostReply.js'
 import cardPostQuote from './cards/cardPostQuote.js'
+import cardMedia from './cards/cardMedia.js'
 import cardImage from './cards/cardImage.js'
 import cardVideo from './cards/cardVideo.js'
 // CONTENT
@@ -56,6 +57,7 @@ export {
     cardPostActionless,
     cardImage,
     cardVideo,
+    cardMedia,
 
     // DROPDOWNS
     aclDropdownAjax,

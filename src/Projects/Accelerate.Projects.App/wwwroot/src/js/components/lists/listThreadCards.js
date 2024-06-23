@@ -53,6 +53,7 @@ export default function (data) {
                 }
                 
             })
+
             await this.initSearch();
 
             this.setHtml(data);

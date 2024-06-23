@@ -26,10 +26,22 @@ export default function (settings) {
 
             // On updates from the websocket 
             this._mxEvents_On(this.getMessageEvent(), async (e) => {
-                const data = e.data;
-                if (!data) return;
-                if (data.alert) this._mxAlert_AddAlert(data);
-                this.items = this.updateItems(this.items, data);
+                const msgData = e.data;
+                if (!msgData) return;
+                if (msgData.alert) this._mxAlert_AddAlert(msgData);
+                this.items = this.updateItems(this.items, msgData);
+                if (msgData.update == 'Created') {
+                    if (msgData.data.parentId) {
+                        // Temporary until content post summaries include the reply counter
+                        var parent = this.items.filter(x => x.id == msgData.data.parentId);
+                        parent.replies = parent.replies++;
+                        const spoofMsg = {
+                            update: 'Updated',
+                            data: parent
+                        }
+                        this.items = this.updateItems(this.items, spoofMsg);
+                    }
+                } 
             })
             // Listen for wssContentPostActionsUpdate
             this._mxEvents_On(wssContentPostActionsUpdate, async (data) => {
