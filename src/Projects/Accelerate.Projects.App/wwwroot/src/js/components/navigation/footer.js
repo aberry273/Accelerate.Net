@@ -24,12 +24,12 @@ export default function navbar(data) {
           <footer>
             <nav>
               <li class="pl-0">
-                ${data.text}
+                <strong>${data.text}</strong> <small x-html="'- Copyright &copy;2024'"></small>
               </li>
               <ul>
                 <li>
                   <details class="dropdown">
-                    <summary role="button" class="secondary">Theme</summary>
+                    <summary role="button" class="secondary outline">Theme</summary>
                     <ul>
                       <li><a href="#" @click="$store.theme.setScheme('auto')">Auto</a></li>
                       <li><a href="#" @click="$store.theme.setScheme('light')">Light</a></li>

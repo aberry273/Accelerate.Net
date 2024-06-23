@@ -143,10 +143,10 @@ export default function (data) {
             return 'col-4';
         },
         get imageWidth() {
-            if (this.items.length <= 1) return 400
-            if (this.items.length <= 2) return 300
-            if (this.items.length <= 3) return 200
-            return 200
+            if (this.items.length <= 1) return 600
+            if (this.items.length <= 2) return 500
+            if (this.items.length <= 3) return 400
+            return 400
         },
         onImgError(image) {
             image.onerror = null;
@@ -192,7 +192,7 @@ export default function (data) {
           
             <dialog :id="modalId" class="fullscreen">
                 <article class="fullscreen">
-                    <header>
+                    <header class="py-0">
                         <nav>
                         <ul>
                             <p>
@@ -216,30 +216,28 @@ export default function (data) {
                             <button aria-label="Close" rel="prev" @click="_mxModal_Close(modalId)"></button>
                         </ul>
                         </nav>
-                    </header>
-                    <div>
-
-                        <button aria-label="Previous" 
-                            :disabled="!hasPrevious"
-                            @click="browsePreviousMedia" 
-                            class="flat material-icons floating-previous" 
-                            rel="next">chevron_left</button>
+                    </header> 
+                    <button aria-label="Previous" 
+                        :disabled="!hasPrevious"
+                        @click="browsePreviousMedia" 
+                        class="round xsmall primary material-icons floating-previous"
+                        rel="next">chevron_left</button>
         
-                       <figure style="text-align:center">
-                            <img
-                                :src="selectedItem.filePath"
-                                :onerror="onImgError(this)"
-                                :alt="selectedItem.name"
-                              />
-                        </figure>
+                    <figure style="text-align:center">
+                        <img
+                            style="height:100%"
+                            :src="selectedItem.filePath"
+                            :onerror="onImgError(this)"
+                            :alt="selectedItem.name"
+                            />
+                    </figure>
 
-                        <button aria-label="Next" 
-                            :disabled="!hasNext"
-                            @click="browseNextMedia" 
-                            class="flat material-icons floating-next" 
-                            rel="next">chevron_right</button>
-    
-                    </div>
+                    <button aria-label="Next" 
+                        :disabled="!hasNext"
+                        @click="browseNextMedia" 
+                        class="round xsmall primary material-icons floating-next"
+                        rel="next">chevron_right</button>
+     
                 </article>
             </dialog> 
             `
