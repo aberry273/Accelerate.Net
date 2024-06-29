@@ -10,13 +10,18 @@ namespace Accelerate.Foundations.Database.Services
 {
     public interface IEntityService<T>
     {
+        void ClearDatabase();
+        int Count(Expression<Func<T, bool>> expression);
         Task<int> CopyRange(IEnumerable<T> entities);
         Task<int> DeleteRange(IEnumerable<T> entities);
         Task<int> UpdateRange(IEnumerable<T> entities);
         Task<int> Delete(T entity);
         Task<int> AddRange(IEnumerable<T> entities);
+        Task AddRangeAsyncNoSave(IEnumerable<T> entities);
         Task<Guid?> CreateWithGuid(T entity);
         Task<int> Create(T entity);
+        Task<int> SaveChangesAsync();
+        void UpdateNoSave(T entity);
         T Get(Guid guid);
         Task<T> GetAsync(Guid id);
         Task<int> Update(T entity);

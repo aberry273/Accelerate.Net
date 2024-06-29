@@ -21,22 +21,49 @@ using System;
 
 namespace Accelerate.Features.Content.Pipelines.ActionsSummary
 {
-    public class ContentPostActionsUpdatedListenerPipeline : DataUpdateEventPipeline<ContentPostActionsEntity>
+    public class ContentPostActionsUpdatedListenerPipeline : DataUpdateEventPipeline<ContentPostActivityEntity>
     {
-        public ContentPostActionsUpdatedListenerPipeline()
+        IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> _messageHub;
+        IEntityService<ContentPostActionsEntity> _entityActionsService;
+        IEntityService<ContentPostActionsSummaryEntity> _entityService;
+        IEntityService<ContentPostActivityEntity> _entityActivitiesService;
+        IElasticService<ContentPostActionsSummaryDocument> _elasticService;
+        public ContentPostActionsUpdatedListenerPipeline(
+            IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub,
+            IEntityService<ContentPostActionsSummaryEntity> entityService,
+            IEntityService<ContentPostActivityEntity> entityActivitiesService,
+            IEntityService<ContentPostActionsEntity> entityActionsService,
+            IElasticService<ContentPostActionsSummaryDocument> elasticService)
         {
+            _entityService = entityService;
+            _entityActionsService = entityActionsService;
+            _messageHub = messageHub;
+            _entityActivitiesService = entityActivitiesService;
+            _elasticService = elasticService;
             // run summary update of action event
 
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActivityEntity>>()
             {
-                PerformUpdate,
+                UpdateEntity,
             };
         }
-        public async Task PerformUpdate(IPipelineArgs<ContentPostActionsEntity> args)
+        public async Task UpdateEntity(IPipelineArgs<ContentPostActivityEntity> args)
         {
-            var indexModel = new ContentPostActionsSummaryDocument();
+            var counts = ContentPostActionsSummaryUtilities.GetActivityCounts(_entityActivitiesService, args);
+            var contentPostDoc = new ContentPostDocument()
+            {
+                ActionsTotals = new ContentPostActionsSummaryDocument()
+                {
+                    Agrees = counts.Agrees,
+                    Disagrees = counts.Disagrees,
+                    Quotes = counts.Quotes,
+                    Replies = counts.Replies,
+                }
+            };
+            await _elasticService.UpdateDocument(contentPostDoc, args.Value.ContentPostId.ToString());
             //do stuff
         }
+        
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.EventPipelines.Pipelines;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerator.Foundation.Content.Database;
 using Azure.Identity;

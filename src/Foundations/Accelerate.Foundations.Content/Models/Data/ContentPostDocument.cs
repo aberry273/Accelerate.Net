@@ -143,14 +143,13 @@ namespace Accelerate.Foundations.Content.Models.Data
                 return ActionsTotals.Disagrees;
             }
         }
-        public int? Likes
+        public int? Replies
         {
             get
             {
                 if (ActionsTotals == null) return 0;
-                return ActionsTotals.Likes;
+                return ActionsTotals.Replies;
             }
         }
-        public int? Replies { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IContentPostService _contentPostService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
+        IElasticService<ContentPostActionsSummaryDocument> _elasticPostActionsSummaryService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentChannelEntity> _channelService;
         IEntityService<MediaBlobEntity> _mediaService;
@@ -38,18 +39,23 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
+        IEntityService<ContentPostActionsSummaryEntity> _entityActionsSummaryService;
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
+            IElasticService<ContentPostActionsSummaryDocument> elasticPostActionsSummaryService,
             IEntityService<ContentChannelEntity> channelService,
             IEntityService<ContentPostEntity> entityService,
             IEntityService<ContentPostQuoteEntity> quoteService,
+            IEntityService<ContentPostActionsSummaryEntity> entityActionsSummaryService,
             IEntityService<MediaBlobEntity> mediaService,
             IEntityService<ContentPostMediaEntity> mediaPostService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
             _contentPostService = contentPostService;
+            _entityActionsSummaryService = entityActionsSummaryService;
+            _elasticPostActionsSummaryService = elasticPostActionsSummaryService;
             _entityService = entityService;
             _elasticService = elasticService;
             _messageHub = messageHub;
@@ -62,11 +68,34 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
                 IndexDocument,
+                CreatePostActionSummary,
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
         }
+
+        private async Task CreatePostActionSummary(IPipelineArgs<ContentPostEntity> args)
+        {
+            var entity = new ContentPostActionsSummaryEntity()
+            {
+                ContentPostId = args.Value.Id,
+                Agrees = 0,
+                Disagrees = 0,
+                Replies = 0,
+                Quotes = 0,
+            };
+            var id = await _entityActionsSummaryService.CreateWithGuid(entity);
+            if (id == null) return;
+            entity.Id = id.GetValueOrDefault();
+
+            var doc = new ContentPostActionsSummaryDocument()
+            {
+                ContentPostId = args.Value.Id,
+            };
+            var response = await _elasticPostActionsSummaryService.Index(doc);
+        }
+
         private List<ContentPostMediaSubdocument> GetMedia(IPipelineArgs<ContentPostEntity> args)
         {
             var mediaLinks = _mediaPostService
@@ -130,8 +159,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 ContentPostQuoteThreadId = GuidExtensions.ShortenBase64(x.QuotedContentPostId.ToBase64()),
                 ContentPostQuoteId = x.QuotedContentPostId.ToString(),
-                Content = x.Content,
-                Response = x.Response
             }).ToList();
         }
         private ContentPostParentEntity? GetParent(IPipelineArgs<ContentPostEntity> args)
@@ -175,14 +202,38 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                         ? postParent.ParentIdItems.ToList()
                         : null;
 
-                    await UpdateParentDocument(postParent, indexModel, args);
+                    //await UpdateParentDocument(postParent, indexModel, args);
                 }
                 await _elasticService.Index(indexModel);
+                await SendWebsocketUpdate(args);
             }
             catch(Exception ex)
             {
                 throw ex;
             }
+        }
+
+        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        {
+            ContentPostDocument doc;
+            var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            doc = response.Source;
+            // If its a reply to own thread by the user, send the parent as the update instead
+            if (doc.PostType == ContentPostType.Page)
+            {
+                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
+                doc = parentResponse.Source;
+            }
+            var payload = new WebsocketMessage<ContentPostDocument>()
+            {
+                Message = "Create successful",
+                Code = 200,
+                Data = doc,
+                UpdateType = DataRequestCompleteType.Created,
+                Group = "Post",
+                Alert = true
+            };
+            await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
         }
 
         private async Task UpdateParentDocument(ContentPostParentEntity parentEntity, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
@@ -192,7 +243,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             if (parentDoc == null) return;
 
             // Update reply count
-            parentDoc.Replies = _contentPostService.GetReplyCount(parentEntity.ParentId.GetValueOrDefault());
+            //parentDoc.Replies = _contentPostService.GetReplyCount(parentEntity.ParentId.GetValueOrDefault());
 
             // Update threads
             if (args.Value.Type == ContentPostType.Page)

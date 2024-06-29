@@ -2,12 +2,14 @@ import { emit, createClient, connectedEvent, messageEvent } from './utilities.js
 import wssService from './wssService.js'
 import { mxAlert, mxList, mxSearch } from '/src/js/mixins/index.js';
 const wssContentPostActionsUpdate = 'wss:post:action';
+const wssContentPostActionsSummaryUpdate = 'wss:post:actionSummary';
 const quoteEvent = 'action:post:quote';
 export default function (settings) {
     return {
         postbackUrl: 'wssContentPosts.postbackUrl',
         queryUrl: 'wssContentPosts.queryUrl',
         actions: [],
+        actionSummaries: [],
         quotedPosts: [],
         //cachedFilters: {},
         // mixins
@@ -30,23 +32,16 @@ export default function (settings) {
                 if (!msgData) return;
                 if (msgData.alert) this._mxAlert_AddAlert(msgData);
                 this.items = this.updateItems(this.items, msgData);
-                if (msgData.update == 'Created') {
-                    if (msgData.data.parentId) {
-                        // Temporary until content post summaries include the reply counter
-                        var parent = this.items.filter(x => x.id == msgData.data.parentId);
-                        parent.replies = parent.replies++;
-                        const spoofMsg = {
-                            update: 'Updated',
-                            data: parent
-                        }
-                        this.items = this.updateItems(this.items, spoofMsg);
-                    }
-                } 
             })
             // Listen for wssContentPostActionsUpdate
             this._mxEvents_On(wssContentPostActionsUpdate, async (data) => {
                 if (!data) return;
                 this.actions = this.updateItems(this.actions, data);
+            })
+            // Listen for wssContentPostActionsSummaryUpdate
+            this._mxEvents_On(wssContentPostActionsSummaryUpdate, async (data) => {
+                if (!data) return;
+                this.actionSummaries = this.updateItems(this.actionSummaries, data);
             })
             // Listen of post quoting
             // Not used right now - to be used as state for editForm t
@@ -97,12 +92,19 @@ export default function (settings) {
                 this.items = result.posts;
                 this.quotedPosts = result.quotedPosts;
                 this.actions = result.actions;
+                this.actionSummaries = result.actionSummaries;
             }
             else {
                 this.items = this.insertOrUpdateItems(this.items, result.posts);
                 this.quotedPosts = this.insertOrUpdateItems(this.items, result.quotedPosts);
                 this.actions = this.insertOrUpdateItems(this.actions, result.actions);
+                this.actionSummaries = this.insertOrUpdateItems(this.actionSummaries, result.actionSummaries);
             }
+        },
+        GetActionSummary(postId) {
+            const summaries = this.actionSummaries.filter(x => x.contentPostId == postId);
+            if (summaries == null || summaries.length == 0) return null;
+            return summaries[0];
         },
         GetPostAction(postId, userId) {
             const actions = this.actions.filter(x => x.userId == userId && x.contentPostId == postId);

@@ -131,7 +131,7 @@ namespace Accelerate.Features.Content.Controllers
 
             if (item == null)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ChannelNotFound));
             }
 
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user));

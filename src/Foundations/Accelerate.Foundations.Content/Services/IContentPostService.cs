@@ -22,7 +22,9 @@ namespace Accelerate.Foundations.Content.Services
         Task RunDeletePipeline(ContentPostEntity obj);
 
         ContentPostMediaEntity CreateMediaLink(ContentPostEntity post, Guid mediaId);
-         
+
+        Task<int> CreatePostSummary(ContentPostEntity post);
+        void UpdatePostSummary(ContentPostActionsSummaryEntity entity);
 
         Task<int> CreateParentPost(ContentPostEntity post, Guid parentId, List<Guid> ancestorIds);
         ContentPostParentEntity GetPostParent(ContentPostEntity post);
@@ -42,5 +44,13 @@ namespace Accelerate.Foundations.Content.Services
 
         Task<int> CreateChannelPost(ContentPostEntity post, Guid channelId);
         ContentChannelEntity GetPostChannel(ContentPostEntity post);
+
+        Task<int> CreateQuotes(Guid postId, List<Guid> quoteIds);
+
+        Task<Guid?> CreatePostActivity(Guid postId, ContentPostActivityTypes type, string value);
+
+        //actions
+        Task<Guid?> CreateOrUpdatePostAction(ContentPostActionsEntity obj);
+        Task<Guid?> CreatePostAction(Guid postId, Guid userId, bool? agree, bool? disagree, bool? like);
     }
 }

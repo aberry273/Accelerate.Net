@@ -12,7 +12,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
     public static class ContentPostActionsSummaryUtilities
     {
 
-        public static ContentPostActionsSummaryEntity GetActionSummaryEntity(IEntityService<ContentPostActionsSummaryEntity> entityService, IPipelineArgs<ContentPostActionsEntity> args)
+        public static ContentPostActionsSummaryEntity GetActionSummaryEntity(IEntityService<ContentPostActionsSummaryEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         {
             return entityService
                .Find(x => x.ContentPostId == args.Value.ContentPostId)
@@ -23,15 +23,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             return await entityService
                 .Create(entity);
         }
-        public static ContentPostActionsSummaryEntity CreateActionSummaryEntity(IPipelineArgs<ContentPostActionsEntity> args)
-        {
-            return new ContentPostActionsSummaryEntity()
-            {
-                ContentPostId = args.Value.ContentPostId,
-                Agrees = args.Value.Agree.GetValueOrDefault() ? 1 : 0,
-                Disagrees = args.Value.Disagree.GetValueOrDefault() ? 1 : 0,
-            };
-        }
+         
 
         public static ContentPostActionsSummaryDocument GetActionCounts(IEntityService<ContentPostActionsEntity> entityService, IPipelineArgs<ContentPostActionsEntity> args)
         {
@@ -45,12 +37,32 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                        Disagrees = x.Count(y => y.Disagree == true),
                    }).Single();
         }
-        public static async Task CreateOrUpdateActionsSummaryIndex(IElasticService<ContentPostActionsSummaryDocument> _elasticService, ContentPostActionsEntity actionsSummary)
+        public static async Task CreateOrUpdateActionsSummaryIndex(IElasticService<ContentPostActionsSummaryDocument> _elasticService, ContentPostActionsSummaryEntity actionsSummary)
         {
-
             var fetchResponse = await _elasticService.GetDocument<ContentPostActionsSummaryDocument>(actionsSummary.Id.ToString());
             var contentPostDocument = fetchResponse.Source;
-            //await _elasticPostService.UpdateOrCreateDocument(contentPostDocument, args.Value?.ContentPostId.ToString())
+            if(contentPostDocument != null)
+            {
+                contentPostDocument.Agrees = actionsSummary.Agrees;
+                contentPostDocument.Disagrees = actionsSummary.Disagrees;
+                contentPostDocument.Replies = actionsSummary.Replies;
+                contentPostDocument.Quotes = actionsSummary.Quotes;
+
+                await _elasticService.UpdateOrCreateDocument(contentPostDocument, actionsSummary.Id.ToString());
+            }
+            else
+            {
+                contentPostDocument = new ContentPostActionsSummaryDocument()
+                {
+                    Agrees = actionsSummary.Agrees,
+                    Disagrees = actionsSummary.Disagrees,
+                    ContentPostId = actionsSummary.ContentPostId,
+                    Id = actionsSummary.Id,
+                    Quotes = actionsSummary.Quotes,
+                    Replies = actionsSummary.Replies,
+                };
+                await _elasticService.Index(contentPostDocument);
+            }
         }
 
         /// <summary>
@@ -59,9 +71,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         /// <param name="entityService"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        
-
-        public static ContentPostActionsSummaryDocument GetActivities(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActionsSummaryEntity> args)
+        public static ContentPostActionsSummaryDocument GetActionsCount(IEntityService<ContentPostActionsEntity> entityService, IPipelineArgs<ContentPostActionsEntity> args)
         {
             return entityService
                .Find(x => x.ContentPostId == args.Value.ContentPostId)
@@ -69,52 +79,50 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                .Select(x =>
                    new ContentPostActionsSummaryDocument
                    {
-                       Agrees = x
-                           .Where(y => y.Type == ContentPostActivityTypes.Agree)
-                           .OrderByDescending(y => y.CreatedOn)
-                           .GroupBy(y => y.UserId)
-                           .First()
-                           .Count(y => y.Value == "true"),
-                       Disagrees = x
-                           .Where(y => y.Type == ContentPostActivityTypes.Disagree)
-                           .OrderByDescending(y => y.CreatedOn)
-                           .GroupBy(y => y.UserId)
-                           .First()
-                           .Count(y => y.Value == "true"),
-                       Likes = x
-                           .Where(y => y.Type == ContentPostActivityTypes.Like)
-                           .OrderByDescending(y => y.CreatedOn)
-                           .GroupBy(y => y.UserId)
-                           .First()
-                           .Count(y => y.Value == "true"),
+                       Agrees = x.Count(y => y.Agree == true),
+                       Disagrees = x.Count(y => y.Disagree == true),
+                       Likes = x.Count(y => y.Like == true),
                    }).Single();
+        }
+        public static ContentPostActionsSummaryDocument GetActivityCounts(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
+        { 
+            var a = entityService
+               .Find(x => x.ContentPostId == args.Value.ContentPostId)?
+               .GroupBy(g => 1)?
+               .Select(x => x);
+
+            return entityService
+               .Find(x => x.ContentPostId == args.Value.ContentPostId)?
+               .GroupBy(g => 1)?
+               .Select(x =>
+                   new ContentPostActionsSummaryDocument
+                   {
+                       Replies = x
+                           .Where(y => y.Type == ContentPostActivityTypes.Reply)?
+                           .GroupBy(y => y.UserId)?
+                           .FirstOrDefault()?
+                           .Count() ?? 0,
+                       Quotes = x
+                           .Where(y => y.Type == ContentPostActivityTypes.Quote)?
+                           .GroupBy(y => y.UserId)?
+                           .FirstOrDefault()?
+                           .Count() ?? 0,
+                   })?.FirstOrDefault()
+                   ?? new ContentPostActionsSummaryDocument();
         }
 
         // TODO: Potentially remove or add, unsure of userbased state mgmt yet
-        public static async Task SendWebsocketActionsSummaryUpdate(IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub, IPipelineArgs<ContentPostActionsSummaryDocument> args, string message, DataRequestCompleteType type)
+        public static async Task SendWebsocketActionsSummaryUpdate(IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub, ContentPostActionsSummaryDocument doc, string message, DataRequestCompleteType type)
         {
             var payload = new WebsocketMessage<ContentPostActionsSummaryDocument>()
             {
                 Message = message,
                 Code = 200,
-                Data = args.Value,
-                UpdateType = type,
-                Group = "Action",
-            };
-            await messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
-        }
-        public static async Task SendWebsocketPostUpdate(IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts, string userId, ContentPostDocument doc, DataRequestCompleteType type)
-        {
-            var payload = new WebsocketMessage<ContentPostDocument>()
-            {
-                Message = "Update successful",
-                Code = 200,
                 Data = doc,
                 UpdateType = type,
-                Group = "Post"
+                Group = "ActionSummary",
             };
-            var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
-            await messageHubPosts.Clients.Clients(userConnections).SendMessage(userId, payload);
-        }
+            await messageHub.Clients.All.SendMessage(doc.UserId.ToString(), payload);
+        } 
     }
 }

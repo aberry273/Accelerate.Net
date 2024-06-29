@@ -15,7 +15,7 @@ namespace Accelerate.Foundations.Content.Services
 
         public ContentPostActionsSummaryElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = config.Value.ActionsIndexName;
+            this._indexName = config.Value.ActionsSummaryIndexName;
         }
         public override async Task<SearchResponse<ContentPostActionsSummaryDocument>> Find(RequestQuery<ContentPostActionsSummaryDocument> query)
         {

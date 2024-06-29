@@ -15,6 +15,7 @@ namespace Accelerate.Foundations.EventPipelines
         {
             services.AddMassTransit<B>(x =>
             {
+                //x.AddConsumersFromNamespaceContaining<T>();
                 // Posts
                 x.AddConsumer<DataCreateConsumer<T, B>>();
                 x.AddConsumer<DataCreateCompleteConsumer<T>>();
@@ -41,6 +42,12 @@ namespace Accelerate.Foundations.EventPipelines
                     });
                 });
             });
+        }
+        public static void ConfigureEmptyPipelineServices<T>(IServiceCollection services)
+        {
+            services.AddTransient<IDataCreateEventPipeline<T>, EmptyCreatedPipeline<T>>();
+            services.AddTransient<IDataUpdateEventPipeline<T>, EmptyUpdatedPipeline<T>>();
+            services.AddTransient<IDataDeleteEventPipeline<T>, EmptyDeletedPipeline<T>>();
         }
         public static void ConfigureEmptyCompletedPipelineServices<T>(IServiceCollection services)
         {

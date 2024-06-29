@@ -23,6 +23,7 @@ namespace Accelerate.Foundations.Content.Services
         Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
         Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);
+        Task<List<ContentPostActionsSummaryDocument>> SearchPostActionSummaries(RequestQuery Query, List<string> ids);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);
         QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildAscendantsSearchQuery(ContentPostDocument item);

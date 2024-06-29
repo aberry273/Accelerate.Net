@@ -24,6 +24,5 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public bool? Agree { get; set; }
         public bool? Disagree { get; set; }
         public bool? Like { get; set; }
-        public string? Reaction { get; set; }
     }
 }

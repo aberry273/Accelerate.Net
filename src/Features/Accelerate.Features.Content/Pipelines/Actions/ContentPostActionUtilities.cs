@@ -20,7 +20,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
                    {
                        Agrees = x.Count(y => y.Agree == true),
                        Disagrees = x.Count(y => y.Disagree == true),
-                       Likes = x.Count(y => y.Like == true),
+                       //Likes = x.Count(y => y.Like == true),
                    }).Single();
         }
 

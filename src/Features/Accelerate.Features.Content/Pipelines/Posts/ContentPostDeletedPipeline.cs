@@ -43,8 +43,30 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var response = await _elasticService.DeleteDocument<ContentPostEntity>(args.Value.Id.ToString());
             if (!response.IsValidResponse) return;
 
-            await UpdateParentDocument(args);
+            await SendWebsocketUpdate(args);
         }
+        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        {
+            var userId = args.Value.UserId.ToString();
+            var id = args.Value.Id;
+
+            // Get doc, sned parent ID if its a self rpely
+            var payload = new WebsocketMessage<ContentPostDocument>()
+            {
+                Message = "Delete successful",
+                Code = 200,
+                Data = new ContentPostDocument()
+                {
+                    Id = id,
+                },
+                UpdateType = DataRequestCompleteType.Deleted,
+                Group = "Post",
+                Alert = true
+            };
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
+            await _messageHub.Clients.Clients(userConnections).SendMessage(userId, payload);
+        }
+
         private async Task UpdateParentDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var parentPost = _contentPostService.GetPostParent(args.Value);
@@ -54,7 +76,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var parentDoc = parentResponse.Source;
             if (!parentResponse.IsValidResponse || parentDoc == null) return;
             // Update reply count
-            parentDoc.Replies = _contentPostService.GetReplyCount(parentPost.ParentId.GetValueOrDefault());
+            //parentDoc.Replies = _contentPostService.GetReplyCount(parentPost.ParentId.GetValueOrDefault());
             // Update threads
             if (parentDoc.UserId == args.Value.UserId)
             {

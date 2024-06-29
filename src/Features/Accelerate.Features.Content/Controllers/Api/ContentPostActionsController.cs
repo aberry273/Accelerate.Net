@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
+using static Elastic.Clients.Elasticsearch.JoinField;
+using Accelerate.Foundations.Content.Services;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -29,11 +31,11 @@ namespace Accelerate.Features.Content.Controllers.Api
         IMetaContentService _contentService;
         readonly Bind<IContentActionsBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
-        IEntityService<ContentPostEntity> _postService;
+        IContentPostService _postService;
         public ContentPostActionsController(
             IMetaContentService contentService,
             IEntityService<ContentPostActionsEntity> service,
-            IEntityService<ContentPostEntity> postService,
+            IContentPostService postService,
             Bind<IContentActionsBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
@@ -81,7 +83,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
 
-            obj.Like = true;
+            //obj.Like = true;
             if (existingAction != null)
             {
                 this.UpdateValues(existingAction, obj);
@@ -97,7 +99,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             var existingAction = _service.Find(x => x.Id == obj.Id).FirstOrDefault();
 
-            obj.Like = false;
+            //obj.Like = false;
             if (existingAction != null)
             {
                 this.UpdateValues(existingAction, obj);
@@ -110,28 +112,23 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public override async Task<IActionResult> Post([FromBody] ContentPostActionsEntity obj)
         {
-            var existingAction = _service.Find(x => x.UserId == obj.UserId && x.ContentPostId == obj.ContentPostId, 0, 1).FirstOrDefault();
-            if (existingAction != null)
+            try
             {
-                this.UpdateValues(existingAction, obj);
-                var switchAgree = existingAction.Disagree == true && obj.Agree == true;
-                var switchDisagree = existingAction.Disagree == true && obj.Agree == true;
-                existingAction.Agree = existingAction.Agree == true && obj.Agree == false ? null : obj.Agree;
-                existingAction.Disagree = existingAction.Disagree == true && obj.Disagree == false ? null : obj.Disagree;
-                if(obj.Agree == true)
-                {
-                    existingAction.Disagree = null;
-                }
-                if (obj.Disagree == true)
-                {
-                    existingAction.Agree = null;
-                }
-                return await this.Put(existingAction.Id, existingAction);
-            }
-            // else create new
-            return await base.Post(obj);
-        }
+                var id = await _postService.CreateOrUpdatePostAction(obj);
 
+                return Ok(new
+                {
+                    message = "Created Successfully",
+                    id = id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+
+        }
         protected override async Task PostCreateSteps(ContentPostActionsEntity obj)
         {
             await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostActionsEntity>() { Data = obj });
@@ -139,7 +136,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         protected override void UpdateValues(ContentPostActionsEntity from, dynamic to)
         {
             from.UpdatedOn = DateTime.Now;
-            from.Like = to.Like != null ? to.Like : null;
+            from.Like = to.Like;
             from.Agree = to.Agree;
             from.Disagree =  to.Disagree;
         }

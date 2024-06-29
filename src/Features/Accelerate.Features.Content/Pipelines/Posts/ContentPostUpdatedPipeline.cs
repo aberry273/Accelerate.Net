@@ -55,7 +55,23 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             args.Value.Hydrate(indexModel, profile);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
            
-            await UpdateParentDocument(indexModel, args);
+            await SendWebsocketUpdate(args);
+        }
+
+        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        {
+            var doc = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
+            var payload = new WebsocketMessage<ContentPostDocument>()
+            {
+                Message = "Update successful",
+                Code = 200,
+                Data = doc.Source,
+                UpdateType = DataRequestCompleteType.Updated,
+                Group = "Post",
+                Alert = true
+            };
+            var userConnections = HubClientConnectionsSingleton.GetUserConnections(args.Value.UserId.ToString());
+            await _messageHub.Clients.Clients(userConnections).SendMessage(args.Value.UserId.ToString(), payload);
         }
 
         private async Task UpdateParentDocument(ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)

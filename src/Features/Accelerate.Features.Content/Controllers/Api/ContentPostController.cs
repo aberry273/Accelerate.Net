@@ -238,10 +238,9 @@ namespace Accelerate.Features.Content.Controllers.Api
                     var quotesItems = obj
                         .QuotedItems
                         .Select(x => Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostQuoteRequest>(x))
-                        .Select(x => CreateQuoteLink(post, x))
+                        .Select(x => x.QuotedContentPostId)
                         .ToList();
-
-                    var quoteResults = _quoteService.AddRange(quotesItems);
+                    await _postService.CreateQuotes(post.Id, quotesItems);
                 }
                 // Upload formfiles, create entities from formfiles, add to request
                 if (images.Any())
@@ -379,8 +378,8 @@ namespace Accelerate.Features.Content.Controllers.Api
             {
                 QuotedContentPostId = quote.QuotedContentPostId,
                 ContentPostId = post.Id,
-                Content = quote.Content,
-                Response = quote.Response
+                //Content = quote.Content,
+                //Response = quote.Response
             };
         }
 

@@ -12,31 +12,35 @@ namespace Accelerate.Features.Content.Pipelines.Activities
     {
         public static ContentPostActionsSummaryDocument GetActivities(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         {
-            return entityService
+            var group = entityService
                .Find(x => x.ContentPostId == args.Value.ContentPostId)
                .GroupBy(g => 1)
                .Select(x =>
                    new ContentPostActionsSummaryDocument
                    {
                        Agrees = x
-                           .Where(y => y.Type == ContentPostActivityTypes.Agree)
-                           .OrderByDescending(y => y.CreatedOn)
-                           .GroupBy(y => y.UserId)
-                           .First()
-                           .Count(y => y.Value == "true"),
+                           .Where(y => y.Type == ContentPostActivityTypes.Agree)?
+                           .OrderByDescending(y => y.CreatedOn)?
+                           .GroupBy(y => y.UserId)?
+                           .First()?
+                           .Count(y => y.Value == "true") ?? 0,
                        Disagrees = x
-                           .Where(y => y.Type == ContentPostActivityTypes.Disagree)
-                           .OrderByDescending(y => y.CreatedOn)
-                           .GroupBy(y => y.UserId)
-                           .First()
-                           .Count(y => y.Value == "true"),
+                           .Where(y => y.Type == ContentPostActivityTypes.Disagree)?
+                           .OrderByDescending(y => y.CreatedOn)?
+                           .GroupBy(y => y.UserId)?
+                           .First()?
+                           .Count(y => y.Value == "true") ?? 0,
+                       /*
                        Likes = x
                            .Where(y => y.Type == ContentPostActivityTypes.Like)
                            .OrderByDescending(y => y.CreatedOn)
                            .GroupBy(y => y.UserId)
                            .First()
                            .Count(y => y.Value == "true"),
-                   }).Single();
+                       */
+                   });
+            if (group == null) return new ContentPostActionsSummaryDocument();
+            return group.Single();
         }
 
         // TODO: Potentially remove or add, unsure of userbased state mgmt yet
@@ -63,7 +67,10 @@ namespace Accelerate.Features.Content.Pipelines.Activities
                 Group = "Post"
             };
             var userConnections = HubClientConnectionsSingleton.GetUserConnections(userId);
-            await messageHubPosts.Clients.Clients(userConnections).SendMessage(userId, payload);
+            if(userConnections != null)
+            {
+                await messageHubPosts.Clients.Clients(userConnections).SendMessage(userId, payload);
+            }
         }
     }
 }

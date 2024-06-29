@@ -1,9 +1,11 @@
 ﻿using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
+using Elastic.Transport.Diagnostics.Auditing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,6 +33,8 @@ namespace Accelerator.Foundation.Content.Database
             Media = mediaContext;
             Channels = channelContext;
             Settings = settingsContext;
+
+            //base.SavingChanges += new EventHandler(context_SavingChanges);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

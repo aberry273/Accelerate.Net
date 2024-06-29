@@ -52,7 +52,6 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override void UpdateValues(ContentPostQuoteEntity from, dynamic to)
         {
-            from.Content = to.Content;
         }
         protected override async Task PostUpdateSteps(ContentPostQuoteEntity obj)
         {

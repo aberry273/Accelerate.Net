@@ -7,8 +7,8 @@ namespace Accelerate.Features.Content.Models.Data
     public class ContentPostQuoteRequest
     {
         public Guid QuotedContentPostId { get; set; }
-        public string? Content { get; set; }
-        public string? Response { get; set; }
+        //public string? Content { get; set; }
+        //public string? Response { get; set; }
     }
     public class ContentPostLinkRequest
     {

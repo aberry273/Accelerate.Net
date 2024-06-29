@@ -60,40 +60,62 @@ namespace Accelerate.Features.Content
             services.AddTransient<BaseHub<ContentPostQuoteDocument>, ContentPostQuoteHub>();
             services.AddTransient<BaseHub<ContentPostSettingsDocument>, ContentPostSettingsHub>();
 
-            // POSTS
+            // Posts
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostEntity, ContentPostCreatedPipeline, ContentPostUpdatedPipeline, ContentPostDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostEntity, ContentPostCreatedCompletedPipeline, ContentPostUpdatedCompletedPipeline, ContentPostDeletedCompletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostEntity, IContentPostBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostEntity>(services);
+            //Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostEntity, ContentPostCreatedCompletedPipeline, ContentPostUpdatedCompletedPipeline, ContentPostDeletedCompletedPipeline>(services);
+         
+            // Parent Posts
+            // Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostParentEntity, ContentPostCreatedListenerPipeline, EmptyUpdatedPipeline<ContentPostParentEntity>, EmptyDeletedPipeline<ContentPostParentEntity>>(services);
+            // Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostParentEntity>(services);
+            // Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostParentEntity, IContentPostParentBus>(services);
 
             // Actions
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedPipeline, ContentPostActionUpdatedPipeline, ContentPostActionsDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedCompletedPipeline, ContentPostActionsUpdatedCompletedPipeline, ContentPostActionsDeletedCompletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
+           // Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActionsEntity>(services);
+             
             // other
-           
-            // ActionSummary
-            //Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsSummaryEntity, ContentPostActionsSummaryCreatedPipeline, ContentPostActionsSummaryUpdatedPipeline, ContentPostActionsSummaryDeletedPipeline>(services);
-            //Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActionsSummaryEntity>(services);
-            //Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
-            // ActionSummary > Action listeners
-            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedListenerPipeline, ContentPostActionsUpdatedListenerPipeline, EmptyDeletedPipeline<ContentPostActionsEntity>>(services);
 
-            // Activities
+            // Parents
+            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostParentEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostParentEntity>(services);
+
+            // ActionSummary
+            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostActionsSummaryEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActionsSummaryEntity>(services);
+            //Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
+
+            // Activities // TODO CHANGE TO NOTIFICATIONS
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActivityEntity, ContentPostActivityCreatedPipeline, ContentPostActivityUpdatedPipeline, ContentPostActivityDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActivityEntity>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentPostActivityBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActivityEntity>(services); 
+            
+            // Activities completed
+            //Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActivityEntity, ContentPostActionsCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostActivityEntity>, EmptyDeletedCompletedPipeline<ContentPostActivityEntity>>(services);
 
             // Channels
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentChannelEntity, ContentChannelCreatedPipeline, ContentChannelUpdatedPipeline, ContentChannelDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentChannelEntity, ContentChannelCreateCompletedPipeline, ContentChannelUpdatedCompletedPipeline, ContentChannelDeleteCompletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);
-            
+          
             // Quotes
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostQuoteEntity, ContentPostQuoteCreatedPipeline, ContentPostQuoteUpdatedPipeline, ContentPostQuoteDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostQuoteEntity, IContentPostQuoteBus>(services);
+            //Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
 
             // Settings
+
+            // Listener pipelines
+            // ActionSummary > Action listeners
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedCompletedListenerPipeline, ContentPostActionsUpdatedCompletedListenerPipeline, EmptyDeletedCompletedPipeline<ContentPostActionsEntity>>(services);
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostParentEntity, ContentPostParentsCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostParentEntity>, EmptyDeletedCompletedPipeline<ContentPostParentEntity>>(services);
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostQuoteEntity, ContentPostQuotesCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostQuoteEntity>, EmptyDeletedCompletedPipeline<ContentPostQuoteEntity>>(services);
+
+            // MassTransit Busses
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostEntity, IContentPostBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostQuoteEntity, IContentPostQuoteBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostParentEntity, IContentPostParentBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentPostActivityBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);
         }
     }
 }

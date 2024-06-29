@@ -13,11 +13,21 @@ using Accelerate.Foundations.Common.Pipelines;
 using Microsoft.AspNetCore.Mvc;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using Accelerate.Foundations.Content.Hydrators;
+using Newtonsoft.Json.Linq;
+using static Accelerate.Foundations.Content.Constants.Defaults;
+using Elastic.Clients.Elasticsearch.IndexManagement;
+using static MassTransit.MessageHeaders;
+using System.Threading.Channels;
+using Accelerate.Foundations.Common.Services;
 
 namespace Accelerate.Foundations.Content.Services
 {
     public class ContentPostService : IContentPostService
     {
+        readonly Bind<IContentActionsBus, IPublishEndpoint> _publishActionsEndpoint; 
+        readonly Bind<IContentPostActivityBus, IPublishEndpoint> _publishActivityEndpoint;
+        readonly Bind<IContentPostQuoteBus, IPublishEndpoint> _publishQuoteEndpoint;
+        readonly Bind<IContentPostParentBus, IPublishEndpoint> _publishParentEndpoint;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _servicePosts { get; set; }
         IEntityService<ContentPostActivityEntity> _servicePostActivities { get; set; }
@@ -33,6 +43,10 @@ namespace Accelerate.Foundations.Content.Services
         IEntityService<ContentPostSettingsPostEntity> _servicePostSettingPost { get; set; }
         IEntityService<ContentChannelEntity> _serviceChannels { get; set; }
         public ContentPostService(
+            Bind<IContentActionsBus, IPublishEndpoint> publishActionsEndpoint,
+            Bind<IContentPostActivityBus, IPublishEndpoint> publishActivityEndpoint,
+            Bind<IContentPostQuoteBus, IPublishEndpoint> publishQuoteEndpoint,
+            Bind<IContentPostParentBus, IPublishEndpoint> publishParentEndpoint,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IEntityService<ContentPostEntity> servicePosts, 
             IEntityService<ContentPostActivityEntity> servicePostActivities,
@@ -48,6 +62,10 @@ namespace Accelerate.Foundations.Content.Services
             IEntityService<ContentPostSettingsPostEntity> servicePostSettingPost, 
             IEntityService<ContentChannelEntity> serviceChannels)
         {
+            this._publishActivityEndpoint = publishActivityEndpoint;
+            this._publishActionsEndpoint = publishActionsEndpoint;
+            this._publishQuoteEndpoint = publishQuoteEndpoint;
+            this._publishParentEndpoint = publishParentEndpoint;
             this._publishEndpoint = publishEndpoint;
             this._servicePosts = servicePosts;
             this._servicePostActivities = servicePostActivities;
@@ -154,10 +172,52 @@ namespace Accelerate.Foundations.Content.Services
                 throw ex;
             }
         }
-        
+
         #endregion
 
         #region EventPipelines
+        public async Task RunCreateActionsPipeline(ContentPostActionsEntity obj)
+        {
+            await _publishActionsEndpoint.Value.Publish(new CreateDataContract<ContentPostActionsEntity>()
+            {
+                Data = obj,
+                UserId = obj.UserId
+            });
+        }
+        public async Task RunUpdateActionsPipeline(ContentPostActionsEntity obj)
+        {
+            await _publishActionsEndpoint.Value.Publish(new UpdateDataContract<ContentPostActionsEntity>()
+            {
+                Data = obj,
+                UserId = obj.UserId
+            });
+        }
+
+        public async Task RunCreateQuotePipeline(ContentPostQuoteEntity obj)
+        {
+            await _publishQuoteEndpoint.Value.Publish(new CreateDataContract<ContentPostQuoteEntity>()
+            {
+                Data = obj,
+                UserId = obj.UserId
+            });
+        }
+        public async Task RunCreateParentPipeline(ContentPostParentEntity obj)
+        {
+            await _publishParentEndpoint.Value.Publish(new CreateDataContract<ContentPostParentEntity>()
+            {
+                Data = obj,
+                UserId = obj.UserId
+            });
+        }
+
+        public async Task RunCreateActivityPipeline(ContentPostActivityEntity obj)
+        {
+            await _publishActivityEndpoint.Value.Publish(new CreateDataContract<ContentPostActivityEntity>()
+            {
+                Data = obj,
+                UserId = obj.UserId
+            });
+        }
 
         public async Task RunCreatePipeline(ContentPostEntity obj)
         {
@@ -188,6 +248,20 @@ namespace Accelerate.Foundations.Content.Services
         }
 
         #endregion
+        #region Post Summary
+        public async Task<int> CreatePostSummary(ContentPostEntity post)
+        {
+            var entity = new ContentPostActionsSummaryEntity()
+            {
+                ContentPostId = post.Id,
+            };
+            return await _serviceActionsSummary.Create(entity);
+        }
+        public void UpdatePostSummary(ContentPostActionsSummaryEntity entity)
+        {
+            _serviceActionsSummary.UpdateNoSave(entity);
+        }
+        #endregion
         #region Channel
         public async Task<int> CreateChannelPost(ContentPostEntity post, Guid channelId)
         {
@@ -208,7 +282,7 @@ namespace Accelerate.Foundations.Content.Services
         {
             var postChannel = _servicePostChannel.Find(x => x.ContentPostId == post.Id).FirstOrDefault();
             if (postChannel == null) return null;
-            return  _serviceChannels.Get(postChannel.ChannelId);
+            return _serviceChannels.Get(postChannel.ChannelId);
         }
         #endregion
         #region Parents
@@ -220,7 +294,14 @@ namespace Accelerate.Foundations.Content.Services
                 ParentId = parentId,
                 ParentIdItems = ancestorIds
             };
-            return await _servicePostParents.Create(entity);
+            //add activity that a child post was addeed to the parent
+            await CreatePostActivity(parentId, ContentPostActivityTypes.Reply, post.Id.ToString());
+            var result = await _servicePostParents.Create(entity);
+
+            // No need to fetch the actual entity as we don't need it's ID
+            await RunCreateParentPipeline(entity);
+
+            return result;
         }
 
         public List<ContentPostEntity> GetReplies(Guid postId)
@@ -309,9 +390,145 @@ namespace Accelerate.Foundations.Content.Services
             return _servicePostLink.Find(x => x.ContentPostId == postId)?.FirstOrDefault();
         }
         #endregion
-         
+
+        #region Actions 
+        public async Task<Guid?> CreateOrUpdatePostAction(ContentPostActionsEntity obj)
+        {
+            Guid? result;
+            var existingAction = _servicePostActions.Find(x => x.UserId == obj.UserId && x.ContentPostId == obj.ContentPostId, 0, 1).FirstOrDefault();
+            bool? agree = obj.Agree, disagree = obj.Disagree, like = obj.Like;
+            if (existingAction != null)
+            {
+                agree = existingAction.Agree == true && obj.Agree == false ? false : obj.Agree;
+                disagree = existingAction.Disagree == true && obj.Disagree == false ? false : obj.Disagree;
+
+                if (obj.Agree == true)
+                {
+                    disagree = false;
+                }
+                if (obj.Disagree == true)
+                {
+                    agree = false;
+                }
+                var count = await this.UpdatePostAction(existingAction, agree, disagree, like);
+                result = count > 0 ? obj.Id : null;
+            }
+            else
+            {
+                result = await this.CreatePostAction(obj.ContentPostId, obj.UserId, agree, disagree, like);
+            }
+            // move to pipeline
+            if (agree == true)
+            {
+                await this.CreatePostActivity(obj.ContentPostId, ContentPostActivityTypes.Vote, "agree");
+            }
+            if (disagree == true)
+            {
+                await this.CreatePostActivity(obj.ContentPostId, ContentPostActivityTypes.Vote, "disagree");
+            }
+            return result;
+        }
+        public async Task<Guid?> CreatePostAction(Guid postId, Guid userId, bool? agree, bool? disagree, bool? like)
+        {
+            var action = new ContentPostActionsEntity()
+            {
+                UserId = userId,
+                ContentPostId = postId,
+                Agree = agree,
+                Disagree = disagree,
+                Like = like,
+            };
+            var guid = await _servicePostActions.CreateWithGuid(action);
+
+            var entity = _servicePostActions.Get(guid.GetValueOrDefault());
+
+            await RunCreateActionsPipeline(entity);
+            return guid;
+
+        }
+        public async Task<int> UpdatePostAction(ContentPostActionsEntity entity, bool? agree, bool? disagree, bool? like)
+        {
+            entity.Agree = agree;
+            entity.Disagree = disagree;
+            entity.Like = like;
+
+            var count = await _servicePostActions.Update(entity);
+             
+            await RunUpdateActionsPipeline(entity);
+            return count;
+        }
+        #endregion
+
+        #region Activities
+        private ContentPostActivityEntity CreateActivity(Guid postId, ContentPostActivityTypes type, string value)
+        {
+            return new ContentPostActivityEntity()
+            {
+                ContentPostId = postId,
+                Type = type,
+                Value = value,
+            };
+        }
+        public async Task<Guid?> CreatePostActivity(Guid postId, ContentPostActivityTypes type, string value)
+        {
+            var action = CreateActivity(postId, type, value);
+            var activityGuid = await _servicePostActivities.CreateWithGuid(action);
+            if (activityGuid == null) return activityGuid;
+            var activity = _servicePostActivities.Get(activityGuid.GetValueOrDefault());
+            await RunCreateActivityPipeline(activity);
+            return activityGuid.GetValueOrDefault();
+        }
+        #endregion
 
         #region Quotes
+
+        public async Task ProcessMultiplePipelinesAsync(IEnumerable<ContentPostQuoteEntity> quotes)
+        { 
+            await Task.WhenAll(quotes.Select(q =>
+            {
+                try
+                {
+                    // No need to fetch the actual entity as we don't need it's ID
+                    return RunCreateQuotePipeline(q);
+                }
+                catch (Exception e)
+                {
+                    return Task.FromException(e);
+                }
+            })); 
+        } 
+
+        public async Task<int> CreateQuotes(Guid postId, List<Guid> quoteIds)
+        {
+            var quotes = quoteIds.Select(x => CreateQuoteLink(postId, x));
+
+            var quoteResults = await _servicePostQuotes.AddRange(quotes);
+
+            await ProcessMultiplePipelinesAsync(quotes);
+
+            //add activities each each quoted post that it was quoted
+            var activityEntities = quotes.Select(x => CreateActivity(x.QuotedContentPostId, ContentPostActivityTypes.Quote, postId.ToString()));
+
+            var activityResults = await _servicePostActivities.AddRange(activityEntities);
+
+
+            return quoteResults;
+        }
+
+        public ContentPostQuoteEntity CreateQuoteLink(Guid postId, Guid quotedPostId)
+        {
+            // append current thread to path of new quote, or set as default path 
+            return new ContentPostQuoteEntity()
+            {
+                QuotedContentPostId = quotedPostId,
+                ContentPostId = postId,
+                //Content = quote.Content,
+                //Response = quote.Response
+            };
+        }
+
+
+        
         #endregion
 
         #region Media

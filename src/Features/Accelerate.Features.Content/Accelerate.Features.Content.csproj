@@ -23,7 +23,15 @@
     <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryCreatedPipeline.cs" />
     <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryDeletedPipeline.cs" />
     <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryUpdatedPipeline.cs" />
+    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsUpdatedListenerPipeline.cs" />
+    <Compile Remove="Pipelines\ActionsSummary\ContentPostCreatedListenerPipeline.cs" />
+    <Compile Remove="Pipelines\Actions\ContentPostActionsCreatedCompletedPipeline.cs" />
+    <Compile Remove="Pipelines\Actions\ContentPostActionsDeletedCompletedPipeline.cs" />
+    <Compile Remove="Pipelines\Actions\ContentPostActionsUpdatedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\IContentPostCreatedPipeline.cs" />
+    <Compile Remove="Pipelines\Posts\ContentPostCreatedCompletedPipeline.cs" />
+    <Compile Remove="Pipelines\Posts\ContentPostDeletedCompletedPipeline.cs" />
+    <Compile Remove="Pipelines\Posts\ContentPostUpdatedCompletedPipeline.cs" />
     <Compile Remove="Services\ContentActivityElasticService.cs" />
     <Compile Remove="Services\ContentElasticService.cs" />
     <Compile Remove="Services\ContentActionElasticService.cs" />

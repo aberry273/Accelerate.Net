@@ -239,10 +239,12 @@ export default function (data) {
                 text = text.replace(elements[i].encoded, elements[i].formatted)
             }
             return text;
-        },
-
+        }, 
         _mxCardPost_getQuotePost(id) {
             return this.$store.wssContentPosts.GetQuotePost(id);
+        },
+        _mxCardPost_getActionSummary(id) {
+            return this.$store.wssContentPosts.GetActionSummary(id) || {}
         },
         _mxCardPost_redirectAction(action) {
             const ev = `redirect-${action}`;

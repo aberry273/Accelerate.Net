@@ -19,7 +19,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public Guid ContentPostId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
-        public string? Content { get; set; }
-        public string? Response { get; set; }
+        //public string? Content { get; set; }
+        //public string? Response { get; set; }
     }
 }

@@ -28,7 +28,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
-                SendWebsocketUpdate
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
@@ -37,28 +36,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         // ASYNC PROCESSORS
 
         // ASYNC PROCESSORS
-        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
-        {
-            ContentPostDocument doc;
-            var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
-            doc = response.Source;
-            // If its a reply to own thread by the user, send the parent as the update instead
-            if (doc.PostType == ContentPostType.Page)
-            {
-                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
-                doc = parentResponse.Source;
-            }
-            var payload = new WebsocketMessage<ContentPostDocument>()
-            {
-                Message = "Create successful",
-                Code = 200,
-                Data = doc,
-                UpdateType = DataRequestCompleteType.Created,
-                Group = "Post",
-                Alert = true
-            };
-            await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
-        }
         // SYNC PROCESSORS
     }
 }

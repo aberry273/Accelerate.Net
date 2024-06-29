@@ -22,6 +22,7 @@ using Accelerate.Foundations.Content.Models.Entities;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.Threading;
 using Azure;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -29,12 +30,16 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentPostElasticService : ElasticService<ContentPostDocument>, IContentPostElasticService
     {
         IElasticService<ContentPostActionsDocument> _actionSearchService;
+        IElasticService<ContentPostActionsSummaryDocument> _actionSummarySearchService;
         public ContentPostElasticService(
             IOptions<ElasticConfiguration> options,
             IOptions<ContentConfiguration> config,
-            IElasticService<ContentPostActionsDocument> actionSearchService) : base(options)
+            IElasticService<ContentPostActionsDocument> actionSearchService,
+            IElasticService<ContentPostActionsSummaryDocument> actionSummarySearchService
+            ) : base(options)
         {
             _actionSearchService = actionSearchService;
+            _actionSummarySearchService = actionSummarySearchService;
             this._indexName = config.Value.PostIndexName;
             _settings = new IndexSettings()
             {
@@ -168,12 +173,14 @@ namespace Accelerate.Foundations.Content.Services
                 .ToList();
             model.QuotedPosts = quotedPostIds.Any() ? await SearchPostQuotes(Query, quotedPostIds) : new List<ContentPostDocument>();
 
-            //actions
+            //related entities
             var postIds = model.Posts.Select(x => x.Id.ToString()).ToList();
-            var postActionResults = await SearchPostActions(Query, postIds);
-            model.Actions = postActionResults.ToList();
+            model.Actions = await SearchPostActions(Query, postIds);
+            model.ActionSummaries = await SearchPostActionSummaries(Query, postIds);
+
             return model;
         }
+         
         public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
         {
             var elasticQuery = BuildSearchQuery(Query);
@@ -194,7 +201,7 @@ namespace Accelerate.Foundations.Content.Services
         private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
         public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId)
         {
-            if (_parentThreadCache.ContainsKey(postId)) return _parentThreadCache[postId];
+            //if (_parentThreadCache.ContainsKey(postId)) return _parentThreadCache[postId];
             
             var response = await this.GetDocument<ContentPostDocument>(postId.ToString());
             var item = response.Source;
@@ -202,7 +209,12 @@ namespace Accelerate.Foundations.Content.Services
             var results = await SearchPosts(Query, elasticQuery);
             results.Posts = results.Posts.OrderBy(x => x.CreatedOn);
 
-            _parentThreadCache.Add(postId, results);
+            //related entities
+            var postIds = results.Posts.Select(x => x.Id.ToString()).ToList();
+            results.Actions = await SearchPostActions(Query, postIds);
+            results.ActionSummaries = await SearchPostActionSummaries(Query, postIds);
+
+            //_parentThreadCache.Add(postId, results);
 
             return results;
         }
@@ -249,6 +261,30 @@ namespace Accelerate.Foundations.Content.Services
                 FilterValues(Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, postIds, true)
             };
             return this.CreateQuery(Query);
+        }
+        #endregion
+        #region ActionSummaries
+        public async Task<List<ContentPostActionsSummaryDocument>> SearchPostActionSummaries(RequestQuery Query, List<string> ids)
+        {
+            int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
+            int skip = take * Query.Page;
+            var searchquery = BuildPostActionsSummarySearchQuery(Query, ids);
+            var results = await _actionSummarySearchService.Search<ContentPostActionsSummaryDocument>(searchquery, skip, take);
+            if (!results.IsValidResponse || !results.IsSuccess())
+            {
+                return new List<ContentPostActionsSummaryDocument>();
+            }
+            return results.Documents.ToList();
+        }
+        public QueryDescriptor<ContentPostActionsSummaryDocument> BuildPostActionsSummarySearchQuery(RequestQuery query, List<string> postIds)
+        {
+            var Query = new RequestQuery();
+            Query.Filters = new List<QueryFilter>()
+            {
+                FilterValues(Constants.Fields.ContentPostId, ElasticCondition.Filter, QueryOperator.Equals, postIds, true)
+            };
+            return _actionSummarySearchService.CreateQuery(Query);
         }
         #endregion
         #region Actions

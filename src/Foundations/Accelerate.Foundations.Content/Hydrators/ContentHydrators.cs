@@ -66,7 +66,22 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.Replies = entity.Replies;
         }
 
+        public static void HydrateFrom(this ContentPostActionsSummaryDocument doc, ContentPostActionsSummaryDocument from)
+        {
+            doc.Agrees = from.Agrees;
+            doc.Disagrees = from.Disagrees;
+            doc.Likes = from.Likes;
+            doc.Replies = from.Replies;
+            doc.Quotes = from.Quotes;
+        }
 
+        public static void HydrateFrom(this ContentPostActionsEntity entity, ContentPostActionsEntity from)
+        {
+            entity.UpdatedOn = DateTime.Now;
+            entity.Like = from.Like;
+            entity.Agree = from.Agree;
+            entity.Disagree = from.Disagree;
+        }
 
         public static void Hydrate(this ContentPostLinkEntity entity, ContentPostLinkDocument document)
         {
@@ -106,8 +121,6 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.UpdatedOn = entity.UpdatedOn;
             document.ContentPostId = entity.ContentPostId;
             document.QuotedContentPostId = entity.QuotedContentPostId;
-            document.Content = entity.Content;
-            document.Response = entity.Response;
             document.Id = entity.Id;
         }
     }

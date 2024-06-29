@@ -18,7 +18,23 @@ namespace Accelerate.Foundations.Database.Services
             _dbContext = dbContext;
             _logger = logger;
         }
+        public void ClearDatabase()
+        {
+            var tableNames = _dbContext.Model.GetEntityTypes()
+            .Select(t => t.GetTableName())
+            .Distinct()
+            .ToList()
+            .FirstOrDefault();
 
+            try
+            {
+                _dbContext.Database.ExecuteSqlRaw($"TRUNCATE TABLE [dbo].{tableNames}");
+            }
+            catch (Exception ex)
+            {
+                _dbContext.Database.ExecuteSqlRaw($"DELETE FROM [dbo].{tableNames}");
+            }
+        }
         public async Task<int> CopyRange(IEnumerable<T> entities)
         {
             try
@@ -64,6 +80,23 @@ namespace Accelerate.Foundations.Database.Services
             catch (Exception ex)
             {
                 _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Delete), ex.Message));
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
+        /// <summary>
+        /// Performs an update without calling SaveChangesAsync
+        /// </summary>
+        /// <param name="entity"></param>
+        public void UpdateNoSave(T entity)
+        {
+            try
+            {
+                _dbContext.Update(entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Update), ex.Message));
                 _logger.LogError(ex.ToString());
                 throw;
             }
@@ -140,11 +173,24 @@ namespace Accelerate.Foundations.Database.Services
                 throw;
             }
         }
+        public async Task AddRangeAsyncNoSave(IEnumerable<T> entities)
+        {
+            try
+            {
+                await _dbContext.AddRangeAsync(entities);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Create), ex.Message));
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
         public async Task<int> AddRange(IEnumerable<T> entities)
         {
             try
             {
-                _dbContext.AddRangeAsync(entities);
+                await _dbContext.AddRangeAsync(entities);
                 return _dbContext.SaveChanges();
             }
             catch (Exception ex)
@@ -179,7 +225,20 @@ namespace Accelerate.Foundations.Database.Services
                 _logger.LogError(ex.ToString());
                 throw;
             }
-        } 
+        }
+        public int Count(Expression<Func<T, bool>> expression)
+        {
+            try
+            {
+                return _dbContext.Entities.Count(expression);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Find), ex.Message));
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
         public IEnumerable<T> Find(Expression<Func<T, bool>> expression, int? skip = 0, int? take = 10)
         {
             try
