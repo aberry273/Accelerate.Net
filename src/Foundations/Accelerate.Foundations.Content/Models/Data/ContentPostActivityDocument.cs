@@ -14,5 +14,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public ContentPostActivityTypes Type { get; set; }
         public string? Action { get; set; }
         public string? Value { get; set; }
+        public string? Url { get; set; }
+        public string? Message { get; set; }
     }
 }

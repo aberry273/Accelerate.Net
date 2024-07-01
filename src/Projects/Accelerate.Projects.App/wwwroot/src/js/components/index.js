@@ -14,7 +14,7 @@ import cardMedia from './cards/cardMedia.js'
 import cardImage from './cards/cardImage.js'
 import cardVideo from './cards/cardVideo.js'
 // CONTENT
-import { header, aclContentEditorWysiwyg } from './content/index.js'
+import { header, aclContentEditorWysiwyg, aclContentEmoji } from './content/index.js'
 // NAVIGATION
 import navbar from './navigation/navbar.js'
 import usernavbar from './navigation/usernavbar.js'
@@ -66,6 +66,7 @@ export {
     header,
 
     aclContentEditorWysiwyg,
+    aclContentEmoji,
 
     // NAVIGATION
     navbar,

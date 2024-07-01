@@ -37,6 +37,7 @@ using System.Text.RegularExpressions;
 using Accelerate.Foundations.Content.Services;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.ComponentModel;
+using Accelerate.Foundations.Account.Services;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -58,6 +59,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
+        IAccountUserSearchService _userSearchService;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentPostMediaEntity> _postMediaService;
@@ -72,10 +74,11 @@ namespace Accelerate.Features.Content.Controllers.Api
             IMediaService mediaService,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
+            IAccountUserSearchService userSearchService,
             UserManager<AccountUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
-            this._postService = postService;
+            _postService = postService;
             _userManager = userManager;
             _contentService = contentService;
             _searchService = searchService;
@@ -83,6 +86,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             _postMediaService = postMediaService;
             _mediaService = mediaService;
             _mediaService = mediaService;
+            _userSearchService = userSearchService;
         }
         //<meta\b[^>]*\bname=["]keywords["][^>]*\bcontent=(['"]?)((?:[^,>"'],?){1,})\1[>]
         private string UrlTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:url[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
@@ -133,6 +137,119 @@ namespace Accelerate.Features.Content.Controllers.Api
             }
         }
 
+        #region MixedPostCreate methods
+        private ContentPostSettingsEntity CreatePostSettingsFromRequest(ContentPostMixedRequest obj)
+        {
+            var hasSettings =
+                    obj.CharLimit != null
+                    || obj.WordLimit != null
+                    || obj.ImageLimit != null
+                    || obj.VideoLimit != null
+                    || obj.QuoteLimit != null
+                    || obj.Access != null;
+            
+            if (!hasSettings) return null;
+
+            return new ContentPostSettingsEntity()
+            {
+                Access = obj.Access ?? "ALL",
+                UserId = obj.UserId,
+                CharLimit = obj.CharLimit,
+                ImageLimit = obj.ImageLimit,
+                VideoLimit = obj.VideoLimit,
+                QuoteLimit = obj.QuoteLimit,
+            };
+        }
+
+        private ContentPostLinkEntity CreateLinkCardFromRequest(ContentPostMixedRequest obj)
+        {
+            if (string.IsNullOrEmpty(obj.LinkValue)) return null;
+            var linkObj = Foundations.Common.Helpers.JsonSerializerHelper.SafelyDeserializeObject<MetadataResponse>(obj?.LinkValue);
+            if (linkObj == null) return null; 
+            return new ContentPostLinkEntity()
+            {
+                Title = linkObj.Title,
+                Description = linkObj.Description,
+                Image = linkObj.Image,
+                Url = linkObj.Url,
+            };
+        }
+
+        private ContentPostTaxonomyEntity CreateTaxonomyFromRequest(ContentPostMixedRequest obj)
+        {
+            var tags = (obj.Tags != null) ? obj.Tags.Where(x => x != null).ToList() : new List<string>();
+            return new ContentPostTaxonomyEntity()
+            {
+                TagItems = tags.ToList(),
+                Category = obj.Category,
+            };
+        }
+
+        private async Task<List<Guid>> CreateMentionsFromRequest(ContentPostMixedRequest obj)
+        {
+            var mentions = GetUsernames(obj.Content);
+
+            if (!mentions.Any()) return null;
+            
+            var query = new RequestQuery()
+            {
+                Filters = new List<QueryFilter>()
+                {
+                    new QueryFilter()
+                    {
+                        Name = Foundations.Account.Constants.Fields.Username,
+                        Keyword = true,
+                        Condition = ElasticCondition.Filter,
+                        Values = mentions,
+                    }
+                }
+            };
+            var userResults = await _userSearchService.SearchUsers(query);
+            if (!userResults.Users.Any()) return null;
+            return userResults.Users.Select(x => x.Id).ToList(); 
+        }
+
+        private List<Guid> CreateQuotesFromRequest(ContentPostMixedRequest obj)
+        {
+            return (obj.QuotedIds != null && obj.QuotedIds.Any())
+                ? obj.QuotedIds.Where(x => x != Guid.Empty).ToList() 
+                : new List<Guid>();
+        }
+
+        private async Task<List<Guid>> CreateMediaFromRequest(ContentPostMixedRequest obj)
+        {
+            var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
+            var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
+            var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
+
+            // Media
+            // Upload formfiles, create entities from formfiles, add to request
+            if (images.Any())
+            {
+                var mediaFiles = await _mediaService.UploadImagesFromFiles(obj.UserId, obj.Images);
+
+                media.AddRange(mediaFiles.Select(x => x.Id));
+            }
+            // Upload formfiles, create entities from formfiles, add to request
+            if (videos.Any())
+            {
+                var mediaFiles = await _mediaService.UploadVideosFromFiles(obj.UserId, obj.Videos);
+
+                media.AddRange(mediaFiles.Select(x => x.Id));
+            }
+            return media;
+        }
+
+        private string MentionRegex = @"@(.*?)#u";
+        private List<string> GetUsernames(string content)
+        {
+            var matches = Regex.Matches(content, MentionRegex);
+            return matches.Where(x => x.Success)
+                .Select(x => x.Groups?.Values?.LastOrDefault()?.Value)
+                .ToList();
+        }
+        #endregion
+
         [Route("mixed")]
         [HttpPost]
         [Consumes("multipart/form-data")]
@@ -141,132 +258,28 @@ namespace Accelerate.Features.Content.Controllers.Api
             try
             {
                 var parentId = obj.ParentId.GetValueOrDefault();
+                var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
                 var channelId = obj.ChannelId.GetValueOrDefault();
-                var link = obj.LinkValue; 
-                var quotes = (obj.QuotedItems != null) ? obj.QuotedItems.Where(x => x != null).ToList() : new List<string>();
-                var media = (obj.MediaIds != null) ? obj.MediaIds.Where(x => x != Guid.Empty).ToList() : new List<Guid>();
-                var images = (obj.Images != null) ? obj.Images.Where(x => x != null).ToList() : new List<IFormFile>();
-                var videos = (obj.Videos != null) ? obj.Videos.Where(x => x != null).ToList() : new List<IFormFile>();
-                var mentions = (obj.MentionItems != null) ? obj.MentionItems.Where(x => x != null).ToList() : new List<string>();
-                var tags = (obj.Tags != null) ? obj.Tags.Where(x => x != null).ToList() : new List<string>();
-                var hasSettings =
-                    obj.CharLimit != null
-                    || obj.WordLimit != null
-                    || obj.ImageLimit != null
-                    || obj.VideoLimit != null
-                    || obj.QuoteLimit != null
-                    || obj.Access != null;
+                var settings = CreatePostSettingsFromRequest(obj);
+                var linkCard = CreateLinkCardFromRequest(obj);
+                var taxonomy = CreateTaxonomyFromRequest(obj);
+                var quoteIds = CreateQuotesFromRequest(obj);
+                var mentions = await this.CreateMentionsFromRequest(obj);
+                var mediaIds = await CreateMediaFromRequest(obj);
 
-                // IF only a direct content post, just run the create fuction
-                if (parentId == Guid.Empty 
-                    && channelId == Guid.Empty
-                    && !hasSettings
-                    && link == null 
-                    && !quotes.Any() 
-                    && !media.Any() 
-                    && !images.Any() 
-                    && !videos.Any() 
-                    && !mentions.Any() 
-                    && !tags.Any()
-                    && obj.Category == null)
-                {
-                    return await this.Post(obj);
-                }
+                var post = await _postService.CreatePost(
+                    obj,
+                    obj.ChannelId.GetValueOrDefault(),
+                    obj.ParentId.GetValueOrDefault(),
+                    parentIds,
+                    mentions,
+                    quoteIds,
+                    mediaIds,
+                    settings,
+                    linkCard,
+                    taxonomy
+                    );
 
-                var post = await _postService.Create(obj);
-                if (post == null)
-                {
-                    return BadRequest("Unable to create post");
-                }
-
-                if(hasSettings)
-                {
-                    var settings = new ContentPostSettingsEntity()
-                    {
-                        Access = obj.Access ?? "ALL",
-                        UserId = obj.UserId,
-                        CharLimit = obj.CharLimit,
-                        ImageLimit = obj.ImageLimit,
-                        VideoLimit = obj.VideoLimit,
-                        QuoteLimit = obj.QuoteLimit,
-                    };
-                    await _postService.CreateSettings(post.Id, settings);
-                }
-
-                // Parents
-                if(parentId != null && parentId != Guid.Empty)
-                {
-                    var ancestorIds = obj.ParentIdItems != null && obj.ParentIdItems.Any() 
-                        ? obj.ParentIdItems.ToList() 
-                        : new List<Guid>();
-                    await _postService.CreateParentPost(obj, parentId, ancestorIds);
-                }
-                // Channel
-                if (channelId != null && channelId != Guid.Empty)
-                { 
-                    await _postService.CreateChannelPost(obj, channelId);
-                }
-                // Links
-                if (link != null)
-                {
-                    var linkObj = Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<MetadataResponse>(link);
-                    var linkEntity = new ContentPostLinkEntity()
-                    {
-                        ContentPostId = post.Id,
-                        Title = linkObj.Title,
-                        Description = linkObj.Description,
-                        Image = linkObj.Image,
-                        Url = linkObj.Url,
-                    };
-                    await _postService.CreateLink(linkEntity);
-                }
-                // Tags
-                if (tags != null && tags.Any())
-                {
-                    var taxonomy = new ContentPostTaxonomyEntity()
-                    {
-                        TagItems = tags.ToList(),
-                        Category = obj.Category,
-                        ContentPostId = post.Id,
-                    };
-                    await _postService.CreateTaxonomy(post.Id, taxonomy);
-                }
-
-                // Quotes
-                if (quotes.Any())
-                {
-                    var quotesItems = obj
-                        .QuotedItems
-                        .Select(x => Foundations.Common.Helpers.JsonSerializerHelper.DeserializeObject<ContentPostQuoteRequest>(x))
-                        .Select(x => x.QuotedContentPostId)
-                        .ToList();
-                    await _postService.CreateQuotes(post.Id, quotesItems);
-                }
-                // Upload formfiles, create entities from formfiles, add to request
-                if (images.Any())
-                {
-                    var mediaFiles = await _mediaService.UploadImagesFromFiles(obj.UserId, obj.Images);
-                    
-                    media.AddRange(mediaFiles.Select(x => x.Id));
-                }
-                // Upload formfiles, create entities from formfiles, add to request
-                if (videos.Any())
-                {
-                    var mediaFiles = await _mediaService.UploadVideosFromFiles(obj.UserId, obj.Videos);
-
-                    media.AddRange(mediaFiles.Select(x => x.Id));
-                }
-                // for all guids sent through in request, create aa link
-                if (media.Any())
-                {
-                    var mediaItems = media
-                        .Select(x => _postService.CreateMediaLink(post, x))
-                        .ToList();
-
-                    var quoteResults = _postMediaService.AddRange(mediaItems);
-                }
-
-                await _postService.RunCreatePipeline(post);
                 return Ok(new
                 {
                     message = "Created Successfully",
@@ -370,19 +383,6 @@ namespace Accelerate.Features.Content.Controllers.Api
                 return BadRequest();
             }
         }
-
-        private ContentPostQuoteEntity CreateQuoteLink(ContentPostEntity post, ContentPostQuoteRequest quote)
-        {
-            // append current thread to path of new quote, or set as default path 
-            return new ContentPostQuoteEntity()
-            {
-                QuotedContentPostId = quote.QuotedContentPostId,
-                ContentPostId = post.Id,
-                //Content = quote.Content,
-                //Response = quote.Response
-            };
-        }
-
 
         private QueryDescriptor<ContentPostDocument> GetPostsQuery()
         {

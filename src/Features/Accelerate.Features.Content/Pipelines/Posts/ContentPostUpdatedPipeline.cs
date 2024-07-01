@@ -15,6 +15,8 @@ using Elastic.Clients.Elasticsearch.Ingest;
 using Accelerate.Foundations.Content.Hydrators;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Content.Services;
+using Accelerate.Foundations.Content.EventBus;
+using Accelerate.Foundations.EventPipelines.Services;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
@@ -24,21 +26,36 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
+        IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         public ContentPostUpdatedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
             IElasticService<AccountUserDocument> accountElasticService,
+            IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
             _contentPostService = contentPostService;
             _elasticService = elasticService;
             _accountElasticService = accountElasticService;
+            _pipelineActivityService = pipelineActivityService;
             _messageHub = messageHub;
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
                 UpdateDocument,
+                CreatePostActivity
             };
+        }
+        private async Task CreatePostActivity(IPipelineArgs<ContentPostEntity> args)
+        {
+            var entity = new ContentPostActivityEntity()
+            {
+                ContentPostId = args.Value.Id,
+                Type = ContentPostActivityTypes.Updated,
+                UserId = args.Value.UserId,
+                Message = "Post updated!"
+            };
+            await _pipelineActivityService.Create(entity);
         }
         // ASYNC PROCESSORS
         public async Task UpdateDocument(IPipelineArgs<ContentPostEntity> args)

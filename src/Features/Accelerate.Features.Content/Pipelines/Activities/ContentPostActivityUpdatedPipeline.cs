@@ -51,8 +51,6 @@ namespace Accelerate.Features.Content.Pipelines.Activities
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActivityEntity>>()
             {
                 IndexDocument,
-                UpdatePostIndex,
-               // PublishPostUpdatedMessage
             };
             _processors = new List<PipelineProcessor<ContentPostActivityEntity>>()
             {
@@ -63,35 +61,8 @@ namespace Accelerate.Features.Content.Pipelines.Activities
         {
             var indexModel = new ContentPostActivityDocument();
             args.Value.Hydrate(indexModel);
-            var result = await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
-            // Run directly in same function as Actions are simple types and will not be extended via pipelines
-            if(result.IsValidResponse)
-            {
-                var docArgs = new PipelineArgs<ContentPostActivityDocument>()
-                {
-                    Value = indexModel
-                };
-                await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, "Update Action successful", DataRequestCompleteType.Updated);
-            }
-            args.Params["IndexedModel"] = indexModel; 
-        }
-        /// <summary>
-        /// TODO: REFACTOR THIS ONCE POC READY
-        /// </summary>
-        /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActivityEntity> args)
-        {
-            // fetch Actions
-            var ActionsDoc = ContentPostActivityUtilities.GetActivities(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
-            var contentPostDocument = fetchResponse.Source; 
-            contentPostDocument.ActionsTotals = ActionsDoc;
-            contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
-
-            // Send websocket request
-            await ContentPostActivityUtilities.SendWebsocketPostUpdate(_messageHubPosts ,args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
+            var docArgs = new PipelineArgs<ContentPostActivityDocument>() { Value = indexModel };
+            await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, args.Value.Message, DataRequestCompleteType.Updated);
         }
     }
 }

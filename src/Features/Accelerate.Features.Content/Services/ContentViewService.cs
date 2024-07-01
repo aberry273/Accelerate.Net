@@ -150,159 +150,25 @@ namespace Accelerate.Features.Content.Services
                 Label = "Submit",
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name= "QuotedItems",
-                        FieldType = FormFieldTypes.quotes,
-                        Class = "flat",
-                        Placeholder = "Quotes",
-                        IsArray = true,
-                        Autocomplete = null,
-                        Multiple = true,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Hidden = false,
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name= "MentionItems",
-                        FieldType = FormFieldTypes.input,
-                        Class = "flat",
-                        Placeholder = "Mentions",
-                        IsArray = true,
-                        Autocomplete = null,
-                        Multiple = true,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Disabled = true,
-                        Hidden = true,
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name = "CharLimit",
-                        FieldType = FormFieldTypes.number,
-                        Class = "flat",
-                        Placeholder = "Character Limit",
-                        Autocomplete = null,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Min = 1,
-                        Max = 1028,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "Content",
-                        FieldType = FormFieldTypes.basicWysiwyg,
-                        Event = "form:input:user",
-                        Placeholder = "Post an update",
-                        ClearOnSubmit = true,
-                        AriaInvalid = false
-                    },
-                    new FormField()
-                    {
-                        Name = "Status",
-                        FieldType = FormFieldTypes.select,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Items = new List<string>()
-                        {
-                            Enum.GetName(ContentPostEntityStatus.Private),
-                            Enum.GetName(ContentPostEntityStatus.Public)
-                        },
-                        Value = Enum.GetName(ContentPostEntityStatus.Public),
-                    },
-                    new FormField()
-                    {
-                        Name = "LinkValue",
-                        FieldType = FormFieldTypes.link,
-                        Placeholder = "Post a reply",
-                        ClearOnSubmit = true,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Disabled = true
-                    },
-                    new FormField()
-                    {
-                        Name = "Category",
-                        FieldType = FormFieldTypes.input,
-                        Placeholder = "Category",
-                        ClearOnSubmit = false,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Value = channel?.Category
-                    },
-                    new FormField()
-                    {
-                        Name = "Tags",
-                        FieldType = FormFieldTypes.chips,
-                        Placeholder = "Add tag",
-                        Multiple = true,
-                        ClearOnSubmit = false,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Value = channel?.Tags
-                    },
-                    new FormField()
-                    {
-                        Name = "Images",
-                        FieldType = FormFieldTypes.file,
-                        Placeholder = "Upload image",
-                        Multiple = true,
-                        Max = 4,
-                        ClearOnSubmit = true,
-                        Icon = "photo_camera",
-                        AriaInvalid = false,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "Videos",
-                        FieldType = FormFieldTypes.file,
-                        Placeholder = "Upload video",
-                        ClearOnSubmit = true,
-                        Multiple = true,
-                        Max = 4,
-                        Icon = "videocam",
-                        Accept = ".mp4,.mov",
-                        AriaInvalid = false,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "UserId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = user?.Id,
-                    },
-                    new FormField()
-                    {
-                        Name = "Type",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = ContentPostType.Post,
-                    }
+                    FormFieldMentions(null),
+                    FormFieldQuotes(null),
+                    FormFieldCharLimit(null),
+                    FormFieldImageLimit(null),
+                    FormFieldVideoLimit(null),
+                    FormFieldContentBasic(null),
+                    FormFieldStatusSelect(),
+                    FormFieldLink(null),
+                    FormFieldImages(null),
+                    FormFieldVideos(null),
+                    FormFieldTags(null),
+                    FormFieldCategory(null),
+                    FormFieldUser(user.Id),
+                    FormFieldType(ContentPostType.Post),
                 }
             };
             if(channel != null )
             {
-                model.Fields.Add(
-                    new FormField()
-                    {
-                        Name = "ChannelId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = channel.Id,
-                    });
+                model.Fields.Add(FormFieldChannel(channel.Id));
             }
             return model;
         }
@@ -342,194 +208,314 @@ namespace Accelerate.Features.Content.Services
                 Label = "Reply",
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name = "ReplyTo",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = false,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        ClearOnSubmit = false,
-                        Value = GetContentPostReplyValue(post),
-                    },
-                    new FormField()
-                    {
-                        Name= "MentionItems",
-                        FieldType = FormFieldTypes.input,
-                        Class = "flat",
-                        Placeholder = "Mentions",
-                        IsArray = true,
-                        Autocomplete = null,
-                        Multiple = true,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Disabled = true,
-                        Hidden = true,
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name= "QuotedItems",
-                        FieldType = FormFieldTypes.quotes,
-                        Class = "flat",
-                        Placeholder = "Quotes",
-                        IsArray = true,
-                        Multiple = true,
-                        Autocomplete = null,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Hidden = false,
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name= "CharLimit",
-                        FieldType = FormFieldTypes.number,
-                        Class = "flat",
-                        Placeholder = "Character Limit",
-                        Autocomplete = null,
-                        ClearOnSubmit = true,
-                        Min = 1,
-                        Max = 1028,
-                        AriaInvalid = true,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "Content",
-                        FieldType = FormFieldTypes.wysiwyg,
-                        Event = "form:input:user",
-                        Placeholder = "Post a reply",
-                        ClearOnSubmit = true,
-                        AriaInvalid = false,
-                        Max = post.Settings?.CharLimit ?? 1024,
-                    },
-                    new FormField()
-                    {
-                        Name = "LinkValue",
-                        FieldType = FormFieldTypes.link,
-                        Placeholder = "Post a reply",
-                        ClearOnSubmit = true,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Disabled = true
-                    },
-                    new FormField()
-                    {
-                        Name = "Images",
-                        FieldType = FormFieldTypes.file,
-                        Placeholder = "Upload image",
-                        Multiple = true,
-                        Max = 4,
-                        ClearOnSubmit = true,
-                        Icon = "photo_camera",
-                        AriaInvalid = false,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "Videos",
-                        FieldType = FormFieldTypes.file,
-                        Placeholder = "Upload video",
-                        ClearOnSubmit = true,
-                        Icon = "videocam",
-                        Max = 4,
-                        Accept = ".mp4,.mov",
-                        AriaInvalid = false,
-                        Hidden = true,
-                    },
-                    new FormField()
-                    {
-                        Name = "Tags",
-                        FieldType = FormFieldTypes.chips,
-                        Placeholder = "Add a tag",
-                        ClearOnSubmit = false,
-                        Multiple = true,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Value = post.Tags
-                    },
-                    new FormField()
-                    {
-                        Name = "Category",
-                        FieldType = FormFieldTypes.input,
-                        Placeholder = "Category",
-                        ClearOnSubmit = false,
-                        AriaInvalid = false,
-                        Hidden = true,
-                        Value = post?.Category
-                    },
-                    new FormField()
-                    {
-                        Name = "UserId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        ClearOnSubmit = false,
-                        Value = user.Id,
-                    },
-                    new FormField()
-                    {
-                        Name = "ParentIds",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        ClearOnSubmit = false,
-                        Value = string.Join(',', parentIdThread),
-                    },
-                    new FormField()
-                    {
-                        Name = "ParentId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        ClearOnSubmit = false,
-                        Value = post.Id,
-                    },
-                    new FormField()
-                    {
-                        Name = "Type",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = ContentPostType.Reply,
-                    },
-                    new FormField()
-                    {
-                        Name = "ChannelId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = post.ChannelId,
-                    },
-                    new FormField()
-                    {
-                        Name = "Category",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = post.Category,
-                    },
-                    new FormField()
-                    {
-                        Name = "Status",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = post.Status,
-                    },
+                    FormFieldReplyTo(post),
+                    FormFieldMentions(post),
+                    FormFieldQuotes(post),
+                    FormFieldCharLimit(post),
+                    FormFieldImageLimit(post),
+                    FormFieldVideoLimit(post),
+                    FormFieldContent(post),
+                    FormFieldLink(post),
+                    FormFieldImages(post),
+                    FormFieldVideos(post),
+                    FormFieldTags(post),
+                    FormFieldCategory(post),
+                    FormFieldUser(user.Id),
+                    FormFieldParents(parentIdThread),
+                    FormFieldParent(post),
+                    FormFieldType(ContentPostType.Reply),
+                    FormFieldChannel(post?.ChannelId),
+                    FormFieldStatus(post),
                 }
             }; 
             return model;
         }
-
+        #region FormFields Post
+        private FormField FormFieldReplyTo(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "ReplyTo",
+                FieldType = FormFieldTypes.input,
+                Hidden = false,
+                Disabled = true,
+                AriaInvalid = false,
+                ClearOnSubmit = false,
+                Value = GetContentPostReplyValue(post),
+            };
+        }
+        private FormField FormFieldMentions(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "MentionItems",
+                FieldType = FormFieldTypes.input,
+                Class = "flat",
+                Placeholder = "Mentions",
+                IsArray = true,
+                Autocomplete = null,
+                Multiple = true,
+                ClearOnSubmit = true,
+                AriaInvalid = true,
+                Disabled = true,
+                Hidden = true,
+                Helper = "",
+            };
+        }
+        private FormField FormFieldQuotes(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "QuotedIds",
+                FieldType = FormFieldTypes.quotes,
+                Class = "flat",
+                Placeholder = "Quotes",
+                IsArray = true,
+                Multiple = true,
+                Autocomplete = null,
+                ClearOnSubmit = true,
+                AriaInvalid = true,
+                Hidden = false,
+                Helper = "",
+            };
+        }
+        private FormField FormFieldCharLimit(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "CharLimit",
+                FieldType = FormFieldTypes.number,
+                Class = "flat",
+                Placeholder = "Character Limit",
+                Autocomplete = null,
+                ClearOnSubmit = true,
+                Min = 1,
+                Max = 1028,
+                AriaInvalid = true,
+                Hidden = true,
+            };
+        }
+        private FormField FormFieldImageLimit(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Image",
+                FieldType = FormFieldTypes.number,
+                Class = "flat",
+                Placeholder = "Image Limit",
+                Autocomplete = null,
+                ClearOnSubmit = true,
+                Min = 1,
+                Max = 4,
+                AriaInvalid = true,
+                Hidden = true,
+            };
+        }
+        private FormField FormFieldVideoLimit(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Video",
+                FieldType = FormFieldTypes.number,
+                Class = "flat",
+                Placeholder = "Video Limit",
+                Autocomplete = null,
+                ClearOnSubmit = true,
+                Min = 1,
+                Max = 4,
+                AriaInvalid = true,
+                Hidden = true,
+            };
+        }
+        private FormField FormFieldContentBasic(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Content",
+                FieldType = FormFieldTypes.basicWysiwyg,
+                Event = "form:input:user",
+                Placeholder = "Post a reply",
+                ClearOnSubmit = true,
+                AriaInvalid = false,
+                Max = post?.Settings?.CharLimit ?? 256,
+            };
+        }
+        private FormField FormFieldContent(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Content",
+                FieldType = FormFieldTypes.wysiwyg,
+                Event = "form:input:user",
+                Placeholder = "Post a reply",
+                ClearOnSubmit = true,
+                AriaInvalid = false,
+                Max = post?.Settings?.CharLimit ?? 1024,
+            };
+        }
+        private FormField FormFieldLink(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "LinkValue",
+                FieldType = FormFieldTypes.link,
+                Placeholder = "Post a reply",
+                ClearOnSubmit = true,
+                AriaInvalid = false,
+                Hidden = true,
+                Disabled = true
+            };
+        }
+        private FormField FormFieldImages(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Images",
+                FieldType = FormFieldTypes.file,
+                Placeholder = "Upload image",
+                Multiple = true,
+                Max = 4,
+                ClearOnSubmit = true,
+                Icon = "photo_camera",
+                AriaInvalid = false,
+                Hidden = true,
+            };
+        }
+        private FormField FormFieldVideos(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Videos",
+                FieldType = FormFieldTypes.file,
+                Placeholder = "Upload video",
+                ClearOnSubmit = true,
+                Icon = "videocam",
+                Max = 4,
+                Accept = ".mp4,.mov",
+                AriaInvalid = false,
+                Hidden = true,
+            };
+        }
+        private FormField FormFieldTags(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Tags",
+                FieldType = FormFieldTypes.chips,
+                Placeholder = "Add a tag",
+                ClearOnSubmit = false,
+                Multiple = true,
+                AriaInvalid = false,
+                Hidden = true,
+                Value = post?.Tags
+            };
+        }
+        private FormField FormFieldCategory(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Category",
+                FieldType = FormFieldTypes.input,
+                Placeholder = "Category",
+                ClearOnSubmit = false,
+                AriaInvalid = false,
+                Hidden = true,
+                Value = post?.Category
+            };
+        }
+        private FormField FormFieldUser(Guid userId)
+        {
+            return new FormField()
+            {
+                Name = "UserId",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                ClearOnSubmit = false,
+                Value = userId,
+            };
+        }
+        private FormField FormFieldParents(List<Guid> parentIds)
+        {
+            return new FormField()
+            {
+                Name = "ParentIds",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                ClearOnSubmit = false,
+                Value = string.Join(',', parentIds),
+            };
+        }
+        private FormField FormFieldParent(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "ParentId",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                ClearOnSubmit = false,
+                Value = post?.Id,
+            };
+        }
+        private FormField FormFieldType(ContentPostType type)
+        {
+            return new FormField()
+            {
+                Name = "Type",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                Value = type,
+            };
+        }
+        private FormField FormFieldChannel(Guid? channelId)
+        {
+            return new FormField()
+            {
+                Name = "ChannelId",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                Value = channelId,
+            };
+        }
+        private FormField FormFieldStatus(ContentPostDocument post)
+        {
+            return new FormField()
+            {
+                Name = "Status",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                Value = post?.Status,
+            };
+        }
+        private FormField FormFieldStatusSelect()
+        {
+            return new FormField()
+            {
+                Name = "Status",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                Items = new List<string>()
+                {
+                    Enum.GetName(ContentPostEntityStatus.Private),
+                    Enum.GetName(ContentPostEntityStatus.Public)
+                },
+                Value = Enum.GetName(ContentPostEntityStatus.Public),
+            };
+        }
+        #endregion
         public ModalForm EditModalChannelForm(AccountUser user, ContentChannelDocument channel)
         {
             var model = new ModalForm();
@@ -671,6 +657,79 @@ namespace Accelerate.Features.Content.Services
             };
             return model;
         }
+        public AjaxForm CreateEditChannelForm(AccountUser user, ContentChannelDocument channel)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = "/api/contentchannel",
+                Type = PostbackType.PUT,
+                Event = "channel:create:modal",
+                Label = "Create",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Id",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Channel name",
+                        AriaInvalid = false,
+                        Value = channel.Id,
+                        Hidden = true
+                    },
+                    new FormField()
+                    {
+                        Name = "Name",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Channel name",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentChannelEntityStatus.Public,
+                    },
+                    new FormField()
+                    {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = false,
+                        Disabled = false,
+                        AriaInvalid = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "TagItems",
+                        Label = "Tags",
+                        FieldType = FormFieldTypes.chips,
+                        Placeholder = "Listen to posts tagged with..",
+                        ClearOnSubmit = false,
+                        AriaInvalid = false,
+                        Hidden = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "Description",
+                        FieldType = FormFieldTypes.textarea,
+                        Placeholder = "Describe what content this channel is for",
+                        AriaInvalid = false
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
+                    }
+                }
+            };
+            return model;
+        }
         public ModalForm CreateModalChannelForm(AccountUser user)
         {
             var model = new ModalForm();
@@ -687,6 +746,15 @@ namespace Accelerate.Features.Content.Services
             model.Text = "Test form text";
             model.Target = "modal-edit-post";
             model.Form = CreateFormEditReply(user);
+            return model;
+        }
+        public ModalForm CreateModalEditChannelForm(AccountUser user, ContentChannelDocument channel)
+        {
+            var model = new ModalForm();
+            model.Title = "Edit post";
+            model.Text = "Test form text";
+            model.Target = "modal-edit-channel";
+            model.Form = CreateEditChannelForm(user, channel);
             return model;
         }
         public ModalForm EditModalReplyForm(AccountUser user)
@@ -1008,7 +1076,7 @@ namespace Accelerate.Features.Content.Services
                     Text = "Users",
                     Href = $"{this.GetChannelUrl(item)}/Users",
                 }*/
-            };
+        };
         }
         public NavigationGroup GetChannelsTabs(SearchResponse<ContentChannelDocument> searchResponse = null, string selectedName = null)
         {

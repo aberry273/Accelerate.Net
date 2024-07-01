@@ -9,8 +9,8 @@ namespace Accelerate.Foundations.Database.Services
 {
     public class EntityService<T> : IEntityService<T> where T : BaseEntity
     {
-        private readonly BaseContext<T> _dbContext;
-        private readonly ILogger _logger;
+        protected readonly BaseContext<T> _dbContext;
+        protected readonly ILogger _logger;
         public EntityService(
             BaseContext<T> dbContext,
             ILogger<EntityService<T>> logger)
@@ -80,23 +80,6 @@ namespace Accelerate.Foundations.Database.Services
             catch (Exception ex)
             {
                 _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Delete), ex.Message));
-                _logger.LogError(ex.ToString());
-                throw;
-            }
-        }
-        /// <summary>
-        /// Performs an update without calling SaveChangesAsync
-        /// </summary>
-        /// <param name="entity"></param>
-        public void UpdateNoSave(T entity)
-        {
-            try
-            {
-                _dbContext.Update(entity);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Update), ex.Message));
                 _logger.LogError(ex.ToString());
                 throw;
             }
@@ -172,20 +155,7 @@ namespace Accelerate.Foundations.Database.Services
                 _logger.LogError(ex.ToString());
                 throw;
             }
-        }
-        public async Task AddRangeAsyncNoSave(IEnumerable<T> entities)
-        {
-            try
-            {
-                await _dbContext.AddRangeAsync(entities);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Create), ex.Message));
-                _logger.LogError(ex.ToString());
-                throw;
-            }
-        }
+        } 
         public async Task<int> AddRange(IEnumerable<T> entities)
         {
             try

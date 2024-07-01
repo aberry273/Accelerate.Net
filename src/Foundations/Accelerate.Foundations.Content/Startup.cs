@@ -6,6 +6,7 @@ using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Pipelines;
+using Accelerate.Foundations.EventPipelines.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerator.Foundation.Content.Database;
 using Azure.Identity;
@@ -62,6 +63,10 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostSettingsPostEntity>, EntityService<ContentPostSettingsPostEntity>>();
             services.AddTransient<IEntityService<ContentPostTaxonomyEntity>, EntityService<ContentPostTaxonomyEntity>>();
             services.AddTransient<IEntityService<ContentPostMentionEntity>, EntityService<ContentPostMentionEntity>>();
+
+            // Pipeline Services
+            services.AddTransient<IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus>, EntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostEntity, IContentPostBus>, EntityPipelineService <ContentPostEntity, IContentPostBus>>();
 
             // Logic
             services.AddTransient<IContentPostService, ContentPostService>();

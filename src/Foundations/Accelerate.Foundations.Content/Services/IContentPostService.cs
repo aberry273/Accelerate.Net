@@ -12,6 +12,18 @@ namespace Accelerate.Foundations.Content.Services
 {
     public interface IContentPostService
     {
+        Task<ContentPostEntity> CreatePost(
+            ContentPostEntity obj,
+            Guid? channelId,
+            Guid? parentId,
+            List<Guid> parentIds,
+            List<Guid> mentionUserIds,
+            List<Guid> quoteIds,
+            List<Guid> mediaIds,
+            ContentPostSettingsEntity settings,
+            ContentPostLinkEntity linkCard,
+            ContentPostTaxonomyEntity taxonomy);
+
         Task<ContentPostEntity> CreateWithPipeline(ContentPostEntity obj);
         Task<ContentPostEntity> Create(ContentPostEntity obj);
         Task<ContentPostEntity> Update(Guid id, ContentPostEntity obj);
@@ -46,8 +58,8 @@ namespace Accelerate.Foundations.Content.Services
         ContentChannelEntity GetPostChannel(ContentPostEntity post);
 
         Task<int> CreateQuotes(Guid postId, List<Guid> quoteIds);
-
-        Task<Guid?> CreatePostActivity(Guid postId, ContentPostActivityTypes type, string value);
+         
+        Task<int> CreateMentions(Guid postId, List<Guid> userIds);
 
         //actions
         Task<Guid?> CreateOrUpdatePostAction(ContentPostActionsEntity obj);

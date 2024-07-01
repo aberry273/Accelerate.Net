@@ -24,7 +24,7 @@ export default function (data) {
         userId: null,
         tags: [],
         belowFold: false,
-        quoteFieldName: 'QuotedItems',
+        quoteFieldName: 'QuotedIds',
         statusFieldName: 'Status',
         categoryFieldName: 'Category',
         charLimitFieldName: 'CharLimit',
@@ -89,10 +89,11 @@ export default function (data) {
             this.$events.on(linkEvent, async (url) => {
                 this.updateLinkField(url);
             })
-
+            /*
             this.$events.on(this.mxCardPost_mentionsEvent, async (item) => {
                 this.updateMentionsField(item);
             }) 
+            */
 
             this.$events.on(this.mxCardPost_formatsEvent, async (item) => { 
                 this.updateSettingsField(item);
@@ -138,7 +139,7 @@ export default function (data) {
         },
         get inputAmount() {
             return this.textField != null && this.textField.value != null
-                ? encoder.encode(this.textField.value).byteLength
+                ? this.textField.value.length//encoder.encode(this.textField.value).byteLength
                 : 0;
         },
         get characterCount() {
@@ -209,32 +210,24 @@ export default function (data) {
             return updatedFields;
         },
         updateQuoteField(item) {
-            const field = this._mxForm_GetField(this.fields, 'QuotedItems');
+            const field = this._mxForm_GetField(this.fields, 'QuotedIds');
             if (!field) return; 
 
-            let threadIds = field.value || []
+            let quoteItems = field.items || []
 
             const quotedItem = this.createQuoteRequestItem(item);
 
-            const quotedIds = threadIds.map(x => x.quotedContentPostId);
+            const quotedIds = quoteItems.map(x => x.quotedContentPostId);
             const index = quotedIds.indexOf(item.id)
             if (index > -1) return;
 
-            threadIds.push(quotedItem)
+            quoteItems.push(quotedItem)
 
-            field.value = threadIds;
-            field.items = threadIds;
+            field.value = quoteItems.map(x => x.quotedContentPostId);;
+            field.items = quoteItems;
             this._mxForm_SetField(this.fields, field);
             this.showFloatingPanel = false;
             if (this.belowFold) this.fixed = true;
-        },
-        updateMentionsField(item) {
-            const field = this._mxForm_GetField(this.fields, 'Mentions');
-            if (!field) return;
-
-             
-            this._mxForm_SetField(this.fields, field);
-            this.showFloatingPanel = false;
         },
         updateReplyField(item) {
             const parentIdField = this._mxForm_GetField(this.fields, 'ParentId');

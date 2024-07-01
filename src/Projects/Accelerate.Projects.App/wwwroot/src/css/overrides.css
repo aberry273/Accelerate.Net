@@ -761,6 +761,13 @@ article div.content {
     margin: 0;
 }
 
+/* Dropdown */
+.dropdown.menu {
+    display: flex;
+    z-index: 999;
+    position: absolute;
+}
+
 /* MEDIA CARD*/
 article .media {
     border-radius: 12px;

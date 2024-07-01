@@ -46,13 +46,14 @@ namespace Accelerator.Foundation.Content.Database
             builder.Entity<ContentPostMediaEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostSettingsEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostTaxonomyEntity>().HasKey(c => c.Id);
-
+            builder.Entity<ContentPostActivityEntity>().HasKey(c => c.Id);
+            /*
             builder.Entity<ContentPostEntity>()
                 .HasMany(e => e.Activities)
                   .WithOne(x => x.ContentPost)
                   .HasForeignKey(x => x.ContentPostId)
                   .OnDelete(DeleteBehavior.Cascade);
-            
+            */
             builder.Entity<ContentPostEntity>()
                 .HasMany(e => e.Actions)
                   .WithOne(x => x.ContentPost)

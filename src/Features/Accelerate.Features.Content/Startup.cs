@@ -45,6 +45,8 @@ namespace Accelerate.Features.Content
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
             app.MapHub<BaseHub<ContentPostActionsSummaryDocument>>($"/{Constants.Settings.ContentPostActionsSummaryHubName}");
             app.MapHub<BaseHub<ContentPostSettingsDocument>>($"/{Constants.Settings.ContentPostSettingsHubName}");
+            app.MapHub<BaseHub<ContentPostActivityDocument>>($"/{Constants.Settings.ContentPostActivitiesHubName}");
+
 
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -99,6 +101,10 @@ namespace Accelerate.Features.Content
             // Quotes
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostQuoteEntity, ContentPostQuoteCreatedPipeline, ContentPostQuoteUpdatedPipeline, ContentPostQuoteDeletedPipeline>(services);
             //Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
+            
+            // Mentions (alerted through notifications)
+            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostMentionEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostMentionEntity>(services);
 
             // Settings
 

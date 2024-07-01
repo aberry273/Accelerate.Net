@@ -16,6 +16,7 @@ export default function header(data) {
         searchEvent: null,
         html: '', 
         nodePosition: 0,
+        onEmojiEvent: 'insert:wysiwyg:emoji',
         // for the context menu
         showElementEditor: false,
         selectedformat: '',
@@ -44,11 +45,25 @@ export default function header(data) {
             this.$events.on(searchResultEvent, (results) => {
                 this.results = results;
             })
+
+            this.$events.on(this.onEmojiEvent, (emoji) => {
+                this.insertHtmlIntoText(emoji.char);
+            })
+        },
+        insertHtmlIntoText(html) {
+            this.setEditorCursorPosition((this.nodePosition || 0), this.editor);
+      
+            document.execCommand("insertHTML", false, html);
+
+            this.convertHtmlToEncodedText();
+            //move cursor to end of inserted element
+            const pos = this.nodePosition + 1;
+            this.setEditorCursorPosition(pos, this.editor);
+            this.editor.focus();
         },
         insertIntoText(item) {
             let type = item.type;
-            //TODO Update with actual types
-            type = 'user';
+
             const format = this._mxCardPost_GetFormat(type);
             const element = this._mxCardPost_CreateElement(this.nodePosition, format, item.name);
 
@@ -87,19 +102,23 @@ export default function header(data) {
             this.editor.focus();
         },
         setEditorCursorPosition(pos, el) {
-            if (this.editor.innerText.length <= 1) return 0;
+            
             //selecting element then adding characters causes the insertion to be in a random position
 
             // for contentedit field
             if (el.isContentEditable) {
                 var range = document.createRange()
                 var sel = window.getSelection()
-                if (this.insert) {
+                if (this.insert) { 
                     const node = el.childNodes[0];
                     range.setStart(node, node.length)
                     document.getSelection().collapse(el, pos)
                 }
                 else {
+                    if (el.childNodes == null || el.childNodes.length == 0) {
+                        const textnode = document.createTextNode("");
+                        el.appendChild(textnode);
+                    }
                     const node = el.childNodes[el.childNodes.length - 1];
                     range.setStart(node, 0)
                 }
@@ -111,7 +130,6 @@ export default function header(data) {
                 //document.getSelection().collapse(el, pos)
                 return
             }
-            el.setSelectionRange(pos, pos)
         },
         toggleElementInput(ev) {
             if (this.showElementEditor) {
@@ -181,7 +199,8 @@ export default function header(data) {
         search() {
             this.$events.emit(this.searchEvent, this.queryText)
         },
-        select(item) {
+        select(item, type) {
+            item.type = type;
             this.open = false;
             this.selected = item;
             this.queryText = item.name;
@@ -234,6 +253,9 @@ export default function header(data) {
                             <button class="material-icons flat small" @click="performAction('bold')">format_bold</button>
                             <button class="material-icons flat small" @click="performAction('italic')">format_italic</button>
                         </span>
+                        <!--Emoji picker-->
+                        <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
+
                         <button class="material-icons flat small" @click="tagPerson">person_search</button>
                         <div x-show="showElementEditor">
                             <input
@@ -245,20 +267,25 @@ export default function header(data) {
                                 placeholder="username"
                                 @keyup.@="($event) => returnToElementInput($event)"
                             />
-                            <article class="dropdownMenu"> 
-                                <!--User Search--> 
-                                <ul style="list-style:none; text-align:left;" >
-                                    <template x-for="(item) in results">
-                                        <div>
-                                            <a href="#" @click="select(item)" x-text="item.name"></a>
-                                        </div>
-                                    </template>
-                                </ul>
-                                <ul x-show="results.length == 0">
-                                    No results found
-                                </ul> 
-                                <!--Quote Format-->
-                                <div x-show="selectedFormat == 'posts'">Posts</div>
+                            <article class="dropdownMenu">
+                                <!--Users Format-->
+                                <template x-if="selectedFormat == 'users'">
+                                    <div>
+                                        <!--User Search-->
+                                        <ul  style="display: grid;list-style:none; text-align:left; " >
+                                            <li>Results</li>
+                                            <template x-for="(item) in results">
+                                                <li>
+                                                    <a href="#" @click="select(item, 'user')" x-text="item.name"></a>
+                                                </li>
+                                            </template>
+                                            <li x-show="results.length == 0">
+                                                No results found
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </template>
+                                <!--  Link Formats-->
                             </article>
                         </div>
                         <button x-show="showElementEditor" class="material-icons flat small" @click="closeElementEditor">close</button>

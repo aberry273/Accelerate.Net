@@ -8,7 +8,8 @@ export default function (data = {}) {
     return {
         show: false,
         snackbars: [],
-        ms: data.ms || defaults.ms,
+        ms: 50000,//data.ms || defaults.ms,
+        showFloatingPanel: true,
         type: data.type || defaults.type,
         icon: data.icon || defaults.icon,
         limit: data.limit || defaults.limit,
@@ -43,6 +44,7 @@ export default function (data = {}) {
         },
         closeAll() {
             this.show = false;
+            this.showFloatingPanel = true;
             this.snackbars = [];
         },
         removeSnackbar(i) {
@@ -58,9 +60,20 @@ export default function (data = {}) {
         },
         load(data) {
           // Turn into object as it returns reactive Proxy
-          //const data = JSON.parse(JSON.stringify(payload))
+            //const data = JSON.parse(JSON.stringify(payload))
+          /*
+            <button
+                x-show="show && showFloatingPanel"
+                @click="showFloatingPanel = false"
+                class="round xsmall secondary "
+                style="y-index:1111; position: fixed; bottom: 65px; right: calc(var(--pico-spacing)*0.225);">
+                    <i class="material-icons">notifications</i>
+                    <sup class="tag" style="margin-left: -3px; color:white" x-text="snackbars.length"></sup>
+            </button>
+            */
           const icon = this.icon;
-          const html = `
+            const html = `
+            <!--Floating button-->
           <template x-if="show">
             <article class="is-fixed dense page-modal snackbar-container" >
                 <ul>
@@ -72,9 +85,9 @@ export default function (data = {}) {
                         <template x-for="(snackbar, i) in topSnackbars" :key="i">
                             <article class="dense snackbar" :class="snackbar.type" x-transition>
                                 <nav>
-                                <i class="material-icons" x-text="snackbar.icon"></i>
-                                <p x-text="snackbar.text"></p>
-                                <i class="flat click material-icons" aria-label="Close" @click="removeSnackbar(i)" rel="prev">close</i>
+                                    <i class="material-icons" x-text="snackbar.icon"></i>
+                                    <p x-text="snackbar.text"></p>
+                                    <i class="flat click material-icons" aria-label="Close" @click="removeSnackbar(i)" rel="prev">close</i>
                                 </nav>
                             </article>
                         </template

@@ -70,8 +70,8 @@
     {
         <nav x-data="{fixed: false}"
                  :class="fixed ? 'container  floating topnav' : 'topnav'"
-             style="padding: 0px 8px;"
-             @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+                 :style="fixed ?  'padding-left:0px; width: 91.45%; padding: 0px 8px;' : 'padding: 0px 8px;'"
+                 @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
             <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
             <ul>
                 @foreach (var link in Model.Items)

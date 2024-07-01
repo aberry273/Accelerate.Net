@@ -10,30 +10,34 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Content.Models.Entities
 {
+    /*
+    public static Dictionary<ContentPostActivityTypes, string> FiendlyTypeNames = new Dictionary<ContentPostActivityTypes, string>()
+    {
+        {
+            ContentPostActivityTypes.Quote,
+            "Quoted"
+        }
+    };
+    */
     public enum ContentPostActivityTypes
     {
         Like,
-        // TODO
-        Unlike,
         Agree,
-        // TODO
-        Unagree,
         Disagree,
-        // TODO
-        Undisagree,
         // TODO
         Quote,
         // TODO
         Reply,
         Vote,
         Share,
+        Mention,
+        Created,
+        Updated,
+        Deleted,
     }
     [Table("ContentPostActivity")]
     public class ContentPostActivityEntity : BaseEntity
     {
-        [JsonIgnore]
-        public virtual ContentPostEntity? ContentPost { get; set; }
-        [ForeignKey("ContentPost")]
         public Guid ContentPostId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
@@ -50,5 +54,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         }
         public ContentPostActivityTypes Type { get; set; }
         public string? Value { get; set; }
+        public string? Message { get; set; }
+        public string? Url { get; set; }
     }
 }

@@ -2,11 +2,13 @@
 using Accelerate.Features.Content.Services;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
+using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Pipelines;
+using Accelerate.Foundations.EventPipelines.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Websockets.Hubs;
 using Accelerate.Foundations.Websockets.Models;
@@ -19,14 +21,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
     {
         IContentPostService _contentPostService;
         IElasticService<ContentPostDocument> _elasticService;
+        IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         IEntityService<ContentPostEntity> _entityService;
         public ContentPostDeletedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
             IEntityService<ContentPostEntity> entityService,
+            IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {
+            _pipelineActivityService = pipelineActivityService;
             _contentPostService = contentPostService;
             _elasticService = elasticService;
             _entityService = entityService;
@@ -35,7 +40,19 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
                 DeleteDocument,
+                CreatePostActivity
             };
+        }
+        private async Task CreatePostActivity(IPipelineArgs<ContentPostEntity> args)
+        {
+            var entity = new ContentPostActivityEntity()
+            {
+                ContentPostId = args.Value.Id,
+                Type = ContentPostActivityTypes.Deleted,
+                UserId = args.Value.UserId,
+                Message = "Post deleted!"
+            };
+            await _pipelineActivityService.Create(entity);
         }
         // ASYNC PROCESSORS
         public async Task DeleteDocument(IPipelineArgs<ContentPostEntity> args)

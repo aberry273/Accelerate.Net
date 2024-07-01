@@ -30,7 +30,6 @@ export default function (settings) {
             this._mxEvents_On(this.getMessageEvent(), async (e) => {
                 const msgData = e.data;
                 if (!msgData) return;
-                if (msgData.alert) this._mxAlert_AddAlert(msgData);
                 this.items = this.updateItems(this.items, msgData);
             })
             // Listen for wssContentPostActionsUpdate

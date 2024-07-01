@@ -23,6 +23,7 @@ using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Foundations.Content.Hydrators;
 using Accelerate.Foundations.Media.Models.Entities;
 using Accelerate.Foundations.Content.Services;
+using Accelerate.Foundations.EventPipelines.Services;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
@@ -40,6 +41,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
         IEntityService<ContentPostActionsSummaryEntity> _entityActionsSummaryService;
+        IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
@@ -48,6 +50,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IEntityService<ContentPostEntity> entityService,
             IEntityService<ContentPostQuoteEntity> quoteService,
             IEntityService<ContentPostActionsSummaryEntity> entityActionsSummaryService,
+            IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService,
             IEntityService<MediaBlobEntity> mediaService,
             IEntityService<ContentPostMediaEntity> mediaPostService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
@@ -55,6 +58,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             _contentPostService = contentPostService;
             _entityActionsSummaryService = entityActionsSummaryService;
+            _pipelineActivityService = pipelineActivityService;
             _elasticPostActionsSummaryService = elasticPostActionsSummaryService;
             _entityService = entityService;
             _elasticService = elasticService;
@@ -69,10 +73,23 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 IndexDocument,
                 CreatePostActionSummary,
+                CreatePostActivity
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
             {
             };
+        }
+
+        private async Task CreatePostActivity(IPipelineArgs<ContentPostEntity> args)
+        {
+            var entity = new ContentPostActivityEntity()
+            {
+                ContentPostId = args.Value.Id,
+                Type = ContentPostActivityTypes.Created,
+                UserId = args.Value.UserId,
+                Message = "Post created!",
+            };
+            await _pipelineActivityService.Create(entity);
         }
 
         private async Task CreatePostActionSummary(IPipelineArgs<ContentPostEntity> args)
@@ -234,24 +251,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 Alert = true
             };
             await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
-        }
-
-        private async Task UpdateParentDocument(ContentPostParentEntity parentEntity, ContentPostDocument childDoc, IPipelineArgs<ContentPostEntity> args)
-        {
-            var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(parentEntity.ParentId?.ToString());
-            var parentDoc = parentResponse.Source;
-            if (parentDoc == null) return;
-
-            // Update reply count
-            //parentDoc.Replies = _contentPostService.GetReplyCount(parentEntity.ParentId.GetValueOrDefault());
-
-            // Update threads
-            if (args.Value.Type == ContentPostType.Page)
-            {
-                if (parentDoc.Pages == null) parentDoc.Pages = new List<ContentPostDocument>();
-                parentDoc.Pages.Add(childDoc);
-            }
-            await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
-        }
+        } 
     }
 }

@@ -12,6 +12,7 @@ using Accelerate.Foundations.Websockets.Models;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Ingest;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Accelerate.Foundations.Content.Hydrators;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Activities
@@ -39,35 +40,15 @@ namespace Accelerate.Features.Content.Pipelines.Activities
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActivityEntity>>()
             {
                 DeleteDocument,
-                UpdatePostIndex
             };
         }
         // ASYNC PROCESSORS
         public async Task DeleteDocument(IPipelineArgs<ContentPostActivityEntity> args)
         {
-            var indexResponse = await _elasticService.DeleteDocument<ContentPostActivityEntity>(args.Value.Id.ToString());
-
-            var docArgs = new PipelineArgs<ContentPostActivityDocument>()
-            {
-                Value = new ContentPostActivityDocument()
-                {
-                    Id = args.Value.Id,
-                }
-            };
-            await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
+            var indexModel = new ContentPostActivityDocument();
+            args.Value.Hydrate(indexModel);
+            var docArgs = new PipelineArgs<ContentPostActivityDocument>() { Value = indexModel };
+            await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, args.Value.Message, DataRequestCompleteType.Deleted);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActivityEntity> args)
-        {
-            // fetch Actions
-            var ActionsDoc = ContentPostActivityUtilities.GetActivities(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
-            var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.ActionsTotals = ActionsDoc;
-            contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
-
-            // Send websocket request
-            await ContentPostUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
-        } 
     }
 }

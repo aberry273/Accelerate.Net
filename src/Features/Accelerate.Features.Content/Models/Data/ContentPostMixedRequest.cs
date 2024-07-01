@@ -47,8 +47,7 @@ namespace Accelerate.Features.Content.Models.Data
         public List<IFormFile>? Videos { get; set; }
         public List<IFormFile>? Images { get; set; }
         public List<Guid>? MediaIds { get; set; }
-        public List<string>? MentionItems { get; set; }
-        public List<string>? QuotedItems { get; set; }
+        public List<Guid>? QuotedIds { get; set; }
         //Taxonomy
         public List<string>? Tags { get; set; }
         public string? Category { get; set; }

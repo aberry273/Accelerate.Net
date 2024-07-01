@@ -10,6 +10,8 @@ namespace Accelerate.Foundations.Common
     {
         public struct Paths
         {
+            public const string AboutPath = "/About";
+            public const string AboutLabel = "About";
             public const string BrowsePath = "/Channels";
             public const string BrowseLabel = "Browse";
             public const string ProfilePath = "/Account/Profile";

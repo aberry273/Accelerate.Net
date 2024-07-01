@@ -93,6 +93,13 @@ namespace Accelerate.Foundations.Common.Services
                     WssEvent = "wss:contentPostActionsSummary",
                     Url = $"{domainUrl}/ContentPostActionsSummary",
                 },
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentPostActivities",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentPostActivities",
+                    Url = $"{domainUrl}/ContentPostActivities",
+                },
             };
         }
         public BasePage CreateUnauthenticatedContent()
@@ -138,6 +145,11 @@ namespace Accelerate.Foundations.Common.Services
                 Subtitle = "The new bird in town",
                 Items = new List<NavigationItem>()
                 {
+                    new NavigationItem()
+                    {
+                        Href = Foundations.Common.Constants.Paths.AboutPath,
+                        Text = Foundations.Common.Constants.Paths.AboutLabel,
+                    },
                     new NavigationItem()
                     {
                         Href = Foundations.Common.Constants.Paths.BrowsePath,
@@ -195,6 +207,11 @@ namespace Accelerate.Foundations.Common.Services
                 },
                 Items = new List<NavigationItem>()
                 {
+                    new NavigationItem()
+                    {
+                        Href = Foundations.Common.Constants.Paths.AboutPath,
+                        Text = Foundations.Common.Constants.Paths.AboutLabel,
+                    },
                     new NavigationItem()
                     {
                         Href = Foundations.Common.Constants.Paths.BrowsePath,

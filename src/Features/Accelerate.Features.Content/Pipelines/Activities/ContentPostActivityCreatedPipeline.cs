@@ -43,8 +43,7 @@ namespace Accelerate.Features.Content.Pipelines.Activities
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActivityEntity>>()
             {
-                //IndexDocument,
-                //UpdatePostIndex,
+                IndexDocument,
             };
             _processors = new List<PipelineProcessor<ContentPostActivityEntity>>()
             {
@@ -55,29 +54,9 @@ namespace Accelerate.Features.Content.Pipelines.Activities
         {
             var indexModel = new ContentPostActivityDocument();
             args.Value.Hydrate(indexModel);
-            await _elasticService.Index(indexModel);
-
-            var docArgs = new PipelineArgs<ContentPostActivityDocument>()
-            {
-                Value = indexModel
-            };
-            await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, "Create activity successful", DataRequestCompleteType.Created);
+            var docArgs = new PipelineArgs<ContentPostActivityDocument>(){Value = indexModel};
+            await ContentPostActivityUtilities.SendWebsocketActivityUpdate(_messageHub, docArgs, args.Value.Message, DataRequestCompleteType.Created);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActivityEntity> args)
-        {
-            // fetch Actions
-            var ActionsDoc = ContentPostActivityUtilities.GetActivities(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
-            var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.ActionsTotals = ActionsDoc;
-            contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
-
-            // Send websocket request
-            await ContentPostActivityUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
-        } 
-          
-
         // SYNC PROCESSORS
     }
 }

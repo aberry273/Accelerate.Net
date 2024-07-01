@@ -6,7 +6,7 @@ namespace Accelerate.Foundations.Content.Hydrators
 {
     public static class ContentHydrators
     {
-        public static void Hydrate(this ContentPostEntity document, ContentPostEntity entity)
+        public static void HydrateFrom(this ContentPostEntity entity, ContentPostEntity document)
         {
             document.Status = entity.Status;
             document.Content = entity.Content;
@@ -109,6 +109,8 @@ namespace Accelerate.Foundations.Content.Hydrators
         public static void Hydrate(this ContentPostActivityEntity entity, ContentPostActivityDocument document)
         {
             document.UserId = entity.UserId;
+            document.Message = entity.Message;
+            document.Url = entity.Url;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
             document.Action = entity.Action;
