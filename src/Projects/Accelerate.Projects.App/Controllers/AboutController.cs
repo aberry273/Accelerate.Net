@@ -53,6 +53,23 @@ namespace Accelerate.Projects.App.Controllers
 
             return View(viewModel);
         }
+        [HttpGet("About/Terms-And-Conditions")]
+        public async Task<IActionResult> TermsAndConditions()
+        {
+            var user = await GetUserWithProfile(this.User);
 
+            var viewModel = CreateBaseContent(user);
+
+            return View(viewModel);
+        }
+        [HttpGet("About/privacy-policy")]
+        public async Task<IActionResult> PrivacyPolicy()
+        {
+            var user = await GetUserWithProfile(this.User);
+
+            var viewModel = CreateBaseContent(user);
+
+            return View(viewModel);
+        }
     }
 }
