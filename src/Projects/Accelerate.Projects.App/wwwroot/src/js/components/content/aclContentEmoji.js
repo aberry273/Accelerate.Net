@@ -7,57 +7,102 @@ export default function header(data) {
         queryText: null,
         results: [],
         topResults: [],
+        selectIcon: false,
+        icon: 'add_reaction',
+        selectedIcon: '',
         event: 'select:emoji',
+        currentPage: 0,
+        perPage: 24,
         init() {
             this.results = _emojiJson.slice(0, 24);
+            this.selectIcon = data.selectIcon;
+            this.selectedIcon = data.selectedIcon;
             this.event = data.event || 'select:emoji';
             this.topResults = [
                 {
                     char: '👍',
+                    codes: '1F44D',
                 },
                 {
                     char: '👎',
+                    codes: '1F44E',
                 },
                 {
                     char: '❤️',
+                    codes: '2764 FE0F'
                 },
                 {
-                    char: '☺️',
+                    char: '🤣',
+                    codes: '1F923'
                 },
                 {
                     char: '😂',
+                    codes: '1F602'
                 },
                 {
                     char: '☹️',
+                    codes: '1F923'
                 }
             ];
             this.$nextTick(() => {
                 this.load(self.data)
             })
         },
+        get page() {
+            return this.currentPage + 1
+        },
+        get pages() {
+            return parseInt(_emojiJson.length / this.perPage);
+        },
+        get pageText() {
+            return `${this.page} / ${this.pages}`;
+        },
         search() {
-            if (!this.queryText) return;
-            const results = _emojiJson.filter(x => x.name.indexOf(this.queryText) > -1);
-            const max = results.length >= 24 ? 24 : results.length;
-            this.results = results.slice(0, max)
+            console.log(this.queryText)
+            const results = this.queryText != null
+                ? _emojiJson.filter(x => x.name.indexOf(this.queryText) > -1)
+                : _emojiJson;
+
+            const max = results.length >= this.perPage ? this.perPage : results.length;
+            const pageIndex = this.currentPage * this.perPage;
+            this.results = results.slice(pageIndex, pageIndex+max)
+        },
+        clear() {
+            this.$events.emit(this.event, '');
+            this.selectedIcon = null;
+            this.showDialog = false;
         },
         select(emoji) {
             this.$events.emit(this.event, emoji);
+            this.selectedIcon = emoji.char;
             this.showDialog = false;
         },
+        lastPage() {
+            if (this.currentPage == 0) return;
+            this.currentPage--;
+            this.search();
+        },
+        nextPage() {
+            if (this.currentPage >= this.pages) return;
+            this.currentPage++;
+            this.search();
+        },
         load(data) {
-        this.$root.innerHTML = `
-            <button @click="showDialog = !showDialog" class="material-icons flat small">add_reaction</button>
-            <template x-if="showDialog">
+            this.$root.innerHTML = `
+            <button @click="showDialog = !showDialog" class="flat small" style="padding:0px; padding-top:8px;">
+               <i x-show="!selectIcon || !selectedIcon" class="material-icons" style="margin-top:4px;" x-text="icon"></i>
+               <span x-show="selectIcon && selectedIcon" class="" x-html="selectedIcon"></span>
+            </button>
+            <template x-if="showDialog"  @click.outside="showDialog = false">
                 <div class="dropdown menu">
-               
+                
                     <article class="dropdownMenu padless">
                         <header class="padless py">
                             <input
-                                id="userInput"
+                                rel="icon"
+                                id="searchInput"
                                 style="margin-bottom: 0px"
                                 :change="search"
-                                x-model="queryText"
                                 :value="queryText"
                                 placeholder="Search"
                             /> 
@@ -66,8 +111,11 @@ export default function header(data) {
                         <div>
                             <!--User Search-->
                             <ul style="display: grid;list-style:none; text-align:left; " >
+                                <li x-show="selectIcon && selectedIcon">
+                                    <button rel="clearselected" @click="clear" class="flat small"><sup>Clear selected</sup></button>
+                                </li>
                                 <li>
-                                    <sup>Top results</sup>
+                                    <sup>Favourites</sup>
                                 </li>
                                  <div class="grid col-6">
                                     <template x-for="(item) in topResults">
@@ -77,9 +125,16 @@ export default function header(data) {
                                 <li><sup>Results</sup></li>
                                 <div class="grid col-6">
                                     <template x-for="(item) in results">
-                                        <span class="click" x-html="item.char" @click="select(item)"></span>
+                                        <span class="click emoji" :data-tooltip="item.name" x-html="item.char" @click="select(item)"></span>
                                     </template>
                                 </div>
+                                <li>
+                                    <nav>
+                                    <button :disabled="page > 1" class="xsmall flat material-icons click" @click="lastPage">chevron_left</button>
+                                    <small x-text="pageText"></small>
+                                    <button :disabled="page >= pages" class="xsmall flat material-icons click" @click="nextPage">chevron_right</button>
+                                    </nav>
+                                </li>
                                 <li x-show="results.length == 0">
                                     <sup>No results found</sup>
                                 </li>

@@ -13,7 +13,7 @@ namespace Accelerate.Features.Content.Pipelines.Activities
         public static ContentPostActionsSummaryDocument GetActivities(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         {
             var group = entityService
-               .Find(x => x.ContentPostId == args.Value.ContentPostId)
+               .Find(x => x.SourceId == args.Value.SourceId)
                .GroupBy(g => 1)
                .Select(x =>
                    new ContentPostActionsSummaryDocument

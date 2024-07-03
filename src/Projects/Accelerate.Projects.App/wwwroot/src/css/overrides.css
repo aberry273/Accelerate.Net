@@ -803,13 +803,16 @@ button.floating-previous {
     left: 0;
     margin-right: 20px;
 }
-
+/*EMOJI*/
+[data-tooltip]:not(a,button,input).emoji {
+    border-bottom:none;
+}
 /* CHIPS */
 button.chip {
     margin: calc(var(--pico-block-spacing-vertical)* .1) calc(var(--pico-block-spacing-horizontal)* .1);
     padding: calc(var(--pico-block-spacing-vertical) * .1) calc(var(--pico-block-spacing-horizontal)* .1);
     display: inline-block;
-    padding:0px;
+    padding: 0px;
 }
 button.chip sup{
     margin-left: 2px;
@@ -828,6 +831,22 @@ button.tag {
         content: "\00d7"; /* This will render the 'X' */
     }
 /*GROUPS*/
+[role=group].flat, [role=search].flat {
+    box-shadow: none;
+}
+[role=group].small:not(:first-child), [role=search].small:not(:first-child) {
+    margin-left:0px;
+}
+[role=group].small, [role=search].small {
+    /*
+    margin: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* 0);
+    padding: calc(var(--pico-block-spacing-vertical)* .1) calc(var(--pico-block-spacing-horizontal)* .1);
+    */
+    width: initial;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
 fieldset button.small {
     margin: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* .25);
     padding: calc(var(--pico-block-spacing-vertical)* .2) calc(var(--pico-block-spacing-horizontal)* .25);

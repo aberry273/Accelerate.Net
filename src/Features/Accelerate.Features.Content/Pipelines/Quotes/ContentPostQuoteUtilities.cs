@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Accelerate.Features.Content.Pipelines.Quotes
 {
-    public static class ContentPostQuoteUtilities
+    public static class ContentPostParentUtilities
     {
         public static int GetTotalQuotes(IEntityService<ContentPostQuoteEntity> entityService, IPipelineArgs<ContentPostQuoteEntity> args)
         {

@@ -10,9 +10,16 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         public Guid UserId { get; set; }
         public Guid ContentPostId { get; set; }
-        public int? Agrees { get; set; }
-        public int? Disagrees { get; set; }
+        public int Agrees { get; set; }
+        public int Disagrees { get; set; }
         public int? Replies { get; set; }
+        public int? Votes
+        {
+            get
+            {
+                return this.Agrees - this.Disagrees;
+            }
+        }
         public int? Quotes { get; set; }
         public int? Likes { get; set; }
     }

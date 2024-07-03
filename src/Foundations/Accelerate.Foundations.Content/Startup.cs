@@ -65,7 +65,11 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostMentionEntity>, EntityService<ContentPostMentionEntity>>();
 
             // Pipeline Services
+            services.AddTransient<IEntityPipelineService<ContentPostActionsEntity, IContentActionsBus>, EntityPipelineService<ContentPostActionsEntity, IContentActionsBus>>();
             services.AddTransient<IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus>, EntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostMentionEntity, IContentPostMentionBus>, EntityPipelineService<ContentPostMentionEntity, IContentPostMentionBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus>, EntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostParentEntity, IContentPostParentBus>, EntityPipelineService<ContentPostParentEntity, IContentPostParentBus>>();
             services.AddTransient<IEntityPipelineService<ContentPostEntity, IContentPostBus>, EntityPipelineService <ContentPostEntity, IContentPostBus>>();
 
             // Logic

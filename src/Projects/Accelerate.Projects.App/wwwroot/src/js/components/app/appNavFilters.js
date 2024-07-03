@@ -81,27 +81,24 @@ export default function (data) {
                 <strong x-text="header"></strong>
               </li>
               <template x-for="filter in filters">
-                <li >
-                  <template x-if="filter.type == 'Checkbox'">
-                    <details class="dropdown">
-                      <summary class="outline flat" x-text="filter.name"></summary>
-                      <!--Checkbox-->
-                      <ul>
+                <li> 
+                    <details class="dropdown" x-show="filter.type == 'Checkbox'">
+                        <summary class="outline flat" x-text="filter.name"></summary>
+                        <!--Checkbox-->
+                        <ul>
                         <template x-for="val in filter.values">
-                          <li>
+                            <li>
                             <label>
-                              <input type="checkbox" :checked="isSelectedMany(val, filter.name)" name="solid" 
-                              @click="selectMany(val, filter.name)" />
-                              <span x-text="val"></span>
+                                <input type="checkbox" :checked="isSelectedMany(val, filter.name)" name="solid" 
+                                @click="selectMany(val, filter.name)" />
+                                <span x-text="val"></span>
                             </label>
-                          </li>
+                            </li>
                         </template>
-                      </ul> 
-                    </details>
-                  </template>
+                        </ul> 
+                    </details> 
                   <!--Radio-->
-                  <template x-if="filter.type == 'Radio'">
-                    <details class="dropdown">
+                    <details class="dropdown" x-show="filter.type == 'Radio'">
                       <summary class="outline flat" x-text="filter.name"></summary>
                       <ul>
                         <template x-for="val in filter.values">
@@ -115,28 +112,16 @@ export default function (data) {
                         </template>
                       </ul>
                     </details>
-                  </template>
-                  <template x-if="filter.type == 'Input' || filter.type == 'Select'">
-                    <details class="dropdown">
-                    <summary class="outline flat" x-text="filter.name"></summary>
-                    <!--No type-->
-                      <ul>
+                    <details class="dropdown" x-show="filter.type == 'Input' || filter.type == 'Select'">
+                        <summary class="outline flat" x-text="filter.name"></summary>
+                        <!--No type-->
+                        <ul>
                         <template x-for="val in filter.values">
-                          <li><a href="#" :selected="isSelectedMany(val, filter.name)"
+                            <li><a href="#" :selected="isSelectedMany(val, filter.name)"
                             @click="selectMany(val, filter.name)" x-text="val"></a></li>
                         </template>
-                      </ul>
+                        </ul>
                     </details>
-                  </template>
-                  <template>
-                    <fieldset>
-                      <legend>Language preferences:</legend>
-                      <label>
-                        <input type="checkbox" name="english" checked />
-                        English
-                      </label>
-                    </fieldset>
-                  </template>
                 </li>
                 </template>
             </ul> 

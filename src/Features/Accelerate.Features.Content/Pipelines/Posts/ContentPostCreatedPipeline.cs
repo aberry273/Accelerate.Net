@@ -72,7 +72,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostEntity>>()
             {
                 IndexDocument,
-                CreatePostActionSummary,
+                //CreatePostActionSummary,
                 CreatePostActivity
             };
             _processors = new List<PipelineProcessor<ContentPostEntity>>()
@@ -84,7 +84,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var entity = new ContentPostActivityEntity()
             {
-                ContentPostId = args.Value.Id,
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
                 Message = "Post created!",

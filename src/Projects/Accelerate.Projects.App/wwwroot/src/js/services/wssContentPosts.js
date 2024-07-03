@@ -119,6 +119,7 @@ export default function (settings) {
         CheckUserPostAction(postId, userId, actionType) {
             const action = this.GetPostAction(postId, userId);
             if (action == null) return false;
+            return action[actionType];
             return action[actionType] === true;
         },
     }

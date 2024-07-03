@@ -24,6 +24,8 @@ export default function (data = {}) {
         this.$events.on(data.event || "snackbar:open", (payload) => {
           const data = {
               text: payload.text,
+              url: payload.url,
+              text: payload.text,
               success: true
           }
           self.load(data)

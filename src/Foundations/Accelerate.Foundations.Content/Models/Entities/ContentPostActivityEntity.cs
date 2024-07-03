@@ -38,7 +38,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
     [Table("ContentPostActivity")]
     public class ContentPostActivityEntity : BaseEntity
     {
-        public Guid ContentPostId { get; set; }
+        public Guid SourceId { get; set; }
         [ForeignKey("User")]
         public Guid UserId { get; set; }
         [NotMapped]

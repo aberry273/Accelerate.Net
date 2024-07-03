@@ -39,7 +39,6 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsSummaryEntity>>()
             {
                 DeleteDocument,
-                UpdatePostIndex
             };
         }
         // ASYNC PROCESSORS
@@ -47,27 +46,11 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         {
             var indexResponse = await _elasticService.DeleteDocument<ContentPostActionsSummaryEntity>(args.Value.Id.ToString());
 
-            var docArgs = new PipelineArgs<ContentPostActionsSummaryDocument>()
+            var indexModel = new ContentPostActionsSummaryDocument()
             {
-                Value = new ContentPostActionsSummaryDocument()
-                {
-                    Id = args.Value.Id,
-                }
+                Id = args.Value.Id,
             };
-            await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
+            await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, indexModel, "Delete Action successful", DataRequestCompleteType.Deleted);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActionsSummaryEntity> args)
-        {
-            // fetch Actions
-            var ActionsDoc = ContentPostActionsSummaryUtilities.GetActivities(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
-            var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.ActionsTotals = ActionsDoc;
-            contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
-
-            // Send websocket request
-            await ContentPostUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
-        } 
     }
 }

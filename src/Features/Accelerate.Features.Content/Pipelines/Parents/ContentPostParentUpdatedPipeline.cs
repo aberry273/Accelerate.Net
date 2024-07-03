@@ -23,22 +23,22 @@ using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Content.Hydrators;
 
-namespace Accelerate.Features.Content.Pipelines.Quotes
+namespace Accelerate.Features.Content.Pipelines.Parents
 {
-    public class ContentPostQuoteUpdatedPipeline : DataUpdateEventPipeline<ContentPostQuoteEntity>
+    public class ContentPostParentUpdatedPipeline : DataUpdateEventPipeline<ContentPostParentEntity>
     {
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHubPosts;
-        IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> _messageHub;
+        IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> _messageHub;
         IElasticService<ContentPostDocument> _elasticPostService;
-        IEntityService<ContentPostQuoteEntity> _entityService;
-        IElasticService<ContentPostQuoteDocument> _elasticService;
-        public ContentPostQuoteUpdatedPipeline(
+        IEntityService<ContentPostParentEntity> _entityService;
+        IElasticService<ContentPostParentDocument> _elasticService;
+        public ContentPostParentUpdatedPipeline(
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
-            IElasticService<ContentPostQuoteDocument> elasticService,
+            IElasticService<ContentPostParentDocument> elasticService,
             IElasticService<ContentPostDocument> elasticPostService,
-            IEntityService<ContentPostQuoteEntity> entityService,
-            IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> messageHub,
+            IEntityService<ContentPostParentEntity> entityService,
+            IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> messageHub,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts)
         {
             _messageHub = messageHub;
@@ -48,30 +48,30 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
             _entityService = entityService;
             _publishEndpoint = publishEndpoint;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostQuoteEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostParentEntity>>()
             {
                 IndexDocument,
               //  UpdatePostIndex,
                // PublishPostUpdatedMessage
             };
-            _processors = new List<PipelineProcessor<ContentPostQuoteEntity>>()
+            _processors = new List<PipelineProcessor<ContentPostParentEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-        public async Task IndexDocument(IPipelineArgs<ContentPostQuoteEntity> args)
+        public async Task IndexDocument(IPipelineArgs<ContentPostParentEntity> args)
         {
-            var indexModel = new ContentPostQuoteDocument();
+            var indexModel = new ContentPostParentDocument();
             args.Value.Hydrate(indexModel);
             var result = await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
             // Run directly in same function as Actions are simple types and will not be extended via pipelines
             if(result.IsValidResponse)
             {
-                var docArgs = new PipelineArgs<ContentPostQuoteDocument>()
+                var docArgs = new PipelineArgs<ContentPostParentDocument>()
                 {
                     Value = indexModel
                 };
-                await ContentPostParentUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Update Action successful", DataRequestCompleteType.Updated);
+                await ContentPostParentUtilities.SendWebsocketParentUpdate(_messageHub, docArgs, "Update Action successful", DataRequestCompleteType.Updated);
             }
             args.Params["IndexedModel"] = indexModel; 
         }
@@ -80,15 +80,15 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
+        public async Task UpdatePostIndex(IPipelineArgs<ContentPostParentEntity> args)
         {
             // fetch Actions
-            var ActionsDoc = ContentPostParentUtilities.GetTotalQuotes(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuotedContentPostId.ToString());
+            var ActionsDoc = ContentPostParentUtilities.GetTotalParents(_entityService, args);
+            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ParentdContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source; 
      
             contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.QuotedContentPostId.ToString());
+            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ParentdContentPostId.ToString());
 
             // Send websocket request
             await ContentPostParentUtilities.SendWebsocketPostUpdate(_messageHubPosts ,args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);

@@ -86,12 +86,18 @@ export default function (data) {
             let thread = [op].concat(postThreads)
             return thread;
         },
-        _mxCardPost_CreatePostActionPayload(action, item) {
+        _mxCardPost_CreatePostActionPayload(action, item, val) {
             const payload = {
                 userId: this.userId,
                 contentPostId: item.id,
             }
-            payload[action] = this._mxCardPost_userSelectedAction(action, item) ? false : true;
+            // if not variable is passed in, set it to val
+            if (val == null) {
+                payload[action] = this._mxCardPost_userSelectedAction(action, item) ? false : true;
+            }
+            else {
+                payload[action] = val;
+            }
             return payload;
         },
         async _mxCardPost_reply(item) {
@@ -106,8 +112,8 @@ export default function (data) {
         async _mxCardPost_richtext(item) {
             this.$events.emit(this.mxCardPost_formatsEvent, item)
         },
-        async _mxCardPost_action(action, item) {
-            const payload = this._mxCardPost_CreatePostActionPayload(action, item);
+        async _mxCardPost_action(action, item, val) {
+            const payload = this._mxCardPost_CreatePostActionPayload(action, item, val);
 
             const result = await this.$store.wssContentPostActions._wssContentActions_HandlePost(payload);
         },

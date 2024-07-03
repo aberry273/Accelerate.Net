@@ -21,7 +21,29 @@ namespace Accelerate.Foundations.Content.Models.Entities
         /// </summary>
         public int Agrees { get; set; }
         public int Disagrees { get; set; }
+        [NotMapped]
+        public int? Votes
+        {
+            get
+            {
+                return this.Agrees - this.Disagrees;
+            }
+        }
         public int Quotes { get; set; }
         public int Replies { get; set; }
+        public int Reactions { get; set; }
+        [NotMapped]
+        public IEnumerable<string>? ReactionItems
+        {
+            get
+            {
+                return TopReaction?.Split(',')?.Select(x => x.Trim()).ToList();
+            }
+            set
+            {
+                if (value != null) TopReaction = string.Join(',', value?.Select(x => x?.Trim()));
+            }
+        }
+        public string? TopReaction { get; set; }
     }
 }

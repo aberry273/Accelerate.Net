@@ -20,15 +20,13 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\ContentOldController.cs" />
-    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryCreatedPipeline.cs" />
-    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryDeletedPipeline.cs" />
-    <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsSummaryUpdatedPipeline.cs" />
     <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsUpdatedListenerPipeline.cs" />
-    <Compile Remove="Pipelines\ActionsSummary\ContentPostCreatedListenerPipeline.cs" />
     <Compile Remove="Pipelines\Actions\ContentPostActionsCreatedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\Actions\ContentPostActionsDeletedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\Actions\ContentPostActionsUpdatedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\IContentPostCreatedPipeline.cs" />
+    <Compile Remove="Pipelines\Parents\ContentPostParentDeletedPipeline.cs" />
+    <Compile Remove="Pipelines\Parents\ContentPostParentUpdatedPipeline.cs" />
     <Compile Remove="Pipelines\Posts\ContentPostCreatedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\Posts\ContentPostDeletedCompletedPipeline.cs" />
     <Compile Remove="Pipelines\Posts\ContentPostUpdatedCompletedPipeline.cs" />

@@ -26,6 +26,8 @@ using Twilio.TwiML.Voice;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using Accelerate.Features.Content.Pipelines.ActionsSummary;
 using Accelerate.Foundations.EventPipelines.Consumers;
+using Accelerate.Features.Content.Pipelines.Mentions;
+using Accelerate.Features.Content.Pipelines.Parents;
 
 namespace Accelerate.Features.Content
 {
@@ -79,11 +81,11 @@ namespace Accelerate.Features.Content
             // other
 
             // Parents
-            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostParentEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostParentEntity, ContentPostParentCreatedPipeline, EmptyUpdatedPipeline<ContentPostParentEntity>, EmptyDeletedPipeline<ContentPostParentEntity>>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostParentEntity>(services);
 
             // ActionSummary
-            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostActionsSummaryEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostActionsSummaryEntity, ContentPostActionsSummaryCreatedPipeline, ContentPostActionsSummaryUpdatedPipeline, ContentPostActionsSummaryDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostActionsSummaryEntity>(services);
             //Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
 
@@ -97,13 +99,13 @@ namespace Accelerate.Features.Content
             // Channels
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentChannelEntity, ContentChannelCreatedPipeline, ContentChannelUpdatedPipeline, ContentChannelDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentChannelEntity, ContentChannelCreateCompletedPipeline, ContentChannelUpdatedCompletedPipeline, ContentChannelDeleteCompletedPipeline>(services);
-          
+            
             // Quotes
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostQuoteEntity, ContentPostQuoteCreatedPipeline, ContentPostQuoteUpdatedPipeline, ContentPostQuoteDeletedPipeline>(services);
             //Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
-            
-            // Mentions (alerted through notifications)
-            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostMentionEntity>(services);
+
+            // Mentions
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostMentionEntity, ContentPostMentionCreatedPipeline, EmptyUpdatedPipeline<ContentPostMentionEntity>, EmptyDeletedPipeline<ContentPostMentionEntity>>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostMentionEntity>(services);
 
             // Settings
@@ -119,6 +121,7 @@ namespace Accelerate.Features.Content
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsEntity, IContentActionsBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActionsSummaryEntity, IContentActionsSummaryBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostQuoteEntity, IContentPostQuoteBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostMentionEntity, IContentPostMentionBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostParentEntity, IContentPostParentBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentPostActivityBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);

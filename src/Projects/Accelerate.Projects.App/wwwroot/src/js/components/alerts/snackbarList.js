@@ -28,6 +28,7 @@ export default function (data = {}) {
             this.snackbars.push({
                 type: payload.type,
                 text: payload.text,
+                url: payload.url,
                 success: true,
                 icon: icon
             })
@@ -87,6 +88,7 @@ export default function (data = {}) {
                                 <nav>
                                     <i class="material-icons" x-text="snackbar.icon"></i>
                                     <p x-text="snackbar.text"></p>
+                                    <a target="_blank" :href="snackbar.url" x-show="snackbar.url"><i class="flat click material-icons" >open_in_fill</i></a>
                                     <i class="flat click material-icons" aria-label="Close" @click="removeSnackbar(i)" rel="prev">close</i>
                                 </nav>
                             </article>

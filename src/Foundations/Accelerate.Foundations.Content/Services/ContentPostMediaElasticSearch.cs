@@ -23,9 +23,9 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentPostMediaElasticService : ElasticService<ContentPostMediaDocument>
     {
 
-        public ContentPostMediaElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentPostMediaElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentpostmedia_index";
+            this._indexName = config.Value.MediaIndexName;
             _settings = new IndexSettings()
             {
                 //NumberOfReplicas = 0,

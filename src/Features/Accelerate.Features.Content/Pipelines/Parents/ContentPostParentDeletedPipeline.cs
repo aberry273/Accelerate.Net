@@ -14,21 +14,21 @@ using Elastic.Clients.Elasticsearch.Ingest;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Accelerate.Features.Content.Pipelines.Quotes
+namespace Accelerate.Features.Content.Pipelines.Parents
 {
-    public class ContentPostQuoteDeletedPipeline : DataDeleteEventPipeline<ContentPostQuoteEntity>
+    public class ContentPostParentDeletedPipeline : DataDeleteEventPipeline<ContentPostParentEntity>
     {
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHubPosts;
-        IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> _messageHub;
-        IElasticService<ContentPostQuoteDocument> _elasticService;
-        IEntityService<ContentPostQuoteEntity> _entityService;
+        IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> _messageHub;
+        IElasticService<ContentPostParentDocument> _elasticService;
+        IEntityService<ContentPostParentEntity> _entityService;
         IElasticService<ContentPostDocument> _elasticPostService;
-        public ContentPostQuoteDeletedPipeline(
+        public ContentPostParentDeletedPipeline(
             IElasticService<ContentPostDocument> elasticPostService,
-            IElasticService<ContentPostQuoteDocument> elasticService,
+            IElasticService<ContentPostParentDocument> elasticService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts,
-            IEntityService<ContentPostQuoteEntity> entityService,
-            IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> messageHub)
+            IEntityService<ContentPostParentEntity> entityService,
+            IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> messageHub)
         {
             _elasticService = elasticService;
             _elasticPostService = elasticPostService;
@@ -36,35 +36,35 @@ namespace Accelerate.Features.Content.Pipelines.Quotes
             _entityService = entityService;
             _messageHubPosts = messageHubPosts;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostQuoteEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostParentEntity>>()
             {
                 DeleteDocument,
                // UpdatePostIndex
             };
         }
         // ASYNC PROCESSORS
-        public async Task DeleteDocument(IPipelineArgs<ContentPostQuoteEntity> args)
+        public async Task DeleteDocument(IPipelineArgs<ContentPostParentEntity> args)
         {
-            var indexResponse = await _elasticService.DeleteDocument<ContentPostQuoteEntity>(args.Value.Id.ToString());
+            var indexResponse = await _elasticService.DeleteDocument<ContentPostParentEntity>(args.Value.Id.ToString());
 
-            var docArgs = new PipelineArgs<ContentPostQuoteDocument>()
+            var docArgs = new PipelineArgs<ContentPostParentDocument>()
             {
-                Value = new ContentPostQuoteDocument()
+                Value = new ContentPostParentDocument()
                 {
                     Id = args.Value.Id,
                 }
             };
-            await ContentPostParentUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
+            await ContentPostParentUtilities.SendWebsocketParentUpdate(_messageHub, docArgs, "Delete Action successful", DataRequestCompleteType.Deleted);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
+        public async Task UpdatePostIndex(IPipelineArgs<ContentPostParentEntity> args)
         {
             // fetch Actions
-            var ActionsDoc = ContentPostParentUtilities.GetTotalQuotes(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.QuotedContentPostId.ToString());
+            var ActionsDoc = ContentPostParentUtilities.GetTotalParents(_entityService, args);
+            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ParentdContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
             
             contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.QuotedContentPostId.ToString());
+            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ParentdContentPostId.ToString());
 
             // Send websocket request
             await ContentPostUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);

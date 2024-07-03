@@ -150,9 +150,24 @@ export function header(data) {
 export function footer(data) {
     return `
     <footer class="padded" x-data="{
+            onEmojiEvent: '',
             get action() { return _mxCardPost_getActionSummary(selectedPost.id) },
             get agreed() { return _mxCardPost_userSelectedAction('agree', selectedPost) },
             get disagreed() { return _mxCardPost_userSelectedAction('disagree', selectedPost) },
+            get reaction() { return _mxCardPost_userSelectedAction('reaction', selectedPost) },
+            selectedIcon: null,
+            init() {
+                this.onEmojiEvent = selectedPost.id+':on:insert:emoji';
+                this.$events.on(this.onEmojiEvent, (val) => {
+                    const decoded = val.codes;
+                    this._mxCardPost_action('reaction', selectedPost, decoded);
+                })
+                 
+                //Is a hex value
+                const hex = '0x'+this.reaction;
+                var isHex = Boolean(hex.match(/^0x[0-9a-f]+$/i));
+                this.selectedIcon = isHex ? String.fromCodePoint(hex) : null;
+            },
         }">
         <nav>
             <ul>
@@ -175,35 +190,44 @@ export function footer(data) {
                     <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_more</i>
                     <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_less</i>
                     -->
-                    <!--Agree-->
+                    <!--
                     <button :disabled="!userId" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="agreed ? 'flat primary': 'flat'" >
                         <i aria-label="Agree" class="icon material-icons">expand_less</i>
                         <sup class="noselect" x-text="action.agrees || 0"></sup>
                     </button>
 
-                    <!--Disagree-->
                     <button :disabled="!userId" @click="_mxCardPost_action('disagree', selectedPost)" class="chip small " style="" :class="disagreed ? 'flat primary': 'flat'" >
                         <i aria-label="Disagree" class="icon material-icons">expand_more</i>
                         <sup class="noselect" x-text="action.disagrees || 0"></sup>
                     </button>
-
+                    -->
                     <!--Likes-->
                     <!--
                     <i @click="_mxCardPost_action('like', selectedPost)" aria-label="Liked" :class="_mxCardPost_userSelectedAction('like', selectedPost) ? 'primary': ''" class=" icon material-icons icon-click" rel="prev">favorite</i>
                     <sup class="noselect" rel="prev" x-text="action.likes || 0 "></sup>
                     -->
+                    
+                    <div role="group" class="small flat pb-0">
+                        <!--React-->
+                        <span style="top:-4px" x-data="aclContentEmoji({ selectIcon: true, selectedIcon: selectedIcon, event: onEmojiEvent })"></span>
 
-                    <!--Quotes-->
-                    <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >
-                        <i aria-label="Quote" class="icon material-icons">format_quote</i>
-                        <sup class="noselect" x-text="action.quotes || 0"></sup>
-                    </button>
+                        <!--Vote-->
+                        <button class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
+                          <strong><sup class="noselect" x-text="action.votes || 0"></sup></strong>
+                        <button class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
+                   
+                        <!--Quotes-->
+                        <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >
+                            <i aria-label="Quote" class="icon material-icons">format_quote</i>
+                            <sup class="noselect" x-text="action.quotes || 0"></sup>
+                        </button>
 
-                    <!--Reply-->
-                    <button :disabled="!userId" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
-                        <i aria-label="Reply" class="icon material-icons">chat</i>
-                        <sup class="noselect" x-text="action.replies || 0"></sup>
-                    </button>
+                        <!--Reply-->
+                        <button :disabled="!userId" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
+                            <i aria-label="Reply" class="icon material-icons">chat</i>
+                            <sup class="noselect" x-text="action.replies || 0"></sup>
+                        </button>
+                     </div>
                 </li>
             </ul>
         </nav>

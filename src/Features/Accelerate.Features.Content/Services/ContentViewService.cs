@@ -389,6 +389,7 @@ namespace Accelerate.Features.Content.Services
                 FieldType = FormFieldTypes.file,
                 Placeholder = "Upload video",
                 ClearOnSubmit = true,
+                Multiple = true,
                 Icon = "videocam",
                 Max = 4,
                 Accept = ".mp4,.mov",

@@ -45,6 +45,14 @@ namespace Accelerate.Foundations.Content.Hydrators
                     Username = "Anonymous"
                 };
         }
+        public static void Hydrate(this ContentPostMentionEntity entity, ContentPostMentionDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.ContentPostId = entity.ContentPostId;
+            document.Id = entity.Id;
+        }
         public static void Hydrate(this ContentPostActionsEntity entity, ContentPostActionsDocument document)
         {
             document.UserId = entity.UserId;
@@ -55,6 +63,7 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.Agree = entity.Agree;
             document.Disagree = entity.Disagree;
             document.Like = entity.Like;
+            document.Reaction = entity.Reaction;
         }
         public static void Hydrate(this ContentPostActionsSummaryEntity entity, ContentPostActionsSummaryDocument document)
         {

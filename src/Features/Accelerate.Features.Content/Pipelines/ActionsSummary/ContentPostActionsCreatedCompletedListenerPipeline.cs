@@ -50,8 +50,12 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
 
         public async Task UpdateIndex(IPipelineArgs<ContentPostActionsEntity> args)
         {
+            if(!args.Value.Agree.GetValueOrDefault() && !args.Value.Disagree.GetValueOrDefault())
+            {
+                return;
+            }
             var entity = _entityService.Find(x => x.ContentPostId == args.Value.ContentPostId).FirstOrDefault();
-
+            
             var response = await _elasticService.GetDocument<ContentPostActionsSummaryDocument>(entity.Id.ToString());
             var doc = response.Source;
             var newDoc = doc == null;

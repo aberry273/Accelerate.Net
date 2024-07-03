@@ -15,13 +15,13 @@ export default function (data) {
             const snackbarType = (data.code == 200) ? 'success' : 'error';
             const wasSuccess = (data.code == 200) ? 'successfully' : 'failed';
             const message = data.message || `${data.update} post ${wasSuccess}`
-            this._mxEvents_Emit(this.mxAlert_EventShow, { code: data.code, type: snackbarType, text: message });
+            this._mxEvents_Emit(this.mxAlert_EventShow, { code: data.code, type: snackbarType, text: message, url: data.url });
         },
         _mxAlert_AddAlert(data) {
             const snackbarType = (data.code == 200) ? 'success' : 'error';
             const wasSuccess = (data.code == 200) ? 'successfully' : 'failed';
-            const message = data.message || `${data.update} post ${wasSuccess}`
-            this._mxEvents_Emit(this.mxAlert_EventAdd, { code: data.code, type: snackbarType, text: message });
+            const message = data.message || `${data.update} post ${wasSuccess}` 
+            this._mxEvents_Emit(this.mxAlert_EventAdd, { code: data.code, type: snackbarType, text: message, url: data.url });
         },
     }
 }

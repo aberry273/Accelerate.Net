@@ -50,7 +50,6 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             var entity = new ContentPostActivityEntity()
             {
-                ContentPostId = args.Value.Id,
                 Type = ContentPostActivityTypes.Updated,
                 UserId = args.Value.UserId,
                 Message = "Post updated!"

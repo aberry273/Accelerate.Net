@@ -23,9 +23,9 @@ namespace Accelerate.Foundations.Content.Services
     public class ContentPostQuoteElasticService : ElasticService<ContentPostQuoteDocument>
     {
 
-        public ContentPostQuoteElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentPostQuoteElasticService(IOptions<ElasticConfiguration> options, IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentpostquote_index";
+            this._indexName = config.Value.QuotesIndexName;
             _settings = new IndexSettings()
             {
                 //NumberOfReplicas = 0,

@@ -6,14 +6,10 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
-    public class ContentPostActionsDocument : EntityDocument
+    public class ContentPostMentionDocument : EntityDocument
     {
         // Core properties 
         public Guid ContentPostId { get; set; }
-        public Guid? UserId { get; set; }
-        public bool? Agree { get; set; }
-        public bool? Disagree { get; set; }
-        public bool? Like { get; set; }
-        public string? Reaction { get; set; }
+        public Guid UserId { get; set; }
     }
 }

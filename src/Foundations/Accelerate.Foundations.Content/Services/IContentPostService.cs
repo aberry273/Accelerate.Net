@@ -33,7 +33,7 @@ namespace Accelerate.Foundations.Content.Services
         Task RunUpdatePipeline(ContentPostEntity obj);
         Task RunDeletePipeline(ContentPostEntity obj);
 
-        ContentPostMediaEntity CreateMediaLink(ContentPostEntity post, Guid mediaId);
+        ContentPostMediaEntity CreateMediaLink(Guid postId, Guid mediaId);
 
         Task<int> CreatePostSummary(ContentPostEntity post);
         void UpdatePostSummary(ContentPostActionsSummaryEntity entity);
@@ -63,6 +63,6 @@ namespace Accelerate.Foundations.Content.Services
 
         //actions
         Task<Guid?> CreateOrUpdatePostAction(ContentPostActionsEntity obj);
-        Task<Guid?> CreatePostAction(Guid postId, Guid userId, bool? agree, bool? disagree, bool? like);
+        Task<Guid?> CreatePostAction(Guid postId, Guid userId, bool? agree, bool? disagree, bool? like, string? reaction);
     }
 }

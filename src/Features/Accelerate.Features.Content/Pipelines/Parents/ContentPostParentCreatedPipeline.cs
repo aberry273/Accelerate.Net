@@ -21,81 +21,70 @@ using System;
 using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.EventPipelines.Services;
 
-namespace Accelerate.Features.Content.Pipelines.Quotes
+namespace Accelerate.Features.Content.Pipelines.Parents
 {
-    public class ContentPostQuoteCreatedPipeline : DataCreateEventPipeline<ContentPostQuoteEntity>
+    public class ContentPostParentCreatedPipeline : DataCreateEventPipeline<ContentPostParentEntity>
     {
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHubPosts;
-        IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> _messageHub;
-        IEntityService<ContentPostQuoteEntity> _entityService;
-        IElasticService<ContentPostQuoteDocument> _elasticService;
+        //IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> _messageHub;
+        IEntityService<ContentPostParentEntity> _entityService;
+        //IElasticService<ContentPostParentDocument> _elasticService;
         IElasticService<ContentPostDocument> _elasticPostService;
         IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
 
-        public ContentPostQuoteCreatedPipeline(
-            IElasticService<ContentPostQuoteDocument> elasticService,
+        public ContentPostParentCreatedPipeline(
+            //IElasticService<ContentPostParentDocument> elasticService,
             IElasticService<ContentPostDocument> elasticPostService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHubPosts,
-            IEntityService<ContentPostQuoteEntity> entityService,
-            IHubContext<BaseHub<ContentPostQuoteDocument>, IBaseHubClient<WebsocketMessage<ContentPostQuoteDocument>>> messageHub,
+            IEntityService<ContentPostParentEntity> entityService,
+            //IHubContext<BaseHub<ContentPostParentDocument>, IBaseHubClient<WebsocketMessage<ContentPostParentDocument>>> messageHub,
             IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService)
         {
-            _elasticService = elasticService;
+            //_elasticService = elasticService;
             _elasticPostService = elasticPostService;
-            _messageHub = messageHub;
+            //_messageHub = messageHub;
             _entityService = entityService;
             _messageHubPosts = messageHubPosts;
             _pipelineActivityService = pipelineActivityService;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostQuoteEntity>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostParentEntity>>()
             {
-                IndexDocument,
-                CreateQuoteActivity
+                //IndexDocument,
+                CreateParentActivity
                 //UpdatePostIndex,
             };
-            _processors = new List<PipelineProcessor<ContentPostQuoteEntity>>()
+            _processors = new List<PipelineProcessor<ContentPostParentEntity>>()
             {
             };
         }
         // ASYNC PROCESSORS
-        public async Task IndexDocument(IPipelineArgs<ContentPostQuoteEntity> args)
+        /*
+        public async Task IndexDocument(IPipelineArgs<ContentPostParentEntity> args)
         {
-            var indexModel = new ContentPostQuoteDocument();
+            var indexModel = new ContentPostParentDocument();
             args.Value.Hydrate(indexModel);
             await _elasticService.Index(indexModel);
 
-            var docArgs = new PipelineArgs<ContentPostQuoteDocument>()
+            var docArgs = new PipelineArgs<ContentPostParentDocument>()
             {
                 Value = indexModel
             };
-            await ContentPostParentUtilities.SendWebsocketQuoteUpdate(_messageHub, docArgs, "Create Quote successful", DataRequestCompleteType.Created);
+            await ContentPostParentUtilities.SendWebsocketParentUpdate(_messageHub, docArgs, "Create Parent successful", DataRequestCompleteType.Created);
         }
-        private async Task CreateQuoteActivity(IPipelineArgs<ContentPostQuoteEntity> args)
+        */
+        private async Task CreateParentActivity(IPipelineArgs<ContentPostParentEntity> args)
         {
+            //If parent user was the same as post user, don't create activity
+            //if(args.Value.UserId != )
             var entity = new ContentPostActivityEntity()
             {
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
-                Message = "You were quoted in a post!",
+                Message = "Someone replies to your post!",
                 Url = $"/Threads/{args.Value.ContentPostId}"
             };
             await _pipelineActivityService.Create(entity);
         }
-        public async Task UpdatePostIndex(IPipelineArgs<ContentPostQuoteEntity> args)
-        {
-            // fetch Actions
-            var ActionsDoc = ContentPostParentUtilities.GetTotalQuotes(_entityService, args);
-            var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
-            var contentPostDocument = fetchResponse.Source;
-
-            contentPostDocument.UpdatedOn = DateTime.Now;
-            await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
-
-            // Send websocket request
-            await ContentPostParentUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
-        } 
-          
-
         // SYNC PROCESSORS
     }
 }

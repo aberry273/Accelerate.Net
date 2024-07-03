@@ -44,7 +44,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsSummaryEntity>>()
             {
                 IndexDocument,
-                UpdatePostIndex,
+                //UpdatePostIndex,
             };
             _processors = new List<PipelineProcessor<ContentPostActionsSummaryEntity>>()
             {
@@ -56,13 +56,10 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             var indexModel = new ContentPostActionsSummaryDocument();
             args.Value.Hydrate(indexModel);
             await _elasticService.Index(indexModel);
-
-            var docArgs = new PipelineArgs<ContentPostActionsSummaryDocument>()
-            {
-                Value = indexModel
-            };
-            await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, docArgs, "Create ActionsSummary successful", DataRequestCompleteType.Created);
+             
+            await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, indexModel, "Create ActionsSummary successful", DataRequestCompleteType.Created);
         }
+        /*
         public async Task UpdatePostIndex(IPipelineArgs<ContentPostActionsSummaryEntity> args)
         {
             // fetch Actions
@@ -76,7 +73,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             // Send websocket request
             await ContentPostActionsSummaryUtilities.SendWebsocketPostUpdate(_messageHubPosts, args.Value?.UserId.ToString(), contentPostDocument, DataRequestCompleteType.Updated);
         } 
-          
+        */
 
         // SYNC PROCESSORS
     }

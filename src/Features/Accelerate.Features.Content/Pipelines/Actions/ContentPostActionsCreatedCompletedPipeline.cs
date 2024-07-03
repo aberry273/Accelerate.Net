@@ -35,8 +35,6 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             };
         }
         // ASYNC PROCESSORS
-
-        // ASYNC PROCESSORS
         public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostActionsEntity> args)
         {
             ContentPostActionsDocument doc;

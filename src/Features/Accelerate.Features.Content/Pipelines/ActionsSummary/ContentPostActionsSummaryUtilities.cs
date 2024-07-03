@@ -15,7 +15,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         public static ContentPostActionsSummaryEntity GetActionSummaryEntity(IEntityService<ContentPostActionsSummaryEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         {
             return entityService
-               .Find(x => x.ContentPostId == args.Value.ContentPostId)
+               .Find(x => x.ContentPostId == args.Value.SourceId)
                .FirstOrDefault();
         }
         public static async Task<int> CreateActionSummary(IEntityService<ContentPostActionsSummaryEntity> entityService, ContentPostActionsSummaryEntity entity)
@@ -87,12 +87,12 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         public static ContentPostActionsSummaryDocument GetActivityCounts(IEntityService<ContentPostActivityEntity> entityService, IPipelineArgs<ContentPostActivityEntity> args)
         { 
             var a = entityService
-               .Find(x => x.ContentPostId == args.Value.ContentPostId)?
+               .Find(x => x.SourceId == args.Value.SourceId)?
                .GroupBy(g => 1)?
                .Select(x => x);
 
             return entityService
-               .Find(x => x.ContentPostId == args.Value.ContentPostId)?
+               .Find(x => x.SourceId == args.Value.SourceId)?
                .GroupBy(g => 1)?
                .Select(x =>
                    new ContentPostActionsSummaryDocument
