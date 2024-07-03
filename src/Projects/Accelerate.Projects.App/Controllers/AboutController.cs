@@ -62,8 +62,17 @@ namespace Accelerate.Projects.App.Controllers
 
             return View(viewModel);
         }
-        [HttpGet("About/privacy-policy")]
+        [HttpGet("About/Privacy-Policy")]
         public async Task<IActionResult> PrivacyPolicy()
+        {
+            var user = await GetUserWithProfile(this.User);
+
+            var viewModel = CreateBaseContent(user);
+
+            return View(viewModel);
+        }
+        [HttpGet("About/data-deletion")]
+        public async Task<IActionResult> DataDeletion()
         {
             var user = await GetUserWithProfile(this.User);
 
