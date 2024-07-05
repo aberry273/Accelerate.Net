@@ -25,6 +25,34 @@ namespace Accelerate.Foundations.Account.Services
         private TypeMapping CreateContentPostMapping()
         {
             var properties = new Properties();
+            var propertyName = new PropertyName(Constants.Fields.Username);
+            var KeywordName = new PropertyName(Constants.Fields.Keyword);
+            var keywordProperty = new KeywordProperty();
+            var subproperties = new Properties();
+            subproperties.Add(KeywordName, keywordProperty);
+            
+            var textProperty = new TextProperty()
+            {
+                Fields = subproperties
+            };
+            properties.Add(propertyName, textProperty);
+            
+            /*
+            properties.Add(p => p
+                .Text(t => t.CompanyName)
+                .Object(o => o.EmployeeInfo, objConfig => objConfig
+                    .Properties(p => p
+                        .Text(t => t.EmployeeInfo.EmployeeName)
+                        .Object(n => n.EmployeeInfo.JobRoles, objConfig => objConfig
+                            .Properties(p => p
+                                .Text(t => t.EmployeeInfo.JobRoles.First().RoleName)
+                            )
+                        )
+                    )
+                )
+            );
+            */
+
             var mapping = new TypeMapping()
             {
                 Properties = properties
@@ -92,11 +120,11 @@ namespace Accelerate.Foundations.Account.Services
 
             //Query.Filters.Add(PublicPosts());
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
-            Query.Filters.Add(Filter(Constants.Fields.Username, ElasticCondition.MustNot, "Public"));
+            Query.Filters.Add(Filter(Constants.Fields.Domain, ElasticCondition.Filter, "Public"));
 
             //Filter any post where the poster is replying to themselves from the results
-            //var filter = Filter(Constants.Fields.Username, ElasticCondition.Must, QueryOperator.Contains, Query.Text, false);
-            //Query.Filters.Add(filter);
+            var filter = Filter(Constants.Fields.Username, ElasticCondition.Filter, QueryOperator.Contains, Query.Text, false);
+            Query.Filters.Add(filter);
 
             return CreateQuery(Query);
         }

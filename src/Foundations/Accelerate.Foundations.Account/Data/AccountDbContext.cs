@@ -1,8 +1,10 @@
 ﻿using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Database.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Accelerate.Foundations.Account.Data
 {
@@ -24,6 +26,7 @@ namespace Accelerate.Foundations.Account.Data
         {
 
         }
+        public DbSet<AccountUserLogin> UserLogins { get; set; }
         public DbSet<AccountProfile> Profiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -40,7 +43,7 @@ namespace Accelerate.Foundations.Account.Data
                 .WithOne(e => e.User)
                 .HasForeignKey(uc => uc.UserId)
                 .IsRequired();
-
+             
             // Each User can have many UserLogins
             builder.Entity<AccountUser>()
                 .HasMany(e => e.Logins)

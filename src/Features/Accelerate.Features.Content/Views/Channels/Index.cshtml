@@ -64,7 +64,11 @@
             
         </nav>
 
-        @if (Model.IsAuthenticated)
+        @if (Model.IsDeactivated)
+        {
+            <article>Reactivate your account to respond</article>
+        }
+        else if (Model.IsAuthenticated)
         {
             <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
         }

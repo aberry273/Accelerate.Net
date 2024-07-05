@@ -29,6 +29,8 @@ using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Media.Models.Data;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Common.Extensions;
+using Twilio.TwiML.Messaging;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -126,22 +128,24 @@ namespace Accelerate.Features.Account.Controllers
         */
         #region Profile
         [HttpGet]
-        [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Profile(string returnUrl = null)
         {
             var user = await GetUserWithProfile(this.User);
+            if (user == null) return RedirectToAction(nameof(Login));
+
             var viewModel = _accountViewService.GetManagePage(user);
             return View(viewModel);
         }
         #endregion
         #region Posts
         [HttpGet]
-        [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Posts(string returnUrl = null)
         {
             var user = await GetUserWithProfile(this.User);
+            if (user == null)  return RedirectToAction(nameof(Login));
+
             var viewModel = _accountViewService.GetManagePage(user);
             viewModel.ActionUrl = "/api/contentpostactivity";
             viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
@@ -165,11 +169,12 @@ namespace Accelerate.Features.Account.Controllers
             return new RequestQuery<MediaBlobDocument>() { Filters = filters, Aggregates = aggregates };
         }
         [HttpGet]
-        [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Media(string returnUrl = null)
         {
             var user = await GetUserWithProfile(this.User);
+            if (user == null) return RedirectToAction(nameof(Login));
+
             var viewModel = _accountViewService.GetManagePage(user);
             viewModel.ActionUrl = "/api/mediablob";
             viewModel.SearchUrl = "/api/mediasearch/blobs";
@@ -180,11 +185,12 @@ namespace Accelerate.Features.Account.Controllers
         #endregion
         #region Settings
         [HttpGet]
-        [AllowAnonymous]
         [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
         public async Task<IActionResult> Settings(string returnUrl = null)
         {
             var user = await GetUserWithProfile(this.User);
+            if (user == null) return RedirectToAction(nameof(Login));
+
             var viewModel = _accountViewService.GetManagePage(user);
             return View(viewModel);
         }
@@ -364,13 +370,14 @@ namespace Accelerate.Features.Account.Controllers
         [HttpGet]
         [AllowAnonymous]
         [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
-        public async Task<IActionResult> Login(string? username = null, string? response = null, string returnUrl = null)
+        public async Task<IActionResult> Login(string? username = null, string? response = null, string? message = null, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             ViewData["ReturnUrl"] = returnUrl; 
-            var viewModel = _accountViewService.GetLoginPage(username);
+            var viewModel = await _accountViewService.GetLoginPage(username);
             viewModel.Form.Response = response;
+            viewModel.Message = message;
             return View(_accountFormRazorFile, viewModel);
         }
 
@@ -438,6 +445,173 @@ namespace Accelerate.Features.Account.Controllers
         }
         #endregion
 
+        #region Social Login
+
+        [HttpPost]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        //[ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        {
+            // Request a redirect to the external login provider.
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+      
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                var message = $"Error from external provider: {remoteError}";
+                return RedirectToAction(nameof(Login), new { response = message });
+            }
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            if (!info.Principal.Identity.IsAuthenticated)
+            {
+                var message = $"Unable to login with {info.LoginProvider}";
+                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+            }
+            var accessToken = info.AuthenticationTokens.Single(f => f.Name == "access_token").Value;
+            var tokenType = info.AuthenticationTokens.Single(f => f.Name == "token_type").Value;
+            var expiryDate = info.AuthenticationTokens.Single(f => f.Name == "expires_at").Value;
+            
+          
+            var result = await this.CreateAndLoginUserFromExternalLogin(info);
+
+            /*
+            var user = await this._userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            var claimsPrincipal = await this._signInManager.CreateUserPrincipalAsync(user);
+            ((ClaimsIdentity)claimsPrincipal.Identity).AddClaim(new Claim("accessToken", info.AuthenticationTokens.Single(t => t.Name == "access_token").Value));
+            await _signInManager.SignInAsync(user, false, info.Principal.Identity.Name);
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            */
+            //var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            if (result.Succeeded)
+            {
+                var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Lockout));
+            }
+            else
+            {
+                // If the user does not have an account, then ask the user to create an account.
+                //ViewData["ReturnUrl"] = returnUrl;
+                //ViewData["LoginProvider"] = info.LoginProvider;
+                var message = $"You don't have an account with {info.LoginProvider}";
+                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+            }
+
+        }
+        private async Task<AccountUser> UpdateUserProfile(AccountUser user, ExternalLoginInfo info)
+        {
+            var profile = user.AccountProfileId != Guid.Empty
+                ? _profileService.Get(user.AccountProfileId)
+                : null;
+            var firstname = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+            var lastname = info.Principal.FindFirstValue(ClaimTypes.Surname);
+            if (profile == null)
+            {
+                profile = new AccountProfile();
+                profile.Firstname = firstname;
+                profile.Lastname = lastname;
+                var guid = await _profileService.CreateWithGuid(profile);
+                if (guid == null) return user;
+
+                user.AccountProfileId = guid.GetValueOrDefault();
+                await _userManager.UpdateAsync(user);
+            }
+            else
+            {
+                profile.Firstname = firstname;
+                profile.Lastname = lastname;
+                await _profileService.Update(profile);
+            }
+            return user;
+        }
+        private async Task<AccountUser> ResetDeactivatedUserDetails(ExternalLoginInfo info, AccountUser user, string password)
+        {
+            await UpdateUserProfile(user, info);
+            
+            await this.PostUpdateSteps(user);
+            return user;
+        }
+        private async Task<Microsoft.AspNetCore.Identity.SignInResult> CreateAndLoginUserFromExternalLogin(ExternalLoginInfo info)
+        {
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var tempPassword = Guid.NewGuid().ToString().ToUpper() + "lower";
+            var user = await this._userManager.FindByEmailAsync(email);
+            // If currently de-activated, update user with details again
+            if(user != null && user.Status == AccountUserStatus.Deactivated)
+            {
+                user = await ResetDeactivatedUserDetails(info, user, tempPassword);
+            }
+            if(user == null)
+            {
+                var result = await this.CreateUser(email, email, Foundations.Account.Constants.Domains.Public, tempPassword);
+                if (!result.Succeeded) {
+                    var message = string.Join(',', result.Errors.Select(x => x.Description));
+                    throw new Exception(message);
+                }
+                user = await this._userManager.FindByEmailAsync(email);
+                await UpdateUserProfile(user, info);
+            }
+            var login = await _userManager.AddLoginAsync(user, info);
+            return await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+        }
+       
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ExternalLoginLinkConfirmation()
+        {
+            var code = HttpContext.Request.Query["code"];
+
+            if (string.IsNullOrEmpty(code))
+            {
+                var message = $"Invalid code, please try again";
+                return RedirectToAction(nameof(Login), new { message = message });
+            }
+           
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+           
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Lockout));
+            }
+            else
+            {
+                // If the user does not have an account, then ask the user to create an account.
+                var message = $"Unable to link this account with {info.LoginProvider}, please try another provider or create an account with email";
+                return RedirectToAction(nameof(Login), new { message = message });
+            }
+
+        }
+        #endregion
+
         #region Register
         [HttpGet]
         [AllowAnonymous]
@@ -474,25 +648,13 @@ namespace Accelerate.Features.Account.Controllers
                 return View(_accountFormRazorFile, viewModel);
             }
 
-            var user = new AccountUser { UserName = request.Username, Email = request.Email, Domain = "Public" };
             //Create user
             try
             {
-                ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
                 {
-                    
-                    var result = await _userManager.CreateAsync(user, request.Password);
-                    if (result.Succeeded)
-                    {
-                        // Create profile
-                        var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
-                        // Get user and update with profile id
-                        user = await _userManager.FindByNameAsync(request.Username);
-                        user.AccountProfileId = profileId.GetValueOrDefault();
-                        await _userManager.UpdateAsync(user); 
-                    }
-                    else if(result.Errors != null && result.Errors.Any())
+                    var result = await this.CreateUser(request.Username, request.Email, Foundations.Account.Constants.Domains.Public, request.Password);
+                    if(result.Errors != null && result.Errors.Any())
                     {
                         viewModel.Form.Response = result.Errors.FirstOrDefault().Description;
                         StaticLoggingService.LogError(result.Errors.FirstOrDefault().Description);
@@ -510,6 +672,7 @@ namespace Accelerate.Features.Account.Controllers
                 StaticLoggingService.LogError(ex);
                 return View(_accountFormRazorFile, viewModel);
             }
+            var user = await _userManager.FindByEmailAsync(request.Email);
 
             //Send Email
             try
@@ -531,6 +694,26 @@ namespace Accelerate.Features.Account.Controllers
 
             return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
 
+        }
+        #endregion
+
+        #region Create User Account
+        private async Task<IdentityResult> CreateUser(string username, string email, string domain, string password)
+        {
+            var user = new AccountUser { UserName = username, Email = email, Domain = domain, Status = AccountUserStatus.Active };
+
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                // Create profile
+                var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
+                // Get user and update with profile id
+                user = await _userManager.FindByNameAsync(username);
+                user.AccountProfileId = profileId.GetValueOrDefault();
+                await _userManager.UpdateAsync(user);
+                await PostCreateSteps(user);
+            }
+            return result;
         }
         #endregion
 

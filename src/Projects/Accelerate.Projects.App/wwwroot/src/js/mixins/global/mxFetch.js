@@ -25,7 +25,10 @@ export default function (data) {
                 body: isJson ? JSON.stringify(data) : data, // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         },
@@ -44,7 +47,10 @@ export default function (data) {
                 body: isJson ? JSON.stringify(data) : data, // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         },
@@ -63,7 +69,10 @@ export default function (data) {
                 //body: JSON.stringify(data), // body data type must match "Content-Type" header
             })
             // parses JSON response into native JavaScript objects
-            const result = response.json();
+            const res = await response.text();
+            //check if empty response
+            if (res == null || res.length == 0) return null;
+            const result = JSON.parse(res);
             result.status = response.status;
             return result;
         }

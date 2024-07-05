@@ -81,8 +81,9 @@ export default function (data) {
             x-on:change="($event) => {
                 if(!field.multiple) {
                     _mxForm_OnFieldChange(field, $event.target.files[0])
-                    console.log($event)
-                    $event.target.parent()[0].load()
+                    if($event.target.parent) {
+                        $event.target.parent()[0].load()
+                    }
                 }
                 else {
                     if (field.value == null) field.value = [];

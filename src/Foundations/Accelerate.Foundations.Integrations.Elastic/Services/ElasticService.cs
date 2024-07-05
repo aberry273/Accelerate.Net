@@ -10,6 +10,7 @@ using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -323,10 +324,11 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         {
             var name = filter.Name.ToCamelCase();
             var field = new Field(name);
-            var tq = new TermQuery(field)
+         
+            var tq = new WildcardQuery(field)
             {
-                Value = GetFieldValue(filter),
-                CaseInsensitive = true
+                Value = $"*{filter.Value?.ToString()}*",
+                CaseInsensitive = true,
             };
             return tq;
         }
@@ -434,6 +436,10 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             if (filter.Operator == QueryOperator.Exist)
             {
                 return CreateExistsQuery(filter);
+            }
+            if (filter.Operator == QueryOperator.Contains)
+            {
+                return CreateTextQuery(filter);
             }
 
             return CreateTextOrTermQuery(filter);

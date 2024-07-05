@@ -11,6 +11,7 @@ namespace Accelerate.Foundations.Account.Helpers
             return user != null ? new UserProfile()
             {
                 IsAuthenticated = true,
+                IsDeactivated = user.Status == AccountUserStatus.Deactivated,
                 Username = user.UserName,
                 UserId = user?.Id,
                 Image = user?.AccountProfile?.Image

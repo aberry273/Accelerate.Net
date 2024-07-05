@@ -10,6 +10,7 @@ export default function (data) {
         mxCardPost_quoteEvent: 'action:post:quote',
         mxCardPost_replyEvent: 'action:post:reply',
         mxCardPost_formatsEvent: 'action:post:formats',
+        mxCardPost_linkEvent: 'action:post:link',
         actionEvent: 'action:post', 
         modalEvent: 'action:post',
         redirectEvent: 'action:post',

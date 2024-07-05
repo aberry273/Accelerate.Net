@@ -21,15 +21,6 @@ export default function (data) {
                     }
                 })
             },  
-            addLinkCard(text) {
-                this.showRender = true;
-                const hasUrl = _mxForm_ValueHasUrl(text)
-                if (hasUrl) {
-                    const value = _mxForm_ValueGetUrl(text);
-                    _mxEvents_Emit(this.linkEvent, value)
-                } 
-               this.showRender = true; 
-            },
         }">
             <span x-text="field.label"></span>
             <input

@@ -22,5 +22,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         }
         public int? Quotes { get; set; }
         public int? Likes { get; set; }
+        public int? Reactions { get; set; }
+        public Dictionary<string, int> TopReactions { get; set; }
     }
 }

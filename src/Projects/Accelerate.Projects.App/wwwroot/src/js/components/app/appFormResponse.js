@@ -1,7 +1,6 @@
 
 import { mxForm, mxEvents, mxFetch, mxModal, mxResponsive, mxCardPost } from '/src/js/mixins/index.js';
  
-const linkEvent = 'form:input:link';
 const wysiwygUserSearchEvent = 'form:input:user';
 const encoder = new TextEncoder();
 export default function (data) {
@@ -86,7 +85,7 @@ export default function (data) {
                 this.updateReplyField(item);
             }) 
 
-            this.$events.on(linkEvent, async (url) => {
+            this.$events.on(this.mxCardPost_linkEvent, async (url) => {
                 this.updateLinkField(url);
             })
             /*
@@ -172,7 +171,6 @@ export default function (data) {
             return total <= 4;
         },
         get isValid() {
-            console.log('isValid')
             return this.underTextLimit
                 && this.underMediaLimit()
                 && this.underQuoteLimit()
@@ -249,7 +247,7 @@ export default function (data) {
             if (this.belowFold) this.fixed = true;
         },
         async updateLinkField(url) {
-            const linkField = this._mxForm_GetField(this.fields, 'Link');
+            const linkField = this._mxForm_GetField(this.fields, 'LinkValue');
             if (!linkField) return;
 
             if (linkField.value != null) return;
@@ -257,7 +255,6 @@ export default function (data) {
             this.loading = true;
 
             const item = await this._mxFetch_Post(this.fetchMetadataUrl, { url })
-
             linkField.value = item;
             linkField.hidden = false;
             this._mxForm_SetField(this.fields, linkField);
@@ -280,7 +277,7 @@ export default function (data) {
             if (!queryText) return;
             this.loading = false;
             var request = {
-                text: `*${queryText}*`,
+                text: queryText,
                 userId: this.userId,
                 page: 0,
                 itemPerPage: 8,
@@ -463,15 +460,8 @@ export default function (data) {
 
                     <fieldset class="padded py-0 flat" role="group">
                         <button x-show="fixed" class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
-                        <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button>
-                        <!--
-                        <input class="flat" hide disabled type="text" placeholder="" />
-                        -->
+                        <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button> 
                         <!--Toggle fields-->
-                        <!--
-                        <button class="small secondary material-icons flat" x-show="!showText" @click="hideTextField(false)" :disabled="loading">text_format</button>
-                        <button class="small secondary material-icons flat" x-show="showText" @click="hideTextField(true)" :disabled="loading">cancel</button>
-                        -->
 
                         <!--Video-->
                         <button class="small secondary material-icons flat" x-show="!showVideo" @click="hideVideoField(false)" :disabled="loading">videocam</button>
@@ -485,7 +475,6 @@ export default function (data) {
                       
                         <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
                         <button class="flat primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
-
                     </fieldset> 
                 </article>
             </template>

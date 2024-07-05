@@ -8,6 +8,7 @@ namespace Accelerate.Foundations.Common.Models
 {
     public class UserProfile
     {
+        public bool IsDeactivated { get; set; }
         public bool IsAuthenticated { get; set; }
         public Guid? UserId { get; set; }
         public string Username {  get; set; }

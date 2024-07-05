@@ -42,6 +42,7 @@ namespace Accelerate.Foundations.EventPipelines.Consumers
                 // Emit complete event
                 await _publishEndpoint.Value.Publish(new DeleteCompleteDataContract<T>() {
                     Data = context.Message.Data,
+                    Params = context.Message.Params,
                     Target = context.Message.Target,
                     UserId = context.Message.UserId
                 });

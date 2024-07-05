@@ -37,7 +37,6 @@ namespace Accelerate.Features.Content.Pipelines
                 CreatedOn = args.Value.CreatedOn,
                 UpdatedOn = args.Value.UpdatedOn,
                 Domain = args.Value.Domain,
-                Id = args.Value.Id,
                 Username = args.Value.UserName,
 
                 Image = profile.Image,

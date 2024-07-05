@@ -175,7 +175,14 @@ namespace Accelerate.Foundations.Content.Services
             }
 
             //run this later as we create related entities first
-            await this.RunCreatePipeline(post);
+            var dict = new Dictionary<string, object>()
+            {
+                {
+                    "Summary",
+                    summary
+                }
+            };
+            await this.RunCreatePipeline(post, dict); 
             return post;
         }
 
@@ -313,19 +320,21 @@ namespace Accelerate.Foundations.Content.Services
             });
         }
 
-        public async Task RunCreatePipeline(ContentPostEntity obj)
+        public async Task RunCreatePipeline(ContentPostEntity obj, dynamic Params = null)
         {
             await _publishEndpoint.Value.Publish(new CreateDataContract<ContentPostEntity>()
             {
+                Params = Params,
                 Data = obj,
                 Target = obj.ThreadId,
                 UserId = obj.UserId
             });
         }
-        public async Task RunUpdatePipeline(ContentPostEntity obj)
+        public async Task RunUpdatePipeline(ContentPostEntity obj, dynamic Params = null)
         {
             await _publishEndpoint.Value.Publish(new UpdateDataContract<ContentPostEntity>()
             {
+                Params = Params,
                 Data = obj,
                 Target = obj.ThreadId,
                 UserId = obj.UserId

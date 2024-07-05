@@ -29,8 +29,8 @@ namespace Accelerate.Foundations.Content.Services
         Task<ContentPostEntity> Update(Guid id, ContentPostEntity obj);
         Task<int> Delete([FromRoute] Guid id);
 
-        Task RunCreatePipeline(ContentPostEntity obj);
-        Task RunUpdatePipeline(ContentPostEntity obj);
+        Task RunCreatePipeline(ContentPostEntity obj, dynamic Params = null);
+        Task RunUpdatePipeline(ContentPostEntity obj, dynamic Params = null);
         Task RunDeletePipeline(ContentPostEntity obj);
 
         ContentPostMediaEntity CreateMediaLink(Guid postId, Guid mediaId);

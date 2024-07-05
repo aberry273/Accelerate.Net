@@ -2,6 +2,7 @@ import { mxForm, mxEvents, mxFetch, mxModal, mxResponsive, mxCardPost } from '/s
 
 export default function header(data) {
     return {
+        ...mxForm(data),
         ...mxEvents(data),
         ...mxCardPost(data),
         ...mxResponsive(data),
@@ -17,6 +18,7 @@ export default function header(data) {
         html: '', 
         nodePosition: 0,
         onEmojiEvent: 'insert:wysiwyg:emoji',
+        linkEvent: 'form:input:link',
         // for the context menu
         showElementEditor: false,
         selectedformat: '',
@@ -180,6 +182,18 @@ export default function header(data) {
             }
             this.convertHtmlToEncodedText();
         },
+        addLinkCard(text) {
+            console.log(text)
+            if (!text) return;
+            const hasUrl = this._mxForm_ValueHasUrl(text)
+            if (hasUrl) {
+                const value = this._mxForm_ValueGetUrl(text);
+                this._mxEvents_Emit(this.mxCardPost_linkEvent, value)
+            }
+        },
+        onKeyupDebounce(ev) {
+            this.addLinkCard(ev.target.innerText)
+        },
         getCaretPosition(target) {
             if (target.isContentEditable || document.designMode === 'on') {
                 target.focus();
@@ -303,6 +317,7 @@ export default function header(data) {
                     class="wysiwyg"
                     @click="($event) => onClick($event)"
                     @keyup="($event) => onKeyup($event)"
+                    @keyup.debounce="($event) => onKeyupDebounce($event)"
                     @keyup.@="($event) => toggleElementInput($event)">
                 </div> 
             </div>`

@@ -122,7 +122,8 @@ namespace Accelerate.Foundations.Common.Services
             return new BasePage()
             {
                 UserId = profile.UserId,
-                IsAuthenticated = true,
+                IsAuthenticated = profile.IsAuthenticated,
+                IsDeactivated = profile.IsDeactivated,
                 ServiceSettings = this.CreateContentServiceSettings(profile.UserId, _siteConfig.Domain),
                 Url = _siteConfig.Domain,
                 SideNavigation = new NavigationGroup(),

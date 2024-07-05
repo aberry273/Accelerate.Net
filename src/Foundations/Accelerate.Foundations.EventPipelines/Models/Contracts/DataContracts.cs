@@ -6,6 +6,7 @@ namespace Accelerate.Foundations.EventPipelines.Models.Contracts
 {
     public class DataContract<T>
     {
+        public dynamic Params { get; set; }
         public required T Data { get; set; }
         public Guid? UserId { get; set; }
         public string Target { get; set; }

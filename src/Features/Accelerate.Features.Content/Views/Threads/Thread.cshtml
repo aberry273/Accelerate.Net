@@ -70,10 +70,17 @@
     
     <hr id="reply-line" />
 
-    <!-- Response Form -->
-    @if (Model.IsAuthenticated)
+    @if (Model.IsDeactivated)
     {
-        <div x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+        <article>Reactivate your account to respond</article>
+    }
+    else if (Model.IsAuthenticated)
+    {
+        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
+    else
+    {
+        <article>Login to respond</article>
     }
 
      <!-- Filters -->

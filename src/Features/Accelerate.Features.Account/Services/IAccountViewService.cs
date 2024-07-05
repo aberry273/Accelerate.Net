@@ -10,7 +10,7 @@ namespace Accelerate.Features.Account.Services
     public interface IAccountViewService
     {
         ManagePage GetManagePage(AccountUser user);
-        AccountFormPage GetLoginPage(string? username);
+        Task<AccountFormPage> GetLoginPage(string? username);
         AccountFormPage GetRegisterPage(string? username, string? email);
         AccountFormPage GetForgotPasswordPage(string? usernameOrEmail);
         AccountFormPage GetConfirmAccountPage(string? userId);

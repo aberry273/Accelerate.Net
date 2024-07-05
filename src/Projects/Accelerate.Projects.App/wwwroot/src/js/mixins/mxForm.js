@@ -1,7 +1,6 @@
 export default function (data) {
 	return {
 		init() {
-			this.$watch('open', () => { })
 		},
 		// PROPERTIES
 		mxForm_Open: false,

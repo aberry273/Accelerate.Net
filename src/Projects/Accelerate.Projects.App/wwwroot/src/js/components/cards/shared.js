@@ -61,12 +61,18 @@ export function pagination(data) {
 export function link(data) {
     return `
     <template x-if="selectedPost.link">
-        <article @click="" class="link" style="padding: 0px;" x-show="!selectedPost.link.hide">
-            <header class="padless"><button style="position:absolute" class="small secondary material-icons flat" @click="selectedPost.link.hide = true">clear</button></header>
-            <div>
+        <article @click="" class="link" style="padding: 0px;" >
+            <header class="padless">
+                <button x-show="selectedPost.link.hide" class="small secondary material-icons flat" @click="selectedPost.link.hide = false">open_in_full</button>
+                 <a x-show="selectedPost.link.hide" style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
+                        <sup x-text="selectedPost.link.url"></sup>
+                    </a>
+                <button x-show="!selectedPost.link.hide" style="position:absolute" class="small secondary material-icons flat" @click="selectedPost.link.hide = true">close</button>
+            </header>
+            <div x-show="!selectedPost.link.hide">
                 <hr />
-                <figure style="text-align:center;">
-                    <a style="text-decoration:none" :href="selectedPost.link.url">
+                <figure style="text-align:center;" x-show="selectedPost.link.image">
+                    <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
                         <img
                             style="max-height: 200px; border-radius: 8px"
                             :src="selectedPost.link.image"
@@ -75,7 +81,7 @@ export function link(data) {
                     </a>
                 </figure>
                 <div class="padless" style="padding: 0px 8px;">
-                    <a style="text-decoration:none" :href="selectedPost.link.url">
+                    <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
                         <sup x-text="selectedPost.link.url"></sup>
                     </a>
                     <div>
@@ -210,6 +216,7 @@ export function footer(data) {
                     <div role="group" class="small flat pb-0">
                         <!--React-->
                         <span style="top:-4px" x-data="aclContentEmoji({ selectIcon: true, selectedIcon: selectedIcon, event: onEmojiEvent })"></span>
+                        <strong><sup class="noselect" x-text="action.reactions || 0"></sup></strong>
 
                         <!--Vote-->
                         <button class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>

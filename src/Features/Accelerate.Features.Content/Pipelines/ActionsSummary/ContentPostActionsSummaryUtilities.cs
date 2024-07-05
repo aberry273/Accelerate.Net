@@ -35,6 +35,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                    {
                        Agrees = x.Count(y => y.Agree == true),
                        Disagrees = x.Count(y => y.Disagree == true),
+                       Reactions = x.Count(y => !string.IsNullOrEmpty(y.Reaction)),
                    }).Single();
         }
         public static async Task CreateOrUpdateActionsSummaryIndex(IElasticService<ContentPostActionsSummaryDocument> _elasticService, ContentPostActionsSummaryEntity actionsSummary)

@@ -8,13 +8,15 @@ export default function (data) {
     loading: false,
     fields: [],
     label: 'Submit',
+    disabled: null,
     event: null,
     postbackType: 'POST',
     localEvent: '__formAjax:completed',
     // INIT
     init() {
       this.label = data.label;
-      this.event = data.event;
+    this.event = data.event;
+    this.disabled = data.disabled;
       this.loading = false;
       this.postbackType = data.postbackType
       this.setHtml(data)
@@ -93,7 +95,7 @@ export default function (data) {
           <progress x-show="loading"></progress>
           <fieldset x-data="formFields({fields})"></fieldset>
           <footer align="right">
-            <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
+            <button class="small" @click="await submit(fields)" :disabled="loading || disabled">${label}</button>
           </footer>
         </div>
       `

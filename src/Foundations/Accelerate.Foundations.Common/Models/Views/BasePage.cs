@@ -10,6 +10,7 @@ namespace Accelerate.Foundations.Common.Models.Views
     {
         public Guid? UserId { get; set; }
         public bool IsAuthenticated { get; set; }
+        public bool IsDeactivated { get; set; }
         public List<JsServiceSettings> ServiceSettings { get; set; } = new List<JsServiceSettings>();
         public NavigationBar TopNavigation { get; set; } = new NavigationBar();
 
@@ -33,6 +34,7 @@ namespace Accelerate.Foundations.Common.Models.Views
         {
             UserId = model.UserId;
             IsAuthenticated = model.IsAuthenticated;
+            IsDeactivated = model.IsDeactivated;
             Breadcrumbs = model.Breadcrumbs;
             Footer = model.Footer;
             TopNavigation = model.TopNavigation;

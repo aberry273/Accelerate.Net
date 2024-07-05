@@ -213,9 +213,10 @@ i:disabled {
 
 input, select, textarea {
     border:none;
-}
+} 
+
 details.dropdown summary:not([role]) {
-    border:none;
+    border: none;
 }
 details.dropdown.flat summary:not([role]) {
     border: none;
@@ -1043,7 +1044,17 @@ input.file-field:is([type="file"]) {
 }
 
 .topnav details.dropdown[open] summary + ul {
-    margin-left: -50px ;
+    margin-left: -250px;
+    max-width: 125px;
+    display: block;
+    clear: both;
+    white-space: wrap;
+    overflow: hidden;
+}
+.topnav details.dropdown[open] ul li {
+    max-width: 100%;
+    word-break: break-all;
+    text-overflow: ellipsis;
 }
 
 ::-webkit-scrollbar {

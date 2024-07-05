@@ -17,5 +17,6 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public required string PostbackUrl { get; set; }
         public string Event { get; set; }
         public string ActionEvent { get; set; }
+        public bool? Disabled { get; set; }
     }
 }

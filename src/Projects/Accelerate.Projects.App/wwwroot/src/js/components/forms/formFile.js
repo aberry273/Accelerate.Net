@@ -8,7 +8,7 @@ export default function (data) {
     loading: false,
     fields: [],
     label: 'Submit',
-    loading: false,
+    disabled: null,
     event: null,
     file: null,
     postbackType: 'POST',
@@ -17,6 +17,7 @@ export default function (data) {
     init() {
       this.label = data.label;
       this.event = data.event;
+    this.disabled = data.disabled;
       this.postbackType = data.postbackType
       this.setHtml(data)
       this.localEvent += new Date().toISOString()
@@ -80,7 +81,7 @@ export default function (data) {
           <progress x-show="loading"></progress>
           <fieldset x-data="formFields({fields})"></fieldset>
           <footer align="right">
-            <button class="small" @click="await submit(fields)" :disabled="loading">${label}</button>
+            <button class="small" @click="await submit(fields)" :disabled="loading || disabled">${label}</button>
           </footer>
         </div>
       `

@@ -7,17 +7,23 @@
     Layout = "/Views/Shared/_Layout.cshtml";
     var currentTab = Context.Request.Path.Value.Split('/').LastOrDefault();
 } 
-<div class="container">
+<div class="container" >
     <div class="center-vertical">
         <nav>
             <ul>
-                <header>
-                    <hgroup>
-                        <h1>Manage profile</h1>
-                    </hgroup>
-                </header>
+                <hgroup>
+                    <h1>Manage profile</h1>
+                </hgroup>
             </ul>
         </nav>
+        @if (Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
+        {
+            <div>
+                <strong>
+                    This account is de-activated, re-active the account below to continue using it.
+                </strong>
+            </div>
+        }
         <!--Feed-->
         <div x-data>
             <nav>

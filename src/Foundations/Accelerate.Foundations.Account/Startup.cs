@@ -16,6 +16,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Account.Models.Data;
+using Accelerate.Foundations.Common.Models;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
 
 namespace Accelerate.Foundations.Account
 {
@@ -29,13 +32,19 @@ namespace Accelerate.Foundations.Account
             {
                 configuration.GetSection(Constants.Config.ConfigName).Bind(options);
             });
-            var socialConfig = configuration
-                .GetSection("OAuthConfiguration")
-                .Get<OAuthConfiguration>();
 
-            socialConfig.GoogleAppSecret = configuration["GoogleAppSecret"];
-            socialConfig.FacebookAppSecret = configuration["FacebookAppSecret"];
+            services.Configure<OAuthConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Config.OAuthConfigurationName).Bind(options);
 
+                options.GoogleAppSecret = configuration[Constants.Config.GoogleAppSecretKey];
+                options.GoogleAppId = configuration[Constants.Config.GoogleAppIdKey];
+                options.GoogleRedirectUri = configuration[Constants.Config.GoogleRedirectUri];
+
+                options.FacebookAppSecret = configuration[Constants.Config.FacebookAppSecretKey];
+                options.FacebookAppId = configuration[Constants.Config.FacebookAppIdKey];
+                options.FacebookRedirectUri = configuration[Constants.Config.FacebookRedirectUri];
+            });
             // CONTEXT
             services.AddDbContext<Foundations.Database.Services.BaseContext<AccountProfile>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(connString));
@@ -54,17 +63,18 @@ namespace Accelerate.Foundations.Account
                 options.SignIn.RequireConfirmedAccount = false;
                 options.User.RequireUniqueEmail = true;
             })
-                .AddEntityFrameworkStores<AccountDbContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<AccountDbContext>()
+            .AddDefaultTokenProviders();
 
             services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<AccountUser>, AccountEmailSender>();
             //services.AddSingleton<IEmailSender, EmailSender>();
-            services.AddScoped<IUserClaimsPrincipalFactory<AccountUser>, AdditionalUserClaimsPrincipalFactory>();
-
-            services.AddAuthorization(options => options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
+           
+            
+            //services.AddScoped<IUserClaimsPrincipalFactory<AccountUser>, AdditionalUserClaimsPrincipalFactory>();
+            //services.AddAuthorization(options => options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
             })
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
                 options => configuration.Bind("JwtSettings", options))
@@ -96,10 +106,32 @@ namespace Accelerate.Foundations.Account
             })
             */
             .AddGoogle(options =>
-             {
-                 options.ClientId = socialConfig?.GoogleAppId ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
-                 options.ClientSecret = socialConfig?.GoogleAppSecret ?? string.Empty;
-             });
+            {
+                options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                options.SaveTokens = true; 
+                options.SignInScheme = IdentityConstants.ExternalScheme;
+                options.ClientId = configuration[Constants.Config.GoogleAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                options.ClientSecret = configuration[Constants.Config.GoogleAppSecretKey] ?? string.Empty;
+            })
+            .AddFacebook(options =>
+            {
+                options.SaveTokens = true;
+                options.SignInScheme = IdentityConstants.ExternalScheme;
+                   options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                options.ClientId = configuration[Constants.Config.FacebookAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                options.ClientSecret = configuration[Constants.Config.FacebookAppSecretKey] ?? string.Empty;
+
+                options.Events.OnTicketReceived = (context) =>
+                {
+                    Console.WriteLine(context.HttpContext.User);
+                    return Task.CompletedTask;
+                };
+                options.Events.OnCreatingTicket = (context) =>
+                {
+                    Console.WriteLine(context.Identity);
+                    return Task.CompletedTask;
+                };
+            });
 
             // Set email timeout to 7 days
 

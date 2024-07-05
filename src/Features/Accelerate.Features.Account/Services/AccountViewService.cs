@@ -1,5 +1,6 @@
 ﻿using Accelerate.Features.Account.Controllers;
 using Accelerate.Features.Account.Models.Views;
+using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Helpers;
@@ -12,34 +13,49 @@ using Accelerate.Foundations.Media.Models.Data;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System.Security.Policy;
 using System.Threading.Channels;
+using static System.Net.WebRequestMethods;
 
 namespace Accelerate.Features.Account.Services
 {
     public class AccountViewService : IAccountViewService
     {
-
+        private readonly SignInManager<AccountUser> _signInManager;
+        private OAuthConfiguration _OAuthConfig;
         private IMetaContentService _contentService;
         public AccountViewService(
-            IMetaContentService contentService)
+            SignInManager<AccountUser> signInManager,
+            IMetaContentService contentService,
+            IOptions<OAuthConfiguration> options)
         {
+            _signInManager = signInManager;
             _contentService = contentService;
+            _OAuthConfig = options.Value;
         }
         #region Manage
-         
+
         public ManagePage GetManagePage(AccountUser user)
         {
             var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
 
             var viewModel = new ManagePage(_contentService.CreatePageBaseContent(profile));
             viewModel.UserId = user.Id;
+            viewModel.UserStatus = user.Status;
             viewModel.ProfileImageForm = CreateProfileImageForm(user);
+            viewModel.UserForm = CreateUserForm(user);
             viewModel.ProfileForm = CreateProfileForm(user);
+            viewModel.DeactivateForm = CreateDeactivateForm(user);
+            viewModel.DeleteForm = CreateDeleteForm(user);
+            viewModel.ReactivateForm = CreateReactivateForm(user);
             viewModel.ModalCreateMedia = CreateModalMediaForm(user);
             viewModel.FilterEvent = "onFilterChange";
             viewModel.Tabs = new List<NavigationItem>()
@@ -249,6 +265,7 @@ namespace Accelerate.Features.Account.Services
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
                 Label = "Update",
+                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -275,14 +292,148 @@ namespace Accelerate.Features.Account.Services
             };
             return model;
         }
+        public AjaxForm CreateDeactivateForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = $"/api/accountuser/deactivate",
+                Type = PostbackType.POST,
+                Event = "user:deactivate",
+                Label = "Deactivate",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user?.UserName,
+                    }
+                }
+            };
+            return model;
+        }
+
+        public AjaxForm CreateDeleteForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = $"/api/accountuser/delete",
+                Type = PostbackType.POST,
+                Event = "user:delete",
+                Label = "Delete",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user?.UserName,
+                    }
+                }
+            };
+            return model;
+        }
+
+        public AjaxForm CreateReactivateForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = $"/api/accountuser/reactivate",
+                Type = PostbackType.POST,
+                Event = "user:Reactivate",
+                Label = "Reactivate",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user.Id,
+                    },
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user?.UserName,
+                    }
+                }
+            };
+            return model;
+        }
+        public AjaxForm CreateUserForm(AccountUser user)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = $"/api/accountuser/{user?.Id}",
+                Type = PostbackType.PUT,
+                Event = "user:create",
+                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Label = "Update",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Label = "Email",
+                        Name = "Email",
+                        FieldType = FormFieldTypes.email,
+                        Disabled = true,
+                        Placeholder = "Email",
+                        Value = user?.Email,
+                    },
+                    new FormField()
+                    {
+                        Label = "Username",
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username",
+                        Disabled = user.Email != user.UserName || user.Status == AccountUserStatus.Deactivated,
+                        Value = user?.UserName,
+                    }, 
+                    new FormField()
+                    {
+                        Name = "Id",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        Value = user.Id,
+                    }
+                }
+            };
+            return model;
+        }
         public AjaxForm CreateProfileForm(AccountUser user)
         {
             var model = new AjaxForm()
             {
                 PostbackUrl = $"/api/accountprofile/{user?.AccountProfileId}",
                 Type = PostbackType.PUT,
-                Event = "profile:updated",
+                Event = "on:user:delete",
                 Label = "Update",
+                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -291,6 +442,7 @@ namespace Accelerate.Features.Account.Services
                         Name = "Firstname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Firstname",
+                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                         Value = user?.AccountProfile?.Firstname,
                     },
                     new FormField()
@@ -299,6 +451,7 @@ namespace Accelerate.Features.Account.Services
                         Name = "Lastname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Lastname",
+                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                         Value = user?.AccountProfile?.Lastname,
                     },
                     new FormField()
@@ -336,6 +489,7 @@ namespace Accelerate.Features.Account.Services
             {
                 PostbackUrl = "/api/mediablob/image",
                 Type = PostbackType.POST,
+                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                 Event = "channel:create:modal",
                 Label = "Create",
                 Fields = new List<FormField>()
@@ -348,6 +502,7 @@ namespace Accelerate.Features.Account.Services
                         Multiple = false,
                         ClearOnSubmit = true,
                         Icon = "photo_camera",
+                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                         AriaInvalid = false,
                         Hidden = false,
                         Accept = ".png,.jpg",
@@ -367,12 +522,16 @@ namespace Accelerate.Features.Account.Services
         }
         #endregion
         #region Login
-        public AccountFormPage GetLoginPage(string? username)
+        public async Task<AccountFormPage> GetLoginPage(string? username)
         {
             var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
             viewModel.Title = "Login";
             viewModel.Form = this.CreateLoginForm(username);
             viewModel.Links = CreateLoginLinks();
+            viewModel.ExternalLoginAction = "ExternalLogin";
+            viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLogin";
+            viewModel.Providers = await _signInManager.GetExternalAuthenticationSchemesAsync();
+
             return viewModel;
         }
         public Form CreateLoginForm(string? username)
@@ -400,6 +559,38 @@ namespace Accelerate.Features.Account.Services
                 }
             };
             return model;
+        } 
+        private List<NavigationItem> CreateSocialLinks()
+        {
+            //<a class="btn btn-primary btn-block btn-responsive" style="background-color: #3578E5; border-color: #3578E5; color: #ffffff; font-size:1.5rem; padding: 20px;" href="https://www.facebook.com/dialog/oauth?client_id=@Html.DisplayFor(model => model.FacebookAppId)&redirect_uri=@Html.DisplayFor(model => model.FacebookRedirectUri)&&response_type=code&scope=email"><i class="fab fa-facebook"></i>&nbsp;&nbsp;&nbsp;Login with Facebook</a>
+
+            return new List<NavigationItem>()
+            {
+                new NavigationItem()
+                {
+                    Href = $"https://www.facebook.com/dialog/oauth?client_id={_OAuthConfig.FacebookAppId}&redirect_uri={_OAuthConfig.FacebookRedirectUri}&response_type=code&scope=email",
+                    Text = "Facebook",
+                    Class = "secondary",
+                    Icon = "facebook"
+                },
+                /*
+                 * https://accounts.google.com/o/oauth2/v2/auth?
+                 scope=https%3A//www.googleapis.com/auth/drive.metadata.readonly&
+                 access_type=offline&
+                 include_granted_scopes=true&
+                 response_type=code&
+                 state=state_parameter_passthrough_value&
+                 redirect_uri=https%3A//oauth2.example.com/code&
+                 client_id=client_id
+                */
+                new NavigationItem()
+                {
+                    Href = $"https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A//www.googleapis.com/auth/drive.metadata.readonly&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=${_OAuthConfig.GoogleRedirectUri}code&client_id=${_OAuthConfig.GoogleAppId}",
+                    Text = "Google",
+                    Class = "secondary",
+                    Icon = "Google"
+                },
+            };
         }
         private List<NavigationItem> CreateLoginLinks()
         {

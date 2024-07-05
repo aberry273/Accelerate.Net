@@ -25,8 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Extensions;
 using Microsoft.AspNetCore.SignalR;
 using MimeKit.Cryptography;
-using System.Threading;
-using Twilio.Rest.Proxy.V1.Service.Session.Participant;
+using System.Threading; 
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using MassTransit.Initializers;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
@@ -38,6 +37,8 @@ using Accelerate.Foundations.Content.Services;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.ComponentModel;
 using Accelerate.Foundations.Account.Services;
+using System.Security.Policy;
+using System; 
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -49,8 +50,8 @@ namespace Accelerate.Features.Content.Controllers.Api
     {
         public string Url { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
-        public string Image { get; set; }
+        public string? Description { get; set; }
+        public string? Image { get; set; }
     }
     [Route("api/[controller]")]
     [ApiController]
@@ -88,48 +89,17 @@ namespace Accelerate.Features.Content.Controllers.Api
             _mediaService = mediaService;
             _userSearchService = userSearchService;
         }
-        //<meta\b[^>]*\bname=["]keywords["][^>]*\bcontent=(['"]?)((?:[^,>"'],?){1,})\1[>]
-        private string UrlTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:url[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
-        private string TitleTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:title[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
-        private string DescriptionTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:description[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
-        private string ImageTagRegex = @"\<meta\b[^>]*\bproperty=[""]og:image[""][^>]*\bcontent=(['""]?)((?:[^,>""'],?){1,})\1[>]";
-        private string GetTagMetadata(string input, string regex)
-        {
-            var result = Regex.Match(input, regex, RegexOptions.IgnoreCase);
-            if (result == null) return null;
-            return result.Groups[2].Value;
-            
-        }
+      
         [Route("metadata")]
         [HttpPost]
         public async Task<IActionResult> GetUrlContents([FromBody] MetadataRequest data)
         {
             try
             {
-
-                const int bytesToRead = 12000;
-                using (var client = new HttpClient())
-                using (var response = await client.GetAsync(data.Url))
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                {
-                    var buffer = new byte[stream.Length];
-                    stream.Read(buffer, 0, buffer.Length);
-                    var partialHtml = Encoding.UTF8.GetString(buffer);
-
-                    var title = GetTagMetadata(partialHtml, TitleTagRegex);
-                    var description = GetTagMetadata(partialHtml, DescriptionTagRegex);
-                    var image = GetTagMetadata(partialHtml, ImageTagRegex);
-                    var url = GetTagMetadata(partialHtml, UrlTagRegex);
-
-                    var model = new MetadataResponse()
-                    {
-                        Url = url,
-                        Title = title,
-                        Description = description,
-                        Image = image,
-                    };
-                    return Ok(model);
-                }
+                bool isUri = Uri.IsWellFormedUriString(data.Url, UriKind.RelativeOrAbsolute);
+                if (!isUri) return Ok(null);
+                var metadata = Foundations.Common.Helpers.HtmlHelper.GetMetaDataFromUrl(data.Url);
+                return Ok(metadata); 
             }
             catch(Exception e)
             {
