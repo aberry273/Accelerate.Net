@@ -77,6 +77,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public Guid? UserId { get; set; }
         public List<Guid> ParentIds { get; set; }
         public Guid? ParentId { get; set; }
+        public string? ParentVote { get; set; }
         // TODO: Update to a getter returning the settings.status
         public ContentPostEntityStatus? Status { get; set; }
         public string? Content { get; set; }

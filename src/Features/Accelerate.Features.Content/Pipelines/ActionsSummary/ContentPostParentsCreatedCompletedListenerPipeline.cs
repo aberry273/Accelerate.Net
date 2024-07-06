@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Accelerate.Foundations.Content.Hydrators;
 using System;
+using Accelerate.Foundations.Common.Models;
 
 namespace Accelerate.Features.Content.Pipelines.ActionsSummary
 {
@@ -25,23 +26,30 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
     {
         IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> _messageHub;
         IEntityService<ContentPostParentEntity> _entityParentService;
+        IElasticService<ContentPostDocument> _elasticPostService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticService;
+        IElasticService<ContentPostActionsDocument> _elasticActionsService;
         IEntityService<ContentPostActionsSummaryEntity> _entityService;
         public ContentPostParentsCreatedCompletedListenerPipeline(
-            IEntityService<ContentPostActionsSummaryEntity> entityService, 
+            IEntityService<ContentPostActionsSummaryEntity> entityService,
             IEntityService<ContentPostParentEntity> entityParentService,
+            IElasticService<ContentPostDocument> elasticPostService,
             IElasticService<ContentPostActionsSummaryDocument> elasticService,
+            IElasticService<ContentPostActionsDocument> elasticActionsService,
             IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub)
         {
             _entityService = entityService;
             _entityParentService = entityParentService;
+            _elasticPostService = elasticPostService;
             _elasticService = elasticService;
+            _elasticActionsService = elasticActionsService;
             _messageHub = messageHub;
 
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostParentEntity>>()
             {
-                UpdateIndex
+                UpdateIndex,
+                //UpdatePostReviewIndex
             };
         }
         private async Task<ContentPostActionsSummaryEntity> CreateActionSummaryEntity(IPipelineArgs<ContentPostParentEntity> args)
@@ -93,6 +101,70 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             }
             //do stuff
 
+        }
+
+        /// <summary>
+        /// Update the content post index to include the positive review if available
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public async Task UpdatePostReviewIndex(IPipelineArgs<ContentPostParentEntity> args)
+        {
+            var action = await GetUserAction(args);
+
+            //Get the action associated with the reply
+            if (action == null)
+            {
+                return;
+            }
+
+            //Update the post to include the vote if available
+            var post = new ContentPostDocument()
+            {
+                Id = args.Value.ContentPostId
+            };
+            /*
+            var post = await this.GetDocument(args.Value.ContentPostId);
+            if(post == null)
+            {
+                post = new ContentPostDocument();
+            }
+            */
+            if(action.Agree.GetValueOrDefault())
+            {
+                post.ParentVote = "Agree";
+            }
+            if(action.Disagree.GetValueOrDefault())
+            {
+                post.ParentVote = "Disagree";
+            }
+            var response = await _elasticPostService.UpdateDocument<ContentPostDocument>(post, args.Value.ContentPostId.ToString());
+        }
+        private async Task<ContentPostDocument> GetDocument(Guid id)
+        {
+            var result = await _elasticPostService.GetDocument<ContentPostDocument>(id.ToString());
+            if (!result.IsSuccess() || result.Source == null) return null;
+            return result.Source;
+        }
+        public async Task<ContentPostActionsDocument> GetUserAction(IPipelineArgs<ContentPostParentEntity> args)
+        {
+            var query = new QueryDescriptor<ContentPostActionsDocument>();
+            if (args.Value.ContentPostId != null && args.Value.UserId != null)
+            {
+                query.MatchAll();
+                query
+                    .Term(x => x.UserId.Suffix("keyword"), args.Value.UserId)
+                    .Term(x => x.ContentPostId.Suffix("keyword"), args.Value.ParentId)
+                ;
+            }
+            var results = await _elasticActionsService.Search<ContentPostActionsDocument>(query, 0, 1);
+
+            //Get the action associated with the reply
+            if (!results.IsSuccess() || results.Documents == null)
+            {
+                return null;
+            }
+            return results.Documents.FirstOrDefault();
         }
     }
 }

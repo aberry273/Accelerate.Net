@@ -229,8 +229,11 @@ namespace Accelerate.Foundations.Content.Services
 
             var aggregates = new List<string>()
             {
-                Foundations.Content.Constants.Fields.threadId.ToCamelCase(),
-                Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+                Constants.Fields.threadId.ToCamelCase(),
+                Constants.Fields.QuoteIds.ToCamelCase(),
+                Constants.Fields.Tags.ToCamelCase(),
+                Constants.Fields.Category.ToCamelCase(),
+                Constants.Fields.ParentVote.ToCamelCase(),
             };
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
         }

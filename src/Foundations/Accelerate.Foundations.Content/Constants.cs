@@ -44,6 +44,7 @@ namespace Accelerate.Foundations.Content
 
             public const string Category = "Category";
             public const string Tags = "tags";
+            public const string ParentVote = "parentVote";
             public const string Status = "status";
             public const string Content = "content";
         }

@@ -9,7 +9,7 @@
     <nav>
         <ul>
             <li>
-                <a href="#">
+                <a href="@Model.ReturnLink.Href">
                     <i aria-label="Agree" class="icon material-icons icon-click" rel="prev">chevron_left</i>
                 </a>
             </li>
@@ -24,7 +24,7 @@
             @Model.Description
         </p>
         <footer>
-            <button>Return</button>
+            <button href="@Model.ReturnLink.Href">Return</button>
         </footer>
     </article>
 </div>

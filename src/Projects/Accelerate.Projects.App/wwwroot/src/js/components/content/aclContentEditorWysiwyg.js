@@ -183,7 +183,6 @@ export default function header(data) {
             this.convertHtmlToEncodedText();
         },
         addLinkCard(text) {
-            console.log(text)
             if (!text) return;
             const hasUrl = this._mxForm_ValueHasUrl(text)
             if (hasUrl) {

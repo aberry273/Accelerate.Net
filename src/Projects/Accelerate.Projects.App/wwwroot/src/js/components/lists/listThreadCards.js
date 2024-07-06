@@ -50,7 +50,7 @@ export default function (data) {
                     await this.initSearch();
                 }
                 else {
-                    await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, filterUpdates);
+                    await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, filterUpdates, true);
                 }
                 
             })

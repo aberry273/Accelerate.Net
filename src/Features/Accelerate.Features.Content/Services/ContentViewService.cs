@@ -131,6 +131,7 @@ namespace Accelerate.Features.Content.Services
         {
             var model = CreateBaseContent(user);
             var viewModel = new NotFoundPage(model);
+            viewModel.ReturnLink = GetReturnLink();
             viewModel.Title = "Post not found";
             viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
             return viewModel;
@@ -918,16 +919,24 @@ namespace Accelerate.Features.Content.Services
             return new Dictionary<string, string>()
             {
                 {
+                    Constants.Filters.Category,
+                    Foundations.Content.Constants.Fields.Category.ToCamelCase()
+                },
+                {
                     Constants.Filters.Tags,
-                    Foundations.Content.Constants.Fields.Tags
+                    Foundations.Content.Constants.Fields.Tags.ToCamelCase()
+                },
+                {
+                    Constants.Filters.Votes,
+                    Foundations.Content.Constants.Fields.ParentVote.ToCamelCase()
                 },
                 {
                     Constants.Filters.Threads,
-                    Foundations.Content.Constants.Fields.ShortThreadId
+                    Foundations.Content.Constants.Fields.ShortThreadId.ToCamelCase()
                 },
                 {
                     Constants.Filters.Quotes,
-                    Foundations.Content.Constants.Fields.QuoteIds
+                    Foundations.Content.Constants.Fields.QuoteIds.ToCamelCase()
                 }
             };
         }
@@ -980,6 +989,16 @@ namespace Accelerate.Features.Content.Services
             if(filters == null) filters = new Dictionary<string, List<string>>();
             var filter = new List<NavigationFilter>();
 
+            var Votes = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Votes));
+            if (Votes.Count > 0)
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.Votes,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = Votes
+                });
+            }
             var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Actions));
             if(Actions.Count > 0)
             {
@@ -1117,6 +1136,14 @@ namespace Accelerate.Features.Content.Services
             {
                 Text = $"{x.Name}",
                 Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Channel), ControllerHelper.NameOf<ChannelsController>(), new {id = x.Id })
+            };
+        }
+        public NavigationItem? GetReturnLink()
+        { 
+            return new NavigationItem()
+            {
+                Text = "Return",
+                Href = this._metaContentService.GetActionUrl(nameof(ChannelsController.Index), ControllerHelper.NameOf<ChannelsController>(), new { })
             };
         }
         private string GetChannelUrl(ContentChannelDocument x)

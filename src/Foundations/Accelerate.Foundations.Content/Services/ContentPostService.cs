@@ -394,6 +394,7 @@ namespace Accelerate.Foundations.Content.Services
             var entity = new ContentPostParentEntity()
             {
                 ContentPostId = post.Id,
+                UserId = post.UserId,
                 ParentId = parentId,
                 ParentIdItems = ancestorIds
             };

@@ -73,6 +73,9 @@ namespace Accelerate.Foundations.Common.Pipelines
                 catch(Exception e)
                 {
                     Services.StaticLoggingService.LogError(e);
+
+                    //put back in queue to retry
+                    //TODO
                     return Task.FromException(e);
                 }
             }));

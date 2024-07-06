@@ -10,6 +10,7 @@ namespace Accelerate.Features.Content.Models.Views
         public Guid UserId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public NavigationItem ReturnLink { get; set; }
         public NotFoundPage(BasePage model) : base(model)
         {
 

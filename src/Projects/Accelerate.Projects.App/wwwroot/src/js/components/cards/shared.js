@@ -116,6 +116,7 @@ export function header(data) {
                                 <span x-text="selectedPost.profile.username"></span>
                             </strong>
                             <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
+                            
                         </li>
                     </aside>
                 </ul>
@@ -128,6 +129,8 @@ export function header(data) {
                             <sup x-text="selectedPost.channelName"></sup>
                         </a>
                     </strong>
+                    <i x-show="selectedPost.parentVote == 'Agree'" aria-label="Agreed" class="icon noselect muted material-icons">expand_less</i>
+                    <i x-show="selectedPost.parentVote == 'Disagree'" aria-label="Disagreed" class="icon noselect muted material-icons">expand_more</i>
 
                      <!--Show more-->
                     <template x-if="selectedPost.userId == userId">
@@ -216,12 +219,13 @@ export function footer(data) {
                     <div role="group" class="small flat pb-0">
                         <!--React-->
                         <span style="top:-4px" x-data="aclContentEmoji({ selectIcon: true, selectedIcon: selectedIcon, event: onEmojiEvent })"></span>
+                        <!--
                         <strong><sup class="noselect" x-text="action.reactions || 0"></sup></strong>
-
+                        -->
                         <!--Vote-->
-                        <button class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
+                        <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
                           <strong><sup class="noselect" x-text="action.votes || 0"></sup></strong>
-                        <button class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
+                        <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
                    
                         <!--Quotes-->
                         <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >

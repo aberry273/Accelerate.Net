@@ -32,6 +32,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IContentPostService _contentPostService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
+        IElasticService<ContentPostActionsDocument> _elasticPostActionsService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticPostActionsSummaryService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentChannelEntity> _channelService;
@@ -45,6 +46,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
+            IElasticService<ContentPostActionsDocument> elasticPostActionsService,
             IElasticService<ContentPostActionsSummaryDocument> elasticPostActionsSummaryService,
             IEntityService<ContentChannelEntity> channelService,
             IEntityService<ContentPostEntity> entityService,
@@ -57,6 +59,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IElasticService<AccountUserDocument> accountElasticService)
         {
             _contentPostService = contentPostService;
+            _elasticPostActionsService = elasticPostActionsService;
             _entityActionsSummaryService = entityActionsSummaryService;
             _pipelineActivityService = pipelineActivityService;
             _elasticPostActionsSummaryService = elasticPostActionsSummaryService;
@@ -218,6 +221,19 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                         ? postParent.ParentIdItems.ToList()
                         : null;
 
+                    //If the user has voted on the parent, get the action item
+                    var action = await this.GetUserParentAction(indexModel);
+                    if(action != null)
+                    {
+                        if (action.Agree.GetValueOrDefault())
+                        {
+                            indexModel.ParentVote = "Agree";
+                        }
+                        if (action.Disagree.GetValueOrDefault())
+                        {
+                            indexModel.ParentVote = "Disagree";
+                        }
+                    }
                     //await UpdateParentDocument(postParent, indexModel, args);
                 }
                 await _elasticService.Index(indexModel);
@@ -227,6 +243,26 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 throw ex;
             }
+        }
+        public async Task<ContentPostActionsDocument> GetUserParentAction(ContentPostDocument post)
+        {
+            var query = new QueryDescriptor<ContentPostActionsDocument>();
+            if (post.ParentId != null && post.UserId != null)
+            {
+                query.MatchAll();
+                query
+                    .Term(x => x.UserId.Suffix("keyword"), post.UserId)
+                    .Term(x => x.ContentPostId.Suffix("keyword"), post.ParentId)
+                ;
+            }
+            var results = await _elasticPostActionsService.Search<ContentPostActionsDocument>(query, 0, 1);
+
+            //Get the action associated with the reply
+            if (!results.IsSuccess() || results.Documents == null || !results.Documents.Any())
+            {
+                return null;
+            }
+            return results.Documents?.FirstOrDefault();
         }
 
         public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)

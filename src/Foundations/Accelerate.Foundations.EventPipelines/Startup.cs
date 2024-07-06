@@ -15,22 +15,20 @@ namespace Accelerate.Foundations.EventPipelines
         {
             services.AddMassTransit<B>(x =>
             {
-                //x.AddConsumersFromNamespaceContaining<T>();
-                // Posts
                 x.AddConsumer<DataCreateConsumer<T, B>>();
                 x.AddConsumer<DataCreateCompleteConsumer<T>>();
                 x.AddConsumer<DataUpdateConsumer<T, B>>();
                 x.AddConsumer<DataUpdateCompleteConsumer<T>>();
                 x.AddConsumer<DataDeleteConsumer<T, B>>();
                 x.AddConsumer<DataDeleteCompleteConsumer<T>>();
-                // Entities
-
 
                 x.UsingInMemory((context, cfg) =>
                 {
                     cfg.ReceiveEndpoint("event-listener", e =>
                     {
                         // Content Posts
+                        e.ConfigureConsumers(context);
+                        /*
                         e.ConfigureConsumer<DataCreateConsumer<T, B>>(context);
                         e.ConfigureConsumer<DataCreateCompleteConsumer<T>>(context);
 
@@ -39,6 +37,7 @@ namespace Accelerate.Foundations.EventPipelines
 
                         e.ConfigureConsumer<DataDeleteConsumer<T, B>>(context);
                         e.ConfigureConsumer<DataDeleteCompleteConsumer<T>>(context);
+                        */
                     });
                 });
             });
