@@ -38,6 +38,11 @@ namespace Accelerate.Foundations.Content
             public const string ParentIds = "parentIds";
             public const string threadId = "threadId";
             public const string ChannelId = "channelId";
+            public const string CreatedOn = "createdOn";
+            public const string UpdatedOn = "updatedOn";
+            public const string Replies = "replies";
+            public const string Quotes = "quotes";
+            public const string TotalVotes = "totalVotes";
             public const string ContentPostId = "contentPostId";
             public const string QuoteIds = "quoteIds";
             public const string Id = "id";

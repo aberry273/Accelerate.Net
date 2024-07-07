@@ -19,6 +19,7 @@ namespace Accelerate.Features.Content
             public const string Status = "Status";
             public const string Content = "Content";
             public const string Sort = "Sort";
+            public const string SortOrder = "SortOrder";
         }
         public struct Settings
         {

@@ -33,6 +33,7 @@ export default function (data) {
         textFieldName: 'Content',
         validationMessage: '',
         originalYPosition: 0,
+        formContainerElement: 'form-container',
         showTags: false,
         showText: false,
         showVideo: false,
@@ -78,11 +79,18 @@ export default function (data) {
             // Move this and all content/post based logic to mixin/geneirc logic
             this.$events.on(this.mxCardPost_quoteEvent, async (item) => {
                 this.updateQuoteField(item);
+                this.scrollToElement(item.threadId);
+                this.showFloatingPanel = false;
+                if (this.belowFold) this.fixed = true;
             })
             // On updates from cards
             // Move this and all content/post based logic to mixin/generic logic
             this.$events.on(this.mxCardPost_replyEvent, async (item) => {
                 this.updateReplyField(item);
+                this.scrollToElement(item.threadId);
+                this.showFloatingPanel = false;
+                if (this.belowFold) this.fixed = true;
+                //this.formContainerElement = '#'+item.threadId
             }) 
 
             this.$events.on(this.mxCardPost_linkEvent, async (url) => {
@@ -146,6 +154,17 @@ export default function (data) {
         },
         get underTextLimit() {
             return this.inputAmount < this.charLimit;
+        },
+        scrollToElement(elementId) {
+            const el = document.getElementById(elementId);
+
+            const headerOffset = 75;
+            const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            window.scrollTo({
+                top: y,
+                left: 0,
+                behavior: 'smooth'
+            });
         },
         underMediaLimit() {
             const images = this.imageField.value != null ? this.imageField.value.length : 0;
@@ -226,8 +245,6 @@ export default function (data) {
             field.value = quoteItems.map(x => x.quotedContentPostId);;
             field.items = quoteItems;
             this._mxForm_SetField(this.fields, field);
-            this.showFloatingPanel = false;
-            if (this.belowFold) this.fixed = true;
         },
         updateReplyField(item) {
             const parentIdField = this._mxForm_GetField(this.fields, 'ParentId');
@@ -241,10 +258,7 @@ export default function (data) {
 
             replyToField.value = this.createReplyPostSummary(item);
 
-            this._mxForm_SetField(this.fields, replyToField);
-            this.showFloatingPanel = false;
-            // If form is in scrollState, show
-            if (this.belowFold) this.fixed = true;
+            this._mxForm_SetField(this.fields, replyToField); 
         },
         async updateLinkField(url) {
             const linkField = this._mxForm_GetField(this.fields, 'LinkValue');
@@ -426,7 +440,7 @@ export default function (data) {
                 </article>
             </dialog>
 
-            <span id="fixedPosition" @scroll.window="belowFold = (window.pageYOffset < 500) ? false: true"><span>
+            <span id="fixedPosition" @scroll.window="belowFold = (window.pageYOffset < 50) ? false: true"><span>
           
             <!--Floating button-->
             <button
@@ -443,12 +457,12 @@ export default function (data) {
             </div>
             -->
             <!-- to update to teleporting between fixed/nonfixed elements-->
-                <article  
+            
+            <article
                 :class="fixed ? 'floating bottom container dense sticky py-0' : 'dense sticky'"
                 
                 style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"
-                :style="fixed ? fixedStyle : ''"
->
+                :style="fixed ? fixedStyle : ''">
                     <progress x-show="loading"></progress>
                     <!--Quotes-->
                     <fieldset class="padded" x-data="formFields({fields})"></fieldset>

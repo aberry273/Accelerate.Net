@@ -174,6 +174,12 @@ export default function header(data) {
             }
             this.$events.emit('editor-wisyiwyg-plaintext', encodedText);
         },
+        onPaste(e) {
+            e.preventDefault();
+            var contentOnBlur = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste text');
+            contentOnBlur = contentOnBlur.replace(/(<([^>]+)>)/ig, '');
+            document.execCommand('insertText', false, contentOnBlur);
+        },
         onKeyup(ev) { 
             this.nodePosition = this.getCaretPosition(ev.target)
             this.contextNode = ev.target;
@@ -314,6 +320,7 @@ export default function header(data) {
                     role="textbox"
                     x-html="html"
                     class="wysiwyg"
+                    @paste="($event) => onPaste($event)"
                     @click="($event) => onClick($event)"
                     @keyup="($event) => onKeyup($event)"
                     @keyup.debounce="($event) => onKeyupDebounce($event)"

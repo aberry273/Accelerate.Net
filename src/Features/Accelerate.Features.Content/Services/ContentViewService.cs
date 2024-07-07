@@ -18,7 +18,7 @@ using System.Security.Principal;
 using System.Threading.Channels;
 
 namespace Accelerate.Features.Content.Services
-{
+{ 
     public class ContentViewService : IContentViewService
     {
         IMetaContentService _metaContentService;
@@ -338,7 +338,7 @@ namespace Accelerate.Features.Content.Services
                 Placeholder = "Post a reply",
                 ClearOnSubmit = true,
                 AriaInvalid = false,
-                Max = post?.Settings?.CharLimit ?? 256,
+                Max = post?.Settings?.CharLimit ?? 512,
             };
         }
         private FormField FormFieldContent(ContentPostDocument post)
@@ -351,7 +351,7 @@ namespace Accelerate.Features.Content.Services
                 Placeholder = "Post a reply",
                 ClearOnSubmit = true,
                 AriaInvalid = false,
-                Max = post?.Settings?.CharLimit ?? 1024,
+                Max = post?.Settings?.CharLimit ?? 2048,
             };
         }
         private FormField FormFieldLink(ContentPostDocument post)
@@ -937,6 +937,10 @@ namespace Accelerate.Features.Content.Services
                 {
                     Constants.Filters.Quotes,
                     Foundations.Content.Constants.Fields.QuoteIds.ToCamelCase()
+                },
+                {
+                    Constants.Filters.Sort,
+                    Constants.Filters.Sort
                 }
             };
         }
@@ -967,11 +971,14 @@ namespace Accelerate.Features.Content.Services
         }
         public List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters)
         {
-            return Filters?.Select(x =>
-            {
-                x.Name = GetFilterKey(x.Name);
-                return x;
-            }).ToList();
+            return Filters
+                ?
+                .Where(x => x.Name != Constants.Filters.Sort && x.Name != Constants.Filters.SortOrder)?
+                .Select(x =>
+                {
+                    x.Name = GetFilterKey(x.Name);
+                    return x;
+                }).ToList();
         }
         public string GetFilterKey(string key)
         {
@@ -995,7 +1002,7 @@ namespace Accelerate.Features.Content.Services
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Votes,
-                    FilterType = NavigationFilterType.Checkbox,
+                    FilterType = NavigationFilterType.Radio,
                     Values = Votes
                 });
             }
@@ -1052,18 +1059,91 @@ namespace Accelerate.Features.Content.Services
                 });
             }
 
-            var sort = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Sort));
-            if (sort.Count > 0)
+            //var sort = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Sort));
+            //if (sort.Count > 0)
             {
                 filter.Add(new NavigationFilter()
                 {
                     Name = Constants.Filters.Sort,
                     FilterType = NavigationFilterType.Select,
-                    Values = sort
+                    Values = GetFilterSortOptions().Values.ToList()
+                });
+            }
+            {
+                filter.Add(new NavigationFilter()
+                {
+                    Name = Constants.Filters.SortOrder,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterSortOrderOptions().Values.ToList()
                 });
             }
 
             return filter;
+        }
+        public Dictionary<string, string> GetFilterSortOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                {
+                    Foundations.Content.Constants.Fields.CreatedOn,
+                    "Created"
+                },
+                {
+                    Foundations.Content.Constants.Fields.UpdatedOn,
+                    "Updated"
+                },
+                {
+                    Foundations.Content.Constants.Fields.Replies,
+                    "Replies"
+                },
+                {
+                    Foundations.Content.Constants.Fields.Quotes,
+                    "Quotes"
+                },
+                {
+                    Foundations.Content.Constants.Fields.TotalVotes,
+                    "Total Votes"
+                },
+            };
+        }
+        public Dictionary<string, string> GetFilterSortOrderOptions()
+        {
+            return new Dictionary<string, string>()
+            {
+                {
+                    "Asc",
+                    "Asc"
+                },
+                {
+                    "Desc",
+                    "Desc"
+                },
+            };
+        }
+
+        public Elastic.Clients.Elasticsearch.SortOrder GetSortOrderField(List<QueryFilter>? Filters)
+        {
+            var sortField = Filters.FirstOrDefault(x => x.Name == Constants.Filters.SortOrder);
+            if (sortField == null)
+            {
+                return Elastic.Clients.Elasticsearch.SortOrder.Desc;
+            }
+            var val = sortField.Value?.ToString();
+            if (string.IsNullOrEmpty(val)) return Elastic.Clients.Elasticsearch.SortOrder.Desc; 
+            if (val == "Asc") return Elastic.Clients.Elasticsearch.SortOrder.Asc;
+            return Elastic.Clients.Elasticsearch.SortOrder.Desc;
+        }
+        public string? GetSortField(List<QueryFilter>? Filters)
+        {
+            var sortField = Filters.FirstOrDefault(x => x.Name == Constants.Filters.Sort);
+            if(sortField == null)
+            {
+                return null;
+            }
+            var val = sortField.Value?.ToString();
+            if (string.IsNullOrEmpty(val)) return null;
+            var option = GetFilterSortOptions().FirstOrDefault(x => x.Value == val);
+            return option.Key;
         }
 
         public List<NavigationItem> GetChannelsDropdown(ContentChannelDocument item)

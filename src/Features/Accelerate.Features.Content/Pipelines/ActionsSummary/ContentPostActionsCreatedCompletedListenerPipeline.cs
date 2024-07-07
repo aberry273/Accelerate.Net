@@ -28,16 +28,19 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         IEntityService<ContentPostActivityEntity> _entityActivitiesService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticService;
         IEntityService<ContentPostActionsSummaryEntity> _entityService;
+        IElasticService<ContentPostDocument> _elasticPostService;
         public ContentPostActionsCreatedCompletedListenerPipeline(
             IEntityService<ContentPostActionsSummaryEntity> entityService, 
             IEntityService<ContentPostActionsEntity> entityActionsService,
             IEntityService<ContentPostActivityEntity> entityActivitiesService,
             IElasticService<ContentPostActionsSummaryDocument> elasticService,
+            IElasticService<ContentPostDocument> elasticPostService,
             IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub)
         {
             _entityService = entityService;
             _entityActionsService = entityActionsService;
             _entityActivitiesService = entityActivitiesService;
+            _elasticPostService = elasticPostService;
             _elasticService = elasticService;
             _messageHub = messageHub;
 
@@ -85,6 +88,12 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                 await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Updated", DataRequestCompleteType.Updated);
             }
             //do stuff
+            var postUpdate = new ContentPostDocument()
+            {
+                ActionsTotals = doc
+            };
+            var result = await _elasticPostService.UpdateDocument(postUpdate, args.Value.ContentPostId.ToString());
+
 
         }
     }

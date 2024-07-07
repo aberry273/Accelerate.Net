@@ -66,8 +66,10 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPost([FromBody] RequestQuery query, [FromRoute] Guid postId)
         {
+            var sortBy = _contentService.GetSortField(query.Filters);
+            var sortOrder = _contentService.GetSortOrderField(query.Filters);
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPost(query, postId);
+            var result = await _searchService.SearchPost(query, postId, sortBy, sortOrder);
             return Ok(result);
         }
         [Route("Posts/{userId}")]
@@ -90,8 +92,10 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPostReplies([FromBody] RequestQuery query)
         {
+            var sortBy = _contentService.GetSortField(query.Filters);
+            var sortOrder = _contentService.GetSortOrderField(query.Filters);
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPostReplies(query);
+            var result = await _searchService.SearchPostReplies(query, sortBy, sortOrder);
             return Ok(result);
         }
         [Route("Posts")]

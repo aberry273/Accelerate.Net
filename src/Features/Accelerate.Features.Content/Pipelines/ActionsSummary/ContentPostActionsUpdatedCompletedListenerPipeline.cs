@@ -28,23 +28,26 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         IEntityService<ContentPostActivityEntity> _entityActivitiesService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticService;
         IEntityService<ContentPostActionsSummaryEntity> _entityService;
+        IElasticService<ContentPostDocument> _elasticPostService;
         public ContentPostActionsUpdatedCompletedListenerPipeline(
             IEntityService<ContentPostActionsSummaryEntity> entityService, 
             IEntityService<ContentPostActionsEntity> entityActionsService,
             IEntityService<ContentPostActivityEntity> entityActivitiesService,
             IElasticService<ContentPostActionsSummaryDocument> elasticService,
+            IElasticService<ContentPostDocument> elasticPostService,
             IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub)
         {
             _entityService = entityService;
             _entityActionsService = entityActionsService;
             _entityActivitiesService = entityActivitiesService;
             _elasticService = elasticService;
+            _elasticPostService = elasticPostService;
             _messageHub = messageHub;
 
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
-                UpdateIndex
+                UpdateIndex,
             };
         }
 
@@ -80,6 +83,28 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                 await _elasticService.UpdateDocument(doc, doc.Id.ToString());
                 await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Updated", DataRequestCompleteType.Updated);
             }
+            //do stuff
+
+            var postUpdate = new ContentPostDocument()
+            {
+                ActionsTotals = doc
+            };
+            var result = await _elasticPostService.UpdateDocument(postUpdate, args.Value.ContentPostId.ToString());
+
+            //await UpdatePostIndex(args, doc);
+        }
+        public async Task UpdatePostIndex(IPipelineArgs<ContentPostActionsEntity> args, ContentPostActionsSummaryDocument summary)
+        {
+            var result = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
+            if (result.Source == null) return;
+            var post = result.Source;
+
+            var doc = new ContentPostDocument()
+            {
+                ActionsTotals = summary
+            };
+            post.ActionsTotals = summary;
+            await _elasticPostService.UpdateDocument(doc, args.Value.ContentPostId.ToString());
             //do stuff
 
         }

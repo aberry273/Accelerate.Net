@@ -224,7 +224,7 @@ export function footer(data) {
                         -->
                         <!--Vote-->
                         <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
-                          <strong><sup class="noselect" x-text="action.votes || 0"></sup></strong>
+                          <strong><sup class="noselect" :class="(!userId || userId == selectedPost.userId) ? 'muted' : ''" x-text="action.votes || 0"></sup></strong>
                         <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
                    
                         <!--Quotes-->

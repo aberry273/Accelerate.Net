@@ -17,9 +17,9 @@ namespace Accelerate.Foundations.Content.Services
     {
         Task<List<ContentChannelDocument>> SearchChannels(RequestQuery Query);
         Task<ContentSearchResults> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10);
-        Task<ContentSearchResults> SearchPosts(RequestQuery Query);
-        Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId);
-        Task<ContentSearchResults> SearchPostReplies(RequestQuery Query);
+        Task<ContentSearchResults> SearchPosts(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
+        Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
+        Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
         Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);
@@ -28,7 +28,7 @@ namespace Accelerate.Foundations.Content.Services
         QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query);
         QueryDescriptor<ContentPostDocument> BuildAscendantsSearchQuery(ContentPostDocument item);
         QueryDescriptor<ContentPostDocument> BuildSearchQuery(RequestQuery Query);
-        Query CreateTerm(QueryFilter filter);
+        Query? CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
         Task<DeleteIndexResponse> DeleteIndex();
         RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId);

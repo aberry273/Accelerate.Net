@@ -52,7 +52,7 @@ nav.floating.bottom {
     scroll-behavior: revert;
 }
 .reply-padding {
-    min-height: 1000px;
+    min-height: 500px;
 }
 
 .show {
@@ -211,8 +211,12 @@ i:disabled {
     margin-bottom: calc(var(--pico-spacing)* 0.5);
 }
 
-input, select, textarea {
-    border:none;
+details.dropdown summary + ul li a.selected {
+    font-weight: bold;
+}
+
+input:is([type=submit],[type=button],[type=reset]), select, textarea {
+    border: none;
 } 
 
 details.dropdown summary:not([role]) {
@@ -374,6 +378,8 @@ details [role=button].small {
 }
 details.dropdown ul {
     display: grid;
+}
+details.dropdown ul.center {
     align-items: center;
     text-align: center;
 }
@@ -990,7 +996,6 @@ input[name="Thread"] {
     margin: 0;
     border: none;
     padding: 4px;
-    ;
     background: none;
     box-shadow: none;
     font-size: 1rem;

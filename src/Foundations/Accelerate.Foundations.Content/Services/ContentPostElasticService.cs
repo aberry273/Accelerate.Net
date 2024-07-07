@@ -149,7 +149,7 @@ namespace Accelerate.Foundations.Content.Services
             model.Posts = results.Documents.ToList();
             return model;
         }
-        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, QueryDescriptor<ContentPostDocument> elasticQuery)
+        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, QueryDescriptor<ContentPostDocument> elasticQuery, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             //TODO: remove
             Query.ItemsPerPage = 100;
@@ -159,7 +159,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * Query.Page;
 
             var model = new ContentSearchResults();
-            var results = await Search(elasticQuery, skip, take, Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder.Desc);
+            var results = await Search(elasticQuery, skip, take, sortField ?? Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, sortOrder);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
                 return model;
@@ -181,22 +181,22 @@ namespace Accelerate.Foundations.Content.Services
             return model;
         }
          
-        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query)
+        public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             var elasticQuery = BuildSearchQuery(Query);
-            return await SearchPosts(Query, elasticQuery);
+            return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
-        public async Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId)
+        public async Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             Query.Page = 0;
             Query.ItemsPerPage = 1;
             var elasticQuery = BuildSearchPostQuery(Query, postId);
-            return await SearchPosts(Query, elasticQuery);
+            return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
-        public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query)
+        public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             var elasticQuery = BuildSearchRepliesQuery(Query);
-            return await SearchPosts(Query, elasticQuery);
+            return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
         private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
         public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId)

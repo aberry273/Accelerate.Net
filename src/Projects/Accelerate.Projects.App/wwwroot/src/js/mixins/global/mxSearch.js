@@ -28,8 +28,13 @@ export default function (data) {
                     name: key,
                     //Equals, NotEquals, Null, NotNull, GreaterThan, LessThan
                     Operator: 'Equals',
-                    Values: data[key],
                     Condition: 'Filter',
+                }
+                if (Array.isArray(data[key])) {
+                    filter.Values = data[key];
+                }
+                else {
+                    filter.Value = data[key];
                 }
                 filters.push(filter)
             }

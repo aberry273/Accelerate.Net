@@ -26,15 +26,18 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> _messageHub;
         IEntityService<ContentPostQuoteEntity> _entityQuoteService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticService;
+        IElasticService<ContentPostDocument> _elasticPostService;
         IEntityService<ContentPostActionsSummaryEntity> _entityService;
         public ContentPostQuotesCreatedCompletedListenerPipeline(
             IEntityService<ContentPostActionsSummaryEntity> entityService, 
             IEntityService<ContentPostQuoteEntity> entityQuoteService,
+            IElasticService<ContentPostDocument> elasticPostService,
             IElasticService<ContentPostActionsSummaryDocument> elasticService,
             IHubContext<BaseHub<ContentPostActionsSummaryDocument>, IBaseHubClient<WebsocketMessage<ContentPostActionsSummaryDocument>>> messageHub)
         {
             _entityService = entityService;
             _entityQuoteService = entityQuoteService;
+            _elasticPostService = elasticPostService;
             _elasticService = elasticService;
             _messageHub = messageHub;
 
@@ -69,11 +72,11 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             }
 
             var response = await _elasticService.GetDocument<ContentPostActionsSummaryDocument>(entity.Id.ToString());
-            var doc = response.Source;
-            var newDoc = doc == null;
+            var summary = response.Source;
+            var newDoc = summary == null;
             if (newDoc)
             {
-                doc = new ContentPostActionsSummaryDocument()
+                summary = new ContentPostActionsSummaryDocument()
                 {
                     Id = entity.Id,
                     ContentPostId = args.Value.QuotedContentPostId,
@@ -81,19 +84,24 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                 };
             }
 
-            doc.Quotes = _entityQuoteService.Count(x => x.QuotedContentPostId == args.Value.QuotedContentPostId);
+            summary.Quotes = _entityQuoteService.Count(x => x.QuotedContentPostId == args.Value.QuotedContentPostId);
 
             if (newDoc)
             {
-                await _elasticService.Index(doc);
-                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Created", DataRequestCompleteType.Created);
+                await _elasticService.Index(summary);
+                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, summary, "Created", DataRequestCompleteType.Created);
             }
             else
             {
-                await _elasticService.UpdateDocument(doc, doc.Id.ToString());
-                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Updated", DataRequestCompleteType.Updated);
+                await _elasticService.UpdateDocument(summary, summary.Id.ToString());
+                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, summary, "Updated", DataRequestCompleteType.Updated);
             }
             //do stuff
+            var post = new ContentPostDocument()
+            {
+                ActionsTotals = summary
+            };
+            await _elasticPostService.UpdateDocument<ContentPostDocument>(post, args.Value.ContentPostId.ToString());
         }
     }
 }

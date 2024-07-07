@@ -55,7 +55,12 @@ export default function (data) {
         },
         select(val, filter) {
             filter.open = false;
-            this.state[filter.name] = val;
+            if (this.state[filter.name] != val) {
+                this.state[filter.name] = val;
+            }
+            else {
+                this.state[filter.name] = null;
+            }
             this.emitChange()
         },
         emitChange() {
@@ -76,50 +81,59 @@ export default function (data) {
           <!--Feed-->
           <nav>
             <!--Filters-->
-            <ul style="margin-left: 0px;">
+            <ul style="margin-left: 0px; text-align:left;">
               <li x-show="header">
                 <strong x-text="header"></strong>
               </li>
               <template x-for="filter in filters">
-                <li> 
+                <li>
+                    <!--Checkbox-->
                     <details class="dropdown" x-show="filter.type == 'Checkbox'">
                         <summary class="outline flat" x-text="filter.name"></summary>
-                        <!--Checkbox-->
                         <ul>
-                        <template x-for="val in filter.values">
-                            <li>
-                            <label>
-                                <input type="checkbox" :checked="isSelectedMany(val, filter.name)" name="solid" 
-                                @click="selectMany(val, filter.name)" />
-                                <span x-text="val"></span>
-                            </label>
-                            </li>
-                        </template>
+                            <template x-for="val in filter.values">
+                                <li>
+                                    <label>
+                                        <input type="checkbox" :checked="isSelectedMany(val, filter.name)" name="solid" 
+                                        @click="selectMany(val, filter.name)"></input>
+                                        <span x-text="val"></span>
+                                    </label>
+                                </li>
+                            </template>
                         </ul> 
                     </details> 
-                  <!--Radio-->
-                    <details class="dropdown" x-show="filter.type == 'Radio'">
+                    <!--Radio-->
+                    <details class="dropdown slate" x-show="filter.type == 'Radio'">
                       <summary class="outline flat" x-text="filter.name"></summary>
-                      <ul>
+                      <ul dir="ltr"> 
                         <template x-for="val in filter.values">
                           <li>
                             <label>
-                              <input type="radio" :checked="isSelectedMany(val, filter.name)" name="solid"
-                                @click="selectMany(val, filter.name)" />
+                              <input type="radio" :checked="isSelected(val, filter.name)" :name="filter.name"
+                                @click="select(val, filter)" ></input>
                               <span x-text="val"></span>
                             </label>
                           </li>
                         </template>
                       </ul>
                     </details>
+                    <!--Select-->
                     <details class="dropdown" x-show="filter.type == 'Input' || filter.type == 'Select'">
-                        <summary class="outline flat" x-text="filter.name"></summary>
-                        <!--No type-->
+                        <summary class="outline flat">
+                            <span x-show="!state[filter.name]" x-text="filter.name"></span>
+                            <span x-show="state[filter.name]" >
+                                <sup style="position: absolute; top: 0.5em;" x-text="filter.name"></sup>
+                                <sub style="padding-top: 12px;" x-text="state[filter.name]"></sub>
+                            </span>
+                        </summary>
+                        <!--No type--> 
                         <ul>
-                        <template x-for="val in filter.values">
-                            <li><a href="#" :selected="isSelectedMany(val, filter.name)"
-                            @click="selectMany(val, filter.name)" x-text="val"></a></li>
-                        </template>
+                            <template x-for="val in filter.values">
+                                <li >
+                                    <a href="javascript:;" :class="isSelected(val, filter.name) ? 'selected' : ''"
+                                        @click="select(val, filter)" x-text="val"></a>
+                                </li>
+                            </template>
                         </ul>
                     </details>
                 </li>

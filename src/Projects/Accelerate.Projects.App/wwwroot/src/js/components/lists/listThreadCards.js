@@ -62,7 +62,7 @@ export default function (data) {
         hasFiltersApplied(filters) {
             const keys = Object.keys(filters);
             for (let i = 0; i < keys.length; i++) {
-                if (filters[keys[i]].length > 0) {
+                if (filters[keys[i]] && filters[keys[i]].length > 0) {
                     return true;
                 }
             }

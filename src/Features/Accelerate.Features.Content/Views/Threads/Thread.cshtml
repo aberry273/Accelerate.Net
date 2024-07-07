@@ -19,9 +19,7 @@
     setScrollPosition() {
         this.$nextTick(() => {
             const el = document.getElementById('@Model.Item.ThreadId');
-            console.log('@Model.Item.ThreadId');
             const headerOffset = 75;
-            console.log(el);
             const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
             window.scrollTo({
                 top: y,

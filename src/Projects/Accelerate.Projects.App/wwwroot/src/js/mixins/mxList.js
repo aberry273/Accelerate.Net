@@ -14,7 +14,7 @@ export default function (data){
         get mxModal_Test() { return true },
         // METHODS
         _mxList_GetFilters(filters) {
-            let query = this.presetFilters;
+            let query = { ...this.presetFilters }
             const filterKeys = Object.keys(filters);
             for (var i = 0; i < filterKeys.length; i++) {
                 const key = filterKeys[i];

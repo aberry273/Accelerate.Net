@@ -75,11 +75,11 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             }
 
             var response = await _elasticService.GetDocument<ContentPostActionsSummaryDocument>(entity.Id.ToString());
-            var doc = response.Source;
-            var newDoc = doc == null;
+            var summary = response.Source;
+            var newDoc = summary == null;
             if (newDoc)
             {
-                doc = new ContentPostActionsSummaryDocument()
+                summary = new ContentPostActionsSummaryDocument()
                 {
                     Id = entity.Id,
                     ContentPostId = args.Value.ParentId.GetValueOrDefault(),
@@ -87,28 +87,32 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
                 };
             }
 
-            doc.Replies = _entityParentService.Count(x => x.ParentId == args.Value.ParentId);
+            summary.Replies = _entityParentService.Count(x => x.ParentId == args.Value.ParentId);
 
             if (newDoc)
             {
-                await _elasticService.Index(doc);
-                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Created", DataRequestCompleteType.Created);
+                await _elasticService.Index(summary);
+                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, summary, "Created", DataRequestCompleteType.Created);
             }
             else
             {
-                await _elasticService.UpdateDocument(doc, doc.Id.ToString());
-                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, doc, "Updated", DataRequestCompleteType.Updated);
+                await _elasticService.UpdateDocument(summary, summary.Id.ToString());
+                await ContentPostActionsSummaryUtilities.SendWebsocketActionsSummaryUpdate(_messageHub, summary, "Updated", DataRequestCompleteType.Updated);
             }
             //do stuff
-
+            var post = new ContentPostDocument()
+            {
+                ActionsTotals = summary
+            };
+            await _elasticPostService.UpdateDocument<ContentPostDocument>(post, args.Value.ContentPostId.ToString());
         }
 
         /// <summary>
         /// Update the content post index to include the positive review if available
         /// </summary>
         /// <param name="args"></param>
-        /// <returns></returns>
-        public async Task UpdatePostReviewIndex(IPipelineArgs<ContentPostParentEntity> args)
+        /// <returns></returns>P
+        public async Task UpdateostReviewIndex(IPipelineArgs<ContentPostParentEntity> args)
         {
             var action = await GetUserAction(args);
 
@@ -123,19 +127,10 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             {
                 Id = args.Value.ContentPostId
             };
-            /*
-            var post = await this.GetDocument(args.Value.ContentPostId);
-            if(post == null)
-            {
-                post = new ContentPostDocument();
-            }
-            */
-            if(action.Agree.GetValueOrDefault())
-            {
+            if(action.Agree.GetValueOrDefault()) {
                 post.ParentVote = "Agree";
             }
-            if(action.Disagree.GetValueOrDefault())
-            {
+            if(action.Disagree.GetValueOrDefault()) {
                 post.ParentVote = "Disagree";
             }
             var response = await _elasticPostService.UpdateDocument<ContentPostDocument>(post, args.Value.ContentPostId.ToString());

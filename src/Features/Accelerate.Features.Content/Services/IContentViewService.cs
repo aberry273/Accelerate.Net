@@ -18,8 +18,9 @@ namespace Accelerate.Features.Content.Services
         ChannelsPage CreateAnonymousChannelsPage();
         string GetFilterKey(string key);
         List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters);
-
-         public AjaxForm CreateChannelForm(AccountUser user);
+        string? GetSortField(List<QueryFilter>? Filters);
+        Elastic.Clients.Elasticsearch.SortOrder GetSortOrderField(List<QueryFilter>? Filters);
+        public AjaxForm CreateChannelForm(AccountUser user);
         public ModalForm CreateModalChannelForm(AccountUser user);
         public ModalForm CreateModalEditReplyForm(AccountUser user);
         public AjaxForm CreateFormEditReply(AccountUser user);
