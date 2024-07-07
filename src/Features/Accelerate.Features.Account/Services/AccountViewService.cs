@@ -62,7 +62,9 @@ namespace Accelerate.Features.Account.Services
             {
                 GetPageLink(nameof(AccountController.Profile)),
                 GetPageLink(nameof(AccountController.Posts)),
+                GetPageLink(nameof(AccountController.Mentions)),
                 GetPageLink(nameof(AccountController.Media)),
+                GetPageLink(nameof(AccountController.Notifications)),
                 //GetPageLink(nameof(AccountController.Settings)),
             };
             return viewModel;

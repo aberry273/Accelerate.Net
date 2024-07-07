@@ -154,6 +154,38 @@ namespace Accelerate.Features.Account.Controllers
             return View(viewModel);
         }
         #endregion
+        #region Notifications
+        [HttpGet]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Notifications(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            var viewModel = _accountViewService.GetManagePage(user);
+            viewModel.ActionUrl = "/api/contentpostactivity";
+            viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
+            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
+            return View(viewModel);
+        }
+        #endregion
+        #region Mentions
+        [HttpGet]
+        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> Mentions(string returnUrl = null)
+        {
+            var user = await GetUserWithProfile(this.User);
+            if (user == null) return RedirectToAction(nameof(Login));
+
+            var viewModel = _accountViewService.GetManagePage(user);
+            viewModel.ActionUrl = "/api/contentpostmentions";
+            viewModel.SearchUrl = $"/api/contentsearch/mentions/{user.Id}";
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
+            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
+            return View(viewModel);
+        }
+        #endregion
         #region Media
         public RequestQuery<MediaBlobDocument> CreateMediasAggregateQuery()
         {
