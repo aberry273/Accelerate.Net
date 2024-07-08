@@ -201,6 +201,11 @@ namespace Accelerate.Foundations.Common.Services
                         },
                         new NavigationItem()
                         {
+                            Href = Foundations.Common.Constants.Paths.NotificationsPath,
+                            Text = Foundations.Common.Constants.Paths.NotificationsLabel,
+                        },
+                        new NavigationItem()
+                        {
                             Href = Foundations.Common.Constants.Paths.LogoutPath,
                             Text = Foundations.Common.Constants.Paths.LogoutLabel,
                         },

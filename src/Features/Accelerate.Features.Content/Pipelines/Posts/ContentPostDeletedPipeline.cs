@@ -49,7 +49,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 Type = ContentPostActivityTypes.Deleted,
                 UserId = args.Value.UserId,
-                Message = "Post deleted!"
+                Message = "Post deleted"
             };
             await _pipelineActivityService.Create(entity);
         }

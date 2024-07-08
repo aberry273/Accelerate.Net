@@ -23,6 +23,7 @@ namespace Accelerate.Foundations.Content
             public const string PostIndexName = "PostIndexName";
             public const string ChannelIndexName = "ChannelIndexName";
             public const string ActionsIndexName = "ActionsIndexName";
+            public const string ActivitiesIndexName = "ActivitiesIndexName";
 
             public const string LocalDatabaseKey = "LocalContentContext";
             public const string DatabaseKey = "ContentContext";

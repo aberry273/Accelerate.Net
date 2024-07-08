@@ -2,6 +2,7 @@
 using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.Database.Services;
 using Azure;
+using Accelerate.Foundations.Common.Models.UI.Components;
 using Microsoft.AspNetCore.Mvc;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -16,6 +17,23 @@ namespace Accelerate.Foundations.Common.Controllers
         public BaseApiController(IEntityService<T> service)
         {
             _service = service;
+        }
+
+        [HttpPost("query")]
+        public virtual async Task<IActionResult> Query([FromBody] QueryRequestModel<T> request)
+        {
+            try
+            {
+                int take = request.ItemsPerPage > 0 ? request.ItemsPerPage ?? 10 : 10;
+                if (take > 100) take = 100;
+                int skip = take * request.CurrentPage;
+                return Ok(_service.Find(x => true, skip, take));
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
         }
 
         [HttpGet]

@@ -10,12 +10,14 @@ using Microsoft.Extensions.Options;
 
 namespace Accelerate.Foundations.Content.Services
 {
-    public class ContentActivityElasticService : ElasticService<ContentPostActivityDocument>
+    public class ContentActivityElasticService : ElasticService<ContentPostActivityDocument>, IContentActivityElasticService
     {
 
-        public ContentActivityElasticService(IOptions<ElasticConfiguration> options) : base(options)
+        public ContentActivityElasticService(
+            IOptions<ElasticConfiguration> options,
+            IOptions<ContentConfiguration> config) : base(options)
         {
-            this._indexName = "contentpostAction_index";
+            this._indexName = config.Value.ActivitiesIndexName;
         }
         public override async Task<SearchResponse<ContentPostActivityDocument>> Find(RequestQuery<ContentPostActivityDocument> query)
         {
@@ -42,6 +44,29 @@ namespace Accelerate.Foundations.Content.Services
             descriptor.MatchAll();
           
             return descriptor;
+        }
+
+        public QueryDescriptor<ContentPostActivityDocument> BuildUserSearchQuery(Guid userId)
+        {
+            var Query = new RequestQuery();
+
+            Query.Filters.Add(Filter(Constants.Fields.UserId, ElasticCondition.Filter, userId));
+
+            return this.CreateQuery(Query);
+        }
+
+        public async Task<SearchResponse<ContentPostActivityDocument>> SearchUserActivities(Guid userId, int page = 0, int itemsPerPage = 10)
+        {
+            var elasticQuery = BuildUserSearchQuery(userId);
+            //TODO: remove
+
+            int take = itemsPerPage > 0 ? itemsPerPage : ItemsPerPage;
+            if (take > MaxQueryable) take = MaxQueryable;
+            int skip = take * page;
+
+            var model = new ContentPostActivityDocument();
+            var results = await Search(elasticQuery, skip, take);
+            return results;
         }
     }
 }

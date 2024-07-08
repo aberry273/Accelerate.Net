@@ -80,7 +80,7 @@ namespace Accelerate.Features.Content.Pipelines.Parents
             {
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
-                Message = "Someone replies to your post!",
+                Message = "Someone replied to your post",
                 Url = $"/Threads/{args.Value.ContentPostId}"
             };
             await _pipelineActivityService.Create(entity);

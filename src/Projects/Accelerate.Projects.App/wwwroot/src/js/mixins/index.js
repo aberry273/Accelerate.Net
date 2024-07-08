@@ -13,6 +13,7 @@ import mxAlert from './mxAlert.js'
 import mxFetch from './global/mxFetch.js'
 import mxEvents from './global/mxEvents.js'
 import mxSearch from './global/mxSearch.js'
+import mxDate from './global/mxDate.js'
 
 export {
     // Components
@@ -30,4 +31,5 @@ export {
     mxFetch,
     mxEvents,
     mxSearch,
+    mxDate
 }

@@ -52,7 +52,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 Type = ContentPostActivityTypes.Updated,
                 UserId = args.Value.UserId,
-                Message = "Post updated!"
+                Message = "Post updated"
             };
             await _pipelineActivityService.Create(entity);
         }

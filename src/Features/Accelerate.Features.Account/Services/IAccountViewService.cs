@@ -2,6 +2,7 @@
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Media.Models.Data;
 using Elastic.Clients.Elasticsearch;
 
@@ -9,6 +10,8 @@ namespace Accelerate.Features.Account.Services
 {
     public interface IAccountViewService
     {
+        ManagePage GetMentionsPage(AccountUser user);
+        ManagePage GetNotificationsPage(AccountUser user, IEnumerable<ContentPostActivityEntity> activitiesResponse, int totalActivities);
         ManagePage GetManagePage(AccountUser user);
         Task<AccountFormPage> GetLoginPage(string? username);
         AccountFormPage GetRegisterPage(string? username, string? email);

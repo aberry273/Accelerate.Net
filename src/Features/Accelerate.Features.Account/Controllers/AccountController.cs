@@ -31,6 +31,7 @@ using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Common.Extensions;
 using Twilio.TwiML.Messaging;
 using Microsoft.AspNetCore.Authentication.Google;
+using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -45,6 +46,8 @@ namespace Accelerate.Features.Account.Controllers
         IContentPostElasticService _contentElasticSearchService;
         private IEmailSender<AccountUser> _emailSender;
         private IMetaContentService _contentService;
+        IContentActivityElasticService _contentActivityElasticService;
+        IEntityService<ContentPostActivityEntity> _postActivityEntityService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<MediaBlobDocument> _mediaSearchService;
         private IEntityService<AccountProfile> _profileService;
@@ -56,6 +59,8 @@ namespace Accelerate.Features.Account.Controllers
             IAccountViewService accountViewService,
             IEntityService<AccountProfile> profileService,
             IContentPostElasticService contentElasticSearchService,
+            IContentActivityElasticService contentActivityElasticService,
+            IEntityService<ContentPostActivityEntity> postActivityEntityService,
             IElasticService<ContentPostDocument> postSearchService,
             IElasticService<MediaBlobDocument> mediaSearchService,
             Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
@@ -70,6 +75,8 @@ namespace Accelerate.Features.Account.Controllers
             _publishEndpoint = publishEndpoint;
             _searchService = searchService;
             _contentElasticSearchService = contentElasticSearchService;
+            _contentActivityElasticService = contentActivityElasticService;
+            _postActivityEntityService = postActivityEntityService;
             _postSearchService = postSearchService;
             _mediaSearchService = mediaSearchService;
             _accountViewService = accountViewService;
@@ -162,7 +169,10 @@ namespace Accelerate.Features.Account.Controllers
             var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction(nameof(Login));
 
-            var viewModel = _accountViewService.GetManagePage(user);
+            var totalActivities = _postActivityEntityService.Count(x => x.UserId == user.Id);
+            var activities = _postActivityEntityService.Find(x => x.UserId == user.Id).ToList();
+
+            var viewModel = _accountViewService.GetNotificationsPage(user, activities, totalActivities);
             viewModel.ActionUrl = "/api/contentpostactivity";
             viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
@@ -178,7 +188,7 @@ namespace Accelerate.Features.Account.Controllers
             var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction(nameof(Login));
 
-            var viewModel = _accountViewService.GetManagePage(user);
+            var viewModel = _accountViewService.GetMentionsPage(user);
             viewModel.ActionUrl = "/api/contentpostmentions";
             viewModel.SearchUrl = $"/api/contentsearch/mentions/{user.Id}";
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));

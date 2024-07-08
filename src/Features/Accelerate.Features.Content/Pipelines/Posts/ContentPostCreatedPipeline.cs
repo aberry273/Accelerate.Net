@@ -89,7 +89,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             {
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
-                Message = "Post created!",
+                Message = "Post created",
             };
             await _pipelineActivityService.Create(entity);
         }

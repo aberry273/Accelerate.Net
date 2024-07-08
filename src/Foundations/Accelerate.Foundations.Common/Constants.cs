@@ -18,6 +18,8 @@ namespace Accelerate.Foundations.Common
             public const string ProfileLabel = "Profile";
             public const string PostsPath = "/Account/Posts";
             public const string PostsLabel = "Posts";
+            public const string NotificationsPath = "/Account/Notifications";
+            public const string NotificationsLabel = "Notifications";
             public const string MediaPath = "/Account/Media";
             public const string MediaLabel = "Media";
             public const string LogoutPath = "/Account/Logout";

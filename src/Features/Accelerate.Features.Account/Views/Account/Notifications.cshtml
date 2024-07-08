@@ -2,18 +2,24 @@
 @using System.Linq
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
-@model Accelerate.Features.Account.Models.Views.ManagePage
+@model Accelerate.Features.Account.Models.Views.MentionPage
 @{
     Layout = "/Views/Account/_ManagePageLayout.cshtml";
 }
-
 <section>
-    <div x-data="listCards( {
-        actionUrl: '@Model.ActionUrl',
-        searchUrl: '@Model.SearchUrl',
-        filterEvent: null,
-        userId: '@Model.UserId',
-        actionEvent: 'action:post',
-        itemEvent: $store.wssContentPosts.getMessageEvent(),
+    <div x-data="aclTable( {
+            actionUrl: '@Model.ActionUrl',
+            searchUrl: '@Model.SearchUrl',
+            filterEvent: null,
+            userId: '@Model.UserId',
+            actionEvent: 'action:post',
+            itemEvent: $store.wssContentPosts.getMessageEvent(),
+
+
+            postbackUrl: '@Model.Table.PostbackUrl',
+            table: @JsonSerializerHelper.SerializeObject(Model.Table),
+            itemsPerPage: @Model.Table.ItemsPerPage,
+            pages: @Model.Table.Pages,
+            currentPage: @Model.Table.CurrentPage,
         })">
 </section

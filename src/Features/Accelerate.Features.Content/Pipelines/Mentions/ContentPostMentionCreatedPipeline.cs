@@ -78,7 +78,7 @@ namespace Accelerate.Features.Content.Pipelines.Mentions
             {
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
-                Message = "You were mentioned in a post!",
+                Message = "You were mentioned in a post",
                 Url = $"/Threads/{args.Value.ContentPostId}"
             };
             await _pipelineActivityService.Create(entity);

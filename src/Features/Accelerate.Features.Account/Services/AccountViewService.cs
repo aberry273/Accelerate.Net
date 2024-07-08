@@ -6,14 +6,17 @@ using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
+using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Media.Models.Data;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -41,6 +44,71 @@ namespace Accelerate.Features.Account.Services
             _contentService = contentService;
             _OAuthConfig = options.Value;
         }
+        #region Notifications
+
+        public ManagePage GetNotificationsPage(AccountUser user, IEnumerable<ContentPostActivityEntity> activities, int totalActivities)
+        {
+            var viewModel = new MentionPage(GetManagePage(user));
+            viewModel.Table = this.GetMentionsTable();
+            viewModel.Table.Pages =(totalActivities / activities.Count());
+            viewModel.Table.ItemsPerPage = activities.Count();
+            viewModel.Table.Rows = activities.ToList();
+            viewModel.Table.PostbackUrl = "/api/ContentPostActivity/query";
+            return viewModel;
+        }
+
+        AclTableRow CreateRow(ContentPostActivityEntity activity)
+        {
+            return new AclTableRow()
+            {
+                Values = new List<string>()
+                {
+                    activity.CreatedOn.ToLongDateString(),
+                    activity.SourceId.ToString(),
+                    activity.UserId.ToString()
+                }
+            };
+        }
+
+        #endregion
+        #region Mentions
+
+        public ManagePage GetMentionsPage(AccountUser user)
+        {
+            var viewModel = new MentionPage(GetManagePage(user));
+            viewModel.Table = this.GetMentionsTable();
+            return viewModel;
+        }
+
+        private AjaxAclTable<ContentPostActivityEntity> GetMentionsTable()
+        {
+            var model = new AjaxAclTable<ContentPostActivityEntity>();
+            var headers = new List<AclTableHeader>()
+            {
+                new AclTableHeader()
+                {
+                    Name = "createdOn",
+                    Label = "Date",
+                    Type = AclTableHeaderType.Date
+                },
+                new AclTableHeader()
+                {
+                    Name = "message",
+                    Label = "Message",
+                },
+                new AclTableHeader()
+                {
+                    Name = "url",
+                    Label = "Url",
+                    Data = new { Type = "Icon", Icon = "home" },
+                    Type = AclTableHeaderType.Link
+                }
+            }; 
+            model.Headers = headers;
+            return model;
+        }
+
+        #endregion
         #region Manage
 
         public ManagePage GetManagePage(AccountUser user)
@@ -62,7 +130,7 @@ namespace Accelerate.Features.Account.Services
             {
                 GetPageLink(nameof(AccountController.Profile)),
                 GetPageLink(nameof(AccountController.Posts)),
-                GetPageLink(nameof(AccountController.Mentions)),
+                //GetPageLink(nameof(AccountController.Mentions)),
                 GetPageLink(nameof(AccountController.Media)),
                 GetPageLink(nameof(AccountController.Notifications)),
                 //GetPageLink(nameof(AccountController.Settings)),
