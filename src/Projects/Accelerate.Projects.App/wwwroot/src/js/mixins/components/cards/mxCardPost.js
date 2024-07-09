@@ -146,6 +146,13 @@ export default function (data) {
         _mxCardPost_FormatQuote(input) {
             return `<blockquote>${input}</blockquote>&nbsp;`;
         },
+        _mxCardPost_ReplaceMarkdown(string) {
+            console.log('_mxCardPost_ReplaceMarkdown')
+            var str = string
+                .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>') // bold text
+            console.log(str)
+            return str;
+        },
         _mxCardPost_FormatText(format, text) {
             switch (format.name) {
                 case 'newline':

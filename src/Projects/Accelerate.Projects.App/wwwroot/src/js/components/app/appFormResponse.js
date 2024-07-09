@@ -247,12 +247,19 @@ export default function (data) {
             this._mxForm_SetField(this.fields, field);
         },
         updateReplyField(item) {
+            // Update parentId
             const parentIdField = this._mxForm_GetField(this.fields, 'ParentId');
             if (!parentIdField) return;
 
             parentIdField.value = item.id;
             this._mxForm_SetField(this.fields, parentIdField);
+            // Update parentIds
+            const parentIdsField = this._mxForm_GetField(this.fields, 'ParentIds');
+            if (!parentIdsField) return;
 
+            parentIdsField.value = `${parentIdsField.value},${item.id}`
+            this._mxForm_SetField(this.fields, parentIdsField);
+            // update replyto
             const replyToField = this._mxForm_GetField(this.fields, 'ReplyTo');
             if (!replyToField) return;
 

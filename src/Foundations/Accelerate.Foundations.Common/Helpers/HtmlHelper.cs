@@ -14,6 +14,7 @@ namespace Accelerate.Foundations.Common.Helpers
         {
             // Get the URL specified
             var webGet = new HtmlWeb();
+            webGet.UserAgent = "Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion";
             var document = webGet.Load(url);
             var metaTags = document.DocumentNode.SelectNodes("//meta");
             var metaInfo = new HtmlMetaInformation(url);

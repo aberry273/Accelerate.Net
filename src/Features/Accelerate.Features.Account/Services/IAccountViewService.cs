@@ -19,7 +19,10 @@ namespace Accelerate.Features.Account.Services
         AccountFormPage GetConfirmAccountPage(string? userId);
         AccountFormPage GetResetPasswordPage(string? userId, string? code);
         AccountFormPage GetForgotPasswordConfirmationPage();
-        public List<NavigationFilter> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
-        public List<NavigationFilter> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
+        NavigationFilter CreatePostNavigationFilters(SearchResponse<ContentPostDocument> aggregateResponse);
+        NavigationFilter CreateMediaNavigationFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
+
+        //public List<NavigationFilterItem> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
+        //public List<NavigationFilterItem> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
     }
 }

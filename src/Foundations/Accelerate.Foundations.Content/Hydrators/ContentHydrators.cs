@@ -45,6 +45,16 @@ namespace Accelerate.Foundations.Content.Hydrators
                     Username = "Anonymous"
                 };
         }
+        public static void Hydrate(this ContentPostLabelEntity entity, ContentPostLabelDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.ContentPostId = entity.ContentPostId;
+            document.Label = entity.Label;
+            document.Reason = entity.Reason;
+            document.Id = entity.Id;
+        }
         public static void Hydrate(this ContentPostMentionEntity entity, ContentPostMentionDocument document)
         {
             document.UserId = entity.UserId;

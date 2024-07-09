@@ -92,10 +92,10 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPostReplies([FromBody] RequestQuery query)
         {
-            var sortBy = _contentService.GetSortField(query.Filters);
-            var sortOrder = _contentService.GetSortOrderField(query.Filters);
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPostReplies(query, sortBy, sortOrder);
+            SortOrder sortOrder = SortOrder.Desc;
+            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
+            var result = await _searchService.SearchPostReplies(query, query.Sort, sortOrder);
             return Ok(result);
         }
         [Route("Posts")]
@@ -103,7 +103,9 @@ namespace Accelerate.Features.Content.Controllers.Api
         public async Task<IActionResult> SearchPosts([FromBody] RequestQuery query)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPosts(query);
+            SortOrder sortOrder = SortOrder.Desc;
+            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
+            var result = await _searchService.SearchPosts(query, query.Sort, sortOrder);
             return Ok(result);
         }
         [Route("Posts/Related/{channelId}")]

@@ -17,6 +17,8 @@ namespace Accelerate.Features.Account
         }
         public struct Filters
         {
+            public const string Sort = "Sort";
+            public const string SortOrder = "SortOrder";
             public struct Media
             {
                 public const string Type = "Type";

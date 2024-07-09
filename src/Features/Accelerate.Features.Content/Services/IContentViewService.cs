@@ -26,8 +26,8 @@ namespace Accelerate.Features.Content.Services
         public AjaxForm CreateFormEditReply(AccountUser user);
         public ModalForm CreateModalDeleteReplyForm(AccountUser user);
         public AjaxForm CreateFormDeleteReply(AccountUser user);
-        List<NavigationFilter> CreateSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
-        Dictionary<string, string> GetFilterOptions();
+        List<NavigationFilterItem> CreateSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
+        List<KeyValuePair<string, string>> GetFilterOptions();
         NavigationItem GetChannelLink(ContentChannelDocument x);
     }
 }

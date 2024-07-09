@@ -169,6 +169,7 @@ export default function header(data) {
         }, 
         convertHtmlToEncodedText() {
             let encodedText = this.editor.innerHTML;
+
             for (var i = 0; i < this.elements.length; i++) {
                 encodedText = encodedText.replace(this.elements[i].formatted, this.elements[i].encoded);
             }
@@ -177,15 +178,19 @@ export default function header(data) {
         onPaste(e) {
             e.preventDefault();
             var contentOnBlur = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste text');
+            // replace/strip HTML
             contentOnBlur = contentOnBlur.replace(/(<([^>]+)>)/ig, '');
             document.execCommand('insertText', false, contentOnBlur);
         },
         onKeyup(ev) { 
             this.nodePosition = this.getCaretPosition(ev.target)
             this.contextNode = ev.target;
+            // If Block Quote or Code
+            
             if (ev.key != '@' && ev.key != 'Shift') {
                 this.insert = false;
             }
+
             this.convertHtmlToEncodedText();
         },
         addLinkCard(text) {

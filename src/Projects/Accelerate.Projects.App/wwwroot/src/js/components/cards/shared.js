@@ -132,29 +132,89 @@ export function header(data) {
                     <i x-show="selectedPost.parentVote == 'Agree'" aria-label="Agreed" class="icon noselect muted material-icons">expand_less</i>
                     <i x-show="selectedPost.parentVote == 'Disagree'" aria-label="Disagreed" class="icon noselect muted material-icons">expand_more</i>
 
-                     <!--Show more-->
-                    <template x-if="selectedPost.userId == userId">
-                        <details class="dropdown flat no-chevron">
-                            <summary role="outline">
-                                <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
-                            </summary>
-                            <ul dir="rtl">
-                                <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
-                                <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
+                     <!--Show more--> 
+                    <details class="dropdown flat no-chevron">
+                        <summary role="outline">
+                            <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
+                        </summary>
+                        <ul dir="rtl">
+                            <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
+                            <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
 
-                                <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
-                                <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
-                                <li><a class="click" @click="_mxCardPost_modalAction('edit', selectedPost)">Edit</a></li>
-                                <li><a class="click" @click="_mxCardPost_modalAction('delete', selectedPost)">Delete</a></li>
-                            </ul>
-                        </details>
-                    </template>
+                            <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalAction('label', selectedPost)">Label Post</a></li>
+
+                        </ul>
+                    </details> 
                 </li>
             </ul>
         </nav>
     </header>
     `
 }
+
+export function headerEditable(data) {
+    return `
+    <header class="padded pb-0">
+        <nav>
+            <template x-if="selectedPost.profile != null">
+                <ul class="profile">
+                    <template x-if="selectedPost.profile.image != null && selectedPost.profile.image.length>0">
+                        <li>
+                            <button class="avatar small">
+                                <img
+                                    :src="selectedPost.profile.image+'?w=40'"
+                                />
+                            </button>
+                        </li>
+                    </template>
+                    <aside>
+                        <li class="secondary pa-0" style="padding-top:0px;">
+                            <strong class="pb-0">
+                                <span x-text="selectedPost.profile.username"></span>
+                            </strong>
+                            <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
+                            
+                        </li>
+                    </aside>
+                </ul>
+            </template>
+            <ul>
+                <li>
+                    <i class="material-icons muted noselect" x-show="selectedPost.status == 0">visibility_off</i>
+                    <strong x-show="selectedPost.channelName">
+                        <a class="py-0 primary my-0" style='text-decoration:none' :href="'/channels/'+selectedPost.channelId">
+                            <sup x-text="selectedPost.channelName"></sup>
+                        </a>
+                    </strong>
+                    <i x-show="selectedPost.parentVote == 'Agree'" aria-label="Agreed" class="icon noselect muted material-icons">expand_less</i>
+                    <i x-show="selectedPost.parentVote == 'Disagree'" aria-label="Disagreed" class="icon noselect muted material-icons">expand_more</i>
+
+                     <!--Show more-->
+                    <details class="dropdown flat no-chevron">
+                        <summary role="outline">
+                            <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
+                        </summary>
+                        <ul dir="rtl">
+                            <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
+                            <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
+
+                            <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share Post</a></li>
+                            
+                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalAction('edit', selectedPost)">Edit</a></li>
+                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalAction('delete', selectedPost)">Delete</a></li>
+
+                        </ul>
+                    </details> 
+                </li>
+            </ul>
+        </nav>
+    </header>
+    `
+}
+
 
 export function footer(data) {
     return `
@@ -186,7 +246,10 @@ export function footer(data) {
                         <a class="py-0 secondary my-0" style='text-decoration:none' :href="selectedPost.href">
                             <small>
                                 <small>
+                                    <!--
                                     <span x-text="selectedPost.shortThreadId"></span>
+                                    -->
+                                    Browse
                                 </small>
                             </small>
                         </a>
@@ -218,7 +281,9 @@ export function footer(data) {
                     
                     <div role="group" class="small flat pb-0">
                         <!--React-->
+                        <!--
                         <span style="top:-4px" x-data="aclContentEmoji({ selectIcon: true, selectedIcon: selectedIcon, event: onEmojiEvent })"></span>
+                        -->
                         <!--
                         <strong><sup class="noselect" x-text="action.reactions || 0"></sup></strong>
                         -->
@@ -328,7 +393,10 @@ export function footerQuote(data) {
                             <a class="py-0 secondary my-0" style='text-decoration:none' :href="selectedPost.href">
                                 <small>
                                     <small>
+                                        <!--
                                         <span x-text="item.shortThreadId"></span>
+                                        -->
+                                        Browse
                                     </small>
                                 </small>
                             </a>

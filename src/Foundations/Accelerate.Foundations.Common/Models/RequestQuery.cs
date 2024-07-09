@@ -1,4 +1,6 @@
-﻿namespace Accelerate.Foundations.Common.Models
+﻿
+
+namespace Accelerate.Foundations.Common.Models
 {
     public enum ElasticCondition
     {
@@ -51,5 +53,7 @@
         public List<QueryFilter>? Filters { get; set; } = new List<QueryFilter>();
         public List<string>? Aggregates { get; set; } = new List<string>();
         public string? Text { get; set; }
+        public string? Sort { get; set; }
+        public string? SortBy { get; set; }
     }
 }

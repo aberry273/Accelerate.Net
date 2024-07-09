@@ -15,9 +15,9 @@ namespace Accelerate.Features.Content.Models.Views
         public AjaxForm FormCreateReply { get; set; }
         public ModalForm ModalEditChannel { get; set; }
         public ModalForm ModalDeleteChannel { get; set; }
-        public ModalForm ModalEditReply { get; set; }
-        public ModalForm ModalDeleteReply { get; set; }
-        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();
+        //public ModalForm ModalEditReply { get; set; }
+        //public ModalForm ModalDeleteReply { get; set; }
+        public NavigationFilter Filters { get; set; }
         public string FilterEvent { get; set; }
         public string ActionEvent { get; set; }
         public string ActionsApiUrl { get; set; }

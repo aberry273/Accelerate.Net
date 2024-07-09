@@ -52,7 +52,7 @@ nav.floating.bottom {
     scroll-behavior: revert;
 }
 .reply-padding {
-    min-height: 500px;
+    min-height: 200px;
 }
 
 .show {
@@ -695,7 +695,8 @@ article.quote {
     margin: 0px;
     padding: 0 calc(var(--pico-block-spacing-vertical)*0.25);
     box-shadow: none;
-    border: solid 1px #dedede;
+    border: solid 1px var(--pico-blockquote-border-color);
+    background-color: var(--pico-blockquote-border-color);
     border-radius: 8px;
 }
 

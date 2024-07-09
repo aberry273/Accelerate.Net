@@ -157,7 +157,7 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.ActionUrl = "/api/contentpostactivity";
             viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
+            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
             return View(viewModel);
         }
         #endregion
@@ -176,7 +176,7 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.ActionUrl = "/api/contentpostactivity";
             viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
+            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
             return View(viewModel);
         }
         #endregion
@@ -192,7 +192,7 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.ActionUrl = "/api/contentpostmentions";
             viewModel.SearchUrl = $"/api/contentsearch/mentions/{user.Id}";
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostSearchFilters(aggResponse);
+            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
             return View(viewModel);
         }
         #endregion
@@ -221,7 +221,7 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.ActionUrl = "/api/mediablob";
             viewModel.SearchUrl = "/api/mediasearch/blobs";
             var aggResponse = await _mediaSearchService.GetAggregates(this.CreateMediasAggregateQuery());
-            viewModel.Filters = _accountViewService.CreateMediaSearchFilters(aggResponse);
+            viewModel.Filters = _accountViewService.CreateMediaNavigationFilters(aggResponse);
             return View(viewModel);
         }
         #endregion

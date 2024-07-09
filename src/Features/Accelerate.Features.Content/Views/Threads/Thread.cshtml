@@ -64,8 +64,15 @@
         userId: '@Model.UserId',
         searchUrl: '@Model.ParentPostsApiUrl'
     })">
-    </div> 
-    
+    </div>
+
+    <div x-data="cardPostEditable({
+        item: @JsonSerializerHelper.SerializeObject(Model.Item),
+        userId: '@Model.UserId',
+        itemEvent: $store.wssContentPosts.getMessageEvent(),
+        parentId: '@Model.Item.ParentId',
+    })"></div>
+
     <hr id="reply-line" />
 
     @if (Model.IsDeactivated)
@@ -123,6 +130,10 @@
     <!-- Delete post -->
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
+    <!-- Delete post -->
+    <!--
+    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalLabelPost))"></div>
+    -->
     <!-- Share post -->
     <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
 }

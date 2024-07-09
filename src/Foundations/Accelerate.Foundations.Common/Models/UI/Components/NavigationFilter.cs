@@ -10,8 +10,15 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
     {
         Radio, Checkbox, Select
     }
-    public class NavigationFilter
+    public class NavigationFilterValue
     {
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public long? Count { get; set; }
+    }
+    public class NavigationFilterItem
+    {
+        public string Key { get; set; }
         public string Name { get; set; }
         public NavigationFilterType FilterType { get; set; }
         public string Type
@@ -20,8 +27,14 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
             {
                 return Enum.GetName(this.FilterType);
             }
-        }
-        public List<string> Values { get; set; }
+        } 
+        public List<NavigationFilterValue> Values { get; set; }
         public List<string> Selected { get; set; }
+    }
+    public class NavigationFilter
+    {
+        public List<NavigationFilterItem> Filters { get; set; }
+        public NavigationFilterItem Sort { get; set; }
+        public NavigationFilterItem SortBy { get; set; }
     }
 }

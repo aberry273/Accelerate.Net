@@ -28,6 +28,7 @@ using Accelerate.Features.Content.Pipelines.ActionsSummary;
 using Accelerate.Foundations.EventPipelines.Consumers;
 using Accelerate.Features.Content.Pipelines.Mentions;
 using Accelerate.Features.Content.Pipelines.Parents;
+using Accelerate.Features.Content.Pipelines.Labels;
 
 namespace Accelerate.Features.Content
 {
@@ -107,6 +108,9 @@ namespace Accelerate.Features.Content
             // Mentions
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostMentionEntity, ContentPostMentionCreatedPipeline, EmptyUpdatedPipeline<ContentPostMentionEntity>, EmptyDeletedPipeline<ContentPostMentionEntity>>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostMentionEntity>(services);
+            // Mentions
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostLabelEntity, ContentPostLabelCreatedPipeline, EmptyUpdatedPipeline<ContentPostLabelEntity>, EmptyDeletedPipeline<ContentPostLabelEntity>>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostLabelEntity>(services);
 
             // Settings
 

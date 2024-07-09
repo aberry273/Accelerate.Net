@@ -19,7 +19,7 @@ namespace Accelerate.Features.Account.Models.Views
         public ModalForm ModalCreateMedia { get; set; }
         public Guid UserId { get; set; }
         public List<NavigationItem> Tabs { get; set; }
-        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>();
+        public NavigationFilter Filters { get; set; }
         public ManagePage(BasePage model) : base(model)
         {
 

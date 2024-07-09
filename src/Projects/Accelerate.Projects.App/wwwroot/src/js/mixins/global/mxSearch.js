@@ -13,6 +13,16 @@ export default function (data) {
         get mxModal_GetOpen() { return this.mxSearch_Open },
         
         // METHODS
+
+        _mxSearch_GetFilters(filters) {
+            let query = { ...this.presetFilters }
+            const filterKeys = Object.keys(filters);
+            for (var i = 0; i < filterKeys.length; i++) {
+                const key = filterKeys[i];
+                query[key] = filters[key];
+            }
+            return query;
+        },
         /// Converts the data object into a list of filters
         _mxSearch_CreateSearchQuery(data, userId, page = 0, itemsPerPage = 1) {
             if (!data) return;

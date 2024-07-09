@@ -91,7 +91,7 @@ namespace Accelerate.Features.Content.Controllers
             }
             */
 
-             var filterFields = _contentViewService.GetFilterOptions().Values.ToList();
+            var filterOptions = _contentViewService.GetFilterOptions();
 
             var filters = new List<QueryFilter>()
             {

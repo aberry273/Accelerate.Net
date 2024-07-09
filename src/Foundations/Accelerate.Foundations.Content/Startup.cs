@@ -38,6 +38,7 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostQuoteEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostMediaEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             
+            services.AddDbContext<BaseContext<ContentPostLabelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostParentEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostChannelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostLinkEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
@@ -56,6 +57,7 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostMediaEntity>, EntityService<ContentPostMediaEntity>>();
             services.AddTransient<IEntityService<ContentPostActionsSummaryEntity>, EntityService<ContentPostActionsSummaryEntity>>();
 
+            services.AddTransient<IEntityService<ContentPostLabelEntity>, EntityService<ContentPostLabelEntity>>();
             services.AddTransient<IEntityService<ContentPostParentEntity>, EntityService<ContentPostParentEntity>>();
             services.AddTransient<IEntityService<ContentPostChannelEntity>, EntityService<ContentPostChannelEntity>>();
             services.AddTransient<IEntityService<ContentPostLinkEntity>, EntityService<ContentPostLinkEntity>>();
@@ -87,6 +89,7 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IElasticService<ContentPostMediaDocument>, ContentPostMediaElasticService>();
             services.AddTransient<IElasticService<ContentPostActionsSummaryDocument>, ContentPostActionsSummaryElasticService>();
             services.AddTransient<IElasticService<ContentPostQuoteDocument>, ContentPostQuoteElasticService>();
+            services.AddTransient<IElasticService<ContentPostLabelDocument>, ContentPostLabelElasticService>();
             //todo: migrate all others to this
             services.AddTransient<IElasticService<ContentPostSettingsDocument>, ContentPostSettingsElasticService>();
             

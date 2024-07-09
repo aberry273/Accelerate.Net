@@ -27,10 +27,11 @@ namespace Accelerate.Features.Content.Models.Views
         public string ParentPostsApiUrl { get; set; }
         public NavigationItem ParentLink { get; set; }
         public NavigationItem ChannelLink { get; set; }
-        public List<NavigationFilter> Filters { get; set; } = new List<NavigationFilter>(); 
+        public NavigationFilter Filters { get; set; } 
         public ContentSubmitForm FormCreateReply { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
+        public ModalForm ModalLabelReply { get; set; }
         public ThreadPage(BasePage model) : base(model)
         {
 

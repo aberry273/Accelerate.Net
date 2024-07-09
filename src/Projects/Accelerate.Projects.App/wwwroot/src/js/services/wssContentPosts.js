@@ -11,6 +11,7 @@ export default function (settings) {
         actions: [],
         actionSummaries: [],
         quotedPosts: [],
+        filters: {},
         //cachedFilters: {},
         // mixins
         ...mxAlert(settings),
@@ -55,10 +56,16 @@ export default function (settings) {
             })
             */
         },
+
         // Custom logic
-        async SearchPosts(filters, searchUrl) {
-            let query = this._mxList_GetFilters(filters);
+        async SearchPosts(filterUpdate, searchUrl) {
+            this.filters = filterUpdate;
+            const filters = filterUpdate != null ? filterUpdate.filters : [];
+            let query = this._mxSearch_GetFilters(filters || []);
             const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
+            postQuery.sort = filterUpdate.sort;
+            postQuery.sortBy = filterUpdate.sortBy;
+
             if (postQuery == null) return;
             return await this._mxSearch_Post(searchUrl || this.queryUrl, postQuery);
         },
@@ -67,14 +74,14 @@ export default function (settings) {
         async Filter(filters) {
             const key = this.CreateFilterKey(filters);
             const result = await this.SearchPosts(filters)
-            this.cachedFilters[key] = result;
+            this.cachedFilters[key] = result;                        
 
             this.items = this.insertOrUpdateItems(this.items, result.posts);
             this.actions = this.insertOrUpdateItems(this.actions, result.actions);
         },
         */
         CreateFilterKey(filters) {
-            let query = this._mxList_GetFilters(filters);
+            let query = this._mxSearch_GetFilters(filters);
             const postQuery = this._mxSearch_CreateSearchQuery(query, this.userId);
             return JSON.stringify(postQuery);
         },

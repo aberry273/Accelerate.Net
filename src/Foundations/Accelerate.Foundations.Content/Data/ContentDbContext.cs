@@ -47,6 +47,7 @@ namespace Accelerator.Foundation.Content.Database
             builder.Entity<ContentPostSettingsEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostTaxonomyEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostActivityEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentPostLabelEntity>().HasKey(c => c.Id);
             /*
             builder.Entity<ContentPostEntity>()
                 .HasMany(e => e.Activities)

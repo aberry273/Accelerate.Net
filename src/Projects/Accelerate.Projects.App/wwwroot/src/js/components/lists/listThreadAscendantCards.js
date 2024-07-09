@@ -31,7 +31,7 @@ export default function (data) {
             this.item = data.item;
             this.results = data.results;
             this.$store.wssContentPosts.setSearchResults(this.results);
-            this.items = this.results.posts;
+            this.items = this.results.posts.filter(x => x.id != this.item.id);
             this.userId = data.userId;
             this.filters = data.filters;
             this.searchUrl = data.searchUrl;
@@ -57,7 +57,6 @@ export default function (data) {
                             parentId: item.id
                         })"></div>
                         <div
-                            x-show="i < items.length-1"
                             :id="i == items.length-2 ? 'parentline' : null"
                             class="line-background" ></div>
                     </div>

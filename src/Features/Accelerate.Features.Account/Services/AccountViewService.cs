@@ -139,7 +139,73 @@ namespace Accelerate.Features.Account.Services
         }
 
 
-        #region Media Filters
+        public List<NavigationFilterValue> GetFilterSortOptions()
+        {
+            return new List<NavigationFilterValue>()
+            {
+                new NavigationFilterValue()
+                {
+                    Key = Foundations.Content.Constants.Fields.CreatedOn,
+                    Name = "Created"
+                },
+                new NavigationFilterValue()
+                {
+                    Key = Foundations.Content.Constants.Fields.UpdatedOn,
+                    Name = "Updated"
+                },
+                new NavigationFilterValue()
+                {
+                    Key = Foundations.Content.Constants.Fields.Replies,
+                    Name = "Replies"
+                },
+                new NavigationFilterValue()
+                {
+                    Key = Foundations.Content.Constants.Fields.Quotes,
+                    Name = "Quotes"
+                },
+                new NavigationFilterValue()
+                {
+                    Key = Foundations.Content.Constants.Fields.TotalVotes,
+                    Name = "Total Votes"
+                },
+            };
+        }
+        public List<NavigationFilterValue> GetFilterSortOrderOptions()
+        {
+            return new List<NavigationFilterValue>()
+            {
+                new NavigationFilterValue()
+                {
+                    Key = "Asc",
+                    Name = "Asc"
+                },
+                new NavigationFilterValue()
+                {
+                    Key = "Desc",
+                    Name = "Desc"
+                },
+            };
+        }
+        #region MediaFilters
+        public NavigationFilter CreateMediaNavigationFilters(SearchResponse<MediaBlobDocument> aggregateResponse)
+        {
+            return new NavigationFilter()
+            {
+                Filters = CreateMediaSearchFilters(aggregateResponse),
+                Sort = new NavigationFilterItem()
+                {
+                    Name = Constants.Filters.Sort,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterSortOptions()
+                },
+                SortBy = new NavigationFilterItem()
+                {
+                    Name = Constants.Filters.SortOrder,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterSortOrderOptions()
+                }
+            };
+        }
         public Dictionary<string, string> GetMediaFilterOptions()
         {
             return new Dictionary<string, string>()
@@ -154,9 +220,9 @@ namespace Accelerate.Features.Account.Services
                 },
             };
         }
-        public List<NavigationFilter> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse)
+        public List<NavigationFilterItem> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse)
         {
-            var filterValues = new Dictionary<string, List<string>>();
+            var filterValues = new Dictionary<string, List<NavigationFilterValue>>();
             if (aggregateResponse.IsValidResponse)
             {
                 var filterOptions = GetMediaFilterOptions();
@@ -164,15 +230,15 @@ namespace Accelerate.Features.Account.Services
             }
             return CreateMediaNavigationFilters(filterValues);
         }
-        private List<NavigationFilter> CreateMediaNavigationFilters(IDictionary<string, List<string>> filters)
+        private List<NavigationFilterItem> CreateMediaNavigationFilters(IDictionary<string, List<NavigationFilterValue>> filters)
         {
-            if (filters == null) filters = new Dictionary<string, List<string>>();
-            var filter = new List<NavigationFilter>();
-
+            if (filters == null) filters = new Dictionary<string, List<NavigationFilterValue>>();
+            var filter = new List<NavigationFilterItem>();
+            //TODO 
             var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Media.Tags));
             if (Actions.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Media.Tags,
                     FilterType = NavigationFilterType.Checkbox,
@@ -182,18 +248,37 @@ namespace Accelerate.Features.Account.Services
             var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Media.Type));
             if (threads.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Media.Type,
                     FilterType = NavigationFilterType.Select,
                     Values = threads
                 });
-            }
+            } 
             return filter;
         }
         #endregion
 
         #region Post Filters
+        public NavigationFilter CreatePostNavigationFilters(SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            return new NavigationFilter()
+            {
+                Filters = CreatePostSearchFilters(aggregateResponse),
+                Sort = new NavigationFilterItem()
+                {
+                    Name = Constants.Filters.Sort,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterSortOptions()
+                },
+                SortBy = new NavigationFilterItem()
+                {
+                    Name = Constants.Filters.SortOrder,
+                    FilterType = NavigationFilterType.Select,
+                    Values = GetFilterSortOrderOptions()
+                }
+            };
+        }
         public Dictionary<string, string> GetPostFilterOptions()
         {
             return new Dictionary<string, string>()
@@ -213,9 +298,9 @@ namespace Accelerate.Features.Account.Services
             };
         }
         // FILTERS - Posts
-        public List<NavigationFilter> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse)
+        public List<NavigationFilterItem> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var filterValues = new Dictionary<string, List<string>>();
+            var filterValues = new Dictionary<string, List<NavigationFilterValue>>();
             if (aggregateResponse.IsValidResponse)
             {
                 var filterOptions = GetPostFilterOptions();
@@ -223,15 +308,21 @@ namespace Accelerate.Features.Account.Services
             }
             return CreatePostNavigationFilters(filterValues);
         }
-        private List<string> GetValuesFromAggregate(AggregateDictionary aggregates, string key)
+        private List<NavigationFilterValue> GetValuesFromAggregate(AggregateDictionary aggregates, string key)
         {
             var agg = aggregates.FirstOrDefault(x => x.Key == key);
             StringTermsAggregate vals = agg.Value as StringTermsAggregate;
-            if (vals == null || vals.Buckets == null || vals.Buckets.Count == 0) return new List<string>();
+            if (vals == null || vals.Buckets == null || vals.Buckets.Count == 0) return new List<NavigationFilterValue>();
 
-            var results = vals.Buckets.
-                Select(x => x.Key.Value.ToString()).
-                Where(x => !string.IsNullOrEmpty(x)).
+            var results = vals.Buckets
+                .Where(x => !string.IsNullOrEmpty(x.Key.Value.ToString()))
+                .Select(x => new NavigationFilterValue()
+                {
+
+                    Key = x.Key.Value.ToString(),
+                    Name = x.Key.Value.ToString(),
+                    Count = x.DocCount
+                }).
                 ToList();
             return results;
         }
@@ -249,20 +340,20 @@ namespace Accelerate.Features.Account.Services
             if (keyVal.Value == null) return key.ToCamelCase();
             return keyVal.Value?.ToCamelCase();
         }
-        private List<string> GetAggregateValues(IDictionary<string, List<string>> aggFilters, string key)
+        private List<NavigationFilterValue> GetAggregateValues(IDictionary<string, List<NavigationFilterValue>> aggFilters, string key)
         {
-            if (key == null) return new List<string>();
-            return aggFilters.ContainsKey(key) ? aggFilters[key] : new List<string>();
+            if (key == null) return new List<NavigationFilterValue>();
+            return aggFilters.ContainsKey(key) ? aggFilters[key] : new List<NavigationFilterValue>();
         }
-        private List<NavigationFilter> CreatePostNavigationFilters(IDictionary<string, List<string>> filters)
+        private List<NavigationFilterItem> CreatePostNavigationFilters(IDictionary<string, List<NavigationFilterValue>> filters)
         {
-            if (filters == null) filters = new Dictionary<string, List<string>>();
-            var filter = new List<NavigationFilter>();
+            if (filters == null) filters = new Dictionary<string, List<NavigationFilterValue>>();
+            var filter = new List<NavigationFilterItem>();
 
             var Actions = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Actions));
             if (Actions.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Actions,
                     FilterType = NavigationFilterType.Select,
@@ -272,17 +363,17 @@ namespace Accelerate.Features.Account.Services
             var threads = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Threads));
             if (threads.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Threads,
                     FilterType = NavigationFilterType.Checkbox,
                     Values = threads
                 });
             }
-            var quotes = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Quotes));
+            var quotes = new List<NavigationFilterValue>();// GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Quotes));
             if (quotes.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Quotes,
                     FilterType = NavigationFilterType.Checkbox,
@@ -290,10 +381,10 @@ namespace Accelerate.Features.Account.Services
                 });
             }
 
-            var tags = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Tags));
+            var tags = new List<NavigationFilterValue>();// GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Tags));
             if (tags.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Tags,
                     FilterType = NavigationFilterType.Checkbox,
@@ -301,10 +392,10 @@ namespace Accelerate.Features.Account.Services
                 });
             }
 
-            var content = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Content));
+            var content = new List<NavigationFilterValue>();//  GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Content));
             if (content.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Content,
                     FilterType = NavigationFilterType.Select,
@@ -312,10 +403,10 @@ namespace Accelerate.Features.Account.Services
                 });
             }
 
-            var sort = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Sort));
+            var sort = new List<NavigationFilterValue>();// GetAggregateValues(filters, GetFilterKey(Constants.Filters.Posts.Sort));
             if (sort.Count > 0)
             {
-                filter.Add(new NavigationFilter()
+                filter.Add(new NavigationFilterItem()
                 {
                     Name = Constants.Filters.Posts.Sort,
                     FilterType = NavigationFilterType.Select,
