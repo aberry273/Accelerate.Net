@@ -65,6 +65,8 @@ namespace Accelerate.Foundations.Content.Models.Data
     public class ContentPostDocument : EntityDocument
     {
         // Core properties
+        [NotMapped]
+        [JsonIgnore]
         public string Href 
         { 
             get
@@ -115,7 +117,7 @@ namespace Accelerate.Foundations.Content.Models.Data
         public ContentPostSettingsSubdocument Settings { get; set; }
         public ContentPostLinkSubdocument Link { get; set; }
         public ContentPostActionsSummaryDocument ActionsTotals { get; set; }
-        public ContentPostType PostType { get; set; } = ContentPostType.Post;
+        public ContentPostType? PostType { get; set; }
         //TODO: Replace with mapping 
         public List<Guid> ThreadIds { get; set; }
         public List<ContentPostDocument> Pages { get; set; }

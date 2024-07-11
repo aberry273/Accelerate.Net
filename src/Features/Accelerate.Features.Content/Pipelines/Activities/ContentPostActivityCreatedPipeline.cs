@@ -52,6 +52,7 @@ namespace Accelerate.Features.Content.Pipelines.Activities
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostActivityEntity> args)
         {
+            var param = args.Params;
             var indexModel = new ContentPostActivityDocument();
             args.Value.Hydrate(indexModel);
             var docArgs = new PipelineArgs<ContentPostActivityDocument>(){Value = indexModel};

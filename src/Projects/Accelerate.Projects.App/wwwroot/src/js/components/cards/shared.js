@@ -284,9 +284,10 @@ export function footer(data) {
                         <strong><sup class="noselect" x-text="action.reactions || 0"></sup></strong>
                         -->
                         <!--Vote-->
-                        <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
-                          <strong><sup class="noselect" :class="(!userId || userId == selectedPost.userId) ? 'muted' : ''" x-text="action.votes || 0"></sup></strong>
-                        <button :disabled="!userId || userId == selectedPost.userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
+                        <!-- || userId == selectedPost.userId-->
+                        <button :disabled="!userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
+                          <strong><sup class="noselect" :class="(!userId) ? 'muted' : ''" x-text="action.votes || 0"></sup></strong>
+                        <button :disabled="!userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
                    
                         <!--Quotes-->
                         <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >

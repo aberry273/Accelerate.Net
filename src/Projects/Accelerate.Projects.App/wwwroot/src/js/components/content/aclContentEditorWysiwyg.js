@@ -300,6 +300,7 @@ export default function header(data) {
                 <!--Panel-->
                 <nav>
                     <ul>
+                    <!--
                         <span x-show="mxResponsive_IsMobile && showRichText">
                             <details class="dropdown flat simple" style="margin-top:0px">
                                 <summary class="material-icons flat small">more_horiz</summary>
@@ -322,7 +323,8 @@ export default function header(data) {
                               </ul>
                             </details>
                         </span>
-                        <span x-show="!mxResponsive_IsMobile && showRichText"> 
+                        -->
+                        <span x-show="showRichText"> 
                             <button class="material-icons flat small" @click="insertCodeIntoText('code')">code</button>
                             <button class="material-icons flat small" @click="insertCodeIntoText('quote')">format_quote</button>
                             <button class="material-icons flat small" @click="insertCodeIntoText('bold')">format_bold</button>

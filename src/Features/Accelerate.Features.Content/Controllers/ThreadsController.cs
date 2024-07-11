@@ -95,10 +95,9 @@ namespace Accelerate.Features.Content.Controllers
 
             var filters = new List<QueryFilter>()
             {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, id)
-            };
-
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(item.Id));
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, id)
+            }; 
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
             var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
             var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
            
@@ -107,7 +106,7 @@ namespace Accelerate.Features.Content.Controllers
                 Page = 0,
                 ItemsPerPage = 100
             };
-            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id);
+            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user.Id);
             viewModel.ThreadData = parentResults ?? new ContentSearchResults();
             viewModel.Replies = aggResponse.Documents.ToList();
 

@@ -108,7 +108,8 @@
         showReplies: true,
         forceLoad: true,
         userId: '@Model.UserId',
-        items:  @JsonSerializerHelper.SerializeObject(Model.Replies),
+        items: []
+        //items:  JsonSerializerHelper.SerializeObject(Model.Replies),
     })">
     </div>
 
@@ -131,7 +132,7 @@
     <!-- Delete post -->
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
-    <!-- Delete post -->
+    <!-- Label post -->
     <!--
     <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalLabelPost))"></div>
     -->

@@ -1,7 +1,10 @@
+import { mxResponsive } from '/src/js/mixins/index.js';
+
 export default function (data) {
     return {
         // PROPERTIES
 
+        ...mxResponsive(data),
         tabs: ['all', 'agrees', 'disagrees'],
         selectedTab: '',
         selectedId: {},
@@ -66,7 +69,8 @@ export default function (data) {
                 this.state.filters[filter.name] = val;
             }
             else {
-                this.state.filters[filter.name] = null;
+                delete this.state.filters[filter.name];
+                //this.state.filters[filter.name] = null;
             }
             this.emitChange()
         },
@@ -101,10 +105,15 @@ export default function (data) {
             // make ajax request
             const html = `
           <!--Feed-->
+          <nav style="margin-left: 0px; text-align:left;" x-show="header && mxResponsive_IsMobile">
+              <ul style="min-width:100%">
+                <strong x-text="header"></strong>
+              </ul>
+          </nav>
           <nav>
             <!--Filters-->
             <ul style="margin-left: 0px; text-align:left;">
-              <li x-show="header">
+              <li x-show="header && !mxResponsive_IsMobile">
                 <strong x-text="header"></strong>
               </li>
               <template x-for="filter in filters">

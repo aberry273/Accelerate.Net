@@ -1046,7 +1046,6 @@ namespace Accelerate.Features.Content.Services
         {
             return Filters
                 ?
-                .Where(x => x.Name != Constants.Filters.Sort && x.Name != Constants.Filters.SortOrder)?
                 .Select(x =>
                 {
                     x.Name = GetFilterKey(x.Name);

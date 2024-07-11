@@ -73,8 +73,12 @@ namespace Accelerate.Features.Content.Controllers
             }
             //if (user == null) return RedirectToAction("Index", "Account");
 
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.PostType, "Post")
+            };
             var channels = await _channelSearchService.Search(GetUserChannelsQuery(user), 0, 100);
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelsAggregateQuery());
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
 
             var viewModel = _contentViewService.CreateChannelsPage(user, channels, aggResponse);
 

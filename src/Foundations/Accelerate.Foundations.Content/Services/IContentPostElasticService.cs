@@ -21,7 +21,7 @@ namespace Accelerate.Foundations.Content.Services
         Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
-        Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId);
+        Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid userId);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);
         Task<List<ContentPostActionsSummaryDocument>> SearchPostActionSummaries(RequestQuery Query, List<string> ids);
         QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string threadId);
@@ -31,10 +31,10 @@ namespace Accelerate.Foundations.Content.Services
         Query? CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
         Task<DeleteIndexResponse> DeleteIndex();
-        RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId);
-        RequestQuery<ContentPostDocument> CreateChannelsAggregateQuery();
+        RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId); 
         RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields);
         RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId);
-        RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId);
+        RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(List<QueryFilter> filters = null);
+
     }
 }

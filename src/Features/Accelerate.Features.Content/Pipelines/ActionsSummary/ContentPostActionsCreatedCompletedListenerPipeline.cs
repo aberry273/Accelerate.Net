@@ -90,6 +90,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             //do stuff
             var postUpdate = new ContentPostDocument()
             {
+                Id = args.Value.ContentPostId,
                 ActionsTotals = doc
             };
             var result = await _elasticPostService.UpdateDocument(postUpdate, args.Value.ContentPostId.ToString());

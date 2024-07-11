@@ -38,9 +38,11 @@ export default function (data) {
             <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
                
                 ${header()}
+                
                 <div class="content">
                     ${content()}
                 </div>
+
                 ${media()}
                      
                 ${quotes()}  

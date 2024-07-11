@@ -199,7 +199,7 @@ namespace Accelerate.Foundations.Content.Services
             return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
         private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
-        public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId)
+        public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid userId)
         {
             //if (_parentThreadCache.ContainsKey(postId)) return _parentThreadCache[postId];
             
@@ -211,7 +211,13 @@ namespace Accelerate.Foundations.Content.Services
 
             //related entities
             var postIds = results.Posts.Select(x => x.Id.ToString()).ToList();
-            results.Actions = await SearchPostActions(Query, postIds);
+            //var user actions
+            var userActionQuery = new RequestQuery()
+            {
+                UserId = userId,
+            };
+            var actionFilters =
+            results.Actions = await SearchPostActions(userActionQuery, postIds);
             results.ActionSummaries = await SearchPostActionSummaries(Query, postIds);
 
             //_parentThreadCache.Add(postId, results);
@@ -219,18 +225,17 @@ namespace Accelerate.Foundations.Content.Services
             return results;
         }
 
-        public RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(Guid? threadId)
+        public RequestQuery<ContentPostDocument> CreateThreadAggregateQuery(List<QueryFilter> filters = null)
         {
-
-            var filters = new List<QueryFilter>()
+            if (filters == null)
             {
-                Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, threadId)
-            };
+                filters = new List<QueryFilter>();
+            }
 
             var aggregates = new List<string>()
             {
-                Constants.Fields.threadId.ToCamelCase(),
-                Constants.Fields.QuoteIds.ToCamelCase(),
+                //Constants.Fields.threadId.ToCamelCase(),
+                //Constants.Fields.QuoteIds.ToCamelCase(),
                 Constants.Fields.Tags.ToCamelCase(),
                 Constants.Fields.Category.ToCamelCase(),
                 Constants.Fields.ParentVote.ToCamelCase(),
@@ -402,8 +407,9 @@ namespace Accelerate.Foundations.Content.Services
         {
             return new List<string>()
             {
-                Foundations.Content.Constants.Fields.threadId.ToCamelCase(),
                 Foundations.Content.Constants.Fields.Tags.ToCamelCase(),
+                Foundations.Content.Constants.Fields.Category.ToCamelCase(),
+                Foundations.Content.Constants.Fields.ParentVote.ToCamelCase(),
             };
         }
         public RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId)
@@ -506,17 +512,7 @@ namespace Accelerate.Foundations.Content.Services
             };
             var aggregates = ContentPostAggregateFields();
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
-        }
-
-        public RequestQuery<ContentPostDocument> CreateChannelsAggregateQuery()
-        {
-            var filters = new List<QueryFilter>()
-            {
-                //this.Filter(Foundations.Content.Constants.Fields.channelId, ElasticCondition.Filter, channelId)
-            };
-            var aggregates = ContentPostAggregateFields();
-            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
-        }
+        } 
 
         public Elastic.Clients.Elasticsearch.QueryDsl.Query[] GetQueries(RequestQuery request, ElasticCondition condition)
         {

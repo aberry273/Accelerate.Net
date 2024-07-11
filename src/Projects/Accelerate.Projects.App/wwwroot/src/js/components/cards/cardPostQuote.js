@@ -38,7 +38,7 @@ export default function (data) {
         },
         load(data) {
             const html = `
-            <article class="quote" :id="selectedPost.threadId">
+            <article class="quote">
                 <div class="content">
                     ${headerQuote()}
 

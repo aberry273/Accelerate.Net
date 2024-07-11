@@ -74,7 +74,12 @@
         }
         else
         {
-            <article>Login to respond</article>
+            <article class="padless">
+                <header class="px">
+                    Login to respond
+                    <a role="button" class="flat secondary" style="right: 0" href="/account/login">Login</a>
+                </header>
+            </article>
         }
         <!--Filter-->
         <div x-data="appNavFilters({
@@ -90,6 +95,7 @@
             userId: '@Model.UserId',
             actionEvent: 'action:post',
             showReplies: false,
+            forceLoad: true,
             filters: {
             },
             itemEvent: $store.wssContentPosts.getMessageEvent(),
@@ -105,12 +111,11 @@
 @if (Model.IsAuthenticated)
 {
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
+    <!--
+    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
 
-    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
-
-    <!-- Delete post -->
-    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
-
+    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+    -->
     <!-- Share post -->
     <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
 }

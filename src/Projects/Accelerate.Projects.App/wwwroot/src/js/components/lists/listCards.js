@@ -67,6 +67,7 @@ export default function (data) {
             const defaultQuery = {
                 filters: this.filters
             }
+     
             if (this.forceLoad) await this.initSearch(defaultQuery);
             this.setHtml(data);
         },
@@ -105,6 +106,7 @@ export default function (data) {
             let match = true;
             if (filters == null) return match;
             const filterKeys = Object.keys(filters);
+            if (filterKeys.length == 0) return match;
             for (var i = 0; i < filterKeys.length; i++) {
                 const key = this.toCamelCase(filterKeys[i]);
                 const filter = filters[filterKeys];
@@ -120,7 +122,6 @@ export default function (data) {
         }, 
         toggleReplies(post) {
             if (!post) return;
-            console.log(post)
             post.toggle = !post.toggle;
             return;
 
@@ -131,14 +132,12 @@ export default function (data) {
             else {
                 this.showPostReplies.splice(index, 1);
             }
-            console.log(this.showPostReplies)
         },
 
         repliesToggled(post) {
             if (!post) return false;
             return post.toggle;
             const index = this.showPostReplies.indexOf(post.id);
-            console.log(index > -1)
             return index > -1;
         },
 
@@ -154,7 +153,7 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div class="list">
-                <template x-for="(item, i) in items" :key="item.id || i" >
+                <template x-for="(item, i) in items" :key="item.id">
                     <div>
                         <div x-data="cardPost({
                             item: item,
@@ -192,6 +191,7 @@ export default function (data) {
                                         parentId: item.id,
                                         filters: combineFilters(item),
                                         showReplies: true,
+                                        forceLoad: true,
                                         userId: userId,
                                 })"></div>
                                 <hr />

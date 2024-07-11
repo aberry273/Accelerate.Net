@@ -85,7 +85,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         public async Task<IActionResult> SearchPostParents([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPostParents(query, postId);
+            var result = await _searchService.SearchPostParents(query, postId, query.UserId.GetValueOrDefault());
             return Ok(result);
         }
         [Route("Posts/Replies")]

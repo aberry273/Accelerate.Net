@@ -73,6 +73,7 @@ namespace Accelerate.Features.Content.Pipelines.Actions
             var ActionsDoc = ContentPostActionUtilities.GetActions(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
+            contentPostDocument.Id = args.Value.ContentPostId;
             contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
             await _elasticPostService.UpdateOrCreateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
