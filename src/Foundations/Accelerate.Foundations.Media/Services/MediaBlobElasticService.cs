@@ -31,7 +31,7 @@ namespace Accelerate.Foundations.Media.Services
                 take);
         }
 
-        public override async Task<SearchResponse<MediaBlobDocument>> GetAggregates(RequestQuery<MediaBlobDocument> query)
+        public override async Task<SearchResponse<MediaBlobDocument>> GetAggregates(RequestQuery<MediaBlobDocument> query, string sortByField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             return await base.GetAggregates(query);
         }

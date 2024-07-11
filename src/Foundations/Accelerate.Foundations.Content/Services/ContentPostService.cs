@@ -115,7 +115,7 @@ namespace Accelerate.Foundations.Content.Services
             ContentPostEntity obj, 
             Guid? channelId, 
             Guid? parentId, 
-            List<Guid> parentIds,
+            //List<Guid> parentIds,
             List<Guid> mentionUserIds,
             List<Guid> quoteIds,
             List<Guid> mediaIds,
@@ -130,7 +130,7 @@ namespace Accelerate.Foundations.Content.Services
 
             // Parents (related)
             if (parentId != null && parentId != Guid.Empty) {
-                await this.CreateParentPost(obj, parentId.GetValueOrDefault(), parentIds ?? new List<Guid>());
+                await this.CreateParentPost(obj, parentId.GetValueOrDefault());
             }
 
             // Channel (related)
@@ -389,8 +389,18 @@ namespace Accelerate.Foundations.Content.Services
         }
         #endregion
         #region Parents
-        public async Task<int> CreateParentPost(ContentPostEntity post, Guid parentId, List<Guid> ancestorIds)
+        public async Task<int> CreateParentPost(ContentPostEntity post, Guid parentId)
         {
+            var existingParent = _servicePipelinePostParents
+                .Find(x => x.ContentPostId == post.Id, 0, 1)
+                .FirstOrDefault();
+
+            var ancestorIds = (existingParent != null && existingParent.ParentIdItems.Any()) 
+                ? existingParent.ParentIdItems.ToList()
+                : new List<Guid>();
+
+            ancestorIds.Add(parentId);
+
             var entity = new ContentPostParentEntity()
             {
                 ContentPostId = post.Id,

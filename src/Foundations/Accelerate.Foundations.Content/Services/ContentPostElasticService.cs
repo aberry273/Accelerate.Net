@@ -16,8 +16,7 @@ using System.Linq;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Accelerate.Foundations.Common.Extensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Elastic.Clients.Elasticsearch.Core.TermVectors;
-using Microsoft.Data.SqlClient;
+using Elastic.Clients.Elasticsearch.Core.TermVectors; 
 using Accelerate.Foundations.Content.Models.Entities;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.Threading;
@@ -53,7 +52,7 @@ namespace Accelerate.Foundations.Content.Services
             var mapping = new TypeMapping();
             return mapping;
         }
-        public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request)
+        public override async Task<SearchResponse<ContentPostDocument>> GetAggregates(RequestQuery<ContentPostDocument> request, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             return await base.GetAggregates(request);
         }
@@ -159,6 +158,7 @@ namespace Accelerate.Foundations.Content.Services
             int skip = take * Query.Page;
 
             var model = new ContentSearchResults();
+            sortField = !string.IsNullOrEmpty(sortField) ? sortField : Foundations.Integrations.Elastic.Constants.Fields.CreatedOn;
             var results = await Search(elasticQuery, skip, take, sortField ?? Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, sortOrder);
             if (!results.IsValidResponse && !results.IsSuccess() || results.Documents == null)
             {
@@ -235,7 +235,7 @@ namespace Accelerate.Foundations.Content.Services
                 Constants.Fields.Category.ToCamelCase(),
                 Constants.Fields.ParentVote.ToCamelCase(),
             };
-            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates };
+            return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates, ItemsPerPage = 100 };
         }
         #endregion
         public RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields)

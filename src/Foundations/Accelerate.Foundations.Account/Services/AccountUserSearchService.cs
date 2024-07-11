@@ -79,7 +79,7 @@ namespace Accelerate.Foundations.Account.Services
             return await SearchUsers(Query, elasticQuery);
         }
 
-        public override Task<SearchResponse<AccountUserDocument>> GetAggregates(RequestQuery<AccountUserDocument> query)
+        public override Task<SearchResponse<AccountUserDocument>> GetAggregates(RequestQuery<AccountUserDocument> query, string sortByField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             throw new NotImplementedException();
         }

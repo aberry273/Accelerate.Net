@@ -61,32 +61,33 @@ export function pagination(data) {
 export function link(data) {
     return `
     <template x-if="selectedPost.link">
-        <article @click="" class="link" style="padding: 0px;" >
-            <header class="padless">
-                <button x-show="selectedPost.link.hide" class="small secondary material-icons flat" @click="selectedPost.link.hide = false">open_in_full</button>
-                 <a x-show="selectedPost.link.hide" style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
-                        <sup x-text="selectedPost.link.url"></sup>
-                    </a>
-                <button x-show="!selectedPost.link.hide" style="position:absolute" class="small secondary material-icons flat" @click="selectedPost.link.hide = true">close</button>
-            </header>
-            <div x-show="!selectedPost.link.hide">
-                <hr />
-                <figure style="text-align:center;" x-show="selectedPost.link.image">
-                    <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
-                        <img
-                            style="max-height: 200px; border-radius: 8px"
-                            :src="selectedPost.link.image"
-                            :alt="selectedPost.link.title"
-                        />
-                    </a>
-                </figure>
-                <div class="padless" style="padding: 0px 8px;">
-                    <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
-                        <sup x-text="selectedPost.link.url"></sup>
-                    </a>
-                    <div>
-                        <b x-text="selectedPost.link.title"></b>
-                        <p x-text="selectedPost.link.description"></p>
+        <article @click="" class="quote" style="padding: 0px;">
+
+            <button x-show="selectedPost.link.hide" class="small  material-icons flat" @click="selectedPost.link.hide = false">open_in_full</button>
+            <button x-show="!selectedPost.link.hide"  class="small  material-icons flat" @click="selectedPost.link.hide = true">close_fullscreen</button>
+
+            <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
+                <sup x-text="selectedPost.link.url"></sup>
+            </a>
+            
+            <div x-show="!selectedPost.link.hide" class="grid">
+                <div x-show="selectedPost.link.image">
+                    <figure style="text-align:center;" >
+                        <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
+                            <img
+                                style="max-height: 200px; border-radius: 8px"
+                                :src="selectedPost.link.image"
+                                :alt="selectedPost.link.title"
+                            />
+                        </a>
+                    </figure>
+                </div>
+                <div>
+                    <div class="padless" style="padding: 0px 8px;">
+                        <div x-show="selectedPost.link.title || selectedPost.link.description">
+                            <b x-text="selectedPost.link.title"></b>
+                            <p x-text="selectedPost.link.description"></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -94,7 +95,6 @@ export function link(data) {
     </template>
     `
 }
-
 export function header(data) {
     return `
     <header class="padded pb-0">
@@ -112,11 +112,8 @@ export function header(data) {
                     </template>
                     <aside>
                         <li class="secondary pa-0" style="padding-top:0px;">
-                            <strong class="pb-0">
-                                <span x-text="selectedPost.profile.username"></span>
-                            </strong>
+                            <span class="pb-0 highlight" x-text="selectedPost.profile.username"></span>
                             <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
-                            
                         </li>
                     </aside>
                 </ul>
@@ -171,9 +168,8 @@ export function headerEditable(data) {
                     </template>
                     <aside>
                         <li class="secondary pa-0" style="padding-top:0px;">
-                            <strong class="pb-0">
-                                <span x-text="selectedPost.profile.username"></span>
-                            </strong>
+                            <span class="pb-0 highlight" x-text="selectedPost.profile.username"></span>
+
                             <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
                             
                         </li>
@@ -243,13 +239,13 @@ export function footer(data) {
                 <li>
                     <!--Replies-->
                     <strong class="py-0 my-0">
-                        <a class="py-0 secondary my-0" style='text-decoration:none' :href="selectedPost.href">
+                        <a class="py-0 primary my-0" style='text-decoration:none' :href="selectedPost.href">
                             <small>
                                 <small>
                                     <!--
                                     <span x-text="selectedPost.shortThreadId"></span>
                                     -->
-                                    Browse
+                                    Open
                                 </small>
                             </small>
                         </a>
@@ -360,9 +356,7 @@ export function headerQuote(data) {
                     </template>
                     <aside>
                         <li class="secondary pa-0" style="padding-top:0px;">
-                            <strong class="pb-0">
-                                <span x-text="selectedPost.profile.username"></span>
-                            </strong>
+                            <span class="pb-0 highlight" x-text="selectedPost.profile.username"></span>
                         </li>
                         </aside>
                 </ul>
@@ -390,13 +384,13 @@ export function footerQuote(data) {
                     <li>
                         <!--Replies-->
                         <strong class="py-0 my-0">
-                            <a class="py-0 secondary my-0" style='text-decoration:none' :href="selectedPost.href">
+                            <a class="py-0 primary my-0" style='text-decoration:none' :href="selectedPost.href">
                                 <small>
                                     <small>
                                         <!--
                                         <span x-text="item.shortThreadId"></span>
                                         -->
-                                        Browse
+                                        open
                                     </small>
                                 </small>
                             </a>

@@ -45,8 +45,12 @@ export default function (data) {
              
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
+                filterUpdates = this.applyDefaultFilters(filterUpdates);
+                 
+                await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, filterUpdates, true);
+                return;
                 // If not filters are applied, use default filters
-                if (!this.hasFiltersApplied(filterUpdates)) {
+                if (!this.hasFiltersApplied(filterUpdates.filters)) {
                     await this.initSearch();
                 }
                 else {
@@ -59,6 +63,13 @@ export default function (data) {
 
             this.setHtml(data);
         },
+        applyDefaultFilters(updates) {
+            const keys = Object.keys(this.filters);
+            for (let i = 0; i < keys.length; i++) {
+                updates.filters[keys[i]] = this.filters[keys[i]]
+            }
+            return updates;
+        },
         hasFiltersApplied(filters) {
             const keys = Object.keys(filters);
             for (let i = 0; i < keys.length; i++) {
@@ -69,7 +80,9 @@ export default function (data) {
             return false;
         },
         async initSearch() {
-            let queryData = this.filters || {} 
+            let queryData = {
+                filters: this.filters || {}
+            }
             await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData);
         },
 

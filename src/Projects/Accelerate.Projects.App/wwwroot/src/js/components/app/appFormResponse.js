@@ -81,7 +81,8 @@ export default function (data) {
                 this.updateQuoteField(item);
                 this.scrollToElement(item.threadId);
                 this.showFloatingPanel = false;
-                if (this.belowFold) this.fixed = true;
+                //if (this.belowFold) this.fixed = true;
+                this.fixed = true;
             })
             // On updates from cards
             // Move this and all content/post based logic to mixin/generic logic
@@ -89,7 +90,8 @@ export default function (data) {
                 this.updateReplyField(item);
                 this.scrollToElement(item.threadId);
                 this.showFloatingPanel = false;
-                if (this.belowFold) this.fixed = true;
+                //if (this.belowFold) this.fixed = true;
+                this.fixed = true;
                 //this.formContainerElement = '#'+item.threadId
             }) 
 
@@ -153,7 +155,7 @@ export default function (data) {
             return `${this.inputAmount} / ${this.charLimit}`;
         },
         get underTextLimit() {
-            return this.inputAmount < this.charLimit;
+            return this.inputAmount > 0 && this.inputAmount < this.charLimit;
         },
         scrollToElement(elementId) {
             const el = document.getElementById(elementId);
@@ -165,6 +167,11 @@ export default function (data) {
                 left: 0,
                 behavior: 'smooth'
             });
+            /*
+            var domElement = document.getElementById('form-element');// don't go to to DOM every time you need it. Instead store in a variable and manipulate.
+            domElement.style.position = "absolute";
+            domElement.style.top = y; //or whatever 
+           */
         },
         underMediaLimit() {
             const images = this.imageField.value != null ? this.imageField.value.length : 0;
@@ -466,6 +473,7 @@ export default function (data) {
             <!-- to update to teleporting between fixed/nonfixed elements-->
             
             <article
+                id="form-element"
                 :class="fixed ? 'floating bottom container dense sticky py-0' : 'dense sticky'"
                 
                 style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"

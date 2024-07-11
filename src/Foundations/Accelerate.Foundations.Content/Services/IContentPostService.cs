@@ -16,7 +16,7 @@ namespace Accelerate.Foundations.Content.Services
             ContentPostEntity obj,
             Guid? channelId,
             Guid? parentId,
-            List<Guid> parentIds,
+            //List<Guid> parentIds,
             List<Guid> mentionUserIds,
             List<Guid> quoteIds,
             List<Guid> mediaIds,
@@ -38,7 +38,7 @@ namespace Accelerate.Foundations.Content.Services
         Task<int> CreatePostSummary(ContentPostEntity post);
         void UpdatePostSummary(ContentPostActionsSummaryEntity entity);
 
-        Task<int> CreateParentPost(ContentPostEntity post, Guid parentId, List<Guid> ancestorIds);
+        Task<int> CreateParentPost(ContentPostEntity post, Guid parentId);//, List<Guid> ancestorIds);
         ContentPostParentEntity GetPostParent(ContentPostEntity post);
         ContentPostParentEntity GetPostParentWithParent(ContentPostEntity post);
         List<ContentPostEntity> GetReplies(Guid postId);

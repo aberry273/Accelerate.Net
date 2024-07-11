@@ -74,17 +74,11 @@ export default function (data) {
             if (this.state.sort != val) {
                 this.state.sort = val;
             }
-            else {
-                this.state.sort = null;
-            }
             this.emitChange()
         },
         selectSortBy(val) {
             if (this.state.sortBy != val) {
                 this.state.sortBy = val;
-            }
-            else {
-                this.state.sortBy = null;
             }
             this.emitChange()
         },

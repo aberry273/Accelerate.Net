@@ -228,7 +228,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             try
             {
                 var parentId = obj.ParentId.GetValueOrDefault();
-                var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
+                //var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
                 var channelId = obj.ChannelId.GetValueOrDefault();
                 var settings = CreatePostSettingsFromRequest(obj);
                 var linkCard = CreateLinkCardFromRequest(obj);
@@ -241,7 +241,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                     obj,
                     obj.ChannelId.GetValueOrDefault(),
                     obj.ParentId.GetValueOrDefault(),
-                    parentIds,
+                    //parentIds,
                     mentions,
                     quoteIds,
                     mediaIds,

@@ -33,7 +33,7 @@ namespace Accelerate.Foundations.Content.Services
                 take);
         }
 
-        public override Task<SearchResponse<ContentPostActivityDocument>> GetAggregates(RequestQuery<ContentPostActivityDocument> query)
+        public override Task<SearchResponse<ContentPostActivityDocument>> GetAggregates(RequestQuery<ContentPostActivityDocument> query, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             throw new NotImplementedException();
         }

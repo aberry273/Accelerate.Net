@@ -192,7 +192,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
+                .Sort(x => x.Field(new Field(sortByField ?? Constants.Fields.CreatedOn), GetSortField(sortOrder)))
             );
         }
         public async Task<SearchResponse<T>> Search<T>(Query query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
@@ -203,7 +203,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
+                .Sort(x => x.Field(new Field(sortByField ?? Constants.Fields.CreatedOn), GetSortField(sortOrder)))
             );
         }
 
@@ -215,7 +215,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 .From(from)
                 .Size(take)
                 .Query(query)
-                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
+                .Sort(x => x.Field(new Field(sortByField ?? Constants.Fields.CreatedOn), GetSortField(sortOrder)))
             );
         }
         public async Task<SearchResponse<T>> Find(QueryDescriptor<T> query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
@@ -223,7 +223,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             //Create if not existing
             await CreateIndex();
             //Search
-            int take = itemsPerPage > 0 ? itemsPerPage : 10;
+            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Integrations.Elastic.Constants.Search.DefaultPerPage;
             int skip = take * page;
 
             return await Search(
@@ -238,7 +238,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             //Create if not existing
             await CreateIndex();
             //Search
-            int take = itemsPerPage > 0 ? itemsPerPage : 10;
+            int take = itemsPerPage > 0 ? itemsPerPage : Foundations.Integrations.Elastic.Constants.Search.DefaultPerPage;
             int skip = take * page;
 
             return await _client.SearchAsync<T>(s => s
@@ -252,11 +252,11 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         // Overrides
         public abstract Task<SearchResponse<T>> Find(RequestQuery<T> query);
         
-        public async virtual Task<SearchResponse<T>> GetAggregates(RequestQuery<T> request)
+        public async virtual Task<SearchResponse<T>> GetAggregates(RequestQuery<T> request, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             //Create if not existing
             await CreateIndex();
-            int take = request.ItemsPerPage > 0 ? request.ItemsPerPage : 10;
+            int take = request.ItemsPerPage > 0 ? request.ItemsPerPage : Foundations.Integrations.Elastic.Constants.Search.DefaultPerPage;
             int skip = take * request.Page;
             var query = this.CreateQuery(request);
             //
@@ -273,8 +273,12 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             };
             return await _client.SearchAsync<T>(s => s
                 .Index(_indexName)
+                .From(skip)
+                .Size(take)
                 .Query(query)
                 .Aggregations(disciptors)
+                .Sort(x => x.Field(new Field(sortByField), GetSortField(sortOrder)))
+
             );
         }
         

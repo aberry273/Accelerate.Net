@@ -96,18 +96,19 @@
     })"></div>
 
     <!-- Replies -->
-    <div x-data="listThreadCards( {
+    <div x-data="listCards( {
         actionUrl: '@Model.ActionsApiUrl',
         searchUrl: '@Model.PostsApiUrl',
         filterEvent: '@Model.FilterEvent',
         actionEvent: '@Model.ActionEvent',
         itemEvent: $store.wssContentPosts.getMessageEvent(),
-        parentId: '@Model.Item.Id',
         filters: {
-            parentId: ['@Model.Item.Id']
+            parentId: '@Model.Item.Id'
         },
+        showReplies: true,
+        forceLoad: true,
         userId: '@Model.UserId',
-        items: []
+        items:  @JsonSerializerHelper.SerializeObject(Model.Replies),
     })">
     </div>
 

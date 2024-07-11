@@ -109,7 +109,8 @@ namespace Accelerate.Features.Content.Controllers
             };
             var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id);
             viewModel.ThreadData = parentResults ?? new ContentSearchResults();
-               
+            viewModel.Replies = aggResponse.Documents.ToList();
+
             return View(viewModel);
         }
 

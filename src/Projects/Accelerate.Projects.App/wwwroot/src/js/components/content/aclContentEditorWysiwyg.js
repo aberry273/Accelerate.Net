@@ -23,6 +23,8 @@ export default function header(data) {
         showElementEditor: false,
         selectedformat: '',
         openFormatSelection: false,
+        showUrlEditor: false,
+        urlText: '',
         queryText: '',
         userInput: null,
         results: [],
@@ -70,6 +72,7 @@ export default function header(data) {
             const element = this._mxCardPost_CreateElement(this.nodePosition, format, item.name);
 
             this.addElement(element);
+            this.editor.focus();
             this.setEditorCursorPosition(this.nodePosition, this.editor);
             this.performCustomAction(element.formatted);
 
@@ -89,6 +92,15 @@ export default function header(data) {
             this.elements.push(element);
             this.$events.emit(this.elementsEvent, this.elements);
         },
+        getSelectionText() {
+            var text = "";
+            if (window.getSelection) {
+                text = window.getSelection().toString();
+            } else if (document.selection && document.selection.type != "Control") {
+                text = document.selection.createRange().text;
+            }
+            return text;
+        },
         performCustomAction(html) {
             //to fix duplicate elements added
             //https://stackoverflow.com/questions/37008776/inserting-text-with-execcommand-causes-a-duplication-issue
@@ -104,9 +116,7 @@ export default function header(data) {
             this.editor.focus();
         },
         setEditorCursorPosition(pos, el) {
-            
             //selecting element then adding characters causes the insertion to be in a random position
-
             // for contentedit field
             if (el.isContentEditable) {
                 var range = document.createRange()
@@ -169,7 +179,6 @@ export default function header(data) {
         }, 
         convertHtmlToEncodedText() {
             let encodedText = this.editor.innerHTML;
-
             for (var i = 0; i < this.elements.length; i++) {
                 encodedText = encodedText.replace(this.elements[i].formatted, this.elements[i].encoded);
             }
@@ -182,7 +191,7 @@ export default function header(data) {
             contentOnBlur = contentOnBlur.replace(/(<([^>]+)>)/ig, '');
             document.execCommand('insertText', false, contentOnBlur);
         },
-        onKeyup(ev) { 
+        onKeyup(ev) {
             this.nodePosition = this.getCaretPosition(ev.target)
             this.contextNode = ev.target;
             // If Block Quote or Code
@@ -216,9 +225,39 @@ export default function header(data) {
                 return caretposition;
             }
         },
-        // element editor 
-        tagPerson() {
-            this.showElementEditor = true;
+        onShiftEnter() {
+            
+        },
+        addLink() {
+            this.editor.focus();
+            this.setEditorCursorPosition(this.nodePosition, this.editor);
+            this.insertEncodedText('link', this.urlText)
+
+            this.urlText = null;
+            this.showUrlEditor = false;
+        },
+        insertCodeIntoText(formatType) {
+            var selectedText = this.getSelectionText();
+            this.insertEncodedText(formatType, selectedText);
+        },
+
+        insertEncodedText(formatType, encodedText) {
+            const format = this._mxCardPost_GetFormat(formatType);
+            const element = this._mxCardPost_CreateElement(this.nodePosition, format, encodedText);
+
+            this.addElement(element)
+            this.performAction('insertHTML', element.formatted)
+            this.convertHtmlToEncodedText();
+
+            //move cursor to end of inserted element
+            const pos = this.nodePosition + element.value.length;
+            this.setEditorCursorPosition(pos, this.editor);
+
+            this.editor.focus();
+        },
+        // element editor  
+        validateUrl() {
+
         },
         search() {
             this.$events.emit(this.searchEvent, this.queryText)
@@ -240,6 +279,21 @@ export default function header(data) {
             this.selectedFormat = type;
             this.openFormatSelection = false;
         },
+        cancelLink() {
+            this.urlText = null;
+            this.showUrlEditor = false;
+        },
+        toggleUrlEditor() {
+            this.showElementEditor = false;
+            this.showUrlEditor = !this.showUrlEditor;
+        },
+        toggleUserEditor() {
+            this.showUrlEditor = false;
+            this.showElementEditor = !this.showElementEditor;
+        },
+        get showInputEditors() {
+            return this.showUrlEditor || this.showElementEditor
+        },
         load(data) {
             this.$root.innerHTML = `
             <div> 
@@ -250,37 +304,48 @@ export default function header(data) {
                             <details class="dropdown flat simple" style="margin-top:0px">
                                 <summary class="material-icons flat small">more_horiz</summary>
                               <ul dir="ltr" style="text-align:left">
-                                <li @click="performAction('code')"><a href="javascript:;">
+                                <li @click="insertCodeIntoText('code')"><a href="javascript:;">
                                     <i class="material-icons flat small">code</i>
                                     Code
                                 </a></li>
-                                <li @click="performAction('formatBlock')"><a href="javascript:;">
+                                <li @click="insertCodeIntoText('quote')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_quote</i>
                                     Quote
                                 </a></li>
-                                <li @click="performAction('bold')"><a href="javascript:;">
+                                <li @click="insertCodeIntoText('bold')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_bold</i>Bold
                                 </a></li>
-                                <li @click="performAction('italic')"><a href="javascript:;">
+                                <li @click="insertCodeIntoText('italic')"><a href="javascript:;">
                                     <i class="material-icons flat small">format_italic</i>Bold
                                     Italics
                                 </a></li>
                               </ul>
                             </details>
                         </span>
-                        <span x-show="!mxResponsive_IsMobile && showRichText">
-                            <!--
-                                <button class="small material-icons flat small" @click="performAction('createLink', '#')" :disabled="loading">link</button>
-                            -->
-                            <button class="material-icons flat small" @click="performAction('code')">code</button>
-                            <button class="material-icons flat small" @click="performAction('formatBlock')">format_quote</button>
-                            <button class="material-icons flat small" @click="performAction('bold')">format_bold</button>
-                            <button class="material-icons flat small" @click="performAction('italic')">format_italic</button>
+                        <span x-show="!mxResponsive_IsMobile && showRichText"> 
+                            <button class="material-icons flat small" @click="insertCodeIntoText('code')">code</button>
+                            <button class="material-icons flat small" @click="insertCodeIntoText('quote')">format_quote</button>
+                            <button class="material-icons flat small" @click="insertCodeIntoText('bold')">format_bold</button>
+                            <button class="material-icons flat small" @click="insertCodeIntoText('italics')">format_italic</button>
                         </span>
-                        <!--Emoji picker-->
-                        <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
+                        <!--Url input-->
+                        <button class="small material-icons flat small" :class="showUrlEditor ? 'secondary' : ''" @click="toggleUrlEditor()">link</button>
 
-                        <button class="material-icons flat small" @click="tagPerson">person_search</button>
+                        <!--User selector-->
+                        <div x-show="showUrlEditor">
+                            <input
+                                id="urlInput"
+                                style="margin-bottom: 0px"
+                                :change="validateUrl"
+                                x-model="urlText"
+                                :value="urlText"
+                                placeholder="url"
+                            />
+                        </div>
+                        <button x-show="showUrlEditor"  class="material-icons flat small" @click="addLink">add</button>
+
+                        <!--User selector-->
+                        <button :class="showElementEditor ? 'secondary' : ''" class="material-icons flat small" @click="toggleUserEditor()">person_search</button>
                         <div x-show="showElementEditor">
                             <input
                                 id="userInput"
@@ -312,7 +377,9 @@ export default function header(data) {
                                 <!--  Link Formats-->
                             </article>
                         </div>
-                        <button x-show="showElementEditor" class="material-icons flat small" @click="closeElementEditor">close</button>
+
+                        <!--Emoji picker-->
+                        <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
                     </ul> 
                     <ul>
                         <input style="width: 5px" class="flat"  disabled />
@@ -328,6 +395,7 @@ export default function header(data) {
                     @paste="($event) => onPaste($event)"
                     @click="($event) => onClick($event)"
                     @keyup="($event) => onKeyup($event)"
+                    @keyup.shift.enter="($event) => onShiftEnter($event)"
                     @keyup.debounce="($event) => onKeyupDebounce($event)"
                     @keyup.@="($event) => toggleElementInput($event)">
                 </div> 

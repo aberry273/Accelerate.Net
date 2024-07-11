@@ -38,7 +38,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
                 take);
         }
 
-        public override Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query)
+        public override Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             throw new NotImplementedException();
         }

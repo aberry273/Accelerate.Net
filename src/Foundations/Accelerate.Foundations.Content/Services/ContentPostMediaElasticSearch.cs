@@ -38,7 +38,7 @@ namespace Accelerate.Foundations.Content.Services
             var mapping = new TypeMapping();
             return mapping;
         } 
-        public override async Task<SearchResponse<ContentPostMediaDocument>> GetAggregates(RequestQuery<ContentPostMediaDocument> request)
+        public override async Task<SearchResponse<ContentPostMediaDocument>> GetAggregates(RequestQuery<ContentPostMediaDocument> request, string sortByField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             return await base.GetAggregates(request);
         }

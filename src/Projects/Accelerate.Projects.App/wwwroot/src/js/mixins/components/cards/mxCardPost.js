@@ -26,12 +26,12 @@ export default function (data) {
                 key: '\\n',
                 regex: new RegExp('\\n', 'gi'),
             },
-            /*
             {
                 name: 'link',
-                regex: new RegExp('@l.(https?:\/\/[^\\s]+)', 'gi'),
+                key: '#l',
+                regex: new RegExp('@(https?:\/\/[^\\s]+)#l', 'gim'),
+                //regex: new RegExp('@([^#l]*)#l', 'gim'),
             },
-            */
             {
                 name: 'post',
                 key: '#p',
@@ -47,22 +47,22 @@ export default function (data) {
             {
                 name: 'quote',
                 key: '#q',
-                regex: new RegExp('@q.((?!\\s{2}).)*', 'gi'),
+                regex: new RegExp('@.*#q', 'gim'),
             },
             {
                 name: 'italics',
                 key: '#i',
-                regex: new RegExp('@i.((?!\\s{2}).)*', 'gi'),
+                regex: new RegExp('@([^#i]*)#i', 'gim'),
             },
             {
                 name: 'bold',
                 key: '#b',
-                regex: new RegExp('@b.((?!\\s{2}).)*', 'gi'),
+                regex: new RegExp('@([^#b]*)#b', 'gim'),
             },
             {
                 name: 'code',
                 key: '#c',
-                regex: new RegExp('@c.((?!\\s{2}).)*', 'gi'),
+                regex: new RegExp('@([^#c]*)#c', 'gim'),
             },
         ],
         _mxCardPost_init() {
@@ -131,7 +131,7 @@ export default function (data) {
             return `<span contenteditable=\"false\" class=\"item p\">${ input }</span>`;
         },
         _mxCardPost_FormatHref(input) {
-            return `<a class='item'>${input}</a>&nbsp;`;
+            return `<a target="_blank" href="${input}">${input}</a>&nbsp;`;
         },
         _mxCardPost_FormatBold(input) {
             return `<strong>${input}</strong>&nbsp;`;
@@ -147,10 +147,8 @@ export default function (data) {
             return `<blockquote>${input}</blockquote>&nbsp;`;
         },
         _mxCardPost_ReplaceMarkdown(string) {
-            console.log('_mxCardPost_ReplaceMarkdown')
             var str = string
                 .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>') // bold text
-            console.log(str)
             return str;
         },
         _mxCardPost_FormatText(format, text) {
@@ -161,8 +159,8 @@ export default function (data) {
                     return this._mxCardPost_FormatUser(text);
                 case 'post':
                     return this._mxCardPost_FormatPost(text);
-                //case 'link':
-                    //return this._mxCardPost_FormatHref(text);
+                case 'link':
+                    return this._mxCardPost_FormatHref(text);
                 case 'bold':
                     return this._mxCardPost_FormatBold(text);
                 case 'italics':
