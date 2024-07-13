@@ -62,6 +62,8 @@ export default function (data) {
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 this.filterUpdates = filterUpdates;
+                let filters = { ...this.filters, ...this.filterUpdates.filters }
+                filterUpdates.filters = filters;
                 await this.initSearch(filterUpdates, false);
             })
             const defaultQuery = {
@@ -88,6 +90,7 @@ export default function (data) {
             return updates;
         },
         async initSearch(queryData, replaceItems = false) {
+            //console.log(queryData);
             if (this.searchUrl) {
                 const results = await this.$store.wssContentPosts.SearchByUrl(this.searchUrl, queryData, replaceItems);
                 this.items = results.posts;
@@ -153,7 +156,7 @@ export default function (data) {
             // make ajax request 
             const html = `
             <div class="list">
-                <template x-for="(item, i) in items" :key="item.id">
+                <template x-for="(item, i) in items" :key="item.id+item.threadId">
                     <div>
                         <div x-data="cardPost({
                             item: item,

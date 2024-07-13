@@ -75,15 +75,11 @@ export default function (data) {
             this.emitChange()
         },
         selectSort(val) {
-            if (this.state.sort != val) {
-                this.state.sort = val;
-            }
+            this.state.sort = val;
             this.emitChange()
         },
         selectSortBy(val) {
-            if (this.state.sortBy != val) {
-                this.state.sortBy = val;
-            }
+            this.state.sortBy = val;
             this.emitChange()
         },
         emitChange() {
@@ -184,10 +180,10 @@ export default function (data) {
                 <li class="px-0">
                      <details class="dropdown flat" >
                         <summary class="outline">
-                            <span x-show="!state.sort[sort.name]" x-text="sort.name"></span>
-                            <span x-show="state.sort[sort.name]" >
+                            <span x-show="!state.sort" x-text="sort.name"></span>
+                            <span x-show="state.sort">
                                 <sup style="position: absolute; top: 0.5em;" x-text="sort.name"></sup>
-                                <sub style="padding-top: 12px;" x-text="state.sort[sort.name]"></sub>
+                                <sub style="padding-top: 12px;" x-text="state.sort"></sub>
                             </span>
                         </summary>
                         <!--No type-->
@@ -207,7 +203,7 @@ export default function (data) {
                             <span x-show="!state.sortBy" x-text="sortBy.name"></span>
                             <span x-show="state.sortBy" >
                                 <sup style="position: absolute; top: 0.5em;" x-text="sortBy.name"></sup>
-                                <sub style="padding-top: 12px;" x-text="state.sortBy[sortBy.name]"></sub>
+                                <sub style="padding-top: 12px;" x-text="state.sortBy"></sub>
                             </span>
                         </summary>
                         <!--No type-->
