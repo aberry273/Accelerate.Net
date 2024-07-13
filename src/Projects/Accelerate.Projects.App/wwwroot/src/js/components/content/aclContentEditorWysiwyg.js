@@ -31,9 +31,11 @@ export default function header(data) {
         userInput: null,
         results: [],
         contextNode: null,
+        placeholder: null,
         //true if user clicks on element, false if user inputs via keyboard
         insert: false,
         init() {
+            this.placeholder = data.placeholder;
             this.elementsEvent = data.elementsEvent;
             this.searchEvent = data.searchEvent;
             this.showRichText = data.showRichText;
@@ -377,6 +379,7 @@ export default function header(data) {
                     role="textbox"
                     x-html="html"
                     class="wysiwyg"
+                    :placeholder="placeholder"
                     @paste="($event) => onPaste($event)"
                     @click="($event) => onClick($event)"
                     @keyup="($event) => onKeyup($event)"

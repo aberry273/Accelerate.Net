@@ -255,6 +255,13 @@ details.dropdown.secondary summary:not([role]) {
     --pico-typography-spacing-top: 1.5rem;
 }
 
+[contenteditable=true]:empty:before {
+    color: var(--pico-contrast-focus);
+    content: attr(placeholder);
+    pointer-events: none;
+    display: block; /* For Firefox */
+}
+
 .wysiwyg {
     text-align: left;
     --pico-outline-width: 0.0625rem;

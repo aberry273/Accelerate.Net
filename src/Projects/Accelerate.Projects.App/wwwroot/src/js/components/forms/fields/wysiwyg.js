@@ -41,6 +41,7 @@ export default function (data) {
                 ></textarea>
           
             <div x-data="aclContentEditorWysiwyg({
+                placeholder: field.placeholder,
                 searchEvent: field.event,
                 showRichText: true,
                 value: value,
