@@ -21,7 +21,9 @@ namespace Accelerate.Features.Account.Services
         AccountFormPage GetForgotPasswordConfirmationPage();
         NavigationFilter CreatePostNavigationFilters(SearchResponse<ContentPostDocument> aggregateResponse);
         NavigationFilter CreateMediaNavigationFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
-
+        Task<AccountFormPage> GetExternalLoginExistingUser(string? username, string providerName);
+        Task<AccountFormPage> GetExternalLoginNewUser(string? username);
+        Task<AccountFormPage> GetExternalLoginDeactivatedUser(string? username);
         //public List<NavigationFilterItem> CreatePostSearchFilters(SearchResponse<ContentPostDocument> aggregateResponse);
         //public List<NavigationFilterItem> CreateMediaSearchFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
     }

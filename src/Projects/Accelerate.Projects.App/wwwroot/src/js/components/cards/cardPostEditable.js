@@ -35,7 +35,7 @@ export default function (data) {
         },
         load(data) {
             const html = `
-            <article class="dense padless" :class="articleClass" :id="selectedPost.threadId">
+            <article class="dense padless highlighted" :class="articleClass" :id="selectedPost.threadId">
                
                 ${headerEditable()}
                 <div class="content">

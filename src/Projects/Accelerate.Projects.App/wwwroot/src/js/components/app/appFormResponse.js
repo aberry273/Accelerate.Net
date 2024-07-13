@@ -33,7 +33,11 @@ export default function (data) {
         textFieldName: 'Content',
         validationMessage: '',
         originalYPosition: 0,
-        formContainerElement: 'form-container',
+        formContainerElement: '#fixedPosition',
+  
+        formBottomOffset: 0,
+        formTopOffset: 'initial',
+
         showTags: false,
         showText: false,
         showVideo: false,
@@ -80,18 +84,20 @@ export default function (data) {
             this.$events.on(this.mxCardPost_quoteEvent, async (item) => {
                 this.updateQuoteField(item);
                 this.scrollToElement(item.threadId);
+                this.highlightElement(item.threadId);
                 this.showFloatingPanel = false;
-                //if (this.belowFold) this.fixed = true;
                 this.fixed = true;
+                //if (this.belowFold) this.fixed = true;
             })
             // On updates from cards
             // Move this and all content/post based logic to mixin/generic logic
             this.$events.on(this.mxCardPost_replyEvent, async (item) => {
                 this.updateReplyField(item);
                 this.scrollToElement(item.threadId);
+                this.highlightElement(item.threadId);
                 this.showFloatingPanel = false;
-                //if (this.belowFold) this.fixed = true;
                 this.fixed = true;
+                //if (this.belowFold) this.fixed = true;
                 //this.formContainerElement = '#'+item.threadId
             }) 
 
@@ -159,19 +165,24 @@ export default function (data) {
         },
         scrollToElement(elementId) {
             const el = document.getElementById(elementId);
-
             const headerOffset = 75;
             const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+          
             window.scrollTo({
                 top: y,
                 left: 0,
                 behavior: 'smooth'
             });
-            /*
-            var domElement = document.getElementById('form-element');// don't go to to DOM every time you need it. Instead store in a variable and manipulate.
-            domElement.style.position = "absolute";
-            domElement.style.top = y; //or whatever 
-           */
+        },
+        highlightElement(elementId) {
+            const el = document.getElementById(elementId);
+            var existingHighlights = document.getElementsByClassName('highlighted')[0];
+            if (existingHighlights != null) {
+                existingHighlights.classList.remove('highlighted');
+            }
+
+            el.classList.add('highlighted');
+
         },
         underMediaLimit() {
             const images = this.imageField.value != null ? this.imageField.value.length : 0;
@@ -210,7 +221,7 @@ export default function (data) {
             let style = 'display:block;margin-top: 55px;'
             if (this.mxResponsive_IsMobile)
                 style += "left: 0; width: 100%;";
-            style += "bottom: 0; top: initial;";
+            style += `bottom: 0; top: initial`;
             return style;
         },
         getTaxonomyFields() {
@@ -460,7 +471,7 @@ export default function (data) {
             <button
                 x-show="showFloatingPanel"
                 @click="hideFloatingPanel(false)"
-                class="material-icons round xsmall"
+                class="material-icons-round round xsmall"
                 style="y-index:1111; position: fixed; top: 65px; right: calc(var(--pico-spacing)*0.225);">
                 chat
             </button>
@@ -470,10 +481,12 @@ export default function (data) {
             <div class="sticky" style="height: 200px; background: transparent;" x-show="!showFloatingPanel && fixed">
             </div>
             -->
+
             <!-- to update to teleporting between fixed/nonfixed elements-->
-            
+    
             <article
                 id="form-element"
+                class="form-post"
                 :class="fixed ? 'floating bottom container dense sticky py-0' : 'dense sticky'"
                 
                 style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"
@@ -482,30 +495,30 @@ export default function (data) {
                     <!--Quotes-->
                     <fieldset class="padded" x-data="formFields({fields})"></fieldset>
 
-
                     <div style="text-align:center" x-show="validationMessage">
                         <em x-text="validationMessage"></em>
                     </div>
 
                     <fieldset class="padded py-0 flat" role="group">
-                        <button x-show="fixed" class="small secondary material-icons flat" @click="fixed = false">vertical_align_center</button>
-                        <button x-show="!fixed" class="small secondary material-icons flat" @click="fixed = true">swap_vert</button> 
+                        <button x-show="fixed" class="small secondary material-icons-round flat" @click="fixed = false">vertical_align_center</button>
+                        <button x-show="!fixed" class="small secondary material-icons-round flat" @click="fixed = true">swap_vert</button>
                         <!--Toggle fields-->
 
                         <!--Video-->
-                        <button class="small secondary material-icons flat" x-show="!showVideo" @click="hideVideoField(false)" :disabled="loading">videocam</button>
-                        <button class="small secondary material-icons flat" x-show="showVideo" @click="hideVideoField(true)" :disabled="loading">cancel</button>
+                        <button class="small secondary material-icons-round flat" x-show="!showVideo" @click="hideVideoField(false)" :disabled="loading">videocam</button>
+                        <button class="small secondary material-icons-round flat" x-show="showVideo" @click="hideVideoField(true)" :disabled="loading">cancel</button>
 
                         <!--Image-->
-                        <button class="small secondary material-icons flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
-                        <button class="small secondary material-icons flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
+                        <button class="small secondary material-icons-round flat" x-show="!showImage" @click="hideImageField(false)" :disabled="loading">image</button>
+                        <button class="small secondary material-icons-round flat" x-show="showImage" @click="hideImageField(true)" :disabled="loading">cancel</button>
 
-                        <button class="small secondary material-icons flat" @click="toggle" :disabled="loading">settings</button>
+                        <button class="small secondary material-icons-round flat" @click="toggle" :disabled="loading">settings</button>
                       
                         <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
-                        <button class="flat primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
+                        <button class="flat small primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
                     </fieldset> 
                 </article>
+               
             </template>
         `
             this.$nextTick(() => {

@@ -62,7 +62,7 @@ export default function (data) {
             // On updates from filter
             this.$events.on(this.filterEvent, async (filterUpdates) => {
                 this.filterUpdates = filterUpdates;
-                await this.initSearch(filterUpdates, true);
+                await this.initSearch(filterUpdates, false);
             })
             const defaultQuery = {
                 filters: this.filters

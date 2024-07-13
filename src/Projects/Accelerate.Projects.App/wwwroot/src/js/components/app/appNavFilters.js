@@ -105,77 +105,85 @@ export default function (data) {
             // make ajax request
             const html = `
           <!--Feed-->
-          <nav style="margin-left: 0px; text-align:left;" x-show="header && mxResponsive_IsMobile">
-              <ul style="min-width:100%">
+          <nav x-show="header && !mxResponsive_IsDesktop">
+            <li>
                 <strong x-text="header"></strong>
-              </ul>
+            </li>
           </nav>
           <nav>
             <!--Filters-->
             <ul style="margin-left: 0px; text-align:left;">
-              <li x-show="header && !mxResponsive_IsMobile">
-                <strong x-text="header"></strong>
-              </li>
-              <template x-for="filter in filters">
-                <li>
-                    <!--Checkbox-->
-                    <details class="dropdown flat" x-show="filter.type == 'Checkbox'">
-                        <summary class="" x-text="filter.name"></summary>
-                        <ul>
-                            <template x-for="val in filter.values">
-                                <li>
-                                    <label>
-                                        <input type="checkbox" :checked="isSelectedMany(val.key, filter.name)" name="solid"
-                                        @click="selectMany(val.key, filter.name)"></input>
-                                        <span x-text="filterValueName(val)"></span>
-                                    </label>
-                                </li>
-                            </template>
-                        </ul> 
-                    </details> 
-                    <!--Radio-->
-                    <details class="dropdown flat" x-show="filter.type == 'Radio'">
-                      <summary class=" " x-text="filter.name"></summary>
-                      <ul dir="ltr"> 
-                        <template x-for="val in filter.values">
-                          <li>
-                            <label>
-                              <input type="radio" :checked="isSelected(val.key, filter.name)" :name="filter.name"
-                                @click="select(val.key, filter)" ></input>
-                              <span x-text="filterValueName(val)"></span>
-                            </label>
-                          </li>
-                        </template>
-                      </ul>
-                    </details>
-                    <!--Select-->
-                    <details class="dropdown flat" x-show="filter.type == 'Input' || filter.type == 'Select'">
-                        <summary class="outline ">
-                            <span x-show="!state.filters[filter.name]" x-text="filter.name"></span>
-                            <span x-show="state.filters[filter.name]" >
-                                <sup style="position: absolute; top: 0.5em;" x-text="filter.name"></sup>
-                                <sub style="padding-top: 12px;" x-text="state.filters[filter.name]"></sub>
-                            </span>
-                        </summary>
-                        <!--No type--> 
-                        <ul>
-                            <template x-for="val in filter.values">
-                                <li >
-                                    <a href="javascript:;" :class="isSelected(val.key, filter.name) ? 'selected' : ''"
-                                        @click="select(val.key, filter)" x-text="filterValueName(val)"></a>
-                                </li>
-                            </template>
-                        </ul>
-                    </details>
+                <li x-show="header && mxResponsive_IsDesktop">
+                    <strong x-text="header"></strong>
                 </li>
+                <template x-for="filter in filters">
+                    <li class="px-0" x-show="filter.type == 'Checkbox'">
+                        <!--Checkbox-->
+                        <details class="dropdown flat">
+                            <summary class="" x-text="filter.name"></summary>
+                            <ul>
+                                <template x-for="val in filter.values">
+                                    <li>
+                                        <label>
+                                            <input
+                                                type="checkbox"
+                                                :checked="isSelectedMany(val.key, filter.name)"
+                                                :name="val.key"
+                                                @click="selectMany(val.key, filter.name)">
+                                            </input>
+                                            <span x-text="filterValueName(val)"></span>
+                                        </label>
+                                    </li>
+                                </template>
+                            </ul> 
+                        </details>
+                    </li>
+                    <li class="px-0" x-show="filter.type == 'Radio'">
+                        <!--Radio-->
+                        <details class="dropdown flat" >
+                          <summary class=" " x-text="filter.name"></summary>
+                          <ul dir="ltr"> 
+                            <template x-for="val in filter.values">
+                              <li>
+                                <label>
+                                  <input type="radio" :checked="isSelected(val.key, filter.name)" :name="filter.name"
+                                    @click="select(val.key, filter)" ></input>
+                                  <span x-text="filterValueName(val)"></span>
+                                </label>
+                              </li>
+                            </template>
+                          </ul>
+                        </details>
+                    </li>
+                    <li class="px-0" x-show="filter.type == 'Input' || filter.type == 'Select'">
+                        <!--Select-->
+                        <details class="dropdown flat" >
+                            <summary class="outline ">
+                                <span x-show="!state.filters[filter.name]" x-text="filter.name"></span>
+                                <span x-show="state.filters[filter.name]" >
+                                    <sup style="position: absolute; top: 0.5em;" x-text="filter.name"></sup>
+                                    <sub style="padding-top: 12px;" x-text="state.filters[filter.name]"></sub>
+                                </span>
+                            </summary>
+                            <!--No type--> 
+                            <ul>
+                                <template x-for="val in filter.values">
+                                    <li >
+                                        <a href="javascript:;" :class="isSelected(val.key, filter.name) ? 'selected' : ''"
+                                            @click="select(val.key, filter)" x-text="filterValueName(val)"></a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </details>
+                    </li>
                 </template>
             </ul>
 
             <!-- Sorting -->
             <ul style="margin-left: 0px; text-align:left;">
-                <li>
-                     <details class="dropdown flat" x-show="sort.type == 'Input' || sort.type == 'Select'">
-                        <summary class="outline ">
+                <li class="px-0">
+                     <details class="dropdown flat" >
+                        <summary class="outline">
                             <span x-show="!state.sort[sort.name]" x-text="sort.name"></span>
                             <span x-show="state.sort[sort.name]" >
                                 <sup style="position: absolute; top: 0.5em;" x-text="sort.name"></sup>
@@ -193,11 +201,11 @@ export default function (data) {
                         </ul>
                     </details>
                 </li>
-                <li>
-                     <details class="dropdown flat" x-show="sortBy.type == 'Input' || sortBy.type == 'Select'">
-                        <summary class="outline ">
-                            <span x-show="!state.sortBy[sortBy.name]" x-text="sortBy.name"></span>
-                            <span x-show="state.sortBy[sortBy.name]" >
+                <li class="px-0">
+                     <details class="dropdown flat" ">
+                        <summary class="outline">
+                            <span x-show="!state.sortBy" x-text="sortBy.name"></span>
+                            <span x-show="state.sortBy" >
                                 <sup style="position: absolute; top: 0.5em;" x-text="sortBy.name"></sup>
                                 <sub style="padding-top: 12px;" x-text="state.sortBy[sortBy.name]"></sub>
                             </span>

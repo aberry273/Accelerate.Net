@@ -767,9 +767,131 @@ namespace Accelerate.Features.Account.Services
                 {
                     Href = _contentService.GetActionUrl(nameof(AccountController.ForgotPassword), ControllerHelper.NameOf<AccountController>()),
                     Text = "Forgot Password",
-                    Class = "contrast",
+                    Class = "secondary",
                 },
             };
+        }
+        #endregion
+        #region ExternalLoginExistingUser
+        public async Task<AccountFormPage> GetExternalLoginExistingUser(string? username, string providerName)
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Link Account";
+            viewModel.Form = this.CreatelLoginExistingUserForm(username, providerName);
+            viewModel.Links = CreateLoginLinks();
+            viewModel.ExternalLoginAction = "ExternalLogin";
+            viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLoginExistingUser";
+
+            return viewModel;
+        }
+        public Form CreatelLoginExistingUserForm(string? username, string providerName)
+        {
+            var model = new Form()
+            {
+                Label = "Link",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Link",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username",
+                        AriaInvalid = false,
+                        Disabled = true,
+                        Value = $"Continue to link your {providerName} account"
+                    },
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username",
+                        AriaInvalid = false,
+                        Hidden = false,
+                        Disabled = true,
+                        Value = username
+                    }
+                }
+            };
+            return model;
+        }
+        #endregion
+        #region ExternalLoginNewUser
+        public async Task<AccountFormPage> GetExternalLoginNewUser(string? username)
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Complete Account";
+            viewModel.Form = this.CreatelLoginNewUserForm(username);
+            viewModel.Links = CreateLoginLinks();
+            viewModel.ExternalLoginAction = "ExternalLogin";
+            viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLoginNewUser"; 
+
+            return viewModel;
+        }
+        public Form CreatelLoginNewUserForm(string? username)
+        {
+            var model = new Form()
+            {
+                Header = "Create a username",
+                Label = "Submit",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username",
+                        Min = 3,
+                        Max = 20,
+                        AriaInvalid = false,
+                        Value = username
+                    },
+                }
+            };
+            return model;
+        }
+        #endregion
+        #region ExternalLoginDeactivatedUser
+        public async Task<AccountFormPage> GetExternalLoginDeactivatedUser(string? username)
+        {
+            var viewModel = new AccountFormPage(_contentService.CreatePageBaseContent());
+            viewModel.Title = "Reactivate Account";
+            viewModel.Form = this.CreatelLoginDeactivatedUserForm(username);
+            viewModel.Links = CreateLoginLinks();
+            viewModel.ExternalLoginAction = "ExternalLogin";
+            viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLoginDeactivatedUser";
+
+            return viewModel;
+        }
+        public Form CreatelLoginDeactivatedUserForm(string? username)
+        {
+            var model = new Form()
+            {
+                Header = "Activate your account",
+                Label = "Continue",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Message",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Message",
+                        AriaInvalid = false,
+                        Disabled = true,
+                        Value = "This account has been de-activated, continue to re-active this account."
+                    },
+                    new FormField()
+                    {
+                        Name = "Username",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = "Username",
+                        AriaInvalid = false,
+                        Value = username,
+                        Hidden = false,
+                        Disabled = true
+                    },
+                }
+            };
+            return model;
         }
         #endregion
         #region Register
@@ -803,6 +925,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
+                Header = "Register by email",
                 Label = "Register",
                 Fields = new List<FormField>()
                 {
@@ -870,6 +993,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
+                Header = "Reset your password",
                 Label = "Forgot Password",
                 Fields = new List<FormField>()
                 {
@@ -918,6 +1042,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
+                Header = "Confirm your account",
                 Label = "Confirm Account",
                 Fields = new List<FormField>()
                 {

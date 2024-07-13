@@ -24,11 +24,13 @@ using Accelerate.Foundations.Content.Hydrators;
 using Accelerate.Foundations.Media.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.EventPipelines.Services;
+using Accelerate.Foundations.Account.Models.Entities;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostCreatedPipeline : DataCreateEventPipeline<ContentPostEntity>
     {
+        private UserManager<AccountUser> _userManager;
         IContentPostService _contentPostService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
@@ -45,6 +47,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
+            UserManager<AccountUser> userManager,
             IElasticService<ContentPostDocument> elasticService,
             IElasticService<ContentPostActionsDocument> elasticPostActionsService,
             IElasticService<ContentPostActionsSummaryDocument> elasticPostActionsSummaryService,
@@ -69,6 +72,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             _quoteService = quoteService;
             _mediaService = mediaService;
             _mediaPostService = mediaPostService;
+            _userManager = userManager;
             _channelService = channelService;
             _accountElasticService = accountElasticService;
             // To update as reflection / auto load based on inheritance classes in library

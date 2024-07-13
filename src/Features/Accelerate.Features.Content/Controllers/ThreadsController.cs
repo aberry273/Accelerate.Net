@@ -106,7 +106,7 @@ namespace Accelerate.Features.Content.Controllers
                 Page = 0,
                 ItemsPerPage = 100
             };
-            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user.Id);
+            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user?.Id);
             viewModel.ThreadData = parentResults ?? new ContentSearchResults();
             viewModel.Replies = aggResponse.Documents.ToList();
 

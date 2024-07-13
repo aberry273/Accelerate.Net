@@ -709,6 +709,25 @@ article.quote {
     background-color: var(--pico-blockquote-border-color);
     border-radius: 8px;
 }
+article.highlighted {
+    border: solid 1px #FFF;
+    background-color: var(--pico-blockquote-border-color);
+}
+
+article.form-post {
+    margin: 0px;
+    padding: 0 calc(var(--pico-block-spacing-vertical)*0.25);
+    background: var(--pico-blockquote-border-color);
+    border-radius: 8px;
+}
+
+article.form-post  :root:not([data-theme=light]) {
+    border: solid 1px #FFF;
+}
+
+article.form-post :root:not([data-theme=dark]) {
+    border: solid 1px #000;
+}
 
 article {
     margin-bottom: calc(var(--pico-block-spacing-vertical)*0);

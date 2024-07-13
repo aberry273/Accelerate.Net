@@ -199,7 +199,7 @@ namespace Accelerate.Foundations.Content.Services
             return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
         private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
-        public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid userId)
+        public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid? userId)
         {
             //if (_parentThreadCache.ContainsKey(postId)) return _parentThreadCache[postId];
             
@@ -212,12 +212,14 @@ namespace Accelerate.Foundations.Content.Services
             //related entities
             var postIds = results.Posts.Select(x => x.Id.ToString()).ToList();
             //var user actions
-            var userActionQuery = new RequestQuery()
+            if(userId != null)
             {
-                UserId = userId,
-            };
-            var actionFilters =
-            results.Actions = await SearchPostActions(userActionQuery, postIds);
+                var userActionQuery = new RequestQuery()
+                {
+                    UserId = userId,
+                };
+                results.Actions = await SearchPostActions(userActionQuery, postIds);
+            }
             results.ActionSummaries = await SearchPostActionSummaries(Query, postIds);
 
             //_parentThreadCache.Add(postId, results);

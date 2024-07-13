@@ -32,6 +32,7 @@ using Accelerate.Foundations.Common.Extensions;
 using Twilio.TwiML.Messaging;
 using Microsoft.AspNetCore.Authentication.Google;
 using Accelerate.Foundations.Content.Models.Entities;
+using static MassTransit.ValidationResultExtensions;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -259,6 +260,7 @@ namespace Accelerate.Features.Account.Controllers
         }
         protected async Task PostUpdateSteps(AccountUser obj)
         {
+            obj.Logins.Clear();
             await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>()
             {
                 Data = obj,
@@ -525,19 +527,34 @@ namespace Accelerate.Features.Account.Controllers
             var accessToken = info.AuthenticationTokens.Single(f => f.Name == "access_token").Value;
             var tokenType = info.AuthenticationTokens.Single(f => f.Name == "token_type").Value;
             var expiryDate = info.AuthenticationTokens.Single(f => f.Name == "expires_at").Value;
-            
-          
-            var result = await this.CreateAndLoginUserFromExternalLogin(info);
-
-            /*
-            var user = await this._userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-            var claimsPrincipal = await this._signInManager.CreateUserPrincipalAsync(user);
-            ((ClaimsIdentity)claimsPrincipal.Identity).AddClaim(new Claim("accessToken", info.AuthenticationTokens.Single(t => t.Name == "access_token").Value));
-            await _signInManager.SignInAsync(user, false, info.Principal.Identity.Name);
 
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            */
-            //var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+            var user = await this._userManager.FindByEmailAsync(email);
+            // If user already exists - not deactivated
+            if(user != null && user.Status == AccountUserStatus.Active)
+            {
+                var alreadyLinkedResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                if(alreadyLinkedResult.Succeeded)
+                {
+                    var login = await _userManager.AddLoginAsync(user, info);
+                    RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                }
+                return RedirectToAction(nameof(ExternalLoginExistingUser), new { username = user.UserName, provider = info.LoginProvider });
+            }
+            // if user exists - deactivated
+            else if (user != null && user.Status == AccountUserStatus.Deactivated)
+            {
+                return RedirectToAction(nameof(ExternalLoginDeactivatedUser), new { username = user.UserName });
+            }
+            // if user doens't exist
+            else
+            {
+                var username = email.Split("@").FirstOrDefault();
+                return RedirectToAction(nameof(ExternalLoginNewUser), new { username = username });
+            }
+            /*
+             var result = await this.CreateAndLoginUserFromExternalLogin(info);
+ 
             if (result.Succeeded)
             {
                 var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
@@ -548,15 +565,163 @@ namespace Accelerate.Features.Account.Controllers
                 return RedirectToAction(nameof(Lockout));
             }
             else
+            { 
+                var message = $"You don't have an account with {info.LoginProvider}";
+                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+            }
+            */
+        }
+
+        #region ExternalLoginNewUser
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ExternalLoginNewUser(string? username = null, string? response = null, string? message = null, string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process 
+            ViewData["ReturnUrl"] = returnUrl;
+            var viewModel = await _accountViewService.GetExternalLoginNewUser(username);
+            viewModel.Form.Response = response;
+            viewModel.Message = message;
+            return View(_accountFormRazorFile, viewModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginNewUser(string username, string returnUrl = null)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var tempPassword = Guid.NewGuid().ToString().ToUpper() + "lower";
+
+            var accessToken = info.AuthenticationTokens.Single(f => f.Name == "access_token").Value;
+            var tokenType = info.AuthenticationTokens.Single(f => f.Name == "token_type").Value;
+            var expiryDate = info.AuthenticationTokens.Single(f => f.Name == "expires_at").Value;
+            if(username.Length < 3 || username.Length > 20)
+            {
+                return RedirectToAction(nameof(ExternalLoginNewUser), new { username = username, message = "Username must be between 3 and 20 characters", returnUrl = returnUrl });
+            }
+            var userCreateResult = await this.CreateUser(username, email, Foundations.Account.Constants.Domains.Public, tempPassword);
+            if (!userCreateResult.Succeeded)
+            {
+                var message = string.Join(',', userCreateResult.Errors.Select(x => x.Description));
+                return RedirectToAction(nameof(ExternalLoginNewUser), new { username = username, message = message, returnUrl = returnUrl });
+            }
+            var user = await this._userManager.FindByEmailAsync(email);
+            await UpdateUserProfile(user, info);
+
+            var login = await _userManager.AddLoginAsync(user, info);
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+          
+            if (result.Succeeded)
+            {
+                //var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(ExternalLoginNewUser));
+            }
+            else
             {
                 // If the user does not have an account, then ask the user to create an account.
                 //ViewData["ReturnUrl"] = returnUrl;
                 //ViewData["LoginProvider"] = info.LoginProvider;
                 var message = $"You don't have an account with {info.LoginProvider}";
-                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+                return RedirectToAction(nameof(ExternalLoginNewUser), new { message = message, returnUrl = returnUrl });
             }
 
         }
+        #endregion
+
+        #region ExternalLoginExistingUser
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ExternalLoginExistingUser(string? username = null, string? provider = null, string? response = null, string? message = null, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            var viewModel = await _accountViewService.GetExternalLoginExistingUser(username, provider);
+            viewModel.Form.Response = response;
+            viewModel.Message = message;
+            return View(_accountFormRazorFile, viewModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginExistingUser(string username, string returnUrl = null)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var tempPassword = Guid.NewGuid().ToString().ToUpper() + "lower";
+            var user = await this._userManager.FindByEmailAsync(email);
+            var login = await _userManager.AddLoginAsync(user, info);
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            return HandleLoginResponse(result, returnUrl, info.LoginProvider);
+        }
+        #endregion
+
+        private IActionResult HandleLoginResponse(Microsoft.AspNetCore.Identity.SignInResult? result, string returnUrl, string loginProvider)
+        {
+            if (result.Succeeded)
+            {
+                //var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+            }
+            else if (result.IsLockedOut)
+            {
+                return RedirectToAction(nameof(Lockout));
+            }
+            else if (result.IsNotAllowed)
+            {
+                var message = $"You are not allowed to login with {loginProvider}";
+                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+            }
+            else
+            {
+                var message = $"You require a one-time code to login";
+                return RedirectToAction(nameof(Login), new { message = message, returnUrl = returnUrl });
+            }
+        }
+
+        #region ExternalLoginDeactivatedUser
+        [HttpGet]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        public async Task<IActionResult> ExternalLoginDeactivatedUser(string? username = null, string? response = null, string? message = null, string returnUrl = null)
+        {
+            // Clear the existing external cookie to ensure a clean login process
+            ViewData["ReturnUrl"] = returnUrl;
+            var viewModel = await _accountViewService.GetExternalLoginDeactivatedUser(username);
+            viewModel.Form.Response = response;
+            viewModel.Message = message;
+            return View(_accountFormRazorFile, viewModel);
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        //[ValidateAntiForgeryToken]
+        public async Task<IActionResult> ExternalLoginDeactivatedUser(string provider, string returnUrl = null)
+        {
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var tempPassword = Guid.NewGuid().ToString().ToUpper() + "lower";
+            var user = await this._userManager.FindByEmailAsync(email);
+            
+            var login = await _userManager.AddLoginAsync(user, info);
+            user = await ResetDeactivatedUserDetails(info, user, tempPassword);
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            return HandleLoginResponse(result, returnUrl, info.LoginProvider);
+
+        }
+        #endregion
         private async Task<AccountUser> UpdateUserProfile(AccountUser user, ExternalLoginInfo info)
         {
             var profile = user.AccountProfileId != Guid.Empty
@@ -586,7 +751,10 @@ namespace Accelerate.Features.Account.Controllers
         private async Task<AccountUser> ResetDeactivatedUserDetails(ExternalLoginInfo info, AccountUser user, string password)
         {
             await UpdateUserProfile(user, info);
-            
+
+            user.Status = AccountUserStatus.Active;
+            await _userManager.UpdateAsync(user);
+
             await this.PostUpdateSteps(user);
             return user;
         }

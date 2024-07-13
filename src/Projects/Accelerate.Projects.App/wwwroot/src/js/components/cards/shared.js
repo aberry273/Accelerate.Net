@@ -111,7 +111,7 @@ export function header(data) {
                         </li>
                     </template>
                     <aside>
-                        <li class="secondary pa-0" style="padding-top:0px;">
+                        <li class="secondary pa-0" style="padding-top:0px; text-overflow: hidden;">
                             <span class="pb-0 highlight" x-text="selectedPost.profile.username"></span>
                             <small class="pl muted noselect" x-show="selectedPost.date"><em><small x-text="selectedPost.date"></small></em></small>
                         </li>
@@ -214,7 +214,7 @@ export function headerEditable(data) {
 
 export function footer(data) {
     return `
-    <footer class="padded" x-data="{
+    <footer class="padded py-0" x-data="{
             onEmojiEvent: '',
             get action() { return _mxCardPost_getActionSummary(selectedPost.id) },
             get agreed() { return _mxCardPost_userSelectedAction('agree', selectedPost) },
@@ -241,11 +241,8 @@ export function footer(data) {
                     <strong class="py-0 my-0">
                         <a class="py-0 primary my-0" style='text-decoration:none' :href="selectedPost.href">
                             <small>
-                                <small>
-                                    <!--
-                                    <span x-text="selectedPost.shortThreadId"></span>
-                                    -->
-                                    Open
+                                <small
+                                    <span x-text="'#'+selectedPost.shortThreadId"></span>
                                 </small>
                             </small>
                         </a>
@@ -285,19 +282,19 @@ export function footer(data) {
                         -->
                         <!--Vote-->
                         <!-- || userId == selectedPost.userId-->
-                        <button :disabled="!userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
+                        <button :disabled="!userId" class="flat chip material-icons-round xsmall" @click="_mxCardPost_action('agree', selectedPost)" :class="agreed ? 'flat primary': 'flat'">expand_less</button>
                           <strong><sup class="noselect" :class="(!userId) ? 'muted' : ''" x-text="action.votes || 0"></sup></strong>
-                        <button :disabled="!userId" class="flat chip material-icons xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
+                        <button :disabled="!userId" class="flat chip material-icons-round xsmall" @click="_mxCardPost_action('disagree', selectedPost)" :class="disagreed ? 'flat primary': 'flat'">expand_more</button>
                    
                         <!--Quotes-->
                         <button :disabled="!userId" @click="_mxCardPost_quote(selectedPost)" class="chip small flat" style="" >
-                            <i aria-label="Quote" class="icon material-icons">format_quote</i>
+                            <i aria-label="Quote" class="icon material-icons-round">format_quote</i>
                             <sup class="noselect" x-text="action.quotes || 0"></sup>
                         </button>
 
                         <!--Reply-->
-                        <button :disabled="!userId" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
-                            <i aria-label="Reply" class="icon material-icons">chat</i>
+                        <button :disabled="!userId'" @click="_mxCardPost_reply(selectedPost)" class="chip small flat" style="" >
+                            <i aria-label="Reply" class="icon material-icons-round">chat_bubble_outline</i>
                             <sup class="noselect" x-text="action.replies || 0"></sup>
                         </button>
                      </div>

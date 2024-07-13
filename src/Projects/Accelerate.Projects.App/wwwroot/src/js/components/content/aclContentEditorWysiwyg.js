@@ -20,10 +20,12 @@ export default function header(data) {
         onEmojiEvent: 'insert:wysiwyg:emoji',
         linkEvent: 'form:input:link',
         // for the context menu
+        showPanel: true,
         showElementEditor: false,
         selectedformat: '',
         openFormatSelection: false,
         showUrlEditor: false,
+        showRichTextMenu: false,
         urlText: '',
         queryText: '',
         userInput: null,
@@ -237,6 +239,8 @@ export default function header(data) {
             this.showUrlEditor = false;
         },
         insertCodeIntoText(formatType) {
+            this.editor.focus();
+            this.showRichTextMenu = false;
             var selectedText = this.getSelectionText();
             this.insertEncodedText(formatType, selectedText);
         },
@@ -298,94 +302,73 @@ export default function header(data) {
             this.$root.innerHTML = `
             <div> 
                 <!--Panel-->
-                <nav>
-                    <ul>
-                    <!--
-                        <span x-show="mxResponsive_IsMobile && showRichText">
-                            <details class="dropdown flat simple" style="margin-top:0px">
-                                <summary class="material-icons flat small">more_horiz</summary>
-                              <ul dir="ltr" style="text-align:left">
-                                <li @click="insertCodeIntoText('code')"><a href="javascript:;">
-                                    <i class="material-icons flat small">code</i>
-                                    Code
-                                </a></li>
-                                <li @click="insertCodeIntoText('quote')"><a href="javascript:;">
-                                    <i class="material-icons flat small">format_quote</i>
-                                    Quote
-                                </a></li>
-                                <li @click="insertCodeIntoText('bold')"><a href="javascript:;">
-                                    <i class="material-icons flat small">format_bold</i>Bold
-                                </a></li>
-                                <li @click="insertCodeIntoText('italic')"><a href="javascript:;">
-                                    <i class="material-icons flat small">format_italic</i>Bold
-                                    Italics
-                                </a></li>
-                              </ul>
-                            </details>
-                        </span>
-                        -->
-                        <span x-show="showRichText"> 
-                            <button class="material-icons flat small" @click="insertCodeIntoText('code')">code</button>
-                            <button class="material-icons flat small" @click="insertCodeIntoText('quote')">format_quote</button>
-                            <button class="material-icons flat small" @click="insertCodeIntoText('bold')">format_bold</button>
-                            <button class="material-icons flat small" @click="insertCodeIntoText('italics')">format_italic</button>
-                        </span>
-                        <!--Url input-->
-                        <button class="small material-icons flat small" :class="showUrlEditor ? 'secondary' : ''" @click="toggleUrlEditor()">link</button>
+                <nav x-show="showPanel">
+                    <ul style="width:100%; max-width:100%">
+                        <fieldset role="group" style="margin-bottom:0px">
+                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('code')">code</button>
+                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('quote')">format_quote</button>
+                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('bold')">format_bold</button>
+                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('italics')">format_italic</button>
+                        
+                            <!--Url input-->
+                            <button x-show="!showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">link</button>
+                            <button x-show="showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">cancel</button>
 
-                        <!--User selector-->
-                        <div x-show="showUrlEditor">
-                            <input
-                                id="urlInput"
-                                style="margin-bottom: 0px"
-                                :change="validateUrl"
-                                x-model="urlText"
-                                :value="urlText"
-                                placeholder="url"
-                            />
-                        </div>
-                        <button x-show="showUrlEditor"  class="material-icons flat small" @click="addLink">add</button>
+                            <!--User selector-->
+                            <div x-show="showUrlEditor">
+                                <input
+                                    id="urlInput"
+                                    style="margin-bottom: 0px"
+                                    :change="validateUrl"
+                                    x-model="urlText"
+                                    :value="urlText"
+                                    placeholder="url"
+                                />
+                            </div>
+                            <button x-show="showUrlEditor"  class="material-icons flat small" @click="addLink">add</button>
 
-                        <!--User selector-->
-                        <button :class="showElementEditor ? 'secondary' : ''" class="material-icons flat small" @click="toggleUserEditor()">person_search</button>
-                        <div x-show="showElementEditor">
-                            <input
-                                id="userInput"
-                                style="margin-bottom: 0px"
-                                :change="search"
-                                x-model="queryText"
-                                :value="queryText"
-                                placeholder="username"
-                                @keyup.@="($event) => returnToElementInput($event)"
-                            />
-                            <article class="dropdownMenu">
-                                <!--Users Format-->
-                                <template x-if="selectedFormat == 'users'">
-                                    <div>
-                                        <!--User Search-->
-                                        <ul  style="display: grid;list-style:none; text-align:left; " >
-                                            <li>Results</li>
-                                            <template x-for="(item) in results">
-                                                <li>
-                                                    <a href="#" @click="select(item, 'user')" x-text="item.name"></a>
+                            <!--User selector-->
+                            <button x-show="!showElementEditor && !showUrlEditor" class="material-icons-round flat small" @click="toggleUserEditor()">person_search</button>
+                            <button x-show="showElementEditor && !showUrlEditor" class="small material-icons-round flat small" @click="toggleUserEditor()">cancel</button>
+                            <div x-show="showElementEditor">
+                                <input
+                                    id="userInput"
+                                    style="margin-bottom: 0px"
+                                    :change="search"
+                                    x-model="queryText"
+                                    :value="queryText"
+                                    placeholder="username"
+                                    @keyup.@="($event) => returnToElementInput($event)"
+                                />
+                                <article class="dropdownMenu">
+                                    <!--Users Format-->
+                                    <template x-if="selectedFormat == 'users'">
+                                        <div>
+                                            <!--User Search-->
+                                            <ul  style="display: grid;list-style:none; text-align:left; " >
+                                                <li>Results</li>
+                                                <template x-for="(item) in results">
+                                                    <li>
+                                                        <a href="#" @click="select(item, 'user')" x-text="item.name"></a>
+                                                    </li>
+                                                </template>
+                                                <li x-show="results.length == 0">
+                                                    No results found
                                                 </li>
-                                            </template>
-                                            <li x-show="results.length == 0">
-                                                No results found
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </template>
-                                <!--  Link Formats-->
-                            </article>
-                        </div>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                    <!--  Link Formats-->
+                                </article>
+                            </div>
 
-                        <!--Emoji picker-->
-                        <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
-                    </ul> 
-                    <ul>
-                        <input style="width: 5px" class="flat"  disabled />
-                    </ul>
+                            <!--Emoji picker-->
+                            <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
+                        </ul> 
+                        <ul>
+                            <input style="width: 5px" class="flat"  disabled />
+                        </ul>
+                    </fieldset>
                 </nav>
                 <!--input-->
                 <div

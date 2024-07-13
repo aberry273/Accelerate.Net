@@ -11,6 +11,9 @@ namespace Accelerate.Foundations.Account.Models.Entities
     }
     public class AccountUser : IdentityUser<Guid>, IBaseEntity
     {
+        [Required, MinLength(3), MaxLength(20)]
+        public override string UserName { get; set; }
+
         public string Domain { get; set; }
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
