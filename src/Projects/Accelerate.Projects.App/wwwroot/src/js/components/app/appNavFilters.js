@@ -12,8 +12,8 @@ export default function (data) {
         sorting: [],
         state: {
             filters: {},
-            sort: '',
-            sortBy: '',
+            sort: 'Created',
+            sortBy: 'Desc',
         },
         header: null,
         event: 'filter:posts',
