@@ -88,6 +88,18 @@
         <article>Login to respond</article>
     }
 
+    <!-- Pinned posts -->
+    <div x-data="listPinnedCards( {
+            actionUrl: '@Model.ActionsApiUrl',
+            searchUrl: '@Model.PinnedPostsApiUrl',
+            filterEvent: '@Model.FilterEvent',
+            actionEvent: '@Model.ActionEvent',
+            itemEvent: '$store.wssContentPosts.getMessageEvent()',
+            userId: '@Model.UserId',
+            items: []
+    })">
+    </div>
+
      <!-- Filters -->
     <div x-data="appNavFilters({
         filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
@@ -103,7 +115,6 @@
         actionEvent: '@Model.ActionEvent',
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         filters: {
-            parentId: '@Model.Item.Id'
         },
         showReplies: true,
         forceLoad: true,
@@ -133,9 +144,11 @@
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
     <!-- Label post -->
-    <!--
-    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalLabelPost))"></div>
-    -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalLabelReply))"></div>
+    
+    <!-- Pin post -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalPinReply))"></div>
+
     <!-- Share post -->
     <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
 }

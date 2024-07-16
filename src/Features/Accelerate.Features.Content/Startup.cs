@@ -111,14 +111,19 @@ namespace Accelerate.Features.Content
             // Mentions
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostLabelEntity, ContentPostLabelCreatedPipeline, EmptyUpdatedPipeline<ContentPostLabelEntity>, EmptyDeletedPipeline<ContentPostLabelEntity>>(services);
             Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostLabelEntity>(services);
+            // Pins
+            Foundations.EventPipelines.Startup.ConfigureEmptyPipelineServices<ContentPostPinEntity>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostPinEntity>(services);
 
             // Settings
 
             // Listener pipelines
-            // ActionSummary > Action listeners
+            // ActionSummary
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostActionsEntity, ContentPostActionsCreatedCompletedListenerPipeline, ContentPostActionsUpdatedCompletedListenerPipeline, EmptyDeletedCompletedPipeline<ContentPostActionsEntity>>(services);
+            //ContentPosts
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostParentEntity, ContentPostParentsCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostParentEntity>, EmptyDeletedCompletedPipeline<ContentPostParentEntity>>(services);
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostQuoteEntity, ContentPostQuotesCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostQuoteEntity>, EmptyDeletedCompletedPipeline<ContentPostQuoteEntity>>(services);
+            Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentPostLabelEntity, ContentPostLabelCreatedCompletedListenerPipeline, EmptyUpdatedCompletedPipeline<ContentPostLabelEntity>, EmptyDeletedCompletedPipeline<ContentPostLabelEntity>>(services);
 
             // MassTransit Busses
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostEntity, IContentPostBus>(services);
@@ -128,6 +133,8 @@ namespace Accelerate.Features.Content
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostMentionEntity, IContentPostMentionBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostParentEntity, IContentPostParentBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostActivityEntity, IContentPostActivityBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostLabelEntity, IContentPostLabelBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostPinEntity, IContentPostPinBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);
         }
     }

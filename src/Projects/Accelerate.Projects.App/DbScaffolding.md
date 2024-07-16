@@ -1,7 +1,7 @@
 
 # Content
 Drop-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
-Add-Migration InitialCreate_Content20 -context ContentDbContext -project "Accelerate.Foundations.Content" 
+Add-Migration InitialCreate_Content22 -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 # Media
 Drop-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 

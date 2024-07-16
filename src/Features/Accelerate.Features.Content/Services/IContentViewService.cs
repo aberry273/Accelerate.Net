@@ -16,6 +16,7 @@ namespace Accelerate.Features.Content.Services
         ChannelPage CreateChannelPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         ThreadPage CreateThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
         ChannelsPage CreateAnonymousChannelsPage();
+        List<NavigationFilterValue> GetFilterSortOptions();
         string GetFilterKey(string key);
         List<QueryFilter> GetActualFilterKeys(List<QueryFilter>? Filters);
         string? GetSortField(List<QueryFilter>? Filters);

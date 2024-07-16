@@ -33,7 +33,7 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
         Task<SearchResponse<T>> GetAggregates(RequestQuery<T> query, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
         Task<SearchResponse<T>> Find(RequestQuery<T> query);
         Task<SearchResponse<T>> Find(BoolQuery query, int page = 0, int itemsPerPage = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc);
-
+        QueryDescriptor<T> BuildIdSearchQuery(List<string> ids);
         // Custom
         FieldValue GetFieldValue(QueryFilter filter, object? value);
         FieldValue GetFieldValue(QueryFilter filter);

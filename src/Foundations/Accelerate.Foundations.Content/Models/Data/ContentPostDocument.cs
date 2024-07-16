@@ -37,6 +37,7 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         public string? Category { get; set; }
         public List<string> Tags { get; set; }
+        public List<string> Labels { get; set; }
     }
     public class ContentPostSettingsSubdocument
     {
@@ -64,7 +65,7 @@ namespace Accelerate.Foundations.Content.Models.Data
     }
     public class ContentPostDocument : EntityDocument
     {
-        // Core properties
+        // Non-index properties
         [NotMapped]
         [JsonIgnore]
         public string Href 
@@ -74,6 +75,11 @@ namespace Accelerate.Foundations.Content.Models.Data
                 return $"/Threads/{this.Id}";
             }
         }
+        [NotMapped]
+        [JsonIgnore]
+        public string Reason { get; set; }
+
+        // Indexex properties
         public string? ShortThreadId { get; set; }
         public string? ThreadId { get; set; }
         public Guid? UserId { get; set; }
@@ -108,6 +114,13 @@ namespace Accelerate.Foundations.Content.Models.Data
             get
             {
                 return Taxonomy?.Tags;
+            }
+        }
+        public IEnumerable<string>? Labels
+        {
+            get
+            {
+                return Taxonomy?.Labels;
             }
         }
         public IEnumerable<ContentPostQuoteSubdocument>? QuotedPosts { get; set; }

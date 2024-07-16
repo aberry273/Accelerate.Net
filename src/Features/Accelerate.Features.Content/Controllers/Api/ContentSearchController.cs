@@ -26,6 +26,9 @@ using Microsoft.AspNetCore.SignalR;
 using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Account.Services;
+using Microsoft.Extensions.Primitives;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -38,13 +41,17 @@ namespace Accelerate.Features.Content.Controllers.Api
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IContentPostElasticService _searchService;
         //IElasticService<ContentPostActionDocument> _searchActionService;
+        IAccountUserSearchService _userSearchService;
         IElasticService<ContentChannelDocument> _searchChannelService;
+        IEntityService<ContentPostPinEntity> _pinnedContentService;
         public ContentSearchController(
             IContentViewService contentService,
             IContentPostElasticService service,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchPostService,
+            IAccountUserSearchService userSearchService,
             //IElasticService<ContentPostActionDocument> searchActionService,
+            IEntityService<ContentPostPinEntity> pinnedContentService,
             IElasticService<ContentChannelDocument> searchChannelService,
             UserManager<AccountUser> userManager)
         {
@@ -53,7 +60,9 @@ namespace Accelerate.Features.Content.Controllers.Api
             _contentService = contentService;
             _searchService = service;
             //_searchActionService = searchActionService;
+            _userSearchService = userSearchService;
             _searchChannelService = searchChannelService;
+            _pinnedContentService = pinnedContentService;
         }
         [Route("Actions")]
         [HttpPost]
@@ -69,7 +78,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             var sortBy = _contentService.GetSortField(query.Filters);
             var sortOrder = _contentService.GetSortOrderField(query.Filters);
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPost(query, postId, sortBy, sortOrder);
+            var result = await _searchService.SearchPost(query, postId, GetSortField(query), sortOrder);
             return Ok(result);
         }
         [Route("Posts/{userId}")]
@@ -88,14 +97,53 @@ namespace Accelerate.Features.Content.Controllers.Api
             var result = await _searchService.SearchPostParents(query, postId, query.UserId.GetValueOrDefault());
             return Ok(result);
         }
-        [Route("Posts/Replies")]
+
+
+        [Route("Posts/pinned/{postId}")]
         [HttpPost]
-        public async Task<IActionResult> SearchPostReplies([FromBody] RequestQuery query)
+        public async Task<IActionResult> SearchPostPinned([FromRoute] Guid postId, [FromBody] RequestQuery query)
+        {
+            var pinned = _pinnedContentService.Find(x => x.ContentPostId == postId);
+            var pinnedIds = pinned.Select(x => x.PinnedContentPostId.ToString()).ToList();
+            query.ItemsPerPage = 10;
+            query.Page = 0;
+            var posts = await _searchService.SearchPostByIds(query, pinnedIds);
+            var userIds = pinned.Select(x => x.UserId.ToString()).ToList();
+            var users = await _userSearchService.SearchUsers(query, userIds);
+
+            var pinnedDocuments = pinned.Select(x =>
+            {
+                var post = posts.FirstOrDefault(y => y.Id == x.PinnedContentPostId);
+                var user = users.Users.FirstOrDefault(y => y.Id == x.UserId);
+                return new ContentPostPinDocument()
+                {
+                    ContentPost = post,
+                    Date = Foundations.Common.Extensions.DateExtensions.ToDateSimple(x.CreatedOn),
+                    Id = x.Id,
+                    ContentPostId = x.ContentPostId,
+                    Reason = x.Reason,
+                    Href = post?.Href,
+                    UserId = post?.UserId,
+                    Username = user?.Username,
+                };
+            }).ToList();
+            
+            return Ok(pinnedDocuments);
+        }
+        private string GetSortField(RequestQuery query)
+        {
+            var sortBy = _contentService.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
+            return sortBy?.Key ?? _contentService.GetFilterSortOptions().FirstOrDefault().Key;
+        }
+        [Route("Posts/Replies/{postId}")]
+        [HttpPost]
+        public async Task<IActionResult> SearchPostReplies([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             SortOrder sortOrder = SortOrder.Desc;
             Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
-            var result = await _searchService.SearchPostReplies(query, query.Sort, sortOrder);
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters); 
+            var result = await _searchService.SearchPostReplies(postId, query, GetSortField(query), sortOrder);
             return Ok(result);
         }
         [Route("Posts")]
@@ -105,7 +153,8 @@ namespace Accelerate.Features.Content.Controllers.Api
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             SortOrder sortOrder = SortOrder.Desc;
             Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
-            var result = await _searchService.SearchPosts(query, query.Sort, sortOrder);
+            var sortBy = _contentService.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
+            var result = await _searchService.SearchPosts(query, GetSortField(query), sortOrder);
             return Ok(result);
         }
         [Route("Posts/Related/{channelId}")]

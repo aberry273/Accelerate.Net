@@ -113,9 +113,11 @@
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateChannel))"></div>
     <!--
     <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+     -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
-    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
-    -->
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalCreateLabel))"></div>
+
     <!-- Share post -->
     <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
 }

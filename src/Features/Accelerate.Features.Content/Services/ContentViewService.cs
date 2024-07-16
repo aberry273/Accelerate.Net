@@ -65,8 +65,9 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = user != null ? user.Id : null;
             viewModel.FormCreatePost = user != null ? CreatePostForm(user) : null;
             viewModel.ModalCreateChannel = CreateModalChannelForm(user);
+            viewModel.ModalCreateLabel = CreateModalChannelForm(user);
             //viewModel.ModalEditReply = CreateModalEditReplyForm(user);
-            //viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+            viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
             viewModel.ActionsApiUrl = "/api/contentpostactions";
             viewModel.PostsApiUrl = "/api/contentsearch/posts";
             viewModel.FilterEvent = "filter:update";
@@ -114,11 +115,13 @@ namespace Accelerate.Features.Content.Services
                 viewModel.FormCreateReply = CreateReplyForm(user, item);
                 viewModel.ModalEditReply = CreateModalEditReplyForm(user);
                 viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
-                viewModel.ModalLabelReply = CreateModalAddLabelForm(user);
+                viewModel.ModalLabelReply = CreateModalCreateLabelForm(user);
+                viewModel.ModalPinReply = CreateModalCreatePinForm(user, item);
             }
 
             viewModel.ActionsApiUrl = "/api/contentpostactions";
-            viewModel.PostsApiUrl = "/api/contentsearch/posts/replies";
+            viewModel.PostsApiUrl = $"/api/contentsearch/posts/replies/{item.Id}";
+            viewModel.PinnedPostsApiUrl = $"/api/contentsearch/posts/pinned/{item.Id}";
             /*
             if(item.ParentId != null)
             {
@@ -519,6 +522,41 @@ namespace Accelerate.Features.Content.Services
                 Value = Enum.GetName(ContentPostEntityStatus.Public),
             };
         }
+
+        private FormField FormFieldLabel()
+        {
+            return new FormField()
+            {
+                Name = "Label",
+                FieldType = FormFieldTypes.input,
+                Placeholder = "Label",
+                AriaInvalid = false,
+            };
+        }
+
+        private FormField FormFieldReason()
+        {
+            return new FormField()
+                {
+                    Name = "Reason",
+                    FieldType = FormFieldTypes.textarea,
+                    Placeholder = "Reason for label (optional)",
+                    AriaInvalid = false
+                };
+        } 
+        private FormField FormFieldContentPost(Guid id)
+        {
+            return new FormField()
+            {
+                Name = "ContentPostId",
+                Class = "flat",
+                Placeholder = "Quotes",
+                Hidden = true,
+                Disabled = true,
+                Value = id,
+                Helper = "",
+            };
+        }
         #endregion
         public ModalForm EditModalChannelForm(AccountUser user, ContentChannelDocument channel)
         {
@@ -743,7 +781,35 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateChannelForm(user);
             return model;
         }
-        public ModalForm CreateModalAddLabelForm(AccountUser user)
+        public ModalForm CreateModalCreatePinForm(AccountUser user, ContentPostDocument post)
+        {
+            var model = new ModalForm();
+            model.Title = "Pin post";
+            model.Text = "Test form text";
+            model.Target = "modal-pin-post";
+            model.Form = CreateFormAddPin(user, post);
+            return model;
+        }
+        public AjaxForm CreateFormAddPin(AccountUser user, ContentPostDocument post)
+        {
+            var model = new AjaxForm()
+            {
+                PostbackUrl = "/api/contentpostpin/post",
+                Type = PostbackType.POST,
+                Event = "post:pin:modal",
+                Label = "Comment",
+                Fields = new List<FormField>()
+                {
+                    FormFieldUser(user.Id),
+                    FormFieldContentPost(post.Id),
+                    FormFieldReason(),
+                }
+            };
+            return model;
+
+        }
+
+        public ModalForm CreateModalCreateLabelForm(AccountUser user)
         {
             var model = new ModalForm();
             model.Title = "Label post";
@@ -757,44 +823,17 @@ namespace Accelerate.Features.Content.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "/api/contentpostlabel",
-                Type = PostbackType.PUT,
+                PostbackUrl = "/api/contentpostlabel/post",
+                Type = PostbackType.POST,
                 Event = "post:label:modal",
                 Label = "Comment",
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name= "ContentPostId",
-                        Class = "flat",
-                        Placeholder = "Quotes",
-                        Hidden = true,
-                        Disabled = true, 
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name= "UserId",
-                        Class = "flat",
-                        Placeholder = "Quotes",
-                        Hidden = true,
-                        Disabled = true,
-                        Value = user.Id.ToString(),
-                        Helper = "",
-                    },
-                    new FormField()
-                    {
-                        Name = "Label",
-                        FieldType = FormFieldTypes.input,
-                        AriaInvalid = false,
-                    },
-                    new FormField()
-                    {
-                        Name = "Reason",
-                        FieldType = FormFieldTypes.textarea,
-                        Placeholder = "What\'s your reason?",
-                        AriaInvalid = false
-                    },
+                    //ContentPostId is replaced by route {id} value
+                    this.FormFieldContentPost(Guid.Empty),
+                    this.FormFieldUser(user.Id),
+                    FormFieldLabel(),
+                    FormFieldReason(),
                 }
             };
             return model;
@@ -978,6 +1017,7 @@ namespace Accelerate.Features.Content.Services
             return new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>(Constants.Filters.Category, Foundations.Content.Constants.Fields.Category.ToCamelCase()),
+                new KeyValuePair<string, string>(Constants.Filters.Labels, Foundations.Content.Constants.Fields.Labels.ToCamelCase()),
                 new KeyValuePair<string, string>(Constants.Filters.Tags, Foundations.Content.Constants.Fields.Tags.ToCamelCase()),
                 new KeyValuePair<string, string>(Constants.Filters.Votes, Foundations.Content.Constants.Fields.ParentVote.ToCamelCase()),
                 new KeyValuePair<string, string>(Constants.Filters.Threads, Foundations.Content.Constants.Fields.ShortThreadId.ToCamelCase()),
@@ -1117,6 +1157,18 @@ namespace Accelerate.Features.Content.Services
                     Name = Constants.Filters.Tags,
                     FilterType = NavigationFilterType.Checkbox,
                     Values = tags
+                });
+            }
+
+
+            var labels = GetAggregateValues(filters, GetFilterKey(Constants.Filters.Labels));
+            if (labels.Count > 0)
+            {
+                filter.Add(new NavigationFilterItem()
+                {
+                    Name = Constants.Filters.Labels,
+                    FilterType = NavigationFilterType.Checkbox,
+                    Values = labels
                 });
             }
 

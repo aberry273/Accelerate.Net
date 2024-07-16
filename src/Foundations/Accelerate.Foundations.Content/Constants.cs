@@ -48,8 +48,9 @@ namespace Accelerate.Foundations.Content
             public const string QuoteIds = "quoteIds";
             public const string Id = "id";
 
-            public const string Category = "Category";
+            public const string Category = "category";
             public const string Tags = "tags";
+            public const string Labels = "taxonomy.labels";
             public const string ParentVote = "parentVote";
             public const string Status = "status";
             public const string Content = "content";

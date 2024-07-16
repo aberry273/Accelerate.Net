@@ -25,15 +25,15 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostLabelController : BaseApiPipelineController<ContentPostLabelEntity, IContentPostLabelBus>
+    public class ContentPostPinController : BaseApiPipelineController<ContentPostPinEntity, IContentPostPinBus>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
-        public ContentPostLabelController(
+        public ContentPostPinController(
             IMetaContentService contentService,
-            IEntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus> service,
+            IEntityPipelineService<ContentPostPinEntity, IContentPostPinBus> service,
             IEntityService<ContentPostEntity> postService,
             IElasticService<ContentPostDocument> searchService,
             UserManager<AccountUser> userManager) : base(service)
@@ -43,16 +43,16 @@ namespace Accelerate.Features.Content.Controllers.Api
             _searchService = searchService;
             _postService = postService;
         }
-        protected override void UpdateValues(ContentPostLabelEntity from, dynamic to)
+        protected override void UpdateValues(ContentPostPinEntity from, dynamic to)
         {
-            from.Label = to.Label;
+            from.PinnedContentPostId = to.PinnedContentPostId;
             from.Reason = to.Reason;
         }
-        [Route("post/{contentPostId}")]
+        [Route("post/{pinnedContentPostId}")]
         [HttpPost]
-        public async Task<IActionResult> Label([FromRoute] Guid contentPostId, [FromBody] ContentPostLabelEntity obj)
+        public async Task<IActionResult> Label([FromRoute] Guid pinnedContentPostId, [FromBody] ContentPostPinEntity obj)
         {
-            obj.ContentPostId = contentPostId;
+            obj.PinnedContentPostId = pinnedContentPostId;
             var id = await _service.CreateWithGuid(obj);
 
             if (id == null)

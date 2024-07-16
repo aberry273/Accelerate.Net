@@ -42,6 +42,8 @@ namespace Accelerate.Foundations.Content.Services
         IEntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus> _servicePipelinePostQuotes { get; set; }
         IEntityPipelineService<ContentPostParentEntity, IContentPostParentBus> _servicePipelinePostParents { get; set; }
         IEntityPipelineService<ContentPostActionsEntity, IContentActionsBus> _servicePipelinePostActions { get; set; }
+        IEntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus> _servicePipelinePostLabels { get; set; }
+        IEntityPipelineService<ContentPostPinEntity, IContentPostPinBus> _servicePipelinePostPins { get; set; }
 
         //IEntityService<ContentPostMentionEntity> _servicePostMentions { get; set; }
         IEntityService<ContentPostMediaEntity> _servicePostMedia { get; set; }
@@ -64,6 +66,8 @@ namespace Accelerate.Foundations.Content.Services
             IEntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus> servicePipelinePostQuotes,
             IEntityPipelineService<ContentPostParentEntity, IContentPostParentBus> servicePipelinePostParents,
             IEntityPipelineService<ContentPostActionsEntity, IContentActionsBus> servicePipelinePostActions,
+            IEntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus> servicePipelinePostLabels,
+            IEntityPipelineService<ContentPostPinEntity, IContentPostPinBus> servicePipelinePostPins,
             IEntityService<ContentPostEntity> servicePosts, 
             IEntityService<ContentPostActivityEntity> servicePostActivities,
             //IEntityService<ContentPostActionsEntity> servicePostActions,
@@ -91,6 +95,8 @@ namespace Accelerate.Foundations.Content.Services
             this._servicePipelinePostQuotes = servicePipelinePostQuotes;
             this._servicePipelinePostParents = servicePipelinePostParents;
             this._servicePipelinePostActions = servicePipelinePostActions;
+            this._servicePipelinePostLabels = servicePipelinePostLabels;
+            this._servicePipelinePostPins = servicePipelinePostPins;
             //base db services
             this._servicePosts = servicePosts;
             this._servicePostActivities = servicePostActivities;

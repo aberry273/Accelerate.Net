@@ -24,6 +24,7 @@ namespace Accelerate.Features.Content.Models.Views
         public string ActionEvent { get; set; } = "action:post";
         public string ActionsApiUrl { get; set; }
         public string PostsApiUrl { get; set; }
+        public string PinnedPostsApiUrl { get; set; }
         public string ParentPostsApiUrl { get; set; }
         public NavigationItem ParentLink { get; set; }
         public NavigationItem ChannelLink { get; set; }
@@ -31,6 +32,7 @@ namespace Accelerate.Features.Content.Models.Views
         public ContentSubmitForm FormCreateReply { get; set; }
         public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
+        public ModalForm ModalPinReply { get; set; }
         public ModalForm ModalLabelReply { get; set; }
         public ThreadPage(BasePage model) : base(model)
         {

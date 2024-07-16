@@ -749,19 +749,19 @@ article {
 
 @media(min-width: 1024px) {
     :root {
-        --pico-font-size: 105%
+        --pico-font-size: 100%
     }
 }
 
 @media(min-width: 1280px) {
     :root {
-        --pico-font-size: 105%
+        --pico-font-size: 100%
     }
 }
 
 @media(min-width: 1536px) {
     :root {
-        --pico-font-size: 110%
+        --pico-font-size: 100%
     }
 }
 

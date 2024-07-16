@@ -36,6 +36,8 @@ namespace Accelerate.Foundations.Content.Models.Entities
         [NotMapped]
         public virtual ContentPostActionsSummaryEntity? Summary { get; set; }
         [NotMapped]
+        public virtual ICollection<ContentPostPinEntity>? Pins { get; set; }
+        [NotMapped]
         public virtual ICollection<ContentPostMentionEntity>? Mentions { get; set; }
         [NotMapped]
         public virtual ICollection<ContentPostQuoteEntity>? Quotes { get; set; }

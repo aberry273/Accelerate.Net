@@ -14,17 +14,20 @@ namespace Accelerate.Foundations.Content.Models.Entities
     /// <summary>
     /// Join table for posts to posts
     /// </summary>
-    [Table("ContentPostLabel")]
-    public class ContentPostLabelEntity : BaseEntity
+    [Table("ContentPostPin")]
+    public class ContentPostPinEntity : BaseEntity
     {
-        public string Label { get; set; }
-        public string? Reason { get; set; }
+        public string Reason { get; set; }
 
         [ForeignKey("User")]
         public Guid UserId { get; set; }
         // Replying to another thread
         [NotMapped]
         public ContentPostEntity? ContentPost { get; set; }
-        public Guid ContentPostId { get; set; } 
+        public Guid ContentPostId { get; set; }
+        // Replying to another thread
+        [NotMapped]
+        public ContentPostEntity? PinnedContentPost { get; set; }
+        public Guid PinnedContentPostId { get; set; }
     }
 }

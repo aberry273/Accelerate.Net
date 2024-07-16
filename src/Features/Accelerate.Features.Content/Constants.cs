@@ -14,6 +14,7 @@ namespace Accelerate.Features.Content
             public const string Threads = "Threads";
             public const string Quotes = "Quotes";
             public const string Category = "Category";
+            public const string Labels = "Labels";
             public const string Tags = "Tags";
             public const string Votes = "Votes";
             public const string Status = "Status";

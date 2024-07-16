@@ -47,7 +47,7 @@ export default function (data) {
             component = data.component || component
 
             // On update post from the websocket 
-            this._mxEvents_On(this.$store.wssContentPosts.getMessageEvent(), async (e) => {
+            this._mxEvents_On(this.itemEvent, async (e) => {
                 const msgData = e.data;
                 if (!msgData) return;
                 //check if item meeds filter criteria
@@ -164,6 +164,7 @@ export default function (data) {
                             actionEvent: actionEvent,
                             updateEvent: item.id,
                         })"></div>
+
 
                         <!-- Replies -->
                         <div x-show="showReplies && replies(item) > 0 && !repliesToggled(item)">

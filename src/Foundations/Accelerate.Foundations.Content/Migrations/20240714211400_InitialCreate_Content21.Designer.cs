@@ -4,6 +4,7 @@ using Accelerator.Foundation.Content.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Accelerate.Foundations.Content.Migrations
 {
     [DbContext(typeof(ContentDbContext))]
-    partial class ContentDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240714211400_InitialCreate_Content21")]
+    partial class InitialCreate_Content21
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,6 +243,7 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Reason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -249,6 +253,8 @@ namespace Accelerate.Foundations.Content.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContentPostId");
 
                     b.ToTable("ContentPostLabel");
                 });
@@ -538,6 +544,17 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
                         .WithOne("Summary")
                         .HasForeignKey("Accelerate.Foundations.Content.Models.Entities.ContentPostActionsSummaryEntity", "ContentPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ContentPost");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostLabelEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", "ContentPost")
+                        .WithMany()
+                        .HasForeignKey("ContentPostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

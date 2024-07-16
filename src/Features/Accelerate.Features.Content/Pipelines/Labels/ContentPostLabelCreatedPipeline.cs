@@ -79,7 +79,7 @@ namespace Accelerate.Features.Content.Pipelines.Labels
             {
                 Type = ContentPostActivityTypes.Created,
                 UserId = args.Value.UserId,
-                Message = $"Your post was labeled with $'{args.Value.Label}'",
+                Message = $"Your post was labeled as '{args.Value.Label}'",
                 Url = $"/Threads/{args.Value.ContentPostId}"
             };
             await _pipelineActivityService.Create(entity);

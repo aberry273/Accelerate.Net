@@ -92,6 +92,11 @@ namespace Accelerator.Foundation.Content.Database
                   .WithOne(x => x.ContentPost)
                   .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<ContentPostEntity>()
+                .HasMany(e => e.Pins)
+                  .WithOne(x => x.ContentPost)
+                  .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<ContentPostSettingsEntity>()
               .HasMany(e => e.ContentPosts)
               .WithOne(e => e.ContentPostSettings);

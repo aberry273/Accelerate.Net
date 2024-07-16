@@ -11,6 +11,8 @@ export default function (data) {
         mxCardPost_replyEvent: 'action:post:reply',
         mxCardPost_formatsEvent: 'action:post:formats',
         mxCardPost_linkEvent: 'action:post:link',
+        mxCardPost_labelEvent: 'action:post:label',
+        mxCardPost_pinEvent: 'action:post:pin',
         actionEvent: 'action:post', 
         modalEvent: 'action:post',
         redirectEvent: 'action:post',
@@ -100,6 +102,12 @@ export default function (data) {
                 payload[action] = val;
             }
             return payload;
+        },
+        async _mxCardPost_pin(item) {
+            this.$events.emit(this.mxCardPost_pinEvent, item)
+        },
+        async _mxCardPost_label(item) {
+            this.$events.emit(this.mxCardPost_labelEvent, item)
         },
         async _mxCardPost_reply(item) {
             this.$events.emit(this.mxCardPost_replyEvent, item)
@@ -263,6 +271,17 @@ export default function (data) {
             this.$events.emit(ev, this.mxCardPost_selectedPost)
         },
         _mxCardPost_modalAction(action, item) {
+            const ev = `modal-${action}-post`;
+            const requestType = action == 'delete' ? 'DELETE' : 'PUT';
+            const payload = {
+                // postback type
+                postbackType: requestType,
+                // content post item
+                item: item,
+            }
+            this.$events.emit(ev, payload)
+        },
+        _mxCardPost_modalActionEditRoute(action, item) {
             const ev = `modal-${action}-post`;
             const requestType = action == 'delete' ? 'DELETE' : 'PUT';
             const payload = {

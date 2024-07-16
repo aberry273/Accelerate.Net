@@ -171,7 +171,7 @@ namespace Accelerate.Foundations.Content.Services
                 SelectMany(x => x.QuotedPosts.
                     Select(y => y.ContentPostQuoteId))
                 .ToList();
-            model.QuotedPosts = quotedPostIds.Any() ? await SearchPostQuotes(Query, quotedPostIds) : new List<ContentPostDocument>();
+            model.QuotedPosts = quotedPostIds.Any() ? await SearchPostByIds(Query, quotedPostIds) : new List<ContentPostDocument>();
 
             //related entities
             var postIds = model.Posts.Select(x => x.Id.ToString()).ToList();
@@ -193,11 +193,11 @@ namespace Accelerate.Foundations.Content.Services
             var elasticQuery = BuildSearchPostQuery(Query, postId);
             return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
-        public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
+        public async Task<ContentSearchResults> SearchPostReplies(Guid postId, RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
-            var elasticQuery = BuildSearchRepliesQuery(Query);
+            var elasticQuery = BuildSearchRepliesQuery(postId, Query);
             return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
-        }
+        } 
         private static Dictionary<Guid, ContentSearchResults> _parentThreadCache { get; set; } = new Dictionary<Guid, ContentSearchResults>();
         public async Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid? userId)
         {
@@ -240,6 +240,7 @@ namespace Accelerate.Foundations.Content.Services
                 //Constants.Fields.QuoteIds.ToCamelCase(),
                 Constants.Fields.Tags.ToCamelCase(),
                 Constants.Fields.Category.ToCamelCase(),
+                Constants.Fields.Labels.ToCamelCase(),
                 Constants.Fields.ParentVote.ToCamelCase(),
             };
             return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = aggregates, ItemsPerPage = 100 };
@@ -250,7 +251,7 @@ namespace Accelerate.Foundations.Content.Services
               return new RequestQuery<ContentPostDocument>() { Filters = filters, Aggregates = fields };
         }
         #region Quotes
-        public async Task<List<ContentPostDocument>> SearchPostQuotes(RequestQuery Query, List<string> ids)
+        public async Task<List<ContentPostDocument>> SearchPostByIds(RequestQuery Query, List<string> ids)
         {
             int take = Query.ItemsPerPage > 0 ? Query.ItemsPerPage : ItemsPerPage;
             if (take > MaxQueryable) take = MaxQueryable;
@@ -453,7 +454,7 @@ namespace Accelerate.Foundations.Content.Services
             return CreateQuery(Query);
         }
 
-        public QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query)
+        public QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(Guid postId, RequestQuery Query)
         {
 
             if (Query == null) Query = new RequestQuery();
@@ -462,7 +463,9 @@ namespace Accelerate.Foundations.Content.Services
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             //Filter any post where the poster is replying to themselves from the results
+            var filterParent = Filter(Constants.Fields.ParentId, ElasticCondition.Filter, postId);
             var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
+            Query.Filters.Add(filterParent);
             Query.Filters.Add(filter);
            
             return CreateQuery(Query);

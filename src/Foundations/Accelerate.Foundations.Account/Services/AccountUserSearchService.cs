@@ -73,6 +73,11 @@ namespace Accelerate.Foundations.Account.Services
                 take);
         }
 
+        public async Task<AccountSearchResults> SearchUsers(RequestQuery Query, List<string> userIds)
+        {
+            var elasticQuery = BuildIdSearchQuery(userIds);
+            return await SearchUsers(Query, elasticQuery);
+        }
         public async Task<AccountSearchResults> SearchUsers(RequestQuery Query)
         {
             var elasticQuery = BuildSearchUserQuery(Query);
@@ -117,6 +122,21 @@ namespace Accelerate.Foundations.Account.Services
         {
 
             if (Query == null) Query = new RequestQuery();
+
+            //Query.Filters.Add(PublicPosts());
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+            Query.Filters.Add(Filter(Constants.Fields.Domain, ElasticCondition.Filter, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+            var filter = Filter(Constants.Fields.Username, ElasticCondition.Filter, QueryOperator.Contains, Query.Text, false);
+            Query.Filters.Add(filter);
+
+            return CreateQuery(Query);
+        }
+        public QueryDescriptor<AccountUserDocument> BuildSearchUserQuery(List<Guid> userIds)
+        {
+
+            var Query = new RequestQuery();
 
             //Query.Filters.Add(PublicPosts());
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));

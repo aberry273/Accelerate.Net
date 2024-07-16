@@ -184,6 +184,17 @@ namespace Accelerate.Foundations.Integrations.Elastic.Services
             fieldSort.Order = sortOrder;
             return fieldSort;
         }
+
+        public QueryDescriptor<T> BuildIdSearchQuery(List<string> ids)
+        {
+            var Query = new RequestQuery();
+            Query.Filters = new List<QueryFilter>()
+            {
+                FilterValues(Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, ids, true)
+            };
+            return this.CreateQuery(Query);
+        }
+
         public async Task<SearchResponse<T>> Search<T>(QueryDescriptor<T> query, int from = 0, int take = 10, string sortByField = Constants.Fields.CreatedOn, SortOrder sortOrder = SortOrder.Asc)
         {
             await CreateIndex();

@@ -12,8 +12,9 @@ namespace Accelerate.Features.Content.Models.Views
         public NavigationGroup ChannelsDropdown { get; set; }
         public ContentSubmitForm FormCreatePost { get; set; }
         public ModalForm ModalCreateChannel { get; set; } 
-        public ModalForm ModalEditReply { get; set; }
+        //public ModalForm ModalEditReply { get; set; }
         public ModalForm ModalDeleteReply { get; set; }
+        public ModalForm ModalCreateLabel { get; set; }
         public string ActionsApiUrl { get; set; }
         public string PostsApiUrl { get; set; }
         public NavigationFilter Filters { get; set; }

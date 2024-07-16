@@ -134,14 +134,12 @@ export function header(data) {
                         <summary role="outline">
                             <i aria-label="Close" class="icon material-icons icon-click" rel="prev">more_vert</i>
                         </summary>
-                        <ul dir="rtl">
-                            <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
-                            <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
-
-                            <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share</a></li>
-                            <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
-                            <li><a class="click" @click="_mxCardPost_modalAction('label', selectedPost)">Label Post</a></li>
-
+                        <ul dir="rtl"> 
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('copy', selectedPost)">Copy Url</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('edit', selectedPost)">Edit Post</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('delete', selectedPost)">Delete Post</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('label', selectedPost)">Label Post</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('pin', selectedPost)">Pin Post</a></li> 
                         </ul>
                     </details> 
                 </li>
@@ -195,12 +193,12 @@ export function headerEditable(data) {
                         <ul dir="rtl">
                             <li x-show="!showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = true">Show tags</a></li>
                             <li x-show="showMetadata && selectedPost.tags"><a class="click" @click="showMetadata = false">Hide tags</a></li>
-                            <li><a class="click" @click="_mxCardPost_modalAction('copy', selectedPost)">Copy Link</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('copy', selectedPost)">Copy Link</a></li>
 
-                            <li><a class="click" @click="_mxCardPost_modalAction('share', selectedPost)">Share Post</a></li>
+                            <li><a class="click" @click="_mxCardPost_modalActionEditRoute('share', selectedPost)">Share Post</a></li>
                             
-                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalAction('edit', selectedPost)">Edit</a></li>
-                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalAction('delete', selectedPost)">Delete</a></li>
+                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalActionEditRoute('edit', selectedPost)">Edit</a></li>
+                            <li x-show="selectedPost.userId == userId" ><a class="click" @click="_mxCardPost_modalActionEditRoute('delete', selectedPost)">Delete</a></li>
 
                         </ul>
                     </details> 
@@ -251,10 +249,9 @@ export function footer(data) {
             </ul>
             <ul>
                 <li>
-                    <!--
-                    <i x-show="!showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_more</i>
-                    <i x-show="showMetadata && selectedPost.tags" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">unfold_less</i>
-                    -->
+                    <i x-show="!showMetadata && selectedPost.tags.length > 0" aria-label="Show more" @click="showMetadata = true" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">label_outline</i>
+                    <i x-show="showMetadata && selectedPost.tags.length > 0" aria-label="Show more" @click="showMetadata = false" :class="false ? 'primary': ''" class="icon material-icons icon-click" rel="prev">label_off</i>
+                   
                     <!--
                     <button :disabled="userId == null" @click="_mxCardPost_action('agree', selectedPost)" class="chip small " style="" :class="agreed ? 'flat primary': 'flat'" >
                         <i aria-label="Agree" class="icon material-icons">expand_less</i>
@@ -302,27 +299,38 @@ export function footer(data) {
             </ul>
         </nav>
         <hr x-show="showMetadata" />
-        <nav x-show="showMetadata">
-                <ul style="width: 100%" >
-                    <li class="pl">
-                        <label><sup>Category</sup></label>
-                        <a href="#" style="text-decoration:none" class="tag flat closable primary small">
-                            <strong><sup x-text="selectedPost.category"</sup></strong>
-                        </a>
-                    </li>
+            <nav x-show="showMetadata" class="px mx">
+                    <ul style="width: 100%;">
+                        <li class="pl px mx" x-show="selectedPost.taxonomy.category">
+                            <label class="muted"><sup>Category</sup></label>
+                            <a href="#" style="text-decoration:none" class="tag flat closable primary small">
+                                <strong><sup x-text="selectedPost.taxonomy.category"</sup></strong>
+                            </a>
+                        </li>
              
-                    <li class="pl">
-                        <div class=" chips">
-                            <label><sup>Tags</sup></label>
-                            <template x-for="(tag, i) in selectedPost.tags">
-                                <a @click="_mxCardPost_filterByTag(tag)" style="text-decoration:none" class="tag closable secondary small">
-                                    <strong><sup x-text="tag"</sup></strong>
-                                </a>
-                            </template>
-                        </div>
-                    </li>
-                </ul>
-        </nav>
+                        <li class="pl px mx"  x-show="selectedPost.taxonomy.tags">
+                            <div class=" chips">
+                                <label class="muted"><sup>Tags</sup></label>
+                                <template x-for="(tag, i) in selectedPost.taxonomy.tags">
+                                    <a @click="_mxCardPost_filterByTag(tag)" style="text-decoration:none" class="tag closable secondary small">
+                                        <strong><sup x-text="tag"</sup></strong>
+                                    </a>
+                                </template>
+                            </div>
+                        </li>
+
+                        <li class="pl px mx" x-show="selectedPost.taxonomy.labels">
+                            <div class=" chips">
+                                <label class="muted"><sup>Labels</sup></label>
+                                <template x-for="(label, i) in selectedPost.taxonomy.labels">
+                                    <a @click="_mxCardPost_filterByTag(label)" style="text-decoration:none" class="tag closable secondary small">
+                                        <strong><sup x-text="label"</sup></strong>
+                                    </a>
+                                </template>
+                            </div>
+                        </li>
+                    </ul>
+            </nav>
     </footer>
     `
 }

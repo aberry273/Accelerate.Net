@@ -39,6 +39,7 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostMediaEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             
             services.AddDbContext<BaseContext<ContentPostLabelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostPinEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostParentEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostChannelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostLinkEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
@@ -58,6 +59,7 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostActionsSummaryEntity>, EntityService<ContentPostActionsSummaryEntity>>();
 
             services.AddTransient<IEntityService<ContentPostLabelEntity>, EntityService<ContentPostLabelEntity>>();
+            services.AddTransient<IEntityService<ContentPostPinEntity>, EntityService<ContentPostPinEntity>>();
             services.AddTransient<IEntityService<ContentPostParentEntity>, EntityService<ContentPostParentEntity>>();
             services.AddTransient<IEntityService<ContentPostChannelEntity>, EntityService<ContentPostChannelEntity>>();
             services.AddTransient<IEntityService<ContentPostLinkEntity>, EntityService<ContentPostLinkEntity>>();
@@ -72,6 +74,8 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityPipelineService<ContentPostMentionEntity, IContentPostMentionBus>, EntityPipelineService<ContentPostMentionEntity, IContentPostMentionBus>>();
             services.AddTransient<IEntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus>, EntityPipelineService<ContentPostQuoteEntity, IContentPostQuoteBus>>();
             services.AddTransient<IEntityPipelineService<ContentPostParentEntity, IContentPostParentBus>, EntityPipelineService<ContentPostParentEntity, IContentPostParentBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostPinEntity, IContentPostPinBus>, EntityPipelineService<ContentPostPinEntity, IContentPostPinBus>>();
+            services.AddTransient<IEntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus>, EntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus>>();
             services.AddTransient<IEntityPipelineService<ContentPostEntity, IContentPostBus>, EntityPipelineService <ContentPostEntity, IContentPostBus>>();
 
             // Logic

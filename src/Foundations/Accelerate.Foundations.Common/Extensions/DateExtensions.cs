@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,11 @@ namespace Accelerate.Foundations.Common.Extensions
 {
     public static class DateExtensions
     {
+        public static string ToDateSimple(this DateTime? value)
+        {
+            if (value == null) return string.Empty;
+            return value?.ToString("MMMM dd yyyy");
+        }
         public static string ToTimeSinceString(this DateTime? value)
         {
             if(value == null) return string.Empty;
