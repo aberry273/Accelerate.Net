@@ -67,7 +67,6 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         // Non-index properties
         [NotMapped]
-        [JsonIgnore]
         public string Href 
         { 
             get
@@ -76,7 +75,6 @@ namespace Accelerate.Foundations.Content.Models.Data
             }
         }
         [NotMapped]
-        [JsonIgnore]
         public string Reason { get; set; }
 
         // Indexex properties

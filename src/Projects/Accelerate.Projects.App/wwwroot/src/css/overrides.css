@@ -699,8 +699,13 @@ article span.p {
     --pico-color: var(--pico-secondary);
 }
 
-.list article {
+.list article{
     margin-bottom: calc(var(--pico-block-spacing-vertical)*0.25);
+    border: solid 1px var(--pico-blockquote-border-color);
+    box-shadow: none;
+}
+:root[data-theme=light] .list article {
+    background-color: #FFF;
 }
 article.link {
     margin: 0px;
@@ -718,9 +723,10 @@ article.quote {
 }
 article.highlighted {
     border: solid 1px #FFF;
-    background-color: var(--pico-blockquote-border-color);
 }
-
+:root[data-theme=light] article.highlighted {
+    border: solid 1px #000;
+}
 article.form-post {
     margin: 0px;
     padding: 0 calc(var(--pico-block-spacing-vertical)*0.25);

@@ -398,7 +398,7 @@ namespace Accelerate.Foundations.Content.Services
         public async Task<int> CreateParentPost(ContentPostEntity post, Guid parentId)
         {
             var existingParent = _servicePipelinePostParents
-                .Find(x => x.ContentPostId == post.Id, 0, 1)
+                .Find(x => x.ContentPostId == parentId, 0, 1)
                 .FirstOrDefault();
 
             var ancestorIds = (existingParent != null && existingParent.ParentIdItems.Any()) 

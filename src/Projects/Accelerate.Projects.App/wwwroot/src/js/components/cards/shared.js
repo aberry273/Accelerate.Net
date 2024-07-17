@@ -62,14 +62,14 @@ export function link(data) {
     return `
     <template x-if="selectedPost.link">
         <article @click="" class="quote" style="padding: 0px;">
+            <div style="display: flex; align-items: center;">
+                <button x-show="selectedPost.link.hide" class="small  material-icons flat" @click="selectedPost.link.hide = false">open_in_full</button>
+                <button x-show="!selectedPost.link.hide"  class="small  material-icons flat" @click="selectedPost.link.hide = true">close_fullscreen</button>
 
-            <button x-show="selectedPost.link.hide" class="small  material-icons flat" @click="selectedPost.link.hide = false">open_in_full</button>
-            <button x-show="!selectedPost.link.hide"  class="small  material-icons flat" @click="selectedPost.link.hide = true">close_fullscreen</button>
-
-            <a style="text-decoration:none" :href="selectedPost.link.url" target="_blank">
-                <sup x-text="selectedPost.link.url"></sup>
-            </a>
-            
+                <a style="text-decoration:none; font-size: 0.8em; white-space:nowrap; overflow: hidden; text-overflow:ellipsis; " :href="selectedPost.link.url" target="_blank">
+                    <span x-text="selectedPost.link.url"></span>
+                </a>
+            </div>
             <div x-show="!selectedPost.link.hide" class="grid">
                 <div x-show="selectedPost.link.image">
                     <figure style="text-align:center;" >

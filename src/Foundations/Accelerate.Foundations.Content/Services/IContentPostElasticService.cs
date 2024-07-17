@@ -20,6 +20,7 @@ namespace Accelerate.Foundations.Content.Services
         Task<ContentSearchResults> SearchPosts(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchPost(RequestQuery Query, Guid postId, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchPostReplies(Guid postId, RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
+        Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc);
         Task<ContentSearchResults> SearchRelatedPosts(ContentChannelDocument channel, RequestQuery query, int page = 0, int itemsPerPage = 10);
         Task<ContentSearchResults> SearchPostParents(RequestQuery Query, Guid postId, Guid? userId);
         Task<List<ContentPostActionsDocument>> SearchUserActions(RequestQuery Query);

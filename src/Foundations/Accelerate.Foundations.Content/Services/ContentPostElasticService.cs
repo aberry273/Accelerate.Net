@@ -193,6 +193,11 @@ namespace Accelerate.Foundations.Content.Services
             var elasticQuery = BuildSearchPostQuery(Query, postId);
             return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
         }
+        public async Task<ContentSearchResults> SearchPostReplies(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
+        {
+            var elasticQuery = BuildSearchRepliesQuery(Query);
+            return await SearchPosts(Query, elasticQuery, sortField, sortOrder);
+        }
         public async Task<ContentSearchResults> SearchPostReplies(Guid postId, RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             var elasticQuery = BuildSearchRepliesQuery(postId, Query);
@@ -454,6 +459,21 @@ namespace Accelerate.Foundations.Content.Services
             return CreateQuery(Query);
         }
 
+
+        public QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(RequestQuery Query)
+        {
+
+            if (Query == null) Query = new RequestQuery();
+
+            //Query.Filters.Add(PublicPosts());
+            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+
+            //Filter any post where the poster is replying to themselves from the results
+            var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
+            Query.Filters.Add(filter);
+
+            return CreateQuery(Query);
+        }
         public QueryDescriptor<ContentPostDocument> BuildSearchRepliesQuery(Guid postId, RequestQuery Query)
         {
 

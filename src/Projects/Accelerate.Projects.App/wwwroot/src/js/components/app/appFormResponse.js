@@ -335,10 +335,10 @@ export default function (data) {
         },
         createReplyPostSummary(item) {
             const content = item.content.length > 64 ? item.content.slice(0, 64) + "..." : item.content;
-            return `Reply to @${item.profile.username}:${content} [${item.shortThreadId}]`
+            return `Reply to @${item.profile.username}: ${content} #${item.shortThreadId}`
         },
         createSingleLineQuotePost(item) {
-            return `@${item.profile.username}: ${item.content.slice(0, 64)} [${item.shortThreadId}]`
+            return `@${item.profile.username}: ${item.content.slice(0, 64)} #${item.shortThreadId}`
         },
         createQuoteRequestItem(item) {
             const quote = {

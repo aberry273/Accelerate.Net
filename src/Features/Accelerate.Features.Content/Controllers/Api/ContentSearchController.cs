@@ -137,13 +137,24 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         [Route("Posts/Replies/{postId}")]
         [HttpPost]
-        public async Task<IActionResult> SearchPostReplies([FromRoute] Guid postId, [FromBody] RequestQuery query)
+        public async Task<IActionResult> SearchPostRepliesFromRoute([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
             query.Filters = _contentService.GetActualFilterKeys(query.Filters);
             SortOrder sortOrder = SortOrder.Desc;
             Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
             query.Filters = _contentService.GetActualFilterKeys(query.Filters); 
             var result = await _searchService.SearchPostReplies(postId, query, GetSortField(query), sortOrder);
+            return Ok(result);
+        }
+        [Route("Posts/Replies")]
+        [HttpPost]
+        public async Task<IActionResult> SearchPostReplies([FromBody] RequestQuery query)
+        {
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
+            SortOrder sortOrder = SortOrder.Desc;
+            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
+            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
+            var result = await _searchService.SearchPostReplies(query, GetSortField(query), sortOrder);
             return Ok(result);
         }
         [Route("Posts")]

@@ -82,11 +82,13 @@
             </article>
         }
         <!--Filter-->
+        <!--
         <div x-data="appNavFilters({
             filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
             header: 'Posts',
             event: '@Model.FilterEvent'
         })"></div>
+        -->
         <!--Feed-->
         <div x-data="listCards( {
             actionUrl: '@Model.ActionsApiUrl',

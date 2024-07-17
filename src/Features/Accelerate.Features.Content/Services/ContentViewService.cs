@@ -120,7 +120,7 @@ namespace Accelerate.Features.Content.Services
             }
 
             viewModel.ActionsApiUrl = "/api/contentpostactions";
-            viewModel.PostsApiUrl = $"/api/contentsearch/posts/replies/{item.Id}";
+            viewModel.PostsApiUrl = $"/api/contentsearch/posts/replies";
             viewModel.PinnedPostsApiUrl = $"/api/contentsearch/posts/pinned/{item.Id}";
             /*
             if(item.ParentId != null)
@@ -196,7 +196,7 @@ namespace Accelerate.Features.Content.Services
             {
                 content = post.Content.Length > 64 ? post.Content.Substring(0, 64) + "..." : post.Content;
             }
-            return $"Reply to @{post?.Profile?.Username}: {content} [{post.ShortThreadId}]";
+            return $"Reply to @{post?.Profile?.Username}: {content} #{post.ShortThreadId}";
         }
         public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostDocument post)
         {
