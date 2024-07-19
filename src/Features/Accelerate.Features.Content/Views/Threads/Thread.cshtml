@@ -66,15 +66,6 @@
     })">
     </div>
 
-    <div x-data="cardPostEditable({
-        item: @JsonSerializerHelper.SerializeObject(Model.Item),
-        userId: '@Model.UserId',
-        itemEvent: $store.wssContentPosts.getMessageEvent(),
-        parentId: '@Model.Item.ParentId',
-    })"></div>
-
-    <hr id="reply-line" />
-
     @if (Model.IsDeactivated)
     {
         <article>Reactivate your account to respond</article>

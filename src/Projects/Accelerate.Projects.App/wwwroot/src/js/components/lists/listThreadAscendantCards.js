@@ -31,7 +31,7 @@ export default function (data) {
             this.item = data.item;
             this.results = data.results;
             this.$store.wssContentPosts.setSearchResults(this.results);
-            this.items = this.results.posts.filter(x => x.id != this.item.id);
+            this.items = this.results.posts;//.filter(x => x.id != this.item.id);
             this.userId = data.userId;
             this.filters = data.filters;
             this.searchUrl = data.searchUrl;
@@ -55,10 +55,11 @@ export default function (data) {
                             actionEvent: actionEvent,
                             itemEvent: $store.wssContentPosts.getMessageEvent(),
                             parentId: item.id
-                        })"></div>
-                        <div
-                            :id="i == items.length-2 ? 'parentline' : null"
-                            class="line-background" ></div>
+                        })"></div> 
+                        <div  
+                            :id="i <= items.length-2 ? 'parentline' : null"
+                            :class="i <= items.length-2 ? 'line-background' : 'line-spacer'"
+                            ></div> 
                     </div>
                 </template>
             </div>
