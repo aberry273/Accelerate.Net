@@ -41,7 +41,6 @@ export default function (data) {
             this.initSearch = data.initSearch;
             //this.modalEvent = data.modalEvent;
             this.modalId = data.modalId;
-
             component = data.component || component
             // init websockets
             /*
@@ -134,7 +133,7 @@ export default function (data) {
         },
 
 
-        get gridCols() {
+        gridCols() {
             if (this.mxResponsive_IsXSmall) return 'col-1'
             if (this.items == null) return 'col-1'
             if (this.items.length <= 1) return 'col-1'

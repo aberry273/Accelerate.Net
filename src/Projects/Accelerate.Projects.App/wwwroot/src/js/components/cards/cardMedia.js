@@ -69,8 +69,8 @@ export default function (data) {
         },
         get gridCols() {
             if (this.mxResponsive_IsXSmall) return 'col-2'
-            if (this.items == null) return 'col-2'
-            if (this.items.length <= 1) return 'col-2'
+            if (this.items == null) return 'col-1'
+            if (this.items.length <= 1) return 'col-1'
             if (this.items.length <= 2) return 'col-2'
             if (this.items.length <= 3) return 'col-3'
             return 'col-4';
@@ -86,7 +86,7 @@ export default function (data) {
             //retry
             setTimeout(function () {
                 image.src += '?' + +new Date;
-            }, 250);
+            }, 350);
         },
 
         // METHODS

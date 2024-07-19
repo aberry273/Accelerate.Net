@@ -20,6 +20,7 @@ export default function header(data) {
         onEmojiEvent: 'insert:wysiwyg:emoji',
         linkEvent: 'form:input:link',
         // for the context menu
+        hasSelectedText: false,
         showPanel: true,
         showElementEditor: false,
         selectedformat: '',
@@ -57,6 +58,42 @@ export default function header(data) {
             this.$events.on(this.onEmojiEvent, (emoji) => {
                 this.insertHtmlIntoText(emoji.char);
             })
+
+            this.preventKeyboardShortcuts();
+        },
+        preventKeyboardShortcuts() {
+            //Prevent bold, italics, underline shortcuts
+            const self = this;
+            document.onkeydown = function (e) {
+                e = e || window.event;//Get event
+
+                if (!e.ctrlKey) return;
+
+                var code = e.which || e.keyCode;//Get key code
+
+                switch (code) {
+                    case 86: //ctrl+V or ctrl+v
+                       e.preventDefault();
+                       e.stopPropagation();
+                       self.onPaste(e);
+                       return;
+                    case 66: //ctrl+B or ctrl+b
+                    case 98:
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    case 73: //ctrl+I or ctrl+i
+                    case 105:
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return;
+                    case 85: //ctrl+U or ctrl+u
+                    case 117:
+                        e.preventDefault();
+                        e.stopPropagation();
+                        break;
+                }
+            };
         },
         insertHtmlIntoText(html) {
             this.setEditorCursorPosition((this.nodePosition || 0), this.editor);
@@ -180,7 +217,13 @@ export default function header(data) {
             //Set insert to true if the cursor did not select the last position
             this.insert = this.nodePosition < this.editor.innerText.length;
             this.showElementEditor = false;
-        }, 
+        },
+        onTouchEnd(ev) {
+            this.hasSelectedText = (this.selectedText != null && this.selectedText.length > 0);
+        },
+        onMouseUp(ev) {
+            this.hasSelectedText = (this.selectedText != null && this.selectedText.length > 0);
+        },
         convertHtmlToEncodedText() {
             let encodedText = this.editor.innerHTML;
             for (var i = 0; i < this.elements.length; i++) {
@@ -188,9 +231,9 @@ export default function header(data) {
             }
             this.$events.emit('editor-wisyiwyg-plaintext', encodedText);
         },
-        onPaste(e) {
-            e.preventDefault();
-            var contentOnBlur = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste text');
+        onPaste(e) { 
+            e.preventDefault(); 
+            var contentOnBlur = prompt('Paste text');
             // replace/strip HTML
             contentOnBlur = contentOnBlur.replace(/(<([^>]+)>)/ig, '');
             document.execCommand('insertText', false, contentOnBlur);
@@ -198,13 +241,34 @@ export default function header(data) {
         onKeyup(ev) {
             this.nodePosition = this.getCaretPosition(ev.target)
             this.contextNode = ev.target;
-            // If Block Quote or Code
-            
+            /*
+            case 86: //ctrl+V or ctrl+v
+                        console.log(ev)
+                        ev.preventDefault();
+                        return;
+                        */
+
             if (ev.key != '@' && ev.key != 'Shift') {
                 this.insert = false;
             }
-
+             
             this.convertHtmlToEncodedText();
+        },
+        stripHtmlFormat() {
+            let text = this.editor.innerHTML;
+
+            var regex = /(<([^>]+)>)/ig 
+            var result = text.replace(regex, "");
+            console.log(result)
+            var match = text.match("/\*\*(.+?)\*\*(?!\*)/g");
+            var str = text.replace(/\*\*(.+?)\*\*(?!\*)/g,'<b>$1</b>').replace(/\*([^*><]+)\*/g,'<i>$1</i>');
+            console.log(result)
+            console.log(str)
+            text = text.replace(/\*\*(.+?)\*\*(?!\*)/g, '<b>$1</b>')
+            text = text.replace(/\*([^*><]+)\*/g, '<i>$1</i>');
+            text = text.replace(/\*([^*><]+)\*/g, '<u>$1</u>');
+            console.log(text);
+            this.$events.emit('editor-wisyiwyg-plaintext', result);
         },
         addLinkCard(text) {
             if (!text) return;
@@ -215,7 +279,7 @@ export default function header(data) {
             }
         },
         onKeyupDebounce(ev) {
-            this.addLinkCard(ev.target.innerText)
+            this.addLinkCard(ev.target.innerText);
         },
         getCaretPosition(target) {
             if (target.isContentEditable || document.designMode === 'on') {
@@ -240,10 +304,14 @@ export default function header(data) {
             this.urlText = null;
             this.showUrlEditor = false;
         },
+        get selectedText() {
+            return this.getSelectionText();
+        },
         insertCodeIntoText(formatType) {
             this.editor.focus();
             this.showRichTextMenu = false;
-            var selectedText = this.getSelectionText();
+            var selectedText = this.selectedText;
+            if (!this.hasSelectedText) return;
             this.insertEncodedText(formatType, selectedText);
         },
 
@@ -307,10 +375,10 @@ export default function header(data) {
                 <nav x-show="showPanel">
                     <ul style="width:100%; max-width:100%">
                         <fieldset role="group" style="margin-bottom:0px">
-                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('code')">code</button>
-                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('quote')">format_quote</button>
-                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('bold')">format_bold</button>
-                            <button x-show="!showInputEditors && showRichText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('italics')">format_italic</button>
+                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('code')">code</button>
+                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('quote')">format_quote</button>
+                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('bold')">format_bold</button>
+                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('italics')">format_italic</button>
                         
                             <!--Url input-->
                             <button x-show="!showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">link</button>
@@ -380,12 +448,14 @@ export default function header(data) {
                     x-html="html"
                     class="wysiwyg"
                     :placeholder="placeholder"
-                    @paste="($event) => onPaste($event)"
                     @click="($event) => onClick($event)"
+                    @touchend="($event) => onTouchEnd($event)"
+                    @mouseup="($event) => onMouseUp($event)"
                     @keyup="($event) => onKeyup($event)"
                     @keyup.shift.enter="($event) => onShiftEnter($event)"
                     @keyup.debounce="($event) => onKeyupDebounce($event)"
                     @keyup.@="($event) => toggleElementInput($event)">
+                    @paste="($event) => onPaste($event)"
                 </div> 
             </div>`
         },

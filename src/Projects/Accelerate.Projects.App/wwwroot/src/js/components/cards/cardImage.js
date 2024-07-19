@@ -24,7 +24,7 @@ export default function (data) {
                 this.load(self.data)
             })
         },
-        getImage(filePath) {
+        getImage(filePath) { 
             if (this.imageWidth) {
                 return filePath + '?w=' + this.imageWidth;
             }
@@ -37,7 +37,7 @@ export default function (data) {
             const html = `
               <div class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
                 <figure>
-                  <img
+                  <img 
                     :src="getImage(item.filePath)"
                     onerror="this.src='/src/images/broken.jpg'"
                     :alt="item.name"

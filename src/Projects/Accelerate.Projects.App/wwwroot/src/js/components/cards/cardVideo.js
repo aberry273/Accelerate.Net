@@ -28,7 +28,7 @@ export default function (data) {
         load(data) {
             const html = `
               <div class="media padless flat" style="cursor: pointer" class="padless clickable">
-                <video width="100%" height="400px" controls>
+                <video width="100%" height="400px" controls style="display: block; margin: 0 auto;">
                     <source :src="item.filePath"
                     onerror="this.src='/src/images/broken.jpg'" type="video/mp4">
                     Your browser does not support the video tag.

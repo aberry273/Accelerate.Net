@@ -139,20 +139,20 @@ export default function (data) {
             return `<span contenteditable=\"false\" class=\"item p\">${ input }</span>`;
         },
         _mxCardPost_FormatHref(input) {
-            return `<a target="_blank" href="${input}">${input}</a>&nbsp;`;
+            return `<a target="_blank" href="${input}">${input}</a>`;
         },
         _mxCardPost_FormatBold(input) {
-            return `<strong>${input}</strong>&nbsp;`;
+            return `<strong>${input}</strong>`;
         },
         _mxCardPost_FormatItalics(input) {
-            return `<em>${input}</em>&nbsp;`;
+            return `<em>${input}</em>`;
         },
         _mxCardPost_FormatCode(input) {
             let str = input.substring(3);
             return `<code>${input}</code>&nbsp;`;
         },
         _mxCardPost_FormatQuote(input) {
-            return `<blockquote>${input}</blockquote>&nbsp;`;
+            return `<blockquote>${input}</blockquote><br/>`;
         },
         _mxCardPost_ReplaceMarkdown(string) {
             var str = string

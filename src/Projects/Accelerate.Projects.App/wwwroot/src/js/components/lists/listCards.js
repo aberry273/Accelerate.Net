@@ -52,9 +52,10 @@ export default function (data) {
                 const msgData = e.data;
                 if (!msgData) return;
                 //check if item meeds filter criteria 
-                var itemMatchesFilters = this.filterItem(msgData.data, mergedFilters);
+                var itemMatchesFilters = this.filterItem(msgData.data, this.mergeFilters());
                 //Only live update items if the current filters apply
                 if (itemMatchesFilters) {
+                    console.log(msgData);
                     this.items = this.$store.wssContentPosts.updateItems(this.items, msgData);
                 }
             })

@@ -835,9 +835,9 @@ article .media figure {
 
 article .media figure img {
     object-fit: cover;
-    height:200px;
     border-radius: 12px;
     vertical-align: middle;
+    height: 200px;
 }
 
 button.floating-next {
@@ -1148,34 +1148,42 @@ html {
     scrollbar-color: var(--pico-form-element-background-color);
 }
 /* RESPONSIVE GRID*/
-@media (min-width: 576px) {
+@media (max-width: 576px) {
+   
 
-    .container {
-        max-width: 100%;
+    article .media figure img {
+        height: 175px !important;
     }
 }
 
-@media (min-width: 768px) {
-    .container {
-        max-width: 768px;
+@media (max-width: 768px) {
+   
+
+    article .media figure img {
+        height: 200px;
     }
 }
 
-@media (min-width: 1024px) {
-    .container {
-        max-width: 768px;
+@media (max-width: 1024px) {
+    
+
+    article .media figure img {
+        height: 350px;
     }
 }
 
-@media (min-width: 1280px) {
-    .container {
-        width: 768px;
+@media (max-width: 1280px) {
+     
+    article .media figure img {
+        height: 350px;
     }
 }
 
-@media (min-width: 1536px) {
-    .container {
-        max-width: 768px;
+@media (max-width: 1536px) {
+    
+
+    article .media figure img {
+        height: 350px;
     }
 }
 /* RESPONSIVE GRID*/
@@ -1230,6 +1238,10 @@ html {
         width: 576px;
         max-width: 576px;
     }
+    .grid {
+        grid-column-gap: calc(var(--pico-grid-column-gap) * 0.5);
+        grid-row-gap: calc(var(--pico-grid-row-gap) * 0.5);
+    }
 }
 
 @media (min-width: 768px) {
@@ -1237,11 +1249,19 @@ html {
         width: 100%;
         max-width: 100%;
     }
+    .grid {
+        grid-column-gap: calc(var(--pico-grid-column-gap) * 0.5);
+        grid-row-gap: calc(var(--pico-grid-row-gap) * 0.5);
+    }
 }
 
 @media (min-width: 576px) {
     .form {
         width: 100%;
         max-width: 100%;
+    }
+    .grid {
+        grid-column-gap: calc(var(--pico-grid-column-gap) * 0.5);
+        grid-row-gap: calc(var(--pico-grid-row-gap) * 0.5);
     }
 }
