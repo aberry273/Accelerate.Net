@@ -157,7 +157,8 @@ namespace Accelerate.Features.Content.Controllers.Api
 
         private async Task<List<Guid>> CreateMentionsFromRequest(ContentPostMixedRequest obj)
         {
-            var mentions = GetUsernames(obj.Content);
+            if (string.IsNullOrEmpty(obj?.Content)) return null;
+            var mentions = GetUsernames(obj?.Content);
 
             if (!mentions.Any()) return null;
             
@@ -197,6 +198,15 @@ namespace Accelerate.Features.Content.Controllers.Api
             if (images.Any())
             {
                 var mediaFiles = await _mediaService.UploadImagesFromFiles(obj.UserId, obj.Images);
+
+                var failedUploads = mediaFiles.Where(x => !x.Success);
+
+                if (failedUploads.Any())
+                {
+                    var names = failedUploads.Select(x => x.FilePath);
+                    var failedFiles = obj.Images.Where(x => names.Contains(x.FileName)).ToList();
+                    var retriedFiles = await _mediaService.UploadImagesFromFiles(obj.UserId, failedFiles);
+                }
 
                 media.AddRange(mediaFiles.Select(x => x.Id));
             }

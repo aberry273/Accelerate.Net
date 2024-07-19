@@ -218,6 +218,7 @@ export default function (data) {
         },
         //Used by contentPost to render the encoded text into decoded HTML
         _mxCardPost_ParseEncodedTextElements(text) { 
+            if (text == null || text.length == 0) return null;
             let elements = this._mxCardPost_GetTextElementsFromEncodedText(text);
             //relying on encoded text
             if (elements == null || elements.length == 0) return text;

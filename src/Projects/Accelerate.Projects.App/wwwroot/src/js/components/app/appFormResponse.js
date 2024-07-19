@@ -208,8 +208,8 @@ export default function (data) {
             return total <= 4;
         },
         get isValid() {
-            return this.underTextLimit
-                && this.underMediaLimit()
+            return (this.underTextLimit
+                || this.underMediaLimit())
                 && this.underQuoteLimit()
                 && ((this.textField.value != null && this.textField.value.length > 0)
                 || (this.videoField.value != null && this.videoField.value.length > 0)

@@ -86,7 +86,7 @@ export default function (data) {
             //retry
             setTimeout(function () {
                 image.src += '?' + +new Date;
-            }, 350);
+            }, 200);
         },
 
         // METHODS
@@ -118,13 +118,11 @@ export default function (data) {
             </div>
           
             <dialog :id="modalId" class="fullscreen">
-                <article class="fullscreen" style="margin-top:0px;">
-                    <header class="py-0">
+                <article class="px-0 fullscreen" style="margin-top:0px;">
+                    <header class="">
                         <nav>
-                        <ul>
-                            <p>
-                                <strong x-text="selectedItem.name"></strong>
-                            </p>
+                        <ul> 
+                            <strong x-text="selectedItem.name"></strong> 
                         </ul>
                         <ul>
                          
@@ -143,28 +141,31 @@ export default function (data) {
                             <button aria-label="Close" rel="prev" @click="_mxModal_Close(modalId)"></button>
                         </ul>
                         </nav>
-                    </header> 
+                    </header>
+                     
                     <button aria-label="Previous" 
                         :disabled="!hasPrevious"
                         @click="browsePreviousMedia" 
-                        class="round xsmall primary material-icons floating-previous"
+                        class="round xsmall flat primary material-icons floating-previous"
                         rel="next">chevron_left</button>
-        
-                    <figure style="text-align:center">
-                        <img
-                            style="height:100%"
-                            :src="selectedItem.filePath"
-                            :onerror="onImgError(this)"
-                            :alt="selectedItem.name"
-                            />
-                    </figure>
+                    <div class="floating-centre">
+                        <figure >
+                            <img
+                                style="height:100%"
+                                :src="selectedItem.filePath"
+                                :onerror="onImgError(this)"
+                                :alt="selectedItem.name"
+                                />
+                        </figure>
+                    </div>
 
                     <button aria-label="Next" 
                         :disabled="!hasNext"
                         @click="browseNextMedia" 
-                        class="round xsmall primary material-icons floating-next"
+                        class="round xsmall flat primary material-icons floating-next"
                         rel="next">chevron_right</button>
-     
+                  
+
                 </article>
             </dialog> 
             `
