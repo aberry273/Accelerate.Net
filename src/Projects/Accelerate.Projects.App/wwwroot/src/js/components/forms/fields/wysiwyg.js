@@ -8,6 +8,7 @@ export default function (data) {
             value: '',
             wysiwyg: null,
             init() {
+                //this.value = ''+field.value;
                 //On aclDropDown user selecting an option
                 this.$events.on('editor-wisyiwyg-plaintext', (val) => {
                     field.value = val;
@@ -16,6 +17,7 @@ export default function (data) {
                     field.items = val;
                 })
                 this.$watch('field.value', (newVal) => {
+                    //this.value = ''+field.value;
                     if(!newVal) {
                         this.$events.emit('wysiwyg:clear')
                     }

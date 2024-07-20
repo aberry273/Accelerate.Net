@@ -79,43 +79,6 @@
         <article>Login to respond</article>
     }
 
-    <!-- Pinned posts -->
-    <div x-data="listPinnedCards( {
-            actionUrl: '@Model.ActionsApiUrl',
-            searchUrl: '@Model.PinnedPostsApiUrl',
-            filterEvent: '@Model.FilterEvent',
-            actionEvent: '@Model.ActionEvent',
-            itemEvent: '$store.wssContentPosts.getMessageEvent()',
-            userId: '@Model.UserId',
-            items: []
-    })">
-    </div>
-
-     <!-- Filters -->
-    <div x-data="appNavFilters({
-        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-        header: 'Replies',
-        event: '@Model.FilterEvent'
-    })"></div>
-
-    <!-- Replies -->
-    <div x-data="listCards( {
-        actionUrl: '@Model.ActionsApiUrl',
-        searchUrl: '@Model.PostsApiUrl',
-        filterEvent: '@Model.FilterEvent',
-        actionEvent: '@Model.ActionEvent',
-        itemEvent: $store.wssContentPosts.getMessageEvent(),
-        filters: {
-            parentId: '@Model.Item.Id'
-        },
-        showReplies: true,
-        forceLoad: true,
-        userId: '@Model.UserId',
-        items: []
-        //items:  JsonSerializerHelper.SerializeObject(Model.Replies),
-    })">
-    </div>
-
     <hr />
      
     <div class="reply-padding"></div>

@@ -113,6 +113,50 @@ namespace Accelerate.Features.Content.Controllers
             return View(viewModel);
         }
 
+        [HttpGet("Threads/{id}/edit")]
+        //[RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        public async Task<IActionResult> EditThread([FromRoute] Guid id)
+        {
+            var user = await GetUserWithProfile(this.User);
+
+            var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
+
+            var item = response.Source;
+
+            if (item == null)
+            {
+                return RedirectToAction(nameof(ThreadNotFound));
+            }
+            /*
+            ContentPostDocument parent = null;
+            if (item.ParentId != null)
+            {
+                var parentResponse = await _postSearchService.GetDocument<ContentPostDocument>(item.ParentId.ToString());
+                parent = parentResponse.Source;
+            }
+            */
+
+            var filterOptions = _contentViewService.GetFilterOptions();
+
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, id)
+            };
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
+            var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
+            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
+
+            var query = new RequestQuery()
+            {
+                Page = 0,
+                ItemsPerPage = 100
+            };
+            var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user?.Id);
+            viewModel.ThreadData = parentResults ?? new ContentSearchResults();
+            viewModel.Replies = aggResponse.Documents.ToList();
+
+            return View(viewModel);
+        }
         [HttpGet]
         public async Task<IActionResult> Index()
         {

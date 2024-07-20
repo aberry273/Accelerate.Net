@@ -31,21 +31,29 @@ namespace Accelerate.Projects.App.Controllers
         }
         public async Task<ActionResult> Files(string id, [FromQuery]int? w, [FromQuery] int? h)
         {
-            var file = await _mediaService.GetPublicLocation(id);
-            if (file == null) return null;
-            if(w == null && h == null)
-                return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png"); ;
+            try
+            {
+                var file = await _mediaService.GetPublicLocation(id);
+                if (file == null) return null;
+                if (w == null && h == null)
+                    return new FileStreamResult(new FileStream(file, FileMode.Open), "image/png"); ;
 
-            var ignoreAspectRatio = h != null && w != null;
-            var width = w != null ? w.GetValueOrDefault() : h.GetValueOrDefault();
-            var height = h != null ? h.GetValueOrDefault() : width;
-            var resizedPath = _mediaService.GetParameterPath(file, height, width);
+                var ignoreAspectRatio = h != null && w != null;
+                var width = w != null ? w.GetValueOrDefault() : h.GetValueOrDefault();
+                var height = h != null ? h.GetValueOrDefault() : width;
+                var resizedPath = _mediaService.GetParameterPath(file, height, width);
 
-            if(!_mediaService.FileExists(resizedPath)) {
-                resizedPath = _mediaService.ResizeImage(file, height, width, ignoreAspectRatio);
+                if (!_mediaService.FileExists(resizedPath))
+                {
+                    resizedPath = _mediaService.ResizeImage(file, height, width, ignoreAspectRatio);
+                }
+
+                return new FileStreamResult(new FileStream(resizedPath, FileMode.Open), "image/png");
             }
-
-            return new FileStreamResult(new FileStream(resizedPath, FileMode.Open), "image/png");
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ export default function header(data) {
             this.searchEvent = data.searchEvent;
             this.showRichText = data.showRichText;
             this.html = data.value || '';
-             
+
             this.$nextTick(() => {
                 this.load(self.data)
                 this.editor = document.getElementById('editor')

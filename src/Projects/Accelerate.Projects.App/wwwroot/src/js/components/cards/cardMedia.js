@@ -86,7 +86,7 @@ export default function (data) {
             //retry
             setTimeout(function () {
                 image.src += '?' + +new Date;
-            }, 200);
+            }, 350);
         },
 
         // METHODS

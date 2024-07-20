@@ -33,13 +33,21 @@ export default function (data) {
         modalAction(action, data) {
             this.$events.emit(this.modalEvent, data)
         },
+        onImgError(image) {
+            image.onerror = null;
+            //retry
+            setTimeout(function () {
+                image.src += '?' + +new Date;
+            }, 350);
+        },
+
         load(data) {
             const html = `
               <div class="media padless flat" style="cursor: pointer" class="padless clickable" @click="modalAction('open', item)">
                 <figure>
                   <img 
                     :src="getImage(item.filePath)"
-                    onerror="this.src='/src/images/broken.jpg'"
+                    :onerror="onImgError(this)"
                     :alt="item.name"
                   />
                 </figure>

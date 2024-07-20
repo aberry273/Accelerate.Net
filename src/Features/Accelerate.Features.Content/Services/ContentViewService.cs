@@ -268,7 +268,7 @@ namespace Accelerate.Features.Content.Services
                 Helper = "",
             };
         }
-        private FormField FormFieldQuotes(ContentPostDocument post)
+        private FormField FormFieldQuotes(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -285,7 +285,7 @@ namespace Accelerate.Features.Content.Services
                 Helper = "",
             };
         }
-        private FormField FormFieldCharLimit(ContentPostDocument post)
+        private FormField FormFieldCharLimit(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -301,7 +301,7 @@ namespace Accelerate.Features.Content.Services
                 Hidden = true,
             };
         }
-        private FormField FormFieldImageLimit(ContentPostDocument post)
+        private FormField FormFieldImageLimit(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -317,7 +317,7 @@ namespace Accelerate.Features.Content.Services
                 Hidden = true,
             };
         }
-        private FormField FormFieldVideoLimit(ContentPostDocument post)
+        private FormField FormFieldVideoLimit(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -346,7 +346,7 @@ namespace Accelerate.Features.Content.Services
                 Max = post?.Settings?.CharLimit ?? 512,
             };
         }
-        private FormField FormFieldContent(ContentPostDocument post)
+        private FormField FormFieldContent(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -359,7 +359,7 @@ namespace Accelerate.Features.Content.Services
                 Max = post?.Settings?.CharLimit ?? 2048,
             };
         }
-        private FormField FormFieldLink(ContentPostDocument post)
+        private FormField FormFieldLink(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -876,26 +876,16 @@ namespace Accelerate.Features.Content.Services
                 Label = "Comment",
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name= "QuoteIds",
-                        FieldType = FormFieldTypes.list,
-                        Class = "flat",
-                        Placeholder = "Quotes",
-                        IsArray = true,
-                        Autocomplete = null,
-                        ClearOnSubmit = true,
-                        AriaInvalid = true,
-                        Hidden = false,
-                        Helper = "",
-                    },
-                    new FormField()
+                    this.FormFieldQuotes(null),
+                    this.FormFieldContent(null),
+                    /*new FormField()
                     {
                         Name = "Content",
                         FieldType = FormFieldTypes.textarea,
-                        Placeholder = "What\'s your update?",
+                        Placeholder = "Comment",
                         AriaInvalid = false
                     },
+                    */
                     new FormField()
                     {
                         Name = "Id",

@@ -6,7 +6,6 @@ const encoder = new TextEncoder();
 export default function (data) {
     return {
         ...mxFetch(data),
-        ...mxFetch(data),
         ...mxEvents(data),
         ...mxForm(data),
         ...mxModal(data),
