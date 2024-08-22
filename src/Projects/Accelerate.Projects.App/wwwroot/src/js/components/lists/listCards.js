@@ -55,7 +55,6 @@ export default function (data) {
                 var itemMatchesFilters = this.filterItem(msgData.data, this.mergeFilters());
                 //Only live update items if the current filters apply
                 if (itemMatchesFilters) {
-                    console.log(msgData);
                     this.items = this.$store.wssContentPosts.updateItems(this.items, msgData);
                 }
             })

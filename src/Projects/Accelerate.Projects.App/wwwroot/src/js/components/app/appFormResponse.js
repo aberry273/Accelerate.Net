@@ -26,6 +26,7 @@ export default function (data) {
         statusFieldName: 'Status',
         categoryFieldName: 'Category',
         charLimitFieldName: 'CharLimit',
+        contentFieldName: 'Content',
         tagFieldName: 'Tags',
         imageFieldName: 'Images',
         videoFieldName: 'Videos',
@@ -33,7 +34,13 @@ export default function (data) {
         validationMessage: '',
         originalYPosition: 0,
         formContainerElement: '#fixedPosition',
-  
+
+        //textField: {},
+        imageField: {},
+        videoField: {},
+        quoteField: {},
+        contentField: null,
+         
         formBottomOffset: 0,
         formTopOffset: 'initial',
 
@@ -63,6 +70,11 @@ export default function (data) {
             this.fetchMetadataUrl = data.fetchMetadataUrl;
             this.searchUsersUrl = data.searchUsersUrl;
             this.fields = data.fields,
+            /*
+            this.formFields = {
+                fields: this.fields
+            }
+            */
             this.actionEvent = data.actionEvent;
             this.fixTop = data.fixTop || false;
 
@@ -71,13 +83,16 @@ export default function (data) {
 
             var tagField = this._mxForm_GetField(this.fields, this.tagFieldName);
             this.showTags = tagField = null ? !tagField.hidden : true
-            var imageField = this._mxForm_GetField(this.fields, this.imageFieldName);
-            this.showImage = imageField != null ? !imageField.hidden : null
-            var videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
-            this.showVideo = videoField != null ? !videoField.hidden : null
+            this.imageField = this._mxForm_GetField(this.fields, this.imageFieldName);
+            this.showImage = this.imageField != null ? !this.imageField.hidden : null
+            this.videoField = this._mxForm_GetField(this.fields, this.videoFieldName);
+            this.showVideo = this.videoField != null ? !this.videoField.hidden : null
 
-            const contentField = this._mxForm_GetField(this.fields, 'Content');
-            this.charLimit = contentField.max || 256;
+            this.quoteField = this._mxForm_GetField(this.fields, this.quoteFieldName);
+             
+            //this.textField = this._mxForm_GetField(this.fields, this.textFieldName);
+
+            this.charLimit = this.textField.max || 256;
             // On updates from cards
             // Move this and all content/post based logic to mixin/geneirc logic
             this.$events.on(this.mxCardPost_quoteEvent, async (item) => {
@@ -109,18 +124,25 @@ export default function (data) {
             }) 
             */
 
-            this.$events.on(this.mxCardPost_formatsEvent, async (item) => { 
+            this.$events.on(this.mxCardPost_formatsEvent, async (item) => {
+                console.log('updatre')
                 this.updateSettingsField(item);
             }) 
             this.$events.on(wysiwygUserSearchEvent, async (query) => {
                 this.searchUsers(query);
             })
+
             this.setHtml(data);
         },
         // Content editable field
         //https://stackoverflow.com/questions/46000233/how-is-formatting-in-textarea-being-done
 
         // GETTERS
+        get contentFieldNames() {
+            return [
+                this.textFieldName,
+            ]
+        },
         get taxonomyFieldNames() {
             return [
                 this.tagFieldName,
@@ -133,21 +155,29 @@ export default function (data) {
                 this.charLimitFieldName,
             ]
         },
+        get formFields() {
+            return {
+                fields: this.fields
+            }
+        },
+        /*
         get tagField() {
             return this._mxForm_GetField(this.fields, this.tagFieldName);
         },
         get imageField() {
             return this._mxForm_GetField(this.fields, this.imageFieldName);
-        },
+        }, 
         get videoField() {
             return this._mxForm_GetField(this.fields, this.videoFieldName);
-        },
-        get textField() {
-            return this._mxForm_GetField(this.fields, this.textFieldName);
         },
         get quoteField() {
             return this._mxForm_GetField(this.fields, this.quoteFieldName);
         },
+        */
+        get textField() {
+            return this._mxForm_GetField(this.fields, this.textFieldName);
+        },
+
         get typeSelected() {
             return this.showImage || this.showVideo || this.showText
         },
@@ -165,7 +195,10 @@ export default function (data) {
         scrollToElement(elementId) {
             const el = document.getElementById(elementId);
             const headerOffset = 75;
-            const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            let y = headerOffset;
+            if (el != null) {
+                y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+            }
           
             window.scrollTo({
                 top: y,
@@ -184,8 +217,8 @@ export default function (data) {
 
         },
         underMediaLimit() {
-            const images = this.imageField.value != null ? this.imageField.value.length : 0;
-            const videos = this.videoField.value != null ? this.videoField.value.length : 0;
+            const images = this.imageField != null && this.imageField.value != null ? this.imageField.value.length : 0;
+            const videos = this.videoField != null && this.videoField.value != null ? this.videoField.value.length : 0;
     
             const total = images + videos
             if (total > 4) {
@@ -211,10 +244,10 @@ export default function (data) {
                 || this.underMediaLimit())
                 && this.underQuoteLimit()
                 && ((this.textField.value != null && this.textField.value.length > 0)
-                || (this.videoField.value != null && this.videoField.value.length > 0)
-                || (this.imageField.value != null && this.imageField.value.length > 0))
+                || (this.videoField != null && this.videoField.value != null && this.videoField.value.length > 0)
+                || (this.imageField != null && this.imageField.value != null && this.imageField.value.length > 0))
         },
-        get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
+        //get tagField() { return this._mxForm_GetField(this.fields, this.tagFieldName) },
 
         get fixedStyle() {
             let style = 'display:block;margin-top: 55px;'
@@ -222,6 +255,14 @@ export default function (data) {
                 style += "left: 0; width: 100%;";
             style += `bottom: 0; top: initial`;
             return style;
+        },
+        getOtherFields() {
+            return this.fields;
+            const fields = this.fields
+                .filter(x => this.contentFieldNames.indexOf(x.name) > -1)
+                .map(x => { return { ...x } });
+
+            return fields;
         },
         getTaxonomyFields() {
             const fields = this.fields
@@ -261,6 +302,7 @@ export default function (data) {
 
             field.value = quoteItems.map(x => x.quotedContentPostId);;
             field.items = quoteItems;
+            console.log('updateQuoteField')
             this._mxForm_SetField(this.fields, field);
         },
         updateReplyField(item) {
@@ -282,7 +324,8 @@ export default function (data) {
 
             replyToField.value = this.createReplyPostSummary(item);
 
-            this._mxForm_SetField(this.fields, replyToField); 
+            this._mxForm_SetField(this.fields, replyToField);
+            console.log('updateReplyField')
         },
         async updateLinkField(url) {
             const linkField = this._mxForm_GetField(this.fields, 'LinkValue');
@@ -297,6 +340,7 @@ export default function (data) {
             linkField.hidden = false;
             this._mxForm_SetField(this.fields, linkField);
             this.loading = false;
+            console.log('updateLinkField')
 
             //this.fixed = true;
         },
@@ -310,6 +354,7 @@ export default function (data) {
 
             settingsField.value = settings;
             this._mxForm_SetField(this.fields, settingsField);
+            console.log('updateSettingsField')
         },
         async searchUsers(queryText) {
             if (!queryText) return;
@@ -396,22 +441,27 @@ export default function (data) {
             this.showFloatingPanel = val;
         },
         setFieldVisibility(fieldName, val) {
+            console.log('setFieldVisibility')
             this._mxForm_SetFieldVisibility(this.fields, fieldName, val)
         },
         hideTagField(val) {
             this.showTags = val;
+            console.log('hideTagField')
             this._mxForm_SetFieldVisibility(this.fields, this.tagFieldName, val)
         },
         hideTextField(val) {
             this.showText = !val;
+            console.log('hideTextField')
             this._mxForm_SetFieldVisibility(this.fields, this.textFieldName, val)
         },
         hideImageField(val) {
             this.showImage = !val;
+            console.log('hideImageField')
             this._mxForm_SetFieldVisibility(this.fields, this.imageFieldName, val)
         },
         hideVideoField(val) {
             this.showVideo = !val;
+            console.log('hideVideoField')
             this._mxForm_SetFieldVisibility(this.fields, this.videoFieldName, val)
         },
         // modal
@@ -419,6 +469,7 @@ export default function (data) {
             this._mxModal_Toggle('formSettings');
         },
         applyAdditionalFieldUpdates() {
+            console.log('applyAdditionalFieldUpdates')
             //taxonomy
             for (var i = 0; i < this.fields.length; i++)
             {
@@ -491,8 +542,22 @@ export default function (data) {
                 style="left:0; border: 1px solid #CCC; padding-left: 0; z-index:111; width: 100%;  margin-bottom:0px; padding-right: var(--pico-spacing);"
                 :style="fixed ? fixedStyle : ''">
                     <progress x-show="loading"></progress>
-                    <!--Quotes-->
-                    <fieldset class="padded" x-data="formFields({fields})"></fieldset>
+
+                    <div
+                        x-data="aclContentEditorWysiwyg({
+                            placeholder: textField.placeholder,
+                            searchEvent: textField.event,
+                            showRichText: true,
+                            prefill: textField.value,
+                            elementsEvent: mxCardPost_formatsEvent
+                        })"
+                        @change="(ev) => { textField.value = ev.detail }"
+                        @elementsChange="(ev) => { textField.items =  ev.detail }"
+                        >
+                    </div>
+
+                    <!--Fields-->
+                    <fieldset x-data="formFields({getOtherFields})"></fieldset>
 
                     <div style="text-align:center" x-show="validationMessage">
                         <em x-text="validationMessage"></em>
@@ -516,8 +581,8 @@ export default function (data) {
                         <button class="small flat" disabled><sub x-text="characterCount"></sub></button>
                         <button class="flat small primary" @click="await submit(fields)"  :disabled="loading || !isValid">${label}</button>
                     </fieldset> 
-                </article>
-               
+                </article> 
+
             </template>
         `
             this.$nextTick(() => {

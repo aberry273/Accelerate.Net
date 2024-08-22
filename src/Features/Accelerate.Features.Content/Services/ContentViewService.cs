@@ -105,10 +105,6 @@ namespace Accelerate.Features.Content.Services
             viewModel.Item = item;
             #pragma warning restore CS8601 // Possible null reference assignment.
             viewModel.ChannelLink = GetChannelLink(channel);
-
-            // Get replies
-            //var replies = await _postSearchService.Search(GetRepliesQuery(item), 0, 1000);
-           // viewModel.Replies = replies.IsValidResponse && replies.IsSuccess() ? replies.Documents?.ToList() : null;
             if(user != null)
             {
                 viewModel.UserId = user.Id;
@@ -122,12 +118,31 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionsApiUrl = "/api/contentpostactions";
             viewModel.PostsApiUrl = $"/api/contentsearch/posts/replies";
             viewModel.PinnedPostsApiUrl = $"/api/contentsearch/posts/pinned/{item.Id}";
-            /*
-            if(item.ParentId != null)
+          
+            // Add filters
+            viewModel.Filters = CreateNavigationFilters(aggregateResponse);
+            return viewModel;
+        }
+        public ThreadEditPage CreateEditThreadPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
+        {
+            var model = CreateBaseContent(user);
+            var viewModel = new ThreadEditPage(model);
+            viewModel.Item = item;
+            #pragma warning restore CS8601 // Possible null reference assignment.
+            viewModel.ChannelLink = GetChannelLink(channel);
+            if (user != null)
             {
-                viewModel.ParentPostsApiUrl = $"/api/contentsearch/posts/{item.Id}/parents";
+                viewModel.UserId = user.Id;
+                viewModel.EditForm = CreateEditPostForm(user, item);
+                viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
+                viewModel.ModalLabelReply = CreateModalCreateLabelForm(user);
+                viewModel.ModalPinReply = CreateModalCreatePinForm(user, item);
             }
-            */
+
+            viewModel.ActionsApiUrl = "/api/contentpostactions";
+            viewModel.PostsApiUrl = $"/api/contentsearch/posts/replies";
+            viewModel.PinnedPostsApiUrl = $"/api/contentsearch/posts/pinned/{item.Id}";
+
             // Add filters
             viewModel.Filters = CreateNavigationFilters(aggregateResponse);
             return viewModel;
@@ -220,7 +235,7 @@ namespace Accelerate.Features.Content.Services
                     FormFieldCharLimit(post),
                     FormFieldImageLimit(post),
                     FormFieldVideoLimit(post),
-                    FormFieldContent(post),
+                    FormFieldContentWithParentSettings(post),
                     FormFieldLink(post),
                     FormFieldImages(post),
                     FormFieldVideos(post),
@@ -236,7 +251,68 @@ namespace Accelerate.Features.Content.Services
             }; 
             return model;
         }
+        public ContentSubmitForm CreateEditPostForm(AccountUser user, ContentPostDocument post)
+        {
+            var parentIdThread = post.ParentIds != null ? post.ParentIds : new List<Guid>();
+            parentIdThread.Add(post.Id);
+            var model = new ContentSubmitForm()
+            {
+                UserId = user.Id,
+                SearchUsersUrl = "/api/accountsearch/users",
+                FetchMetadataUrl = "/api/contentpost/metadata",
+                PostbackUrl = $"/api/contentpost/mixed",
+                Type = PostbackType.PUT,
+                Event = "post:created",
+                ActionEvent = "action:post",
+                Label = "Reply",
+                Fields = new List<FormField>()
+                {
+                    FormFieldId(post.Id),
+                    FormFieldMentions(post),
+                    FormFieldQuotes(post),
+                    FormFieldCharLimit(post),
+                    FormFieldImageLimit(post),
+                    FormFieldVideoLimit(post),
+                    FormFieldEditContent(post),
+                    /*
+                    FormFieldLink(post),
+                    FormFieldImages(post),
+                    FormFieldVideos(post),
+                    FormFieldTags(post),
+                    FormFieldCategory(post),
+                    FormFieldUser(user.Id),
+                    FormFieldParents(parentIdThread),
+                    FormFieldParent(post),
+                    FormFieldChannel(post?.ChannelId),
+                    */
+                    FormFieldStatus(post),
+                }
+            };
+            if(post.ParentId != null)
+            {
+                model.Fields.Insert(0, FormFieldReplyTo(post));
+                model.Fields.Insert(0, FormFieldType(ContentPostType.Reply));
+            }
+            else
+            {
+                model.Fields.Insert(0, FormFieldType(ContentPostType.Post));
+            }
+            return model;
+        }
         #region FormFields Post
+        private FormField FormFieldId(Guid id)
+        {
+            return new FormField()
+            {
+                Name = "Id",
+                FieldType = FormFieldTypes.input,
+                Hidden = true,
+                Disabled = true,
+                AriaInvalid = false,
+                ClearOnSubmit = false,
+                Value = id
+            };
+        }
         private FormField FormFieldReplyTo(ContentPostDocument post)
         {
             return new FormField()
@@ -346,7 +422,21 @@ namespace Accelerate.Features.Content.Services
                 Max = post?.Settings?.CharLimit ?? 512,
             };
         }
-        private FormField FormFieldContent(ContentPostDocument? post)
+        private FormField FormFieldEditContent(ContentPostDocument? post)
+        {
+            return new FormField()
+            {
+                Name = "Content",
+                FieldType = FormFieldTypes.wysiwyg,
+                Event = "form:input:user",
+                Placeholder = "Comment..",
+                ClearOnSubmit = true,
+                AriaInvalid = false,
+                Max = post?.Settings?.CharLimit ?? 2048,
+                Value = post?.Content,
+            };
+        }
+        private FormField FormFieldContentWithParentSettings(ContentPostDocument? post)
         {
             return new FormField()
             {
@@ -877,7 +967,7 @@ namespace Accelerate.Features.Content.Services
                 Fields = new List<FormField>()
                 {
                     this.FormFieldQuotes(null),
-                    this.FormFieldContent(null),
+                    this.FormFieldEditContent(null),
                     /*new FormField()
                     {
                         Name = "Content",

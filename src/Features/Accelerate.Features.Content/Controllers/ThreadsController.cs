@@ -144,7 +144,7 @@ namespace Accelerate.Features.Content.Controllers
             };
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
             var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
-            var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
+            var viewModel = _contentViewService.CreateEditThreadPage(user, item, aggResponse, channelResponse?.Source);
 
             var query = new RequestQuery()
             {

@@ -272,6 +272,40 @@ namespace Accelerate.Features.Content.Controllers.Api
                 return BadRequest();
             }
         }
+        [Route("mixed")]
+        [HttpPut]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> MixedUpdate([FromForm] ContentPostMixedRequest obj)
+        {
+            try
+            {
+                var parentId = obj.ParentId.GetValueOrDefault();
+                //var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
+                var channelId = obj.ChannelId.GetValueOrDefault();
+                var settings = CreatePostSettingsFromRequest(obj);
+                var linkCard = CreateLinkCardFromRequest(obj);
+                var taxonomy = CreateTaxonomyFromRequest(obj);
+                var quoteIds = CreateQuotesFromRequest(obj);
+                var mentions = await this.CreateMentionsFromRequest(obj);
+                var mediaIds = await CreateMediaFromRequest(obj);
+
+                var post = await _postService.Update(
+                    obj.Id,
+                    obj
+                    );
+
+                return Ok(new
+                {
+                    message = "Updated Successfully",
+                    id = post.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
 
         //Override with elastic search instead of db query
         [HttpGet]

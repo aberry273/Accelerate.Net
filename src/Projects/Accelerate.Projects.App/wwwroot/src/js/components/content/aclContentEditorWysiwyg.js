@@ -1,6 +1,6 @@
 import { mxForm, mxEvents, mxFetch, mxModal, mxResponsive, mxCardPost } from '/src/js/mixins/index.js';
 
-export default function header(data) {
+export default function aclContentEditorWysiwyg(data) {
     return {
         ...mxForm(data),
         ...mxEvents(data),
@@ -15,7 +15,9 @@ export default function header(data) {
         input: null,
         selectedItemEvent: 'nullevent',
         searchEvent: null,
-        html: '', 
+        html: '',
+        value: '',
+        prefill: null,
         nodePosition: 0,
         onEmojiEvent: 'insert:wysiwyg:emoji',
         linkEvent: 'form:input:link',
@@ -40,14 +42,12 @@ export default function header(data) {
             this.elementsEvent = data.elementsEvent;
             this.searchEvent = data.searchEvent;
             this.showRichText = data.showRichText;
-            this.html = data.value || '';
 
-            this.$nextTick(() => {
-                this.load(self.data)
-                this.editor = document.getElementById('editor')
-                this.panel = document.getElementById('panel')
-                this.userInput = document.getElementById('userInput')
+           
+            this.$watch('value', (newVal) => {
+                this.$dispatch('change', newVal); 
             })
+
             this.$events.on('wysiwyg:clear', () => { this.clear(this) })
 
             var searchResultEvent = this.searchEvent + ":results";
@@ -60,6 +60,25 @@ export default function header(data) {
             })
 
             this.preventKeyboardShortcuts();
+
+            console.log('pre-fill');
+            console.log(this.prefill)
+
+            this.$nextTick(() => {
+                console.log(this.value)
+                //if (this.value)
+                {
+                    console.log(this.value)
+                    console.log('on: init:wysiwyg:value')
+                    this.elements = this._mxCardPost_GetTextElementsFromEncodedText(this.value);
+                    this.html = this._mxCardPost_ParseEncodedTextElements(this.value) || '';
+                }
+
+                this.load(self.data)
+                this.editor = document.getElementById('editor')
+                this.panel = document.getElementById('panel')
+                this.userInput = document.getElementById('userInput')
+            })
         },
         preventKeyboardShortcuts() {
             //Prevent bold, italics, underline shortcuts
@@ -100,7 +119,7 @@ export default function header(data) {
       
             document.execCommand("insertHTML", false, html);
 
-            this.convertHtmlToEncodedText();
+            this.value = this.convertHtmlToEncodedText();
             //move cursor to end of inserted element
             const pos = this.nodePosition + 1;
             this.setEditorCursorPosition(pos, this.editor);
@@ -117,7 +136,7 @@ export default function header(data) {
             this.setEditorCursorPosition(this.nodePosition, this.editor);
             this.performCustomAction(element.formatted);
 
-            this.convertHtmlToEncodedText();
+            this.value = this.convertHtmlToEncodedText();
             this.showElementEditor = false;
             //move cursor to end of inserted element
             const pos = this.nodePosition + element.value.length;
@@ -131,7 +150,8 @@ export default function header(data) {
         },
         addElement(element) {
             this.elements.push(element);
-            this.$events.emit(this.elementsEvent, this.elements);
+            this.$dispatch('elementsChange', this.elements)
+            //this.$events.emit(this.elementsEvent, this.elements);
         },
         getSelectionText() {
             var text = "";
@@ -223,13 +243,15 @@ export default function header(data) {
         },
         onMouseUp(ev) {
             this.hasSelectedText = (this.selectedText != null && this.selectedText.length > 0);
-        },
+            console.log(this.hasSelectedText)
+        }, 
         convertHtmlToEncodedText() {
             let encodedText = this.editor.innerHTML;
+            encodedText = encodedText.replace(/&nbsp;/g, ' ');
             for (var i = 0; i < this.elements.length; i++) {
                 encodedText = encodedText.replace(this.elements[i].formatted, this.elements[i].encoded);
             }
-            this.$events.emit('editor-wisyiwyg-plaintext', encodedText);
+            return encodedText;
         },
         onPaste(e) { 
             e.preventDefault(); 
@@ -252,23 +274,8 @@ export default function header(data) {
                 this.insert = false;
             }
              
-            this.convertHtmlToEncodedText();
-        },
-        stripHtmlFormat() {
-            let text = this.editor.innerHTML;
 
-            var regex = /(<([^>]+)>)/ig 
-            var result = text.replace(regex, "");
-            console.log(result)
-            var match = text.match("/\*\*(.+?)\*\*(?!\*)/g");
-            var str = text.replace(/\*\*(.+?)\*\*(?!\*)/g,'<b>$1</b>').replace(/\*([^*><]+)\*/g,'<i>$1</i>');
-            console.log(result)
-            console.log(str)
-            text = text.replace(/\*\*(.+?)\*\*(?!\*)/g, '<b>$1</b>')
-            text = text.replace(/\*([^*><]+)\*/g, '<i>$1</i>');
-            text = text.replace(/\*([^*><]+)\*/g, '<u>$1</u>');
-            console.log(text);
-            this.$events.emit('editor-wisyiwyg-plaintext', result);
+            this.value = this.convertHtmlToEncodedText();
         },
         addLinkCard(text) {
             if (!text) return;
@@ -311,7 +318,7 @@ export default function header(data) {
             this.editor.focus();
             this.showRichTextMenu = false;
             var selectedText = this.selectedText;
-            if (!this.hasSelectedText) return;
+            if (!this.hasSelectedText && this.selectedText.length == 0) return;
             this.insertEncodedText(formatType, selectedText);
         },
 
@@ -321,7 +328,7 @@ export default function header(data) {
 
             this.addElement(element)
             this.performAction('insertHTML', element.formatted)
-            this.convertHtmlToEncodedText();
+            this.value = this.convertHtmlToEncodedText();
 
             //move cursor to end of inserted element
             const pos = this.nodePosition + element.value.length;
@@ -375,73 +382,70 @@ export default function header(data) {
                 <nav x-show="showPanel">
                     <ul style="width:100%; max-width:100%">
                         <fieldset role="group" style="margin-bottom:0px">
-                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('code')">code</button>
-                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('quote')">format_quote</button>
-                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('bold')">format_bold</button>
-                            <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('italics')">format_italic</button>
+                        <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('code')">code</button>
+                        <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('quote')">format_quote</button>
+                        <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('bold')">format_bold</button>
+                        <button x-show="!showInputEditors && showRichText" :disabled="!hasSelectedText" class="material-icons-round flat small px-0" @click="insertCodeIntoText('italics')">format_italic</button>
                         
-                            <!--Url input-->
-                            <button x-show="!showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">link</button>
-                            <button x-show="showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">cancel</button>
+                        <!--Url input-->
+                        <button x-show="!showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">link</button>
+                        <button x-show="showUrlEditor && !showElementEditor" class="small material-icons-round flat small" @click="toggleUrlEditor()">cancel</button>
 
-                            <!--User selector-->
-                            <div x-show="showUrlEditor">
-                                <input
-                                    id="urlInput"
-                                    style="margin-bottom: 0px"
-                                    :change="validateUrl"
-                                    x-model="urlText"
-                                    :value="urlText"
-                                    placeholder="url"
-                                />
-                            </div>
-                            <button x-show="showUrlEditor"  class="material-icons flat small" @click="addLink">add</button>
+                        <!--User selector-->
+                        <div x-show="showUrlEditor">
+                            <input
+                                id="urlInput"
+                                style="margin-bottom: 0px"
+                                :change="validateUrl"
+                                x-model="urlText"
+                                :value="urlText"
+                                placeholder="url"
+                            />
+                        </div>
+                        <button x-show="showUrlEditor"  class="material-icons flat small" @click="addLink">add</button>
 
-                            <!--User selector-->
-                            <button x-show="!showElementEditor && !showUrlEditor" class="material-icons-round flat small" @click="toggleUserEditor()">person_search</button>
-                            <button x-show="showElementEditor && !showUrlEditor" class="small material-icons-round flat small" @click="toggleUserEditor()">cancel</button>
-                            <div x-show="showElementEditor">
-                                <input
-                                    id="userInput"
-                                    style="margin-bottom: 0px"
-                                    :change="search"
-                                    x-model="queryText"
-                                    :value="queryText"
-                                    placeholder="username"
-                                    @keyup.@="($event) => returnToElementInput($event)"
-                                />
-                                <article class="dropdownMenu">
-                                    <!--Users Format-->
-                                    <template x-if="selectedFormat == 'users'">
-                                        <div>
-                                            <!--User Search-->
-                                            <ul  style="display: grid;list-style:none; text-align:left; " >
-                                                <li>Results</li>
-                                                <template x-for="(item) in results">
-                                                    <li>
-                                                        <a href="#" @click="select(item, 'user')" x-text="item.name"></a>
-                                                    </li>
-                                                </template>
-                                                <li x-show="results.length == 0">
-                                                    No results found
+                        <!--User selector-->
+                        <button x-show="!showElementEditor && !showUrlEditor" class="material-icons-round flat small" @click="toggleUserEditor()">person_search</button>
+                        <button x-show="showElementEditor && !showUrlEditor" class="small material-icons-round flat small" @click="toggleUserEditor()">cancel</button>
+                        <div x-show="showElementEditor">
+                            <input
+                                id="userInput"
+                                style="margin-bottom: 0px"
+                                :change="search"
+                                x-model="queryText"
+                                :value="queryText"
+                                placeholder="username"
+                                @keyup.@="($event) => returnToElementInput($event)"
+                            />
+                            <article class="dropdownMenu">
+                                <!--Users Format-->
+                                <template x-if="selectedFormat == 'users'">
+                                    <div>
+                                        <!--User Search-->
+                                        <ul style="display: grid;list-style:none; text-align:left; " >
+                                            <li>Results</li>
+                                            <template x-for="(item) in results">
+                                                <li>
+                                                    <a href="#" @click="select(item, 'user')" x-text="item.name"></a>
                                                 </li>
-                                            </ul>
-                                        </div>
-                                    </template>
-                                    <!--  Link Formats-->
-                                </article>
-                            </div>
+                                            </template>
+                                            <li x-show="results.length == 0">
+                                                No results found
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </template>
+                                <!--  Link Formats-->
+                            </article>
+                        </div>
 
-                            <!--Emoji picker-->
-                            <div x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
-                        </ul> 
-                        <ul>
-                            <input style="width: 5px" class="flat"  disabled />
-                        </ul>
-                    </fieldset>
+                        <!--Emoji picker-->
+                        <div x-show="!showInputEditors" x-data="aclContentEmoji({ event: onEmojiEvent })"></div>
+                        </fieldset>
+                    </ul>
                 </nav>
                 <!--input-->
-                <div
+                <div   
                     id="editor"
                     contenteditable="true"
                     role="textbox"

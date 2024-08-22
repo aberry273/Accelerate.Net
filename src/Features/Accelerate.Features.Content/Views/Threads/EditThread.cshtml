@@ -3,7 +3,7 @@
 @using Accelerate.Features.Content.Models.Views
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
-@model ThreadPage
+@model ThreadEditPage
 
 <div class="fixed-scroll-container" x-data="{
     isScrollSet: false,
@@ -18,8 +18,9 @@
     },
     setScrollPosition() {
         this.$nextTick(() => {
-            const el = document.getElementById('@Model.Item.ThreadId');
+            const el = document.getElementById('editor');
             const headerOffset = 75;
+            
             const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
             window.scrollTo({
                 top: y,
@@ -55,30 +56,21 @@
             </summary>
         </div>
     }
-   
-    <!-- Threadline -->
-    <div
-        x-data="listThreadAscendantCards( {
+    <div x-data="listThreadAscendantCards( {
         item: @JsonSerializerHelper.SerializeObject(Model.Item),
         results: @JsonSerializerHelper.SerializeObject(Model.ThreadData),
         userId: '@Model.UserId',
-        searchUrl: '@Model.ParentPostsApiUrl'
+        searchUrl: '@Model.ParentPostsApiUrl',
+        excludeItems: ['@Model.Item.Id']
     })">
     </div>
-
-    @if (Model.IsDeactivated)
+    @if(Model.Item.ParentId != null)
     {
-        <article>Reactivate your account to respond</article>
-    }
-    else if (Model.IsAuthenticated)
-    {
-        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    }
-    else
-    {
-        <article>Login to respond</article>
+        <div class="line-background"></div>
     }
 
+    <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.EditForm))"></div>
+   
     <hr />
      
     <div class="reply-padding"></div>
@@ -93,10 +85,6 @@
 <!-- Edit post -->
 @if (Model.IsAuthenticated)
 {
-    <!-- Edit post -->
-    <span x-data="mxCardPost({})">
-        <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
-    </span>
     <!-- Delete post -->
     <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 

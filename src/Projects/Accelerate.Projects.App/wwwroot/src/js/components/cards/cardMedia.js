@@ -86,7 +86,7 @@ export default function (data) {
             //retry
             setTimeout(function () {
                 image.src += '?' + +new Date;
-            }, 350);
+            }, 0);
         },
 
         // METHODS
@@ -146,9 +146,9 @@ export default function (data) {
                     <button aria-label="Previous" 
                         :disabled="!hasPrevious"
                         @click="browsePreviousMedia" 
-                        class="round xsmall flat primary material-icons floating-previous"
+                        class="round xsmall  primary material-icons floating-previous"
                         rel="next">chevron_left</button>
-                    <div class="floating-centre">
+                    <div class="flex-content">
                         <figure >
                             <img
                                 style="height:100%"
@@ -162,7 +162,7 @@ export default function (data) {
                     <button aria-label="Next" 
                         :disabled="!hasNext"
                         @click="browseNextMedia" 
-                        class="round xsmall flat primary material-icons floating-next"
+                        class="round xsmall  primary material-icons floating-next"
                         rel="next">chevron_right</button>
                   
 

@@ -20,6 +20,7 @@
         this.$nextTick(() => {
             const el = document.getElementById('@Model.Item.ThreadId');
             const headerOffset = 75;
+
             const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
             window.scrollTo({
                 top: y,
@@ -65,6 +66,7 @@
         searchUrl: '@Model.ParentPostsApiUrl'
     })">
     </div>
+    <div class="line-spacer"></div>
 
     @if (Model.IsDeactivated)
     {
