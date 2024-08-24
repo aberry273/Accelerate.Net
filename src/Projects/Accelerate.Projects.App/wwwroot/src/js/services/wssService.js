@@ -1,10 +1,11 @@
 import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
 
-import { mxEvents } from '/src/js/mixins/index.js';
+import { mxEvent, mxService } from '/src/js/mixins/index.js';
 
 export default function (settings) {
     return {
-        ...mxEvents(settings),
+        ...mxEvent(settings),
+        ...mxService(settings),
         items: [],
         socket: null,
         settings: {},
@@ -21,6 +22,8 @@ export default function (settings) {
             // Start the connection.
             try {
                 this.client = await createClient(this.settings.url, this.wssEvent)
+                if (!this.client) return;
+                
                 await this.client.start();
                 this.connectionId = this.client.connection.connectionId;
                 emit(this.wssEvent, connectedEvent, this.client.connection.connectionId);

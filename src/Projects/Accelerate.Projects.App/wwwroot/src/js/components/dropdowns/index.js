@@ -1,6 +1,8 @@
 
-import aclDropdownAjax from './aclDropdownAjax.js'
+import aclDropdownMenuProfile from './aclDropdownMenuProfile.js'
+import aclDropdownMenuButton from './aclDropdownMenuButton.js'
 
 export {
-    aclDropdownAjax,
+    aclDropdownMenuProfile,
+    aclDropdownMenuButton,
 }

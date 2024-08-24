@@ -1,6 +1,10 @@
 export default function (data) {
     return {
         // PROPERTIES
+        mxFetch_url: '',
+        mxFetch_params: {},
+        // GET, POST, PUT, DELETE
+        mxFetch_type: 'POST',
         init() {
         },
         // GETTERS

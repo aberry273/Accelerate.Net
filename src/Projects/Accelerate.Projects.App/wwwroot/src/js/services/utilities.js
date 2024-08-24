@@ -9,6 +9,7 @@ const sendMessageRequest = 'sendMessage';
 
 export async function createClient(url, wssEvent ) {
     try {
+        if(!url) return;
         const client = new signalR.HubConnectionBuilder()
             .withUrl(url)
             .configureLogging(signalR.LogLevel.Information)

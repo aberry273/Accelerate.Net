@@ -5,7 +5,7 @@ export default () => ({
     buttonsTarget: "a[data-theme-switcher]",
     buttonAttribute: "data-theme-switcher",
     rootAttribute: "data-theme",
-    localStorageKey: "picoPreferredColorScheme",
+    localStorageKey: "app_theme",
     theme: 'dark',
 
     /*
@@ -50,7 +50,7 @@ export default () => ({
         });
     },
     toggle() {
-        this.theme = !this.theme == 'dark' ? 'light' : 'dark'
+        this.theme = this.theme == 'dark' ? 'light' : 'dark'
         this.setScheme(this.theme);
     },
     // Set scheme
@@ -71,12 +71,14 @@ export default () => ({
 
     // Apply scheme
     applyScheme() {
-        document.querySelector("html")?.setAttribute(this.rootAttribute, this.scheme);
+        //document.querySelector("html")?.setAttribute(this.rootAttribute, this.scheme);
+        document.querySelector("html")?.classList.remove('dark');
+        document.querySelector("html")?.classList.remove('light');
+        document.querySelector("html")?.classList.add(this.scheme);
     },
 
     // Store scheme to local storage
     schemeToLocalStorage() {
-        console.log('set scheme');
         window.localStorage?.setItem(this.localStorageKey, this.scheme);
     },
 })

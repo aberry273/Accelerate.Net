@@ -1,10 +1,6 @@
 
-import header from './header.js'
-import aclContentEditorWysiwyg from './aclContentEditorWysiwyg.js'
-import aclContentEmoji from './aclContentEmoji.js'
+import aclContentSection from './aclContentSection.js'
 
 export {
-    header,
-    aclContentEditorWysiwyg,
-    aclContentEmoji,
+    aclContentSection,
 }
