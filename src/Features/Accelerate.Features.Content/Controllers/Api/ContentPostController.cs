@@ -157,8 +157,8 @@ namespace Accelerate.Features.Content.Controllers.Api
 
         private async Task<List<Guid>> CreateMentionsFromRequest(ContentPostMixedRequest obj)
         {
-            if (string.IsNullOrEmpty(obj?.Content)) return null;
-            var mentions = GetUsernames(obj?.Content);
+            if (string.IsNullOrEmpty(obj?.Text)) return null;
+            var mentions = GetUsernames(obj?.Text);
 
             if (!mentions.Any()) return null;
             
@@ -240,6 +240,8 @@ namespace Accelerate.Features.Content.Controllers.Api
                 var parentId = obj.ParentId.GetValueOrDefault();
                 //var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
                 var channelId = obj.ChannelId.GetValueOrDefault();
+                var listId = obj.ListId.GetValueOrDefault();
+                var chatId = obj.ChatId.GetValueOrDefault();
                 var settings = CreatePostSettingsFromRequest(obj);
                 var linkCard = CreateLinkCardFromRequest(obj);
                 var taxonomy = CreateTaxonomyFromRequest(obj);
@@ -250,6 +252,8 @@ namespace Accelerate.Features.Content.Controllers.Api
                 var post = await _postService.CreatePost(
                     obj,
                     obj.ChannelId.GetValueOrDefault(),
+                    obj.ChatId.GetValueOrDefault(),
+                    obj.ListId.GetValueOrDefault(),
                     obj.ParentId.GetValueOrDefault(),
                     //parentIds,
                     mentions,
@@ -258,7 +262,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                     settings,
                     linkCard,
                     taxonomy
-                    );
+                );
 
                 return Ok(new
                 {
@@ -418,7 +422,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         }
         protected override void UpdateValues(ContentPostEntity from, dynamic to)
         {
-            from.Content = to.Content;
+            from.Text = to.Text;
         }
     }
 }

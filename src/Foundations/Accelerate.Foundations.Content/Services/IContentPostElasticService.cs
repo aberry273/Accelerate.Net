@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Models.View;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -33,6 +34,8 @@ namespace Accelerate.Foundations.Content.Services
         Query? CreateTerm(QueryFilter filter);
         Query[] GetQueries(RequestQuery request, ElasticCondition condition);
         Task<DeleteIndexResponse> DeleteIndex();
+
+        ContentPostViewDocument CreateViewModel(ContentPostDocument doc);
         RequestQuery<ContentPostDocument> CreateUserPostQuery(Guid userId); 
         RequestQuery<ContentPostDocument> CreateAggregateQuery(Guid? threadId, List<QueryFilter> filters, List<string> fields);
         RequestQuery<ContentPostDocument> CreateChannelAggregateQuery(Guid channelId);

@@ -8,12 +8,37 @@ namespace Accelerate.Foundations.Common
 {
     public struct Constants
     {
+        public struct Domains
+        {
+            public const string Public = "Public";
+            public const string Internal = "Internal";
+        }
+        public struct AdminPaths
+        {
+            public const string JobsPath = "/Admin/Jobs";
+            public const string JobsLabel = "Jobs";
+            public const string ActionsPath = "/Admin/Actions";
+            public const string ActionsLabel = "Actions";
+            public const string UsersPath = "/Admin/Users";
+            public const string UsersLabel = "Users";
+        }
         public struct Paths
         {
+            public const string SearchPath = "/Search";
+            public const string SearchLabel = "Search";
+            public const string ChatLabel = "Chat";
             public const string AboutPath = "/About";
             public const string AboutLabel = "About";
-            public const string BrowsePath = "/Channels";
-            public const string BrowseLabel = "Browse";
+            public const string FeedsPath = "/Feeds";
+            public const string FeedsLabel = "Feeds";
+            public const string ThreadsPath = "/Threads";
+            public const string ThreadsLabel = "Threads";
+            public const string ChatsPath = "/Chats";
+            public const string ChatsLabel = "Chats";
+            public const string ChannelsPath = "/Channels";
+            public const string ChannelsLabel = "Channels";
+            public const string ListsPath = "/Lists";
+            public const string ListsLabel = "Lists";
             public const string ProfilePath = "/Account/Profile";
             public const string ProfileLabel = "Profile";
             public const string PostsPath = "/Account/Posts";

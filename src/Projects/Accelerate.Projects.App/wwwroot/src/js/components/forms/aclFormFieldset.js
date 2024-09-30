@@ -1,17 +1,21 @@
 import { mxContent, mxForm } from '/src/js/mixins/index.js';
-import { 
+
+import {
     aclFieldInput,
-    aclFieldTextarea,
-    aclFieldContentEditable, 
-    aclFieldEditorJs, 
-    aclFieldSelect, 
-    aclFieldSelectCheckbox,
-    aclFieldFile,
-    aclFieldSwitch
 } from '/src/js/components/fields/index.js'
 
+import * as fields from '/src/js/components/fields/index.js'
+/*
+Object.keys(fields).forEach(svc => {
+    let settings = wssSettings.filter(x => x.serviceName == svc)[0]
+    if (settings != null) {
+        let data = fields[svc](settings);
+        alpinejs.store(svc, data);
+    }
+});
+*/
 export default function (params) {
-	return {
+    return {
         ...mxContent(params),
         ...mxForm(params),
         // PROPERTIES 
@@ -19,11 +23,6 @@ export default function (params) {
         init() {
             this.setValues(params);
             this.render();
-            /*
-                this.$watch('mxForm_fields', (newVal, oldVal) => {
-                    console.log(newVal);
-                })
-            */
         },
         // GETTERS
         // METHODS
@@ -35,41 +34,17 @@ export default function (params) {
         },
         getFieldComponent(field) {
             const fieldType = field.component || field.type;
-            switch(fieldType)
-            {
-                case 'aclFieldInput':
-                    return aclFieldInput(field);
-                case 'aclFieldTextarea':
-                    return aclFieldTextarea(field);
-                case 'aclFieldSelect':
-                    return aclFieldSelect(field);
-                case 'aclFieldSelectCheckbox':
-                    return aclFieldSelectCheckbox(field);
-                case 'aclFieldContentEditable':
-                    return aclFieldContentEditable(field);
-                case 'aclFieldEditorJs':
-                    return aclFieldEditorJs(field);
-                case 'aclFieldFile':
-                    return aclFieldFile(field);
-                case 'aclFieldSwitch':
-                    return aclFieldSwitch(field);
-                default:
-                    return aclFieldInput(field);
-            }
+            const fieldComponent = fields[fieldType];
+            return fieldComponent != null ? fieldComponent(field) : aclFieldInput(field)
         },
-        // redundant
-        renderField(field) {
-            const component = field.component || 'aclFieldInput'
-            return `${component}(field)`
-        },
-        getFieldKey(field) {
+        getFieldKey(field, i) {
             const key = field.id || field.name;
-            return `${key}:${field.updated}`;
+            return `${key}:${i}${field.updated}`;
         },
         render() {
             const html = `
-                <template x-for="(field, i) in mxForm_fields" :key="getFieldKey(field)">
-                    <div >
+                <template x-for="(field, i) in mxForm_fields" :key="getFieldKey(field, i)">
+                    <div>
                         <label x-cloak :for="field.id || field.name" class="relative" x-show="!field.hidden">
                             <span x-show="field.label && field.component != 'aclFieldSwitch'" class="font-medium text-gray-900" x-text="field.label"></span>
                             <div x-data="getFieldComponent(field)" @oninputchange="(ev) => { onFieldChange(ev.detail) }"></div>

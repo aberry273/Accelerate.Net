@@ -6,46 +6,55 @@ export default function (params) {
         // PROPERTIES
         type: '',
         value: null,
+        limitText: null,
         placeholder: '',
         cssClass: '',
         mediaItems: [],
         // INIT
         init() {
+            this._mxField_setValues(params);
             this.setValues(params);
             this.render(); 
         },
         // GETTERS
         // METHODS
         setValues(params) {
-            this.mxField_type = params.type || 'text';
-            this.mxField_placeholder = params.placeholder;
-            this.mxField_cssClass = params.cssClass;
-            this.mxField_id = params.id;
-            this.mxField_name = params.name;
-            this.mxField_min = params.min;
-            this.mxField_max = params.max;
-            this.mxField_disabled = params.disabled;
-            this.mxField_class = params.class;
-            this.mxField_multiple = params.multiple;
-            this.mxField_value = params.value;
-            this.mxField_required = params.required;
-            this.mxField_readOnly = params.readOnly;
-            this.mxField_autocomplete = params.autocomplete;
-            this.mxField_ariaInvalid = params.ariaInvalid;
-            this.mxField_areaDescribedBy = params.areaDescribedBy;
-            this.mxField_pattern = params.pattern;
+            if (this.mxField_max != null && this.mxField_max > 0) {
+                this.limitText = `Maximum ${this.mxField_max} files allowed`;
+            }
+            if (this.mxField_value != null) {
+                this.mediaItems = [
+                    this.createMediaItem('Profile', this.mxField_value, this.mxField_type)
+                ]
+            }
+        },
+        createMediaItem(name, imgSrc, type) {
+            return {
+                type: type,
+                name: name,
+                caption: name,
+                src: imgSrc,
+            }
         },
         onChange($ev) {
-            const files = Array.from($ev.target.files);
-            if(files == null || files.length == 0) return;
+            let files = Array.from($ev.target.files);
+            if (files == null || files.length == 0) return;
+            // Limit files to max limit
+            if (files.length > this.mxField_max) {
+                files = files.slice(0, this.mxField_max);
+            }
             const items = files.map(x => 
             {
+                const type = x.type.split("/")[0];
+                return this.createMediaItem(x.name, this._mxField_GetFilePreview(x), type)
+                /*
                 return {
-                    type: this.mxField_type,
+                    type: type,
                     name: x.name,
                     caption: x.name,
                     src: this._mxField_GetFilePreview(x)
                 }
+                */
             });
             // media items
             this.mediaItems = items;   
@@ -55,7 +64,6 @@ export default function (params) {
             } else {
                 this.mxField_value = files
             }
-            
             this._mxField_onChange();
         },
         removeFile(index) {
@@ -77,20 +85,19 @@ export default function (params) {
                     :disabled="mxField_disabled"
                     :min="mxField_min"
                     :max="mxField_max"
-                    :max="mxField_max"
                     data-primary="blue-600"
                     data-rounded="rounded-lg"
                     :accept="mxField_max"
                     :class="mxField_cssClass || mxField_inputClass"
-                    x-on:change="onChange"
+                    @change="onChange"
                     type="file" 
-                    multiple
+                    :multiple="mxField_multiple"
                     class="block w-full py-0 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" 
                     >
-
+                <span x-text="limitText" class="mt-2  text-sm  peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
+                </span>
                 <span x-text="field.invalidText || 'Invalid input'" class="mt-2 hidden text-sm text-red-500 peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
                 </span>
-
                 <!--Grid-->
                 <div 
                     class="max-w-6xl mx-auto duration-1000 delay-300 opacity-0 select-none ease animate-fade-in-view" 
@@ -98,7 +105,7 @@ export default function (params) {
                     <ul x-ref="gallery" id="gallery" class="grid grid-cols-2 gap-2 lg:grid-cols-5">
                         <template x-for="(media, index) in mediaItems" :id="media.id">
                             <li>
-                                <div 
+                                <div
                                     x-data="aclMedia({
                                         ...media,
                                         controls: false,
@@ -109,7 +116,7 @@ export default function (params) {
                                 </div>
                                 <figcaption x-show="media.caption" x-text="media.caption" class="mt-2 text-sm text-center text-gray-500 dark:text-gray-400"></figcaption>
                                 <div 
-                                    class="justify-center z-10"
+                                    class="justify-center text-center z-10"
                                     x-data="aclButton({ text: 'Remove file'})"
                                     @click="(ev) => {
                                         ev.preventDefault();

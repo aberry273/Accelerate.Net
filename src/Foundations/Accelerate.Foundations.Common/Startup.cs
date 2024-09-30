@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Common
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
 
             services.AddTransient<IMetaContentService, MetaContentService>();
+            services.AddTransient<IRssReaderService, RssReaderService>();
         }
     }
 }

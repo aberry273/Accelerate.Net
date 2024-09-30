@@ -44,7 +44,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostQuoteEntity>>()
             {
-                UpdateIndex
+                //UpdateIndex
             };
         }
 
@@ -100,7 +100,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             var post = new ContentPostDocument()
             {
                 Id = args.Value.ContentPostId,
-                ActionsTotals = summary
+                //ActionsTotals = summary
             };
             await _elasticPostService.UpdateDocument<ContentPostDocument>(post, args.Value.ContentPostId.ToString());
         }

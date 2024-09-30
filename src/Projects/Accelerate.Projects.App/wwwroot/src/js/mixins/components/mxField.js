@@ -9,6 +9,7 @@ export default function (data) {
         mxField_name: null,
         mxField_min: null,
         mxField_max: null,
+        mxField_multiple: null,
         mxField_accept: '',
         mxField_items: [],
         mxField_rows: 1,
@@ -25,8 +26,12 @@ export default function (data) {
         init() {
         },
         // GETTERS  
-        get mxField_inputInvalidClass() { return 'invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 '},     
+        get mxField_getInputClass() { return 'block w-full px-4 py-4 mt-2 text-xl placeholder-gray-400 bg-gray-200 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-600 focus:ring-opacity-50' },
+        get mxField_getFileClass() { return 'block w-full py-0 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400' },
+
+        get mxField_inputInvalidClass() { return 'invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-500 ' },
         get mxField_inputEmailRegex() { return '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$' },
+        get mxField_inputJsonRegex() { return '!(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/$' },
         // METHODS
         _mxField_onChange(data) {
             const field = {
@@ -44,6 +49,7 @@ export default function (data) {
             this.mxField_name = params.name;
             this.mxField_min = params.min;
             this.mxField_max = params.max;
+            this.mxField_multiple = params.multiple;
             this.mxField_accept = params.accept;
             this.mxField_disabled = params.disabled;
             this.mxField_class = params.class;
@@ -57,15 +63,15 @@ export default function (data) {
             this.mxField_areaDescribedBy = params.areaDescribedBy;
             this.mxField_pattern = params.pattern;
         },
-		_mxField_GetFilePreview(file) {
-			return (typeof file == 'string') ? file : URL.createObjectURL(file)
-		},
+        _mxField_GetFilePreview(file) {
+            return (typeof file == 'string') ? file : URL.createObjectURL(file)
+        },
         _mxField_ConvertItemStringToObject(x) {
             return {
-                title: x,
+                key: x,
                 value: x,
                 disabled: false
-            } 
+            }
         },
     }
 }

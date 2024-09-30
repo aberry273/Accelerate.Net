@@ -21,6 +21,7 @@ export default function (params) {
         setValues(params) {
             this.mxEvent_event = params.event;
             this.mxContent_title = params.title;
+            this.mxModal_component = params.component || 'aclFormAjax';
             this.form = params.form;
             this.mxModal_clickOutside = params.clickOutside;
         },
@@ -64,7 +65,7 @@ export default function (params) {
                                     </button>
                                 </div>
                                 
-                                <div x-data="${this.component}(form)"></div>
+                                <div x-data="${this.mxModal_component}(form)"></div>
                         </div>
                     </div>
                 </template>

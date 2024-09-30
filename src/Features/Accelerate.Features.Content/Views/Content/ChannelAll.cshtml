@@ -2,17 +2,17 @@
 @using System.Linq
 @using Accelerate.Features.Content.Models.Views
 @using Accelerate.Foundations.Common.Helpers
-@using Microsoft.AspNetCore.Http 
+@using Microsoft.AspNetCore.Http
 @model ChannelPage
 @{
-    Layout = "/Views/Content/Shared/_ChannelPageLayout.cshtml";
-}   
+    Layout = "/Views/Shared/_ContentPageLayout.cshtml";
+}
 <!--Filter-->
 <div x-data="appNavFilters({
     filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
     event: '@Model.FilterEvent'
 })"></div>
-         
+
 <!--Feed-->
 <div x-data="listCards({
     actionUrl: '/api/contentpostactivity',

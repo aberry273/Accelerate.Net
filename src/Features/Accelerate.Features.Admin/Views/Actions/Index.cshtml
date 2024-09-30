@@ -1,0 +1,27 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Accelerate.Features.Admin.Models.Views
+@using Accelerate.Foundations.Operations.Models.Entities
+@using Microsoft.AspNetCore.Http
+@model AdminIndexPage<OperationsActionEntity>
+@{
+    Layout = "/Views/Shared/_AdminPageLayout.cshtml";
+    var currentTab = "All";
+}
+
+<div class="w-full h-full container overflow-y-scroll">
+    <!-- Channels panel -->
+    <!--
+    <nav>
+        <ul>
+            if (Model.ModalCreateChannel != null)
+            {
+                <button class="material-icon flat primary" @@click="$events.emit('Model.ModalCreateChannel.Target', { target: 'Model.ModalCreateChannel.Target' })">Add</button>
+            }
+        </ul>
+    </nav>
+    -->
+    <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+</div>
+<!-- Edit post -->

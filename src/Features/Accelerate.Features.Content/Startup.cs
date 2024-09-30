@@ -28,7 +28,11 @@ using Accelerate.Features.Content.Pipelines.ActionsSummary;
 using Accelerate.Foundations.EventPipelines.Consumers;
 using Accelerate.Features.Content.Pipelines.Mentions;
 using Accelerate.Features.Content.Pipelines.Parents;
+using Accelerate.Features.Content.Pipelines.Chats;
 using Accelerate.Features.Content.Pipelines.Labels;
+using Accelerate.Foundations.Content.Models.View;
+using Accelerate.Features.Content.Pipelines.Lists;
+using Accelerate.Features.Content.Pipelines.Feeds;
 
 namespace Accelerate.Features.Content
 {
@@ -43,9 +47,12 @@ namespace Accelerate.Features.Content
         */
         public static void ConfigureApp(WebApplication app)
         {
-            app.MapHub<BaseHub<ContentPostDocument>>($"/{Constants.Settings.ContentPostsHubName}");
+            app.MapHub<BaseHub<ContentPostViewDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostActionsDocument>>($"/{Constants.Settings.ContentPostActionsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
+            app.MapHub<BaseHub<ContentFeedDocument>>($"/{Constants.Settings.ContentFeedsHubName}");
+            app.MapHub<BaseHub<ContentChatDocument>>($"/{Constants.Settings.ContentChatsHubName}");
+            app.MapHub<BaseHub<ContentListDocument>>($"/{Constants.Settings.ContentListsHubName}");
             app.MapHub<BaseHub<ContentPostActionsSummaryDocument>>($"/{Constants.Settings.ContentPostActionsSummaryHubName}");
             app.MapHub<BaseHub<ContentPostSettingsDocument>>($"/{Constants.Settings.ContentPostSettingsHubName}");
             app.MapHub<BaseHub<ContentPostActivityDocument>>($"/{Constants.Settings.ContentPostActivitiesHubName}");
@@ -56,11 +63,19 @@ namespace Accelerate.Features.Content
         {
             // SERVICES
             services.AddTransient<IContentViewService, ContentViewService>();
+            services.AddTransient<IContentViewSearchService, ContentViewSearchService>();
+            services.AddTransient<IBaseContentEntityViewService<ContentChannelDocument>, ContentChannelEntityViewService>();
+            services.AddTransient<IBaseContentEntityViewService<ContentListDocument>, ContentListEntityViewService>();
+            services.AddTransient<IBaseContentEntityViewService<ContentFeedDocument>, ContentFeedEntityViewService>();
+            services.AddTransient<IBaseContentEntityViewService<ContentChatDocument>, ContentChatEntityViewService>();
 
-            services.AddTransient<BaseHub<ContentPostDocument>, ContentPostHub>();
+            services.AddTransient<BaseHub<ContentPostViewDocument>, ContentPostHub>();
             services.AddTransient<BaseHub<ContentPostActionsDocument>, ContentPostActionsHub>();
             services.AddTransient<BaseHub<ContentPostActionsSummaryDocument>, ContentPostActionsSummaryHub>();
             services.AddTransient<BaseHub<ContentChannelDocument>, ContentChannelHub>();
+            services.AddTransient<BaseHub<ContentListDocument>, ContentListHub>();
+            services.AddTransient<BaseHub<ContentFeedDocument>, ContentFeedHub>();
+            services.AddTransient<BaseHub<ContentChatDocument>, ContentChatHub>();
             services.AddTransient<BaseHub<ContentPostActivityDocument>, ContentPostActivityHub>();
             services.AddTransient<BaseHub<ContentPostQuoteDocument>, ContentPostQuoteHub>();
             services.AddTransient<BaseHub<ContentPostSettingsDocument>, ContentPostSettingsHub>();
@@ -100,7 +115,19 @@ namespace Accelerate.Features.Content
             // Channels
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentChannelEntity, ContentChannelCreatedPipeline, ContentChannelUpdatedPipeline, ContentChannelDeletedPipeline>(services);
             Foundations.EventPipelines.Startup.ConfigureCompletedPipelineServices<ContentChannelEntity, ContentChannelCreateCompletedPipeline, ContentChannelUpdatedCompletedPipeline, ContentChannelDeleteCompletedPipeline>(services);
-            
+
+            // Chats
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentChatEntity, ContentChatCreatedPipeline, ContentChatUpdatedPipeline, ContentChatDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentChatEntity>(services);
+
+            // Feeds
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentFeedEntity, ContentFeedCreatedPipeline, ContentFeedUpdatedPipeline, ContentFeedDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentFeedEntity>(services);
+
+            // Lists
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentListEntity, ContentListCreatedPipeline, ContentListUpdatedPipeline, ContentListDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentListEntity>(services);
+
             // Quotes
             Foundations.EventPipelines.Startup.ConfigurePipelineServices<ContentPostQuoteEntity, ContentPostQuoteCreatedPipeline, ContentPostQuoteUpdatedPipeline, ContentPostQuoteDeletedPipeline>(services);
             //Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<ContentPostQuoteEntity>(services);
@@ -136,6 +163,10 @@ namespace Accelerate.Features.Content
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostLabelEntity, IContentPostLabelBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentPostPinEntity, IContentPostPinBus>(services);
             Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChannelEntity, IContentChannelBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentListEntity, IContentListBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentFeedEntity, IContentFeedBus>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<ContentChatEntity, IContentChatBus>(services);
+
         }
     }
 }

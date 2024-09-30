@@ -9,6 +9,7 @@ namespace Accelerate.Foundations.Common.Models.Views
 {
     public class NavigationGroup
     {
+        public string Selected { get; set; }
         public string Title { get; set; }
 
         public string Subtitle { get; set; }

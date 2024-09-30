@@ -30,10 +30,10 @@ namespace Accelerate.Features.Content.Pipelines
         {
             var profile = _profileService.Get(args.Value.AccountProfileId);
 
-            var userId = args.Value.Id.ToString();
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new AccountUserDocument()
             {
+                Id = args.Value.Id,
                 CreatedOn = args.Value.CreatedOn,
                 UpdatedOn = args.Value.UpdatedOn,
                 Domain = args.Value.Domain,

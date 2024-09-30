@@ -6,6 +6,7 @@ import aclFieldEditorJs from './aclFieldEditorJs.js'
 import aclFieldSelect from './aclFieldSelect.js'
 import aclFieldSwitch from './aclFieldSwitch.js'
 import aclFieldFile from './aclFieldFile.js'
+import aclFieldCodeEditor from './aclFieldCodeEditor.js'
 import aclFieldSelectCheckbox from './aclFieldSelectCheckbox.js'
 
 export {
@@ -16,5 +17,6 @@ export {
     aclFieldSelect,
     aclFieldSwitch,
     aclFieldFile,
+    aclFieldCodeEditor,
     aclFieldSelectCheckbox,
 }

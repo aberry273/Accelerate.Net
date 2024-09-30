@@ -1,11 +1,14 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Database.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
@@ -26,7 +29,22 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Private;
-        public string? Content { get; set; }
+        public string? Text { get; set; }
+        public string? Formats { get; set; }
+        [NotMapped]
+        public List<ContentPostFormatItem>? FormatItems
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Formats)) return null;
+                return System.Text.Json.JsonSerializer.Deserialize<List<ContentPostFormatItem>>(Formats);
+            }
+            set
+            {
+                Formats = System.Text.Json.JsonSerializer.Serialize(value);
+            }
+        }
+        public List<string>? Tags { get; set; }
         [NotMapped]
         public virtual ContentPostTaxonomyEntity? Taxonomy { get; set; }
         [NotMapped]

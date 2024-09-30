@@ -12,8 +12,12 @@ namespace Accelerate.Foundations.Account.Helpers
             {
                 IsAuthenticated = true,
                 IsDeactivated = user.Status == AccountUserStatus.Deactivated,
+                Name = user.AccountProfile != null 
+                    ? $"{user.AccountProfile.Firstname} {user.AccountProfile.Lastname}"
+                    : user.UserName,
                 Username = user.UserName,
                 UserId = user?.Id,
+                Domain = user.Domain,
                 Image = user?.AccountProfile?.Image
             } : new UserProfile()
             {

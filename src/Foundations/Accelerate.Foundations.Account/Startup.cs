@@ -50,7 +50,9 @@ namespace Accelerate.Foundations.Account
             services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(connString));
 
             // SERVICES
-            services.AddTransient<IEntityService<AccountProfile>, EntityService<AccountProfile>>();
+            services.AddTransient<IEntityService<AccountProfile>, EntityService<AccountProfile>>(); 
+            services.AddTransient<IEntityService<AccountUser>, AccountUserService>(); 
+            services.AddTransient<IAccountUserService, AccountUserService>();
 
             services.AddTransient<IAccountUserSearchService, AccountUserSearchService>();
 
@@ -149,6 +151,26 @@ namespace Accelerate.Foundations.Account
         {
             try
             {
+                context.Database.EnsureCreated();
+                // Look for any students.
+                 
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public static async Task<IdentityResult> InitializeDefaultAdmin(UserManager<AccountUser> userManager)
+        {
+            try
+            {
+                var existingAdmin = await userManager.FindByNameAsync("Admin");
+                if (existingAdmin != null)
+                    return null;
+
+                var user = new AccountUser { UserName = "Admin", Email = "Admin@internal", Domain = Constants.Domains.Internal, EmailConfirmed = true, Status = AccountUserStatus.Active };
+                var password = "Password1!!";
+                return await userManager.CreateAsync(user, password);
             }
             catch (Exception ex)
             {

@@ -15,6 +15,8 @@ namespace Accelerate.Foundations.Content.Services
         Task<ContentPostEntity> CreatePost(
             ContentPostEntity obj,
             Guid? channelId,
+            Guid? chatId,
+            Guid? listId,
             Guid? parentId,
             //List<Guid> parentIds,
             List<Guid> mentionUserIds,
@@ -53,9 +55,14 @@ namespace Accelerate.Foundations.Content.Services
         Task<Guid?> CreateTaxonomy(Guid postId, ContentPostTaxonomyEntity entity);
         ContentPostTaxonomyEntity GetTaxonomy(Guid postId);
 
-
         Task<int> CreateChannelPost(ContentPostEntity post, Guid channelId);
         ContentChannelEntity GetPostChannel(ContentPostEntity post);
+
+        Task<int> CreateChatPost(ContentPostEntity post, Guid chatId);
+        ContentChatEntity GetPostChat(ContentPostEntity post);
+
+        Task<int> CreateListPost(ContentPostEntity post, Guid listId);
+        ContentListEntity GetPostList(ContentPostEntity post);
 
         Task<int> CreateQuotes(Guid postId, List<Guid> quoteIds);
          

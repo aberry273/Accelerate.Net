@@ -16,7 +16,10 @@ namespace Accelerator.Foundation.Content.Database
         public BaseContext<ContentPostMediaEntity> Media { get; set; }
         public BaseContext<ContentPostQuoteEntity> Quotes { get; set; }
         public BaseContext<ContentChannelEntity> Channels { get; set; }
+        public BaseContext<ContentFeedEntity> Feeds { get; set; }
+        public BaseContext<ContentListEntity> Lists { get; set; }
         public BaseContext<ContentPostEntity> Posts { get; set; }
+        public BaseContext<ContentChatEntity> Chats { get; set; }
         public BaseContext<ContentPostSettingsEntity> Settings { get; set; }
         public BaseContext<ContentPostTaxonomyEntity> Taxonomys { get; set; }
         public ContentDbContext(DbContextOptions<ContentDbContext> options,
@@ -24,6 +27,9 @@ namespace Accelerator.Foundation.Content.Database
                 BaseContext<ContentPostMediaEntity> mediaContext,
                 BaseContext<ContentPostQuoteEntity> quoteContext,
                 BaseContext<ContentChannelEntity> channelContext,
+                BaseContext<ContentListEntity> listContext,
+                BaseContext<ContentFeedEntity> feedContext,
+                BaseContext<ContentChatEntity> chatContext,
                 BaseContext<ContentPostSettingsEntity> settingsContext)
             : base(options)
         {
@@ -33,6 +39,9 @@ namespace Accelerator.Foundation.Content.Database
             Media = mediaContext;
             Channels = channelContext;
             Settings = settingsContext;
+            Feeds = feedContext;
+            Lists = listContext;
+            Chats = chatContext;
 
             //base.SavingChanges += new EventHandler(context_SavingChanges);
         }
@@ -41,8 +50,14 @@ namespace Accelerator.Foundation.Content.Database
         {
             base.OnModelCreating(builder);
             builder.Entity<ContentChannelEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentListEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentFeedEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentChatEntity>().HasKey(c => c.Id);
+
             builder.Entity<ContentPostParentEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostChannelEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentPostChatEntity>().HasKey(c => c.Id);
+            builder.Entity<ContentPostListEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostMediaEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostSettingsEntity>().HasKey(c => c.Id);
             builder.Entity<ContentPostTaxonomyEntity>().HasKey(c => c.Id);

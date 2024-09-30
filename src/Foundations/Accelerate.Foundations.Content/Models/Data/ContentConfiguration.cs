@@ -10,6 +10,9 @@ namespace Accelerate.Foundations.Content.Models.Data
     {
         public string PostIndexName { get; set; }
         public string ChannelIndexName { get; set; }
+        public string FeedIndexName { get; set; }
+        public string ChatIndexName { get; set; }
+        public string ListIndexName { get; set; }
         public string ActivitiesIndexName { get; set; }
         public string ActionsIndexName { get; set; }
         public string QuotesIndexName { get; set; }

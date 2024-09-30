@@ -31,7 +31,11 @@ namespace Accelerate.Foundations.Content
             //Context
 
             services.AddDbContext<BaseContext<ContentChannelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentFeedEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentListEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentChatEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+
             services.AddDbContext<BaseContext<ContentPostActivityEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostActionsEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostActionsSummaryEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
@@ -41,6 +45,8 @@ namespace Accelerate.Foundations.Content
             services.AddDbContext<BaseContext<ContentPostLabelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostPinEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostParentEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostListEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<ContentPostChatEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostChannelEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostLinkEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<ContentPostSettingsEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
@@ -51,7 +57,11 @@ namespace Accelerate.Foundations.Content
             //Services
             // Core
             services.AddTransient<IEntityService<ContentChannelEntity>, EntityService<ContentChannelEntity>>();
+            services.AddTransient<IEntityService<ContentFeedEntity>, EntityService<ContentFeedEntity>>();
+            services.AddTransient<IEntityService<ContentListEntity>, EntityService<ContentListEntity>>();
             services.AddTransient<IEntityService<ContentPostEntity>, EntityService<ContentPostEntity>>();
+            services.AddTransient<IEntityService<ContentChatEntity>, EntityService<ContentChatEntity>>();
+
             services.AddTransient<IEntityService<ContentPostActivityEntity>, EntityService<ContentPostActivityEntity>>();
             services.AddTransient<IEntityService<ContentPostActionsEntity>, EntityService<ContentPostActionsEntity>>();
             services.AddTransient<IEntityService<ContentPostQuoteEntity>, EntityService<ContentPostQuoteEntity>>();
@@ -62,6 +72,8 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IEntityService<ContentPostPinEntity>, EntityService<ContentPostPinEntity>>();
             services.AddTransient<IEntityService<ContentPostParentEntity>, EntityService<ContentPostParentEntity>>();
             services.AddTransient<IEntityService<ContentPostChannelEntity>, EntityService<ContentPostChannelEntity>>();
+            services.AddTransient<IEntityService<ContentPostChatEntity>, EntityService<ContentPostChatEntity>>();
+            services.AddTransient<IEntityService<ContentPostListEntity>, EntityService<ContentPostListEntity>>();
             services.AddTransient<IEntityService<ContentPostLinkEntity>, EntityService<ContentPostLinkEntity>>();
             services.AddTransient<IEntityService<ContentPostSettingsEntity>, EntityService<ContentPostSettingsEntity>>();
             services.AddTransient<IEntityService<ContentPostSettingsPostEntity>, EntityService<ContentPostSettingsPostEntity>>();
@@ -90,6 +102,10 @@ namespace Accelerate.Foundations.Content
             services.AddTransient<IElasticService<ContentPostActionsDocument>, ContentPostActionsElasticService>();
             services.AddTransient<IElasticService<ContentPostActivityDocument>, ContentActivityElasticService>();
             services.AddTransient<IElasticService<ContentChannelDocument>, ContentChannelElasticService>();
+            services.AddTransient<IElasticService<ContentListDocument>, ContentListElasticService>();
+            services.AddTransient<IElasticService<ContentFeedDocument>, ContentFeedElasticService>();
+            services.AddTransient<IElasticService<ContentChatDocument>, ContentChatElasticService>();
+            
             services.AddTransient<IElasticService<ContentPostMediaDocument>, ContentPostMediaElasticService>();
             services.AddTransient<IElasticService<ContentPostActionsSummaryDocument>, ContentPostActionsSummaryElasticService>();
             services.AddTransient<IElasticService<ContentPostQuoteDocument>, ContentPostQuoteElasticService>();

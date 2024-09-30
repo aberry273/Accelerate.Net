@@ -24,6 +24,6 @@ namespace Accelerate.Features.Account.Models.Views
             this.Filters = model.Filters;
         }
 
-        public AjaxAclTable<ContentPostActivityEntity> Table { get; set; }
+        public AjaxAclTable<string> Table { get; set; }
     }
 }

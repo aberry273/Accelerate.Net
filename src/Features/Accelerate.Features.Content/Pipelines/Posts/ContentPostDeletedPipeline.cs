@@ -96,9 +96,11 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             // Update threads
             if (parentDoc.UserId == args.Value.UserId)
             {
+                /*
                 if (parentDoc.Pages == null) return;
                 var index = parentDoc.Pages.FindIndex(x => x.Id == args.Value.Id);
                 parentDoc.Pages.RemoveAt(index);
+                */
             }
             await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
         }

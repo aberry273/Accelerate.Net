@@ -1,0 +1,50 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model ContentPage
+@{
+    Layout = "/Views/Shared/_ContentPageLayout.cshtml"; 
+    var currentTab = "All";
+}
+<div class="w-full h-full container overflow-y-scroll">
+
+    <div >
+        <!-- Channels panel -->
+        <div> 
+            <!--
+            <nav> 
+                <ul>
+                    if (Model.ModalCreateChannel != null)
+                    {
+                        <button class="material-icon flat primary" @@click="$events.emit('Model.ModalCreateChannel.Target', { target: 'Model.ModalCreateChannel.Target' })">Add</button>
+                    }
+                </ul>
+            </nav>
+            -->
+
+            <!--Feed-->
+            <div x-data="aclSocialListFeedPosts( {
+                url: '@Model.PostsApiUrl',
+                params: {
+                    filters: [],
+                    itemsPerPage: 1,
+                    page: 0,
+                    query: null,
+                    userId: '@Model.UserId'
+                },
+                mode: 'inline',
+                websockets: true,
+                searchOnInit: true,
+                commentItems: [],
+                menuItems: [],
+                actionItems: [],
+              })">
+            </div>
+
+            <div class="reply-padding"></div>
+        </div>
+    </div> 
+</div>
+ 

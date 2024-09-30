@@ -59,16 +59,9 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         // ASYNC PROCESSORS
         public async Task UpdateDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
             var indexModel = new ContentPostDocument();
-            
-            var profile = new ContentPostUserSubdocument()
-            {
-                Username = user?.Source?.Username,
-                Image = user?.Source?.Image
-            };
-
-            args.Value.Hydrate(indexModel, profile);
+              
+            args.Value.Hydrate(indexModel);
             await _elasticService.UpdateOrCreateDocument(indexModel, args.Value.Id.ToString());
            
             await SendWebsocketUpdate(args);
@@ -102,6 +95,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 if (!parentResponse.IsValidResponse || parentDoc == null) return;
 
                 // Update threads
+                /*
                 if (parentDoc.UserId == args.Value.UserId)
                 {
                     if (parentDoc.Pages == null) parentDoc.Pages = new List<ContentPostDocument>();
@@ -111,6 +105,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                     else
                         parentDoc.Pages.Add(childDoc);
                 }
+                */
                 await _elasticService.UpdateDocument(parentDoc, parentDoc.Id.ToString());
             }
             catch(Exception ex)

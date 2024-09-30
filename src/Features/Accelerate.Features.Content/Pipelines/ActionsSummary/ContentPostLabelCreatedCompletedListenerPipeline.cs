@@ -44,7 +44,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostLabelEntity>>()
             {
-                UpdatePostIndex
+                //UpdatePostIndex
             };
         }
          
@@ -53,7 +53,8 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
         {
             var postResult = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var post = postResult.Source;
-            if (post.Taxonomy == null) {
+            //if (post.Taxonomy == null) 
+            {
                 post.Taxonomy = new ContentPostTaxonomySubdocument()
                 {
                     Labels = new List<string>()
@@ -61,7 +62,7 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             }
             if (post.Taxonomy.Labels == null)
             {
-                post.Taxonomy.Labels = new List<string>();
+                //post.Taxonomy.Labels = new List<string>();
             }
             post.Taxonomy.Labels.Add(args.Value.Label);
         

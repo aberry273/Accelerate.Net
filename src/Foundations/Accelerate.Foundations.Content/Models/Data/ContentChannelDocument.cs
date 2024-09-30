@@ -6,13 +6,8 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
-    public class ContentChannelDocument : EntityDocument
+    public class ContentChannelDocument : ContentEntityDocument
     {
-        // Core properties 
-        public string Name { get; set; }
-        public string? Description { get; set; }
-        public Guid? UserId { get; set; }
-        public string? Category { get; set; }
-        public IEnumerable<string>? Tags { get; set; }
+        // Core properties  
     }
 }

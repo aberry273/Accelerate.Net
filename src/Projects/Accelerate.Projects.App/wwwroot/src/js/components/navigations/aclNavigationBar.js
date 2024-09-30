@@ -21,24 +21,26 @@ export default function (params) {
         // RENDER
         render() {
             const html = `
-            <section :class="mxNavigation_getSectionClass" {!! $attributes ?? '' !!}>
-                <div :class="mxNavigation_getContainerClass">
+            <section class="z-40 bg-white" :class="mxNavigation_getSectionClass" :style {!! $attributes ?? '' !!}>
+                <div class="flex flex-row" :class="mxNavigation_getContainerClass">
                     <div :class="mxNavigation_getContainerLeftClass">
                         <a href="#_" :class="mxNavigation_getLinkClass">
                             <span :class="mxNavigation_getTitleClass" x-text="mxContent_title"></span>
                         </a>
                         <nav :class="mxNavigation_getItemsClass">
                             <template x-for="item in mxNavigation_primaryItems">
-                                <a :href="item.href" x-text="item.label" :class="item.class || mxNavigation_headerLinkClass"></a>
+                                <a :href="item.href" x-text="item.text" :class="item.class || mxNavigation_headerLinkClass"></a>
                             </template>
                         </nav>
                     </div>
-            
-                    <div :class="mxNavigation_getContainerRightClass">
+                    <!--Desktop-->
+                    <div class="lg:block md:hidden sm:hidden xs:hidden" :class="mxNavigation_getContainerRightClass">
                         <template x-for="item in mxNavigation_secondaryItems">
-                            <a :href="item.href" x-text="item.label" :class="item.class || mxNavigation_headerButtonClass"></a>
+                            <a :href="item.href" x-text="item.text" :class="item.class || mxNavigation_headerButtonClass"></a>
                         </template>
                     </div>
+                    <!--Mobile-->
+                    <div class="mt-1 ml-2 lg:hidden md:flex sm:flex xs:flex" x-data="aclDropdownMenuButton({ items: mxNavigation_secondaryItems })"></div>
                 </div>
             </section>
         `

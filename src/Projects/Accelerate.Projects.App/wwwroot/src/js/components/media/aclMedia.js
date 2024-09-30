@@ -17,10 +17,10 @@ export default function (params) {
         },
         render() {
             const html = ` 
-                <template x-if="params.type == mxMedia_video">
+                <template x-if="params.type.toLowerCase() == mxMedia_video.toLowerCase()">
                     <div x-data="aclMediaVideo(params)"></div>
                 </template>
-                <template x-if="params.type == mxMedia_image">
+                <template x-if="params.type.toLowerCase() == mxMedia_image.toLowerCase()">
                     <div x-data="aclMediaImage(params)"></div>
                 </template>
             `

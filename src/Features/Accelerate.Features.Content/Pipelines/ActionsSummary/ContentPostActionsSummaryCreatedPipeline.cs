@@ -43,7 +43,8 @@ namespace Accelerate.Features.Content.Pipelines.ActionsSummary
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsSummaryEntity>>()
             {
-                IndexDocument,
+                //IndexDocument,
+
                 //UpdatePostIndex,
             };
             _processors = new List<PipelineProcessor<ContentPostActionsSummaryEntity>>()

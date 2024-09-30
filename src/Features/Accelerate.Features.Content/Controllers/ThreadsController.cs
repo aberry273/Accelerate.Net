@@ -10,6 +10,7 @@ using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -22,12 +23,15 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading;
 using Twilio.TwiML.Voice;
+using static MassTransit.ValidationResultExtensions;
 
 namespace Accelerate.Features.Content.Controllers
 {
     public class ThreadsController : BaseController
     {
+        SignInManager<AccountUser> _signInManager;
         UserManager<AccountUser> _userManager;
+        IContentViewSearchService _contentViewSearchService;
         IMetaContentService _contentService;
         IContentPostElasticService _contentElasticSearchService;
         IElasticService<ContentPostDocument> _postSearchService;
@@ -40,19 +44,49 @@ namespace Accelerate.Features.Content.Controllers
             IMetaContentService service,
             IContentViewService contentViewService,
             IContentPostElasticService postElasticSearchService,
+            IContentViewSearchService contentViewSearchService,
+            SignInManager<AccountUser> signInManager,
             IEntityService<ContentPostEntity> postService,
             IEntityService<AccountProfile> profileService,
             IElasticService<ContentPostDocument> searchService,
             IElasticService<ContentChannelDocument> channelService,
             UserManager<AccountUser> userManager) : base(service)
         {
+            _signInManager = signInManager;
             _userManager = userManager;
             _contentViewService = contentViewService;
             _contentService = service;
             _postSearchService = searchService;
             _profileService = profileService;
             _contentElasticSearchService = postElasticSearchService;
+            _contentViewSearchService = contentViewSearchService;
             _channelSearchService = channelService;
+        }
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return View(_contentViewService.CreateAnonymousListingPage());
+            }
+            var user = await GetUserWithProfile(this.User);
+            if (user == null)
+            {
+                await _signInManager.SignOutAsync();
+                return View(_contentViewService.CreateAnonymousListingPage());
+            }
+            //if (user == null) return RedirectToAction("Index", "Account");
+
+            var filters = new List<QueryFilter>()
+            {
+                _postSearchService.Filter(Foundations.Content.Constants.Fields.PostType, "Post")
+            };
+            var posts = await _contentElasticSearchService.SearchUserPosts(user.Id);
+            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
+
+            var viewModel = _contentViewService.CreateThreadsPage(user, aggResponse, aggResponse);
+
+            return View(viewModel);
         }
         [HttpGet("ThreadNotFound")]
         public async Task<IActionResult> ThreadNotFound()
@@ -76,12 +110,13 @@ namespace Accelerate.Features.Content.Controllers
             
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
 
-            var item = response.Source;
-
-            if (item == null)
+            if (response.Source == null)
             {
                 return RedirectToAction(nameof(ThreadNotFound));
             }
+
+            var item = await _contentViewSearchService.UpdatePostDocument(response.Source);
+
             /*
             ContentPostDocument parent = null;
             if (item.ParentId != null)
@@ -91,14 +126,15 @@ namespace Accelerate.Features.Content.Controllers
             }
             */
 
-            var filterOptions = _contentViewService.GetFilterOptions();
+            var filterOptions = _contentViewSearchService.GetFilterOptions();
 
             var filters = new List<QueryFilter>()
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, id)
             }; 
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
-            var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
+            //var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
+            GetResponse<ContentChannelDocument> channelResponse = null;
             var viewModel = _contentViewService.CreateThreadPage(user, item, aggResponse, channelResponse?.Source);
            
             var query = new RequestQuery()
@@ -107,8 +143,8 @@ namespace Accelerate.Features.Content.Controllers
                 ItemsPerPage = 100
             };
             var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user?.Id);
-            viewModel.ThreadData = parentResults ?? new ContentSearchResults();
-            viewModel.Replies = aggResponse.Documents.ToList();
+            viewModel.Thread = await _contentViewSearchService.UpdatePostDocuments(parentResults.Posts.ToList());
+            //viewModel.Replies = aggResponse.Documents.Select(_contentElasticSearchService.CreateViewModel).ToList();
 
             return View(viewModel);
         }
@@ -121,7 +157,7 @@ namespace Accelerate.Features.Content.Controllers
 
             var response = await _postSearchService.GetDocument<ContentPostDocument>(id.ToString());
 
-            var item = response.Source;
+            var item = _contentElasticSearchService.CreateViewModel(response.Source);
 
             if (item == null)
             {
@@ -136,14 +172,15 @@ namespace Accelerate.Features.Content.Controllers
             }
             */
 
-            var filterOptions = _contentViewService.GetFilterOptions();
+            var filterOptions = _contentViewSearchService.GetFilterOptions();
 
             var filters = new List<QueryFilter>()
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.ParentId, ElasticCondition.Filter, id)
             };
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
-            var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
+            //var channelResponse = item.ChannelId != null ? await _channelSearchService.GetDocument<ContentChannelDocument>(item.ChannelId.ToString()) : null;
+            var channelResponse = new GetResponse<ContentChannelDocument>();
             var viewModel = _contentViewService.CreateEditThreadPage(user, item, aggResponse, channelResponse?.Source);
 
             var query = new RequestQuery()
@@ -153,14 +190,9 @@ namespace Accelerate.Features.Content.Controllers
             };
             var parentResults = await _contentElasticSearchService.SearchPostParents(query, item.Id, user?.Id);
             viewModel.ThreadData = parentResults ?? new ContentSearchResults();
-            viewModel.Replies = aggResponse.Documents.ToList();
+            viewModel.Replies = aggResponse.Documents.Select(_contentElasticSearchService.CreateViewModel).ToList();
 
             return View(viewModel);
-        }
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            return RedirectToAction("ThreadNotFound");
         }
 
         private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
@@ -176,7 +208,7 @@ namespace Accelerate.Features.Content.Controllers
         {
             var query = new QueryDescriptor<ContentPostDocument>();
             query.MatchAll();
-            query.Term(x => x.ThreadId.Suffix("keyword"), item.ThreadId.ToString());
+            query.Term(x => x.Id.Suffix("keyword"), item.Id.ToString());
             return query;
         }
 

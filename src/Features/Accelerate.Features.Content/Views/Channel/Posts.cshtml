@@ -15,7 +15,7 @@
     }
     else if (Model.IsAuthenticated)
     {
-        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreatePost))"></div>
     }
     else
     {
@@ -36,7 +36,7 @@
         forceLoad: true,
         actionEvent: 'action:post',
         filters: {
-            channelId: ['@Model.Item.Id']
+            channelId: ['@Model.Id']
         },
         itemEvent: $store.wssContentPosts.getMessageEvent(),
         })">

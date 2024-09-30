@@ -36,11 +36,6 @@
 
         <nav class="noscrollbar"  style="width:100%;overflow-x: scroll;">
             <ul>
-                @foreach (var tab in Model.ChannelsTabs.Items)
-                {
-                    var tabClass = currentTab == tab.Text ? "selected" : "";
-                    <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
-                }
             </ul> 
         </nav>
 
@@ -58,8 +53,8 @@
 
                 @if (Model.UserId == Model.Item.UserId)
                 {
-                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalDeleteChannel.Target', { target: '@Model.ModalDeleteChannel.Target' })">delete</button>
-                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalDeleteChannel.Event', { target: '@Model.ModalDeleteChannel.Event' })">delete</button>
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalEditChannel.Event', { target: '@Model.ModalEditChannel.Event' })">edit</button>
                 }
             </ul>
         </nav>

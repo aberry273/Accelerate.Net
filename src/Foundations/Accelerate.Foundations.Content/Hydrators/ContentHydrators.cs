@@ -1,6 +1,7 @@
 ﻿using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
+using Accelerate.Foundations.Content.Models.View;
 
 namespace Accelerate.Foundations.Content.Hydrators
 {
@@ -9,7 +10,7 @@ namespace Accelerate.Foundations.Content.Hydrators
         public static void HydrateFrom(this ContentPostEntity entity, ContentPostEntity document)
         {
             document.Status = entity.Status;
-            document.Content = entity.Content;
+            document.Text = entity.Text;
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
@@ -17,17 +18,35 @@ namespace Accelerate.Foundations.Content.Hydrators
             //document.Category = entity.Category;
             document.Id = entity.Id;
         }
-        public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document, ContentPostUserSubdocument profile)
+        public static void HydrateFrom(this ContentPostViewDocument viewModel,  ContentPostDocument doc)
         {
-            document.Status = entity.Status;
-            document.Content = entity.Content;
-            document.UserId = entity.UserId;
+            viewModel.Id = doc.Id;
+            viewModel.UpdatedOn = doc.UpdatedOn;
+            viewModel.CreatedOn = doc.CreatedOn;
+            viewModel.UserId = doc.UserId;
+            viewModel.Status = doc.Status;
+            viewModel.Content = doc.Content;
+            viewModel.Related = doc.Related;
+            viewModel.Quotes = doc.Quotes;
+            viewModel.Metrics = doc.Metrics;
+            viewModel.Taxonomy = doc.Taxonomy;
+        }
+        public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document)
+        {
+            document.Id = entity.Id;
             document.CreatedOn = entity.CreatedOn;
             document.UpdatedOn = entity.UpdatedOn;
+            document.UserId = entity.UserId;
+            document.Status = entity.Status;
+            /*
+            document.Content = entity.Content;
+            document.UserId = entity.UserId;
+            */
+            /*
             document.ThreadId = entity.ThreadId;
             document.ShortThreadId = Foundations.Common.Extensions.GuidExtensions.ShortenBase64(entity.ThreadId);
             document.PostType = entity.Type;
-            /*
+            
              * TODO: Move these into subdocument updates
             document.threadId = entity.threadId;
             document.ParentId = entity.ParentId;
@@ -37,13 +56,12 @@ namespace Accelerate.Foundations.Content.Hydrators
             
             document.Tags = entity.TagItems;
             document.Category = entity.Category;
-            */
-            document.Id = entity.Id;
             document.Profile = profile ?? 
                 new ContentPostUserSubdocument()
                 {
                     Username = "Anonymous"
                 };
+            */
         }
         public static void HydrateFrom(this ContentPostPinEntity entity, ContentPostPinEntity from)
         {
@@ -124,6 +142,41 @@ namespace Accelerate.Foundations.Content.Hydrators
         }
 
         public static void Hydrate(this ContentChannelEntity entity, ContentChannelDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.Name = entity.Name;
+            document.Tags = entity.TagItems;
+            document.Category = entity.Category;
+            document.Description = entity.Description;
+            document.Id = entity.Id;
+        }
+
+        public static void Hydrate(this ContentFeedEntity entity, ContentFeedDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.Name = entity.Name;
+            document.Tags = entity.TagItems;
+            document.Category = entity.Category;
+            document.Description = entity.Description;
+            document.Id = entity.Id;
+        }
+        public static void Hydrate(this ContentChatEntity entity, ContentChatDocument document)
+        {
+            document.UserId = entity.UserId;
+            document.CreatedOn = entity.CreatedOn;
+            document.UpdatedOn = entity.UpdatedOn;
+            document.Name = entity.Name;
+            document.Tags = entity.TagItems;
+            document.Category = entity.Category;
+            document.Description = entity.Description;
+            document.Id = entity.Id;
+        }
+
+        public static void Hydrate(this ContentListEntity entity, ContentListDocument document)
         {
             document.UserId = entity.UserId;
             document.CreatedOn = entity.CreatedOn;

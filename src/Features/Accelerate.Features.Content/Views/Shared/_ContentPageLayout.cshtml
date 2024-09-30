@@ -1,0 +1,65 @@
+﻿ @using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@using Accelerate.Foundations.Common.Models.Views
+@using Accelerate.Foundations.Content.Models.Data
+@model ContentBasePage
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    var eventDelete = Model.ModalDelete != null ? Model.ModalDelete.Form.Event : "null-event";
+}
+<!--Dashboard-->
+<div class="flex h-screen h-full overflow-y-hidden" x-data="{
+    init() {
+        this.$events.On('@eventDelete', async (e)=>
+            {
+                const delay = ms => new Promise(res => setTimeout(res, ms));
+                window.location.href = '@Model.ParentUrl'
+            })
+        },
+    }">
+    <!-- Sidebar - Desktop only -->
+    <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+    
+    <!--Sidebar - Desktop only -->
+    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar(@JsonSerializerHelper.SerializeObject(Model.PageLinks))"></div>
+    
+    <!--Sidepanel-->
+    <div x-data="aclNavigationSidebarSlide({ 
+        ...@JsonSerializerHelper.SerializeObject(Model.PageLinks),
+        event: 'on:side' 
+    })"></div>
+
+    <!-- Dashboard -->
+    <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
+        <!-- Tabs - Mobile only -->
+        <div class="lg:hidden md:hidden sm:block xs:block" x-data="aclTabsNavigation(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+        <!--Mobile-->
+        <div class="lg:hidden md:hidden sm:flex xs:flex">
+            <div class="flex-none w-10 align-middle">
+                <button @@click="$events.Emit('on:side')"
+                    x-data="aclButton({
+                        icon: 'menu',
+                    })">
+                </button>
+            </div>
+            <!-- Page Actions Mobile -->
+            <div class="grow">
+                <div x-data="aclNavigationBarAction(@JsonSerializerHelper.SerializeObject(Model.PageActions))"></div>
+            </div>
+        </div>
+        <!-- Page Actions Desktop -->
+        <div class="lg:block md:block sm:hidden xs:hidden" x-data="aclNavigationBarAction(@JsonSerializerHelper.SerializeObject(Model.PageActions))"></div>
+
+        <!-- Page Content -->
+        @RenderBody()
+    </div>
+</div>
+<!-- Modals post -->
+@if (Model.ModalDelete != null)
+{
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalDelete))"></div>
+}

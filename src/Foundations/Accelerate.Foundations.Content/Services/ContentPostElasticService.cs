@@ -16,12 +16,14 @@ using System.Linq;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Accelerate.Foundations.Common.Extensions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Elastic.Clients.Elasticsearch.Core.TermVectors; 
+using Elastic.Clients.Elasticsearch.Core.TermVectors;
 using Accelerate.Foundations.Content.Models.Entities;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.Threading;
 using Azure;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Accelerate.Foundations.Content.Models.View;
+using Accelerate.Foundations.Content.Hydrators;
 
 namespace Accelerate.Foundations.Content.Services
 {
@@ -78,7 +80,7 @@ namespace Accelerate.Foundations.Content.Services
         {
             var descriptor = new QueryDescriptor<ContentPostDocument>();
             descriptor.MatchAll();
-            if (!string.IsNullOrEmpty(request?.Query?.Content))
+            if (!string.IsNullOrEmpty(request?.Query?.Content.Text))
                 descriptor.Term(x => x.Content, request?.Query?.Content);
 
             return descriptor;
@@ -127,7 +129,8 @@ namespace Accelerate.Foundations.Content.Services
             {
                 return model;
             }
-            model.Posts = results.Documents.ToList();
+            model.Posts = results.Documents.Select(CreateViewModel);
+
             return model;
         }
         public async Task<ContentSearchResults> SearchUserPosts(Guid userId, int page = 0, int itemsPerPage = 10)
@@ -145,7 +148,8 @@ namespace Accelerate.Foundations.Content.Services
             {
                 return model;
             }
-            model.Posts = results.Documents.ToList();
+            model.Posts = results.Documents.Select(CreateViewModel);
+
             return model;
         }
         public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, QueryDescriptor<ContentPostDocument> elasticQuery, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
@@ -164,14 +168,17 @@ namespace Accelerate.Foundations.Content.Services
             {
                 return model;
             }
-            model.Posts = results.Documents.ToList();
+            model.Posts = results.Documents.Select(CreateViewModel);
 
             //quotes
-            var quotedPostIds = model.Posts.
-                SelectMany(x => x.QuotedPosts.
-                    Select(y => y.ContentPostQuoteId))
+            var quotedPostIds = model.Posts
+                .Where(x => x.Related != null && x.Related?.Quotes != null)
+                .SelectMany(x => x.Related?.Quotes?.Select(y => y.ContentPostQuoteId))
                 .ToList();
-            model.QuotedPosts = quotedPostIds.Any() ? await SearchPostByIds(Query, quotedPostIds) : new List<ContentPostDocument>();
+
+            model.QuotedPosts = quotedPostIds != null && quotedPostIds.Any() 
+                ? await SearchPostByIds(Query, quotedPostIds)
+                : new List<ContentPostDocument>();
 
             //related entities
             var postIds = model.Posts.Select(x => x.Id.ToString()).ToList();
@@ -180,7 +187,14 @@ namespace Accelerate.Foundations.Content.Services
 
             return model;
         }
-         
+
+        public ContentPostViewDocument CreateViewModel(ContentPostDocument doc)
+        {
+            var viewModel = new ContentPostViewDocument();
+            viewModel.HydrateFrom(doc);
+            return viewModel;
+        }
+
         public async Task<ContentSearchResults> SearchPosts(RequestQuery Query, string sortField = Foundations.Integrations.Elastic.Constants.Fields.CreatedOn, Elastic.Clients.Elasticsearch.SortOrder sortOrder = Elastic.Clients.Elasticsearch.SortOrder.Desc)
         {
             var elasticQuery = BuildSearchQuery(Query);
@@ -437,9 +451,9 @@ namespace Accelerate.Foundations.Content.Services
             if (Query == null) Query = new RequestQuery();
 
             //Query.Filters.Add(PublicPosts());
-            //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
+            Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
-            Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
+            //Query.Filters.Add(Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Post));
            
             return CreateQuery(Query);
         }
@@ -469,8 +483,8 @@ namespace Accelerate.Foundations.Content.Services
             //Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             //Filter any post where the poster is replying to themselves from the results
-            var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
-            Query.Filters.Add(filter);
+            //var filter = Filter(Constants.Fields.PostType, ElasticCondition.Filter, ContentPostType.Reply);
+            //Query.Filters.Add(filter);
 
             return CreateQuery(Query);
         }
@@ -501,14 +515,12 @@ namespace Accelerate.Foundations.Content.Services
             Query.Filters.Add(Filter(Constants.Fields.Status, ElasticCondition.Must, "Public"));
 
             //Filter any post where the poster is replying to themselves from the results
-            var ids = item.ParentIds != null ? item.ParentIds.Select(x => x.ToString()).ToList() : new List<string>();
+            var ids = item.Related.ParentIds != null ? item.Related.ParentIds.Select(x => x.ToString()).ToList() : new List<string>();
             // add current item as well to retrieve associated properties (quotes/etc) of item
             ids.Add(item.Id.ToString());
 
             Query.Filters.Add(FilterValues(Foundations.Content.Constants.Fields.Id, ElasticCondition.Filter, QueryOperator.Equals, ids, true));
             
-            //Query.Filters.Add(Filter(Constants.Fields.ParentIds, ElasticCondition.Filter, QueryOperator.Equals, item.ParentIds, true));
-
             return CreateQuery(Query);
         }
         public QueryDescriptor<ContentPostDocument> BuildRepliesSearchQuery(string parentId)

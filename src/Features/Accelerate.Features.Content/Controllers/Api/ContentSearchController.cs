@@ -36,33 +36,15 @@ namespace Accelerate.Features.Content.Controllers.Api
     [ApiController]
     public class ContentSearchController : ControllerBase
     {
-        UserManager<AccountUser> _userManager;
-        IContentViewService _contentService;
-        readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
+        IContentViewSearchService _contentViewSearchService;
         IContentPostElasticService _searchService;
-        //IElasticService<ContentPostActionDocument> _searchActionService;
-        IAccountUserSearchService _userSearchService;
-        IElasticService<ContentChannelDocument> _searchChannelService;
-        IEntityService<ContentPostPinEntity> _pinnedContentService;
         public ContentSearchController(
-            IContentViewService contentService,
             IContentPostElasticService service,
-            Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
-            IElasticService<ContentPostDocument> searchPostService,
-            IAccountUserSearchService userSearchService,
-            //IElasticService<ContentPostActionDocument> searchActionService,
-            IEntityService<ContentPostPinEntity> pinnedContentService,
-            IElasticService<ContentChannelDocument> searchChannelService,
-            UserManager<AccountUser> userManager)
+            IContentViewSearchService contentViewSearchService,
+            IEntityService<ContentPostPinEntity> pinnedContentService)
         {
-            _publishEndpoint = publishEndpoint;
-            _userManager = userManager;
-            _contentService = contentService;
             _searchService = service;
-            //_searchActionService = searchActionService;
-            _userSearchService = userSearchService;
-            _searchChannelService = searchChannelService;
-            _pinnedContentService = pinnedContentService;
+            _contentViewSearchService = contentViewSearchService;
         }
         [Route("Actions")]
         [HttpPost]
@@ -75,27 +57,19 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPost([FromBody] RequestQuery query, [FromRoute] Guid postId)
         {
-            var sortBy = _contentService.GetSortField(query.Filters);
-            var sortOrder = _contentService.GetSortOrderField(query.Filters);
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPost(query, postId, GetSortField(query), sortOrder);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPosts(query, postId));
         }
         [Route("Posts/{userId}")]
         [HttpPost]
         public async Task<IActionResult> SearchUserPosts([FromBody] RequestQuery query, [FromRoute] Guid userId)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchUserPosts(userId, query.Page, query.ItemsPerPage);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchUserPosts(query, userId));
         }
         [Route("Posts/{postId}/Parents")]
         [HttpPost]
         public async Task<IActionResult> SearchPostParents([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPostParents(query, postId, query.UserId.GetValueOrDefault());
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPostParents(postId, query));
         }
 
 
@@ -103,87 +77,37 @@ namespace Accelerate.Features.Content.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> SearchPostPinned([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
-            var pinned = _pinnedContentService.Find(x => x.ContentPostId == postId);
-            var pinnedIds = pinned.Select(x => x.PinnedContentPostId.ToString()).ToList();
-            query.ItemsPerPage = 10;
-            query.Page = 0;
-            var posts = await _searchService.SearchPostByIds(query, pinnedIds);
-            var userIds = pinned.Select(x => x.UserId.ToString()).ToList();
-            var users = await _userSearchService.SearchUsers(query, userIds);
-
-            var pinnedDocuments = pinned.Select(x =>
-            {
-                var post = posts.FirstOrDefault(y => y.Id == x.PinnedContentPostId);
-                var user = users.Users.FirstOrDefault(y => y.Id == x.UserId);
-                return new ContentPostPinDocument()
-                {
-                    ContentPost = post,
-                    Date = Foundations.Common.Extensions.DateExtensions.ToDateSimple(x.CreatedOn),
-                    Id = x.Id,
-                    ContentPostId = x.ContentPostId,
-                    Reason = x.Reason,
-                    Href = post?.Href,
-                    UserId = post?.UserId,
-                    Username = user?.Username,
-                };
-            }).ToList();
-            
-            return Ok(pinnedDocuments);
-        }
-        private string GetSortField(RequestQuery query)
-        {
-            var sortBy = _contentService.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
-            return sortBy?.Key ?? _contentService.GetFilterSortOptions().FirstOrDefault().Key;
+            return Ok(await _contentViewSearchService.SearchPostPinned(postId, query));
         }
         [Route("Posts/Replies/{postId}")]
         [HttpPost]
         public async Task<IActionResult> SearchPostRepliesFromRoute([FromRoute] Guid postId, [FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            SortOrder sortOrder = SortOrder.Desc;
-            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters); 
-            var result = await _searchService.SearchPostReplies(postId, query, GetSortField(query), sortOrder);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPostRepliesFromRoute(postId, query));
         }
         [Route("Posts/Replies")]
         [HttpPost]
         public async Task<IActionResult> SearchPostReplies([FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            SortOrder sortOrder = SortOrder.Desc;
-            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var result = await _searchService.SearchPostReplies(query, GetSortField(query), sortOrder);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPostReplies(query));
         }
         [Route("Posts")]
         [HttpPost]
         public async Task<IActionResult> SearchPosts([FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            SortOrder sortOrder = SortOrder.Desc;
-            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
-            var sortBy = _contentService.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
-            var result = await _searchService.SearchPosts(query, GetSortField(query), sortOrder);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPosts(query));
         }
         [Route("Posts/Related/{channelId}")]
         [HttpPost]
         public async Task<IActionResult> SearchPostsRelated(Guid channelId, [FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var channel = await _searchChannelService.GetDocument<ContentChannelDocument>(channelId.ToString());
-            var result = await _searchService.SearchRelatedPosts(channel.Source, query);
-            return Ok(result);
+            return Ok(await _contentViewSearchService.SearchPostsRelated(channelId, query));
         }
         [Route("Channels")]
         [HttpPost]
         public async Task<IActionResult> SearchChannels([FromBody] RequestQuery query)
         {
-            query.Filters = _contentService.GetActualFilterKeys(query.Filters);
-            var docs = await _searchService.SearchPosts(query);
-            return Ok(docs);
+            return Ok(await _contentViewSearchService.SearchChannels(query));
         }
         [Route("Index")]
         [HttpDelete]

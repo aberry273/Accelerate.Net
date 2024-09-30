@@ -4,6 +4,11 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace Accelerate.Features.Account.Models.Views
 {
+    public struct ProviderLink
+    {
+        public string Name { get; set; }
+        public string Color { get; set; }
+    }
     public class AccountFormPage : BasePage
     {
         public string Title { get; set; }
@@ -13,7 +18,7 @@ namespace Accelerate.Features.Account.Models.Views
 
         public string ExternalLoginAction { get; set; }
         public string ExternalLoginPostbackUrl { get; set; }
-        public IEnumerable<AuthenticationScheme> Providers { get; set; }
+        public IEnumerable<ProviderLink> Providers { get; set; }
         public List<NavigationItem> Links { get; set; } = new List<NavigationItem>();
         
         public AccountFormPage(BasePage model) : base(model)

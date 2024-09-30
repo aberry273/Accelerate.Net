@@ -10,7 +10,12 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public enum FormFieldTypes
     {
-        input, email, textarea, wysiwyg, basicWysiwyg, link, number, password, file, list, quotes, select, chips
+        //        input, email, textarea, wysiwyg, basicWysiwyg, link, number, password, file, list, quotes, select, chips
+        input, email, textarea, number, password, file, Image, Video, select
+    }
+    public enum FormFieldComponents
+    {
+        aclFieldInput, aclFieldTextarea, aclFieldContentEditable, aclFieldCodeEditor, aclFieldEditorJs, aclFieldSelect, aclFieldSwitch, aclFieldFile, aclFieldSelectCheckbox
     }
     public class FormField
     {
@@ -19,6 +24,9 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public string Event { get; set; }
         public string Name { get; set; }
         public string Type => Enum.GetName(FieldType);
+        public string Component => Enum.GetName(FieldComponent);
+        [JsonIgnore]
+        public FormFieldComponents FieldComponent { get; set; }
         [JsonIgnore]
         public FormFieldTypes FieldType { get; set; }
         public bool? Disabled { get; set; }
@@ -36,9 +44,10 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
         public bool? Autocomplete { get; set; }
         public bool? AriaInvalid { get; set; }
         public bool? ClearOnSubmit { get; set; }
+        public bool? AreItemsObject { get; set; } = false;
         public string? Accept { get; set; }
         public string Helper { get; set; }
         public object Value { get; set; }
-        public List<string> Items { get; set; }
+        public List<dynamic> Items { get; set; }
     }
 }

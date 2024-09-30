@@ -81,6 +81,7 @@ namespace Accelerate.Features.Account.Controllers
             _postSearchService = postSearchService;
             _mediaSearchService = mediaSearchService;
             _accountViewService = accountViewService;
+            // Move to service
         }
 
         private const string _authenticatedRedirectUrl = "/";
@@ -445,6 +446,7 @@ namespace Accelerate.Features.Account.Controllers
             if (result == null)
             {
                 var response = "No account with that email/username could be found";
+                viewModel.Form.Response = response;
                 return RedirectToAction(nameof(Login), new { username = request.Username, response = response });
 
             }
@@ -464,6 +466,7 @@ namespace Accelerate.Features.Account.Controllers
             else
             {
                 var response = "Invalid login attempt";
+                viewModel.Form.Response = response;
                 return RedirectToAction(nameof(Login), new { username = request.Username, response = response  }); 
             }
         }
@@ -536,6 +539,11 @@ namespace Accelerate.Features.Account.Controllers
                 var alreadyLinkedResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
                 if(alreadyLinkedResult.Succeeded)
                 {
+                    var firstname = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+                    var lastname = info.Principal.FindFirstValue(ClaimTypes.Surname);
+                    // Update user
+                    if (user.Id == Guid.Empty || user?.AccountProfile?.Firstname != firstname || user?.AccountProfile?.Lastname != lastname)
+                        await this.UpdateUserProfile(user, info);
                     var login = await _userManager.AddLoginAsync(user, info);
                     RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
                 }
@@ -739,12 +747,16 @@ namespace Accelerate.Features.Account.Controllers
 
                 user.AccountProfileId = guid.GetValueOrDefault();
                 await _userManager.UpdateAsync(user);
+                await PostUpdateSteps(user);
             }
             else
             {
                 profile.Firstname = firstname;
                 profile.Lastname = lastname;
                 await _profileService.Update(profile);
+                // TODO: only run if user id is null
+                
+                await PostUpdateSteps(user);
             }
             return user;
         }

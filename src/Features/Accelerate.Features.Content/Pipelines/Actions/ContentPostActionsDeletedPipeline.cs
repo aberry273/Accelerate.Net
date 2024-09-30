@@ -38,7 +38,8 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             // To update as reflection / auto load based on inheritance classes in library
             _asyncProcessors = new List<AsyncPipelineProcessor<ContentPostActionsEntity>>()
             {
-                DeleteDocument,
+                //DeleteDocument,
+
                 //UpdatePostIndex
             };
         }
@@ -62,7 +63,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var ActionsDoc = ContentPostActionUtilities.GetActions(_entityService, args);
             var fetchResponse = await _elasticPostService.GetDocument<ContentPostDocument>(args.Value.ContentPostId.ToString());
             var contentPostDocument = fetchResponse.Source;
-            contentPostDocument.ActionsTotals = ActionsDoc;
+            //contentPostDocument.ActionsTotals = ActionsDoc;
             contentPostDocument.UpdatedOn = DateTime.Now;
             await _elasticPostService.UpdateDocument(contentPostDocument, args.Value?.ContentPostId.ToString());
 

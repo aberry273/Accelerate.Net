@@ -31,6 +31,8 @@ namespace Accelerate.Features.Content.Models.Data
     { 
         public string? LinkValue { get; set; }
         public Guid? ChannelId { get; set; }
+        public Guid? ChatId { get; set; }
+        public Guid? ListId { get; set; }
         public IEnumerable<Guid>? ParentIdItems
         {
             get

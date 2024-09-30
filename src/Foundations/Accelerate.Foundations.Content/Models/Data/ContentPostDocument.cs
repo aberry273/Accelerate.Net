@@ -1,24 +1,14 @@
 ﻿using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Content.Models.Entities;
+using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Foundations.Integrations.Elastic.Models;
+using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.Data
 {
-    public enum ContentPostType
-    {
-        Post, Reply, Page
-    }
-    public class ContentPostLinkSubdocument
-    {
-        public string? Url { get; set; }
-        public string? Title { get; set; }
-        public string? Description { get; set; }
-        public string? Image { get; set; }
-        public string? ShortUrl { get; set; }
-    }
     public class ContentPostQuoteSubdocument
     {
         public string ContentPostQuoteThreadId { get; set; }
@@ -26,152 +16,95 @@ namespace Accelerate.Foundations.Content.Models.Data
         public string? Content { get; set; }
         public string? Response { get; set; }
     }
-    public class ContentPostFormatSubdocument
+    public class ContentPostContentMediaSubdocument
     {
-        public int Start { get; set; }
-        public int End { get; set; }
-        public string Value { get; set; }
-        public string Format { get; set; }
+        public string Src { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Type { get; set; }
+    }
+    public class ContentPostContentSubdocument
+    {
+        public string Date { get; set; }
+        public string Text { get; set; }
+        public List<ContentPostFormatItem> Formats { get; set; }
+        public List<ContentPostContentMediaSubdocument> Media { get; set; }
+    }
+    public class ContentPostRelatedPostsSubdocument
+    {
+        public List<ContentPostQuoteSubdocument> Quotes { get; set; }
+        public List<Guid> ParentIds { get; set; }
+        public Guid? ParentId { get; set; }
+        public Guid? ChannelId { get; set; }
+        public Guid? ChatId { get; set; }
+        public Guid? ListId { get; set; }
+    }
+    public class ContentPostMetricsSubdocument
+    {
+        public int Replies { get; set; }
+        public int Quotes { get; set; }
+        public int Rating { get; set; }
     }
     public class ContentPostTaxonomySubdocument
     {
-        public string? Category { get; set; }
+        public string Category { get; set; }
         public List<string> Tags { get; set; }
         public List<string> Labels { get; set; }
     }
-    public class ContentPostSettingsSubdocument
-    {
-        public ContentPostEntityStatus Status { get; set; }
-        public string ContentPostSettingsId { get; set; }
-        public string? Access { get; set; }
-        public int? CharLimit { get; set; }
-        public int? PostLimit { get; set; }
-        public int? ImageLimit { get; set; }
-        public int? VideoLimit { get; set; }
-        public int? QuoteLimit { get; set; }
-        public List<ContentPostSettingsFormat> Formats { get; set; }
-    }
-    public class ContentPostMediaSubdocument
-    {
-        public string Name { get; set; }
-        public string Id { get; set; }
-        public string FilePath { get; set; }
-        public string Type { get; set; }
-    }
-    public class ContentPostUserSubdocument
-    {
-        public string Username { get; set; }
-        public string Image { get; set; }
-    }
     public class ContentPostDocument : EntityDocument
     {
-        // Non-index properties
-        [NotMapped]
-        public string Href 
-        { 
-            get
-            {
-                return $"/Threads/{this.Id}";
-            }
-        }
-        [NotMapped]
-        public string Reason { get; set; }
-
-        // Indexex properties
-        public string? ShortThreadId { get; set; }
-        public string? ThreadId { get; set; }
-        public Guid? UserId { get; set; }
-        public List<Guid> ParentIds { get; set; }
-        public Guid? ParentId { get; set; }
-        public string? ParentVote { get; set; }
-        // TODO: Update to a getter returning the settings.status
-        public ContentPostEntityStatus? Status { get; set; }
-        public string? Content { get; set; }
+        public Guid UserId { get; set; }
+        public ContentPostEntityStatus Status { get; set; }
         
-        public string? Date
-        {
-            get
-            {
-                return this.UpdatedOn.ToTimeSinceString();
-            }
-        }
-        // Original posts threadId, all child threads reference the parent threadId which should become the original post
-        
-        public Guid? ChannelId { get; set; }
-        public string? ChannelName { get; set; }
-        // TODO: Update to a getter returning the settings.status
-        public string? Category
-        {
-            get
-            {
-                return Taxonomy?.Category;
-            }
-        }
-        public IEnumerable<string>? Tags 
-        {
-            get
-            {
-                return Taxonomy?.Tags;
-            }
-        }
-        public IEnumerable<string>? Labels
-        {
-            get
-            {
-                return Taxonomy?.Labels;
-            }
-        }
-        public IEnumerable<ContentPostQuoteSubdocument>? QuotedPosts { get; set; }
-        public IEnumerable<ContentPostMediaSubdocument>? Media { get; set; }
-        // Computed
+        [NotMapped]
+        public ContentPostContentSubdocument Content { get; set; }
+        public ContentPostRelatedPostsSubdocument Related { get; set; }
+        public ContentPostQuoteSubdocument Quotes { get; set; }
+        public ContentPostMetricsSubdocument Metrics { get; set; }
         public ContentPostTaxonomySubdocument Taxonomy { get; set; }
-        public ContentPostSettingsSubdocument Settings { get; set; }
-        public ContentPostLinkSubdocument Link { get; set; }
-        public ContentPostActionsSummaryDocument ActionsTotals { get; set; }
-        public ContentPostType? PostType { get; set; }
-        //TODO: Replace with mapping 
-        public List<Guid> ThreadIds { get; set; }
-        public List<ContentPostDocument> Pages { get; set; }
-        public ContentPostUserSubdocument? Profile { get; set; }
-        public int? Quotes
-        {
-            get
-            {
-                if (ActionsTotals == null) return 0;
-                return ActionsTotals.Quotes;
-            }
-        }
-        public int? Agrees
-        {
-            get
-            {
-                if (ActionsTotals == null) return 0;
-                return ActionsTotals.Agrees;
-            }
-        }
-        public int? Disagrees
-        {
-            get
-            {
-                if (ActionsTotals == null) return 0;
-                return ActionsTotals.Disagrees;
-            }
-        }
-        public int? TotalVotes
-        {
-            get
-            {
-                if (ActionsTotals == null) return 0;
-                return ActionsTotals.Disagrees + ActionsTotals.Agrees;
-            }
-        }
-        public int? Replies
-        {
-            get
-            {
-                if (ActionsTotals == null) return 0;
-                return ActionsTotals.Replies;
-            }
-        }
     }
+    /*
+     * id: 0,
+            href: '#',
+            profile: {
+                icon: 'calendar',
+                displayName: 'Deb peterson',
+                username: '@johnwes',
+                description: 'Blogger, thraser, skaterboi, etc',
+                date: '10/07/2024',
+                href: '#',
+                img: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png',
+            },
+            content: {
+                date: '2024-07-20T00:38:52.0421225Z',
+                text: 'Display users\' comments beautifully. The component also has a form for commenting.',
+            },
+            ui: {
+                showReplies: true,
+            },
+            replies: {
+                profiles: [
+                    {
+                        img: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png',
+                    },
+                    {
+                        img: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png',
+                    },
+                    {
+                        img: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png',
+                    },
+                ],
+                text: 'View replies (3)',
+                date: '2024-07-20T00:38:52.0421225Z',
+            },
+            metrics: {
+                replies: 4,
+                rating: 17231
+            },
+            taxonomy: {
+                category: 'Marketing',
+            },
+            menu: [ 'CopyLink', 'Edit', 'Delete' ],
+            actions: [ 'reply', 'quote', 'upvote', 'downvote', 'tag' ],
+    */
 }

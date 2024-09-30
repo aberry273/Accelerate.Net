@@ -50,11 +50,15 @@ namespace Accelerate.Foundations.Content.Services
         IEntityService<ContentPostActionsSummaryEntity> _serviceActionsSummary { get; set; }
         //IEntityService<ContentPostParentEntity> _servicePostParents { get; set; }
         IEntityService<ContentPostChannelEntity> _servicePostChannel { get; set; }
+        IEntityService<ContentPostChatEntity> _servicePostChat { get; set; }
+        IEntityService<ContentPostListEntity> _servicePostList { get; set; }
         IEntityService<ContentPostLinkEntity> _servicePostLink { get; set; }
         IEntityService<ContentPostSettingsEntity> _servicePostSettings { get; set; }
         IEntityService<ContentPostTaxonomyEntity> _servicePostTaxonomy { get; set; }
         IEntityService<ContentPostSettingsPostEntity> _servicePostSettingPost { get; set; }
         IEntityService<ContentChannelEntity> _serviceChannels { get; set; }
+        IEntityService<ContentChatEntity> _serviceChats { get; set; }
+        IEntityService<ContentListEntity> _serviceLists { get; set; }
         public ContentPostService(
             Bind<IContentActionsBus, IPublishEndpoint> publishActionsEndpoint,
             Bind<IContentPostActivityBus, IPublishEndpoint> publishActivityEndpoint,
@@ -76,12 +80,16 @@ namespace Accelerate.Foundations.Content.Services
             IEntityService<ContentPostMediaEntity> servicePostMedia, 
             IEntityService<ContentPostActionsSummaryEntity> serviceActionsSummary, 
             IEntityService<ContentPostParentEntity> servicePostParents, 
-            IEntityService<ContentPostChannelEntity> servicePostChannel, 
+            IEntityService<ContentPostChannelEntity> servicePostChannel,
+            IEntityService<ContentPostChatEntity> servicePostChat,
+            IEntityService<ContentPostListEntity> servicePostList,
             IEntityService<ContentPostLinkEntity> servicePostLink, 
             IEntityService<ContentPostSettingsEntity> servicePostSettings,
             IEntityService<ContentPostTaxonomyEntity> servicePostTaxonomy,
             IEntityService<ContentPostSettingsPostEntity> servicePostSettingPost, 
-            IEntityService<ContentChannelEntity> serviceChannels)
+            IEntityService<ContentChannelEntity> serviceChannels,
+            IEntityService<ContentChatEntity> serviceChats,
+            IEntityService<ContentListEntity> serviceLists)
         {
             //database
             this._publishActivityEndpoint = publishActivityEndpoint;
@@ -107,10 +115,15 @@ namespace Accelerate.Foundations.Content.Services
             this._serviceActionsSummary = serviceActionsSummary;
             //this._servicePostParents = servicePostParents;
             this._servicePostChannel = servicePostChannel;
+            this._servicePostChat = servicePostChat;
+            this._servicePostList = servicePostList;
+
             this._servicePostLink = servicePostLink;
             this._servicePostSettings = servicePostSettings;
             this._servicePostSettingPost = servicePostSettingPost;
             this._serviceChannels = serviceChannels;
+            this._serviceChats = serviceChats;
+            this._serviceLists = serviceLists;
             this._servicePostTaxonomy = servicePostTaxonomy;
         }
 
@@ -118,8 +131,10 @@ namespace Accelerate.Foundations.Content.Services
         #region Post
 
         public async Task<ContentPostEntity> CreatePost(
-            ContentPostEntity obj, 
-            Guid? channelId, 
+            ContentPostEntity obj,
+            Guid? channelId,
+            Guid? chatId,
+            Guid? listId,
             Guid? parentId, 
             //List<Guid> parentIds,
             List<Guid> mentionUserIds,
@@ -142,6 +157,17 @@ namespace Accelerate.Foundations.Content.Services
             // Channel (related)
             if (channelId != null && channelId != Guid.Empty) {
                 await this.CreateChannelPost(obj, channelId.GetValueOrDefault());
+            }
+
+            // Chat (related)
+            if (chatId != null && chatId != Guid.Empty)
+            {
+                await this.CreateChatPost(obj, chatId.GetValueOrDefault());
+            }
+            // List (related)
+            if (listId != null && listId != Guid.Empty)
+            {
+                await this.CreateListPost(obj, listId.GetValueOrDefault());
             }
 
             // Mentions (related)
@@ -392,6 +418,52 @@ namespace Accelerate.Foundations.Content.Services
             var postChannel = _servicePostChannel.Find(x => x.ContentPostId == post.Id).FirstOrDefault();
             if (postChannel == null) return null;
             return _serviceChannels.Get(postChannel.ChannelId);
+        }
+        #endregion
+        #region Chat
+        public async Task<int> CreateChatPost(ContentPostEntity post, Guid chat)
+        {
+            var entity = new ContentPostChatEntity()
+            {
+                ContentPostId = post.Id,
+                ChatId = chat,
+            };
+            return await _servicePostChat.Create(entity);
+        }
+        /// <summary>
+        /// Returns the channel if the post has a channel
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        public ContentChatEntity GetPostChat(ContentPostEntity post)
+        {
+            var postChat = _servicePostChat.Find(x => x.ContentPostId == post.Id).FirstOrDefault();
+            if (postChat == null) return null;
+            return _serviceChats.Get(postChat.ChatId);
+        }
+        #endregion
+        #region List
+        public async Task<int> CreateListPost(ContentPostEntity post, Guid listId)
+        {
+            var entity = new ContentPostListEntity()
+            {
+                ContentPostId = post.Id,
+                ListId = listId,
+            };
+            return await _servicePostList.Create(entity);
+        }
+        /// <summary>
+        /// Returns the channel if the post has a channel
+        /// </summary>
+        /// <param name="post"></param>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        public ContentListEntity GetPostList(ContentPostEntity post)
+        {
+            var postList = _servicePostList.Find(x => x.ContentPostId == post.Id).FirstOrDefault();
+            if (postList == null) return null;
+            return _serviceLists.Get(postList.ListId);
         }
         #endregion
         #region Parents

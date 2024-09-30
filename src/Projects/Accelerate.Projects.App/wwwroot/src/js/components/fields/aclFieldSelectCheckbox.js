@@ -20,6 +20,7 @@ export default function (params) {
         
         // INIT
         init() {
+            this._mxField_setValues(params);
             this.setValues(params);
             this.selectedItem = this.mxField_items.filter(x => x.value == this.mxField_value)[0]
             this.render();
@@ -28,29 +29,13 @@ export default function (params) {
         get selectedItemText() {
             if(this.mxField_value == null || this.mxField_value.length == 0) return null;
             if(this.isObjectItems) {
-                this.mxField_value.map(x => x.title).join(', ');
+                this.mxField_value.map(x => x.key).join(', ');
                 return;
             }
             return this.mxField_value.join(', ');
         },
         // METHODS
         setValues(params) {
-            this.mxField_type = params.type || 'text';
-            this.mxField_placeholder = params.placeholder;
-            this.mxField_cssClass = params.cssClass;
-            this.mxField_id = params.id;
-            this.mxField_name = params.name;
-            this.mxField_min = params.min;
-            this.mxField_max = params.max;
-            this.mxField_disabled = params.disabled;
-            this.mxField_class = params.class;
-            this.mxField_value = params.value;
-            this.mxField_required = params.required;
-            this.mxField_readOnly = params.readOnly;
-            this.mxField_autocomplete = params.autocomplete;
-            this.mxField_ariaInvalid = params.ariaInvalid;
-            this.mxField_areaDescribedBy = params.areaDescribedBy;
-            this.mxField_pattern = params.pattern;
 
             this.isObjectItems = params.isObjectItems;
             
@@ -143,7 +128,7 @@ export default function (params) {
                                     <span 
                                         :for="getItemLabel(field, i)" 
                                         class="pl-2" 
-                                        x-text="item.title"></span>
+                                        x-text="item.key"></span>
                                 </div>
                             </div>
                         </li>

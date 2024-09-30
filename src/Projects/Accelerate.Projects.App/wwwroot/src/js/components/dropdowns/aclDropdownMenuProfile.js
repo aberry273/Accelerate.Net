@@ -11,6 +11,7 @@ export default function (params) {
             this.mxContent_title = params.title;
             this.mxContent_subtitle = params.subtitle;
             this.mxDropdown_groups = params.groups;
+            this.mxDropdown_imageSrc = params.image;
             
             this.open = params.open;
             this.render();
@@ -27,12 +28,29 @@ export default function (params) {
             // Fallback to dispatch
             this.$dispatch('onselect', btn);
         },
+        avatarLetters() {
+            if (this.mxContent_title == null || this.mxContent_title.length == 0)
+                return '??'
+            const letters = this.mxContent_title.split(' ');
+            return letters.map(x => x[0]).join('')
+        },
         render() {
             const html = `
             <div class="relative">
         
             <button @click="mxDropdown_open=true" :class="mxDropdown_buttonClass">
-                <img :src="mxDropdown_imageSrc" :class="mxDropdown_imageClass">
+                <img 
+                    x-show="mxDropdown_imageSrc"
+                    :src="mxDropdown_imageSrc" 
+                    :class="mxDropdown_imageClass">
+                <!-- No image-->
+                <div 
+                    x-show="!mxDropdown_imageSrc" class="relative inline-flex items-center justify-center w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
+                    <span 
+                        class="font-medium text-gray-600 dark:text-gray-300"
+                        x-text="avatarLetters"></span>
+                </div>
+
                 <span :class="mxDropdown_buttonTextContainerClass">
                     <span x-text="mxContent_title"></span>
                     <span :class="mxDropdown_buttonSubtitleClass" x-text="mxContent_subtitle"></span>

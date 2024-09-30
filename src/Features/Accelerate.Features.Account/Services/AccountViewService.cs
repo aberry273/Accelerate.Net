@@ -17,6 +17,7 @@ using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Elastic.Transport;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -52,21 +53,18 @@ namespace Accelerate.Features.Account.Services
             viewModel.Table = this.GetMentionsTable();
             viewModel.Table.Pages =(totalActivities / activities.Count());
             viewModel.Table.ItemsPerPage = activities.Count();
-            viewModel.Table.Rows = activities.ToList();
+            viewModel.Table.Items = activities.Select(CreateRow).ToList();
             viewModel.Table.PostbackUrl = "/api/ContentPostActivity/query";
             return viewModel;
         }
 
-        AclTableRow CreateRow(ContentPostActivityEntity activity)
+        List<string> CreateRow(ContentPostActivityEntity activity)
         {
-            return new AclTableRow()
+            return new List<string>()
             {
-                Values = new List<string>()
-                {
-                    activity.CreatedOn.ToLongDateString(),
-                    activity.SourceId.ToString(),
-                    activity.UserId.ToString()
-                }
+                activity.CreatedOn.ToLongDateString(),
+                activity.SourceId.ToString(),
+                activity.UserId.ToString()
             };
         }
 
@@ -80,25 +78,25 @@ namespace Accelerate.Features.Account.Services
             return viewModel;
         }
 
-        private AjaxAclTable<ContentPostActivityEntity> GetMentionsTable()
+        private AjaxAclTable<string> GetMentionsTable()
         {
-            var model = new AjaxAclTable<ContentPostActivityEntity>();
+            var model = new AjaxAclTable<string>();
             var headers = new List<AclTableHeader>()
             {
                 new AclTableHeader()
                 {
-                    Name = "createdOn",
+                    Text = "createdOn",
                     Label = "Date",
                     Type = AclTableHeaderType.Date
                 },
                 new AclTableHeader()
                 {
-                    Name = "message",
+                    Text = "message",
                     Label = "Message",
                 },
                 new AclTableHeader()
                 {
-                    Name = "url",
+                    Text = "url",
                     Label = "Url",
                     Data = new { Type = "Icon", Icon = "home" },
                     Type = AclTableHeaderType.Link
@@ -422,9 +420,10 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountprofile/{user?.AccountProfileId}/image",
+                Action = $"/api/accountprofile/{user?.AccountProfileId}/image",
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
+                IsFile = true,
                 Label = "Update",
                 Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
@@ -432,10 +431,12 @@ namespace Accelerate.Features.Account.Services
                     new FormField()
                     {
                         Name = "File",
-                        FieldType = FormFieldTypes.file,
+                        FieldComponent = FormFieldComponents.aclFieldFile,
+                        FieldType = FormFieldTypes.Image,
                         Placeholder = "Upload image",
                         Multiple = false,
                         ClearOnSubmit = true,
+                        Value = user?.AccountProfile?.Image?.ToString(),
                         Icon = "photo_camera",
                         AriaInvalid = false,
                         Hidden = false,
@@ -457,7 +458,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountuser/deactivate",
+                Action = $"/api/accountuser/deactivate",
                 Type = PostbackType.POST,
                 Event = "user:deactivate",
                 Label = "Deactivate",
@@ -488,7 +489,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountuser/delete",
+                Action = $"/api/accountuser/delete",
                 Type = PostbackType.POST,
                 Event = "user:delete",
                 Label = "Delete",
@@ -519,7 +520,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountuser/reactivate",
+                Action = $"/api/accountuser/reactivate",
                 Type = PostbackType.POST,
                 Event = "user:Reactivate",
                 Label = "Reactivate",
@@ -549,7 +550,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountuser/{user?.Id}",
+                Action = $"/api/accountuser/{user?.Id}",
                 Type = PostbackType.PUT,
                 Event = "user:create",
                 Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
@@ -590,7 +591,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = $"/api/accountprofile/{user?.AccountProfileId}",
+                Action = $"/api/accountprofile/{user?.AccountProfileId}",
                 Type = PostbackType.PUT,
                 Event = "on:user:delete",
                 Label = "Update",
@@ -640,7 +641,7 @@ namespace Accelerate.Features.Account.Services
             var model = new ModalForm();
             model.Title = "Create media";
             model.Text = "Test form text";
-            model.Target = "modal-create-channel";
+            model.Event = "modal-create-channel";
             model.Form = CreateMediaForm(user);
             return model;
         }
@@ -648,7 +649,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new AjaxForm()
             {
-                PostbackUrl = "/api/mediablob/image",
+                Action = "/api/mediablob/image",
                 Type = PostbackType.POST,
                 Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
                 Event = "channel:create:modal",
@@ -658,6 +659,7 @@ namespace Accelerate.Features.Account.Services
                     new FormField()
                     {
                         Name = "File",
+                        FieldComponent = FormFieldComponents.aclFieldFile,
                         FieldType = FormFieldTypes.file,
                         Placeholder = "Upload image",
                         Multiple = false,
@@ -691,15 +693,43 @@ namespace Accelerate.Features.Account.Services
             viewModel.Links = CreateLoginLinks();
             viewModel.ExternalLoginAction = "ExternalLogin";
             viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLogin";
-            viewModel.Providers = await _signInManager.GetExternalAuthenticationSchemesAsync();
-
+            var providers = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            viewModel.Providers = this.GetProviderLinks(providers);
             return viewModel;
+        }
+        private List<ProviderLink> GetProviderLinks(IEnumerable<AuthenticationScheme> providers)
+        {
+            var result = new List<ProviderLink>();
+            foreach (var provider in providers)
+            {
+                result.Add(new ProviderLink()
+                {
+                    Name = provider.Name,
+                    Color = GetProviderColor(provider.Name)
+                });
+            }
+            return result;
+        }
+        private string GetProviderColor(string provider)
+        {
+            switch (provider)
+            {
+                case "Facebook":
+                    return "#4267B2";
+                case "Google":
+                    return "#4285F4";
+                case "Microsoft":
+                    return "#000";
+                default:
+                    return "#4267B2";
+            }
         }
         public Form CreateLoginForm(string? username)
         {
             var model = new Form()
             {
                 Label = "Login",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -779,8 +809,8 @@ namespace Accelerate.Features.Account.Services
             viewModel.Title = "Link Account";
             viewModel.Form = this.CreatelLoginExistingUserForm(username, providerName);
             viewModel.Links = CreateLoginLinks();
-            viewModel.ExternalLoginAction = "ExternalLogin";
             viewModel.ExternalLoginPostbackUrl = "/Account/ExternalLoginExistingUser";
+            viewModel.ExternalLoginAction = "ExternalLoginExistingUser";
 
             return viewModel;
         }
@@ -831,7 +861,7 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
-                Header = "Create a username",
+                Title = "Create a username",
                 Label = "Submit",
                 Fields = new List<FormField>()
                 {
@@ -866,8 +896,9 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
-                Header = "Activate your account",
+                Title = "Activate your account",
                 Label = "Continue",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -925,8 +956,9 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
-                Header = "Register by email",
+                Title = "Register by email",
                 Label = "Register",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -993,8 +1025,9 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
-                Header = "Reset your password",
+                Title = "Reset your password",
                 Label = "Forgot Password",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -1042,8 +1075,9 @@ namespace Accelerate.Features.Account.Services
         {
             var model = new Form()
             {
-                Header = "Confirm your account",
+                Title = "Confirm your account",
                 Label = "Confirm Account",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
                     new FormField()

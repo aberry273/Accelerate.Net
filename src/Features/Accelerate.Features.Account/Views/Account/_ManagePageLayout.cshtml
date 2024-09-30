@@ -6,39 +6,34 @@
 @{
     Layout = "/Views/Shared/_Layout.cshtml";
     var currentTab = Context.Request.Path.Value.Split('/').LastOrDefault();
-} 
-<div class="container" >
-    <div class="center-vertical">
-        <nav>
-            <ul>
-                <hgroup>
-                    <h1>Manage profile</h1>
-                </hgroup>
-            </ul>
-        </nav>
-        @if (Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
-        {
-            <div>
-                <strong>
-                    This account is de-activated, re-active the account below to continue using it.
-                </strong>
-            </div>
-        }
-        <!--Feed-->
-        <div x-data>
-            <nav>
-                <ul>
-                    @foreach(var tab in Model.Tabs)
-                    {
-                        var tabClass = currentTab == tab.Text ? "selected" : "";
-                        <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
-                    }
-                </ul>
-            </nav>
+}
+<div class="container justify-center items-center mx-auto">
+    
+    <h4 class="w-full text-3xl font-bold">Manage profile</h4>
+
+    @if (Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
+    {
+        <div>
+            <strong>
+                This account is de-activated, re-active the account below to continue using it.
+            </strong>
+        </div>
+    }
+    <!--Feed-->
+    <div class="relative w-full" x-init="{
+            mxTab_tabButtons = $refs.tabButtons
+            this._mxTab_setMarkerStyle(mxTab_tabButtons)
+        }">
+        <div x-data="aclTabsNavigation({
+            items: @JsonSerializerHelper.SerializeObject(Model.Tabs),
+            active: '@currentTab' 
+        })"></div>
+        <div class="relative w-full mt-2 content">
             <section>
                 @RenderBody()
             </section>
         </div>
     </div>
+   
 </div>
    

@@ -1,10 +1,12 @@
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Twilio.Models;
 using Accelerate.Foundations.Websockets.Hubs;
 using Azure.Identity;
+using MassTransit.JobService;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +51,7 @@ Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Se
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
@@ -58,12 +61,14 @@ Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services,
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 
 
@@ -86,9 +91,11 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddSignalR();
-
 var app = builder.Build();
 
+var sp = builder.Services.BuildServiceProvider();
+var userService = sp.GetService<IAccountUserService>();
+userService.InitializeAdmin();
 
 app.UseSession();
 

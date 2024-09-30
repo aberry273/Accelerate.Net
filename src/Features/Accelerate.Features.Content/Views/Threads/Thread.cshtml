@@ -4,147 +4,91 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
 @model ThreadPage
+@{
+    Layout = "/Views/Shared/_ContentPageLayout.cshtml";
+}
 
-<div class="fixed-scroll-container" x-data="{
-    isScrollSet: false,
-    filterEvent: 'onFilterChange',
-    actionEvent: 'action:post',
-    quoteEvent: 'quote:post',
-    init() {
-        const self = this;
-        setTimeout(function() {
-            self.setScrollPosition();
-        }, 100);
-    },
-    setScrollPosition() {
-        this.$nextTick(() => {
-            const el = document.getElementById('@Model.Item.ThreadId');
-            const headerOffset = 75;
-
-            const y = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
-            window.scrollTo({
-                top: y,
-                left: 0,
-                behavior: 'instant'
-            });
-        });
-    },
-  }">
-
-    <summary class="primary" >
-        <a href="/" style="text-decoration:none;">
-            <i class="material-icons">expand_less</i>
-            <sup class="primary">
-                <strong>
-                    Return to all
-                </strong>
-            </sup>
-        </a>
-    </summary>
-    @if (Model.ChannelLink != null)
-    {
-        <div class="dense" style="border: 0px">
-            <summary class="primary">
-                <a href="@Model.ChannelLink.Href" style="text-decoration:none;">
-                    <i class="material-icons">chevron_left</i>
-                    <sup class="primary">
-                        <strong>
-                            @Model.ChannelLink.Text
-                        </strong>
-                    </sup>
-                </a>
-            </summary>
-        </div>
-    }
-   
-    <!-- Threadline -->
-    <div
-        x-data="listThreadAscendantCards( {
-        item: @JsonSerializerHelper.SerializeObject(Model.Item),
-        results: @JsonSerializerHelper.SerializeObject(Model.ThreadData),
-        userId: '@Model.UserId',
-        searchUrl: '@Model.ParentPostsApiUrl'
-    })">
-    </div>
-    <div class="line-spacer"></div>
-
-    @if (Model.IsDeactivated)
-    {
-        <article>Reactivate your account to respond</article>
-    }
-    else if (Model.IsAuthenticated)
-    {
-        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
-    }
-    else
-    {
-        <article>Login to respond</article>
-    }
-
-    <!-- Pinned posts -->
-    <div x-data="listPinnedCards( {
-            actionUrl: '@Model.ActionsApiUrl',
-            searchUrl: '@Model.PinnedPostsApiUrl',
-            filterEvent: '@Model.FilterEvent',
-            actionEvent: '@Model.ActionEvent',
-            itemEvent: '$store.wssContentPosts.getMessageEvent()',
-            userId: '@Model.UserId',
-            items: []
-    })">
-    </div>
-
-     <!-- Filters -->
-    <div x-data="appNavFilters({
-        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
-        header: 'Replies',
-        event: '@Model.FilterEvent'
+<div class="w-full">
+    <!--Parents-->
+    <div x-data="aclSocialListChatPosts({
+        mode: 'inline',
+        key: 'parent',
+        showline: true,
+        showReplies: false,
+        websockets: false,
+        postItems: @JsonSerializerHelper.SerializeObject(Model.Thread),
+        menuItems: commentMenu,
+        actionItems: commentActions,
     })"></div>
-
-    <!-- Replies -->
-    <div x-data="listCards( {
-        actionUrl: '@Model.ActionsApiUrl',
-        searchUrl: '@Model.PostsApiUrl',
-        filterEvent: '@Model.FilterEvent',
-        actionEvent: '@Model.ActionEvent',
-        itemEvent: $store.wssContentPosts.getMessageEvent(),
-        filters: {
-            parentId: '@Model.Item.Id'
+    <hr />
+    <!--Feed-->
+    <div x-data="aclSocialListChatPosts( {
+        url: '@Model.PostsApiUrl',
+        params: {
+            filters: [
+                { 
+                    name: 'related.parentId',
+                    value: '@Model.Item.Id' 
+                }
+            ],
+            itemsPerPage: 1,
+            page: 0,
+            query: null,
+            userId: '@Model.UserId'
         },
-        showReplies: true,
-        forceLoad: true,
         userId: '@Model.UserId',
-        items: []
-        //items:  JsonSerializerHelper.SerializeObject(Model.Replies),
-    })">
+        mode: 'inline',
+        key: 'children',
+        websockets: true,
+        showReplies: true,
+        searchOnInit: true,
+        menuItems: commentMenu,
+        actionItems: commentActions,
+        })">
     </div>
 
     <hr />
-     
-    <div class="reply-padding"></div>
-    <!--
-    <div class="loading-overlay" x-show="!isScrollSet">
-        <article class="loading-spinner" aria-busy="true"></article>
-    </div>
-    -->
+
+    @if (Model.IsDeactivated)
+    {
+        <div>Reactivate your account to respond</div>
+    }
+    else if (Model.IsAuthenticated)
+    {
+        <div style="margin-bottom: 8px;" x-data="aclSocialFormPost({
+            form: @JsonSerializerHelper.SerializeObject(Model.FormCreatePost),
+            actions: formActions,
+            formatActions: formatActions
+        })"></div>
+    }
+    else
+    {
+        <div>
+            <h4 class="w-full text-2xl font-bold">
+                Login to respond
+                <a role="button" class="flat secondary" style="right: 0" href="/account/login">Login</a>
+            </h4>
+        </div>
+    }
 </div>
 
 <!-- Modals -->
 <!-- Edit post -->
 @if (Model.IsAuthenticated)
 {
-    <!-- Edit post -->
-    <span x-data="mxCardPost({})">
-        <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
-    </span>
+    <!-- Create reply --> 
+    <!--
+    <div x-data="aclModalFormAjax(JsonSerializerHelper.SerializeObject(Model.ModalCreateReply))"></div>
+    -->
     <!-- Delete post -->
-    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
 
     <!-- Label post -->
-    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalLabelReply))"></div>
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalLabelReply))"></div>
     
     <!-- Pin post -->
-    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalPinReply))"></div>
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalPinReply))"></div>
 
     <!-- Share post -->
-    <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+    <div x-data="aclModal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
 }

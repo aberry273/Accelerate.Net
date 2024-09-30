@@ -60,6 +60,13 @@ namespace Accelerate.Features.Account.Controllers.Api
         {
             //await _publishEndpoint.Value.Publish(new CreateDataContract<AccountProfile>() { Data = obj });
         }
+        protected override async Task PostUpdateSteps(AccountProfile obj)
+        {
+        }
+        protected override async Task PostDeleteSteps(AccountProfile obj)
+        {
+            //await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountProfile>() { Data = obj });
+        }
         protected override void UpdateValues(AccountProfile from, dynamic to)
         {
             from.Firstname = to.Firstname;
@@ -75,13 +82,6 @@ namespace Accelerate.Features.Account.Controllers.Api
 
             from.Category = to.Firstname;
             from.Tags = to.Tags;
-        }
-        protected override async Task PostUpdateSteps(AccountProfile obj)
-        {
-        }
-        protected override async Task PostDeleteSteps(AccountProfile obj)
-        {
-            //await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountProfile>() { Data = obj });
         }
 
         [HttpPut("{id}/image")]

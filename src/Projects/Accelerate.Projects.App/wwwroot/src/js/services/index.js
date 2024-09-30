@@ -1,8 +1,6 @@
-import wssService from './wssService.js'
-import svcComments from './svcComments.js'
+import svcPosts from './svcPosts.js'
 
 export {
-    wssService,
     // Entity services
-    svcComments
+    svcPosts
 }

@@ -17,7 +17,7 @@ namespace Accelerate.Foundations.Content.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -56,6 +56,114 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ContentChannels");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentChatEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentChats");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentFeedEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentFeeds");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentListEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentLists");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostActionsEntity", b =>
@@ -194,20 +302,49 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.ToTable("ContentPostChannel");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostChatEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostChat");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Formats")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -287,6 +424,32 @@ namespace Accelerate.Foundations.Content.Migrations
                         .IsUnique();
 
                     b.ToTable("ContentPostLink");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostListEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentPostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ListId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContentPostList");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Content.Models.Entities.ContentPostMediaEntity", b =>

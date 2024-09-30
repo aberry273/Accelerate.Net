@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\ContentController.cs" />
     <Compile Remove="Controllers\ContentOldController.cs" />
     <Compile Remove="Pipelines\ActionsSummary\ContentPostActionsUpdatedListenerPipeline.cs" />
     <Compile Remove="Pipelines\Actions\ContentPostActionsCreatedCompletedPipeline.cs" />
@@ -39,6 +40,9 @@
     <Content Remove="appsettings.Development.json" />
     <Content Remove="appsettings.json" />
     <Content Remove="Views\Channels\Channel.cshtml" />
+    <Content Remove="Views\Channels\IndexOld.cshtml" />
+    <Content Remove="Views\Channels\NotFound.cshtml" />
+    <Content Remove="Views\Channel\_ChannelPageLayout.cshtml" />
     <Content Remove="Views\Content\ChannelAll.cshtml" />
   </ItemGroup>
 
@@ -55,11 +59,6 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Views\Content\" />
   </ItemGroup>
 
 </Project>

@@ -26,7 +26,9 @@ namespace Accelerate.Foundations.Common.Services
             IActionContextAccessor actionContextAccessor,
             IOptions<SiteConfiguration> siteConfig)
         {
-            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _urlHelper = actionContextAccessor.ActionContext != null
+                ? urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext)
+                : null;
             _siteConfig = siteConfig.Value;
         }
 
@@ -56,19 +58,20 @@ namespace Accelerate.Foundations.Common.Services
             {
                 new JsServiceSettings()
                 {
-                    ServiceName = "wssContentChannels",
-                    UserId = userId.ToString(),
-                    WssEvent = "wss:contentChannels",
-                    Url = $"{domainUrl}/ContentChannels",
-                },
-                new JsServiceSettings()
-                {
-                    ServiceName = "wssContentPosts",
+                    ServiceName = "wssSvcPosts",
                     UserId = userId.ToString(),
                     WssEvent = "wss:contentPosts",
                     Url = $"{domainUrl}/ContentPosts",
                     PostbackUrl = "/api/contentposts",
                     QueryUrl = "/api/contentsearch/posts"
+                },
+                /*
+                new JsServiceSettings()
+                {
+                    ServiceName = "wssContentChannels",
+                    UserId = userId.ToString(),
+                    WssEvent = "wss:contentChannels",
+                    Url = $"{domainUrl}/ContentChannels",
                 },
                 new JsServiceSettings()
                 {
@@ -99,7 +102,7 @@ namespace Accelerate.Foundations.Common.Services
                     UserId = userId.ToString(),
                     WssEvent = "wss:contentPostActivities",
                     Url = $"{domainUrl}/ContentPostActivities",
-                },
+                },*/
             };
         }
         public BasePage CreateUnauthenticatedContent()
@@ -108,11 +111,10 @@ namespace Accelerate.Foundations.Common.Services
             {
                 Url = _siteConfig.Domain,
                 ServiceSettings = this.CreateContentServiceSettings(null, _siteConfig.Domain),
-                SideNavigation = new NavigationGroup(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
-                SocialMetadata = new SocialMetadata(),
+                SocialMetadata = new SocialMetadata(), 
                 TopNavigation = CreateTopNavigation(),
                 SEO = new SeoMetadata(),
             };
@@ -126,13 +128,82 @@ namespace Accelerate.Foundations.Common.Services
                 IsDeactivated = profile.IsDeactivated,
                 ServiceSettings = this.CreateContentServiceSettings(profile.UserId, _siteConfig.Domain),
                 Url = _siteConfig.Domain,
-                SideNavigation = new NavigationGroup(),
+                SideNavigation = profile.Domain == Constants.Domains.Internal 
+                    ? CreateInternalSideNavigation()
+                    : CreatePublicSideNavigation(),
                 Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(),
                 TopNavigation = CreateAuthenticatedTopNavigation(profile),
                 SEO = new SeoMetadata(),
+            };
+        }
+        public NavigationGroup CreateInternalSideNavigation()
+        {
+            return new NavigationGroup
+            {
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Icon = "queueList",
+                        Text = Foundations.Common.Constants.AdminPaths.JobsLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.JobsPath
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "cog",
+                        Text = Foundations.Common.Constants.AdminPaths.ActionsLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.ActionsPath
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "userGroup",
+                        Text = Foundations.Common.Constants.AdminPaths.UsersLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.UsersPath
+                    },
+                }
+            };
+        }
+
+        public NavigationGroup CreatePublicSideNavigation()
+        {
+            return new NavigationGroup
+            {
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Icon = "funnel",
+                        Text = Foundations.Common.Constants.Paths.FeedsLabel,
+                        Href = Foundations.Common.Constants.Paths.FeedsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "chatBubbles",
+                        Text = Foundations.Common.Constants.Paths.ChatsLabel,
+                        Href = Foundations.Common.Constants.Paths.ChatsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "queueList",
+                        Text = Foundations.Common.Constants.Paths.ListsLabel,
+                        Href = Foundations.Common.Constants.Paths.ListsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "chatBubble",
+                        Text = Foundations.Common.Constants.Paths.ThreadsLabel,
+                        Href = Foundations.Common.Constants.Paths.ThreadsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "userGroup",
+                        Text = Foundations.Common.Constants.Paths.ChannelsLabel,
+                        Href = Foundations.Common.Constants.Paths.ChannelsPath,
+                    },
+                }
             };
         }
 
@@ -143,18 +214,13 @@ namespace Accelerate.Foundations.Common.Services
                 Logo = "/src/images/logo.png",
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
-                Subtitle = "The new bird in town",
-                Items = new List<NavigationItem>()
+                Subtitle = "Chat for familes and friends",
+                PrimaryItems = new List<NavigationItem>()
                 {
                     new NavigationItem()
                     {
                         Href = Foundations.Common.Constants.Paths.AboutPath,
                         Text = Foundations.Common.Constants.Paths.AboutLabel,
-                    },
-                    new NavigationItem()
-                    {
-                        Href = Foundations.Common.Constants.Paths.BrowsePath,
-                        Text = Foundations.Common.Constants.Paths.BrowseLabel,
                     },
                     new NavigationItem()
                     {
@@ -173,46 +239,14 @@ namespace Accelerate.Foundations.Common.Services
                 Logo = "/src/images/logo.png",
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
-                Subtitle = "The new bird in town",
-                Dropdown = profile == null ? null : new NavigationAvatarDropdown()
+                Subtitle = "Chat for familes and friends",
+                PrimaryItems = new List<NavigationItem>()
                 {
-                    Image = profile?.Image,
-                    Items = new List<NavigationItem>()
+                    new NavigationItem()
                     {
-                        new NavigationItem()
-                        {
-                            Disabled = true,
-                            Text = profile?.Username,
-                        },
-                        new NavigationItem()
-                        {
-                            Href = Foundations.Common.Constants.Paths.ProfilePath,
-                            Text = Foundations.Common.Constants.Paths.ProfileLabel,
-                        },
-                        new NavigationItem()
-                        {
-                            Href = Foundations.Common.Constants.Paths.PostsPath,
-                            Text = Foundations.Common.Constants.Paths.PostsLabel,
-                        },
-                        new NavigationItem()
-                        {
-                            Href = Foundations.Common.Constants.Paths.MediaPath,
-                            Text = Foundations.Common.Constants.Paths.MediaLabel,
-                        },
-                        new NavigationItem()
-                        {
-                            Href = Foundations.Common.Constants.Paths.NotificationsPath,
-                            Text = Foundations.Common.Constants.Paths.NotificationsLabel,
-                        },
-                        new NavigationItem()
-                        {
-                            Href = Foundations.Common.Constants.Paths.LogoutPath,
-                            Text = Foundations.Common.Constants.Paths.LogoutLabel,
-                        },
-                    }
-                },
-                Items = new List<NavigationItem>()
-                {
+                        Href = Foundations.Common.Constants.Paths.FeedsPath,
+                        Text = Foundations.Common.Constants.Paths.ChatLabel,
+                    },
                     new NavigationItem()
                     {
                         Href = Foundations.Common.Constants.Paths.AboutPath,
@@ -220,9 +254,49 @@ namespace Accelerate.Foundations.Common.Services
                     },
                     new NavigationItem()
                     {
-                        Href = Foundations.Common.Constants.Paths.BrowsePath,
-                        Text = Foundations.Common.Constants.Paths.BrowseLabel,
+                        Href = Foundations.Common.Constants.Paths.SearchPath,
+                        Text = Foundations.Common.Constants.Paths.SearchLabel,
                     },
+                },
+                Dropdown = profile == null ? null : new NavigationAvatarDropdown()
+                {
+                    Title = profile?.Name,
+                    Subtitle = profile?.Username,
+                    Image = $"{profile?.Image}?w=50",
+                    Groups = new List<NavigationGroup>()
+                    {
+                        new NavigationGroup()
+                        {
+                            Title = "Account",
+                            Items = new List<NavigationItem>() {
+                                new NavigationItem()
+                                {
+                                    Href = Foundations.Common.Constants.Paths.ProfilePath,
+                                    Text = Foundations.Common.Constants.Paths.ProfileLabel,
+                                },
+                                new NavigationItem()
+                                {
+                                    Href = Foundations.Common.Constants.Paths.PostsPath,
+                                    Text = Foundations.Common.Constants.Paths.PostsLabel,
+                                },
+                                new NavigationItem()
+                                {
+                                    Href = Foundations.Common.Constants.Paths.MediaPath,
+                                    Text = Foundations.Common.Constants.Paths.MediaLabel,
+                                },
+                                new NavigationItem()
+                                {
+                                    Href = Foundations.Common.Constants.Paths.NotificationsPath,
+                                    Text = Foundations.Common.Constants.Paths.NotificationsLabel,
+                                },
+                                new NavigationItem()
+                                {
+                                    Href = Foundations.Common.Constants.Paths.LogoutPath,
+                                    Text = Foundations.Common.Constants.Paths.LogoutLabel,
+                                },
+                            }
+                        }
+                    }
                 }
             };
         }

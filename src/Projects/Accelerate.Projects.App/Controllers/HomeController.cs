@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Views;
-using Accelerate.Features.Content.Controllers; 
+using Accelerate.Features.Content.Controllers;
+using Accelerate.Foundations.Account.Services;
 namespace Accelerate.Projects.App.Controllers
 {
     //[Authorize]
@@ -15,13 +16,16 @@ namespace Accelerate.Projects.App.Controllers
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
+        IAccountUserService _accountUserService;
         public HomeController(
+            IAccountUserService accountUserService,
             UserManager<AccountUser> userManager,
             IMetaContentService contentService)
             : base(contentService)
         {
             _contentService = contentService;
             _userManager = userManager;
+            _accountUserService = accountUserService;
         }
         private BasePage CreateBaseContent(AccountUser user)
         { 
@@ -31,7 +35,7 @@ namespace Accelerate.Projects.App.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction(nameof(ChannelsController.Index), Foundations.Common.Helpers.ControllerHelper.NameOf<ChannelsController>());
+            return RedirectToAction(nameof(FeedsController.Index), Foundations.Common.Helpers.ControllerHelper.NameOf<FeedsController>());
         }
 
     }

@@ -10,28 +10,13 @@ export default function (params) {
         cssClass: '',
         // INIT
         init() {
-            this.setValues(params);
+            this._mxField_setValues(params);
             this.render(); 
         },
         // GETTERS
         // METHODS
-        setValues(params) {
-            this.mxField_type = params.type || 'text';
-            this.mxField_placeholder = params.placeholder;
-            this.mxField_cssClass = params.cssClass;
-            this.mxField_id = params.id;
-            this.mxField_name = params.name;
-            this.mxField_min = params.min;
-            this.mxField_max = params.max;
-            this.mxField_disabled = params.disabled;
-            this.mxField_class = params.class;
-            this.mxField_value = params.value;
-            this.mxField_required = params.required;
-            this.mxField_readOnly = params.readOnly;
-            this.mxField_autocomplete = params.autocomplete;
-            this.mxField_ariaInvalid = params.ariaInvalid;
-            this.mxField_areaDescribedBy = params.areaDescribedBy;
-            this.mxField_pattern = params.pattern;
+        onChange(ev) {
+            this._mxField_onChange(this.mxField_value)
         },
         render() {
             const html =  `
@@ -57,7 +42,7 @@ export default function (params) {
                     :aria-describedBy="mxField_areaDescribedBy || mxField_id"
                     data-primary="blue-600"
                     data-rounded="rounded-lg"
-                    @change="_mxField_onChange"
+                    @change="onChange"
                 />
                 <span x-text="field.invalidText || 'Invalid input'" class="mt-2 hidden text-sm text-red-500 peer-[&:not(:placeholder-shown):not(:focus):invalid]:block">
                 </span>

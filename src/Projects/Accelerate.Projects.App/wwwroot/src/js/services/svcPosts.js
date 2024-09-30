@@ -1,5 +1,3 @@
-import { emit, createClient, connectedEvent, messageEvent } from './utilities.js'
-
 import { mxEvent, mxFetch, mxService, mxToast } from '/src/js/mixins/index.js';
 
 export default function (settings) {
@@ -9,16 +7,16 @@ export default function (settings) {
         ...mxService(settings),
         ...mxToast(settings),
         // PROPERTIES
-        svcComments_eventCreate: 'on:comment:create',
-        svcComments_eventUpdate: 'on:comment:update',
-        svcComments_eventDelete: 'on:comment:delete',
-        svcComments_eventGet: 'on:comment:get',
-        svcComments_eventCopyLink: 'on:comment:copylink',
-        svcComments_eventQuote: 'on:comment:quote',
-        svcComments_eventUpvote: 'on:upvote',
-        svcComments_eventDownvote: 'on:comment:downvote',
-        svcComments_eventDelete: 'on:comment:delete',
-        svcComments_eventFlag: 'on:comment:flag',
+        svcComments_eventCreate: 'on:post:create',
+        svcComments_eventUpdate: 'on:post:update',
+        svcComments_eventDelete: 'on:post:delete',
+        svcComments_eventGet: 'on:post:get',
+        svcComments_eventCopyLink: 'on:post:copylink',
+        svcComments_eventQuote: 'on:post:quote',
+        svcComments_eventUpvote: 'on:post:upvote',
+        svcComments_eventDownvote: 'on:post:downvote',
+        svcComments_eventDelete: 'on:post:delete',
+        svcComments_eventFlag: 'on:post:flag',
         self: null,
         async init() {
             this.self = this;

@@ -255,6 +255,27 @@ export default function (params) {
             }
             return chunks;
         },
+        createDecodedChunks(html) {
+            let chunks = [];
+            if (!html) return chunks;
+            const self = this;
+            // loop through each format type and fetch all instances of it based on the format regex
+            for (var i = 0; i < this.formats.length; i++) {
+                const formatter = this.formats[i];
+                // return array of all instances of the regex pattern
+                var links = text.match(formatter.regex)
+                // if empty, skip
+                if (links == null || links.length == 0) continue;
+                // get the formatValues
+                const formats = links.map(x => {
+                    const index = text.indexOf(x);
+                    const cleanedStr = x.slice(1, x.length - 2)
+                    return self.createElement(index, formatter, cleanedStr)
+                })
+                chunks = chunks.concat(formats)
+            }
+            return chunks;
+        },
         addNode(text) {
             if(this.nodes == null) this.nodes = [];
             this.nodes.push(
@@ -312,12 +333,12 @@ export default function (params) {
                 this.execCommand('delete', false, null);
             }
             return text;
-        },
+        }, 
         decodeText(html) {
             let encodedText = html;
             for (var i = 0; i < this.chunks.length; i++) {
                 encodedText = encodedText.replace(this.chunks[i].formatted, this.chunks[i].encoded);
-            } 
+            }
             return encodedText;
         },
         onPaste(ev) {

@@ -38,24 +38,24 @@ export default function (params) {
                 <div class="flex max-w cursor-pointer bg-grey rounded-lg hover:bg-gray-50">
                     <div class="flex sm:w-10 w-9 flex items-center justify-center">
                         <!-- Comment line -->
-                        <div x-show="!active" class="w-1 top-0 bottom-0 h-full flex-grow bg-gray-200"></div>
+                        <div x-show="!active" class="w-1 top-0 bottom-0 h-full pb-1 bg-gray-200"></div>
                     </div>
 
-                    <div class="flex w-full max-w h-9 items-center rounded-lg  md:flex-row hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div class="flex w-full max-w h-9 items-center rounded-lg md:flex-row hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
                        
                         <!--Link-->
                         <div class="w-full p-1 leading-normal">
                             <p>
-                                <span x-text="mxContent_text" class="mb-2 underline pl-2 font-bold text-gray-900 text-blue dark:text-white" ></span>
+                                <span x-text="mxContent_text" class="mb-2 pl-2 font-bold text-sm text-gray-900 dark:text-white" ></span>
                                 <time x-show="date" x-text="_mxDate_FormatString(date)" datetime="date" class="pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
                             </p>
                         </div>
                         <!--Profile Images-->
-                        <div class="flex-shrink-0 flex">
+                        <div class="flex-shrink-0 flex mr-2">
                             <template x-for="item in items">
                                 <div x-data="aclMediaImage( {
                                     src: item.img,
-                                    class: 'rounded-md w-9 h-9 pr-1'
+                                    class: 'rounded-md w-8 h-8'
                                 })"></div>
                             </template>
                         </div>

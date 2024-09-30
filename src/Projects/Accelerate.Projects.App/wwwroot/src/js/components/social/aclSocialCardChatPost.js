@@ -1,7 +1,7 @@
 import { mxContent, mxNavigation, mxLink, mxIcon, mxDate, } from '/src/js/mixins/index.js';
 
 export default function (params) {
-	return {
+    return {
         ...mxNavigation(params),
         ...mxContent(params),
         ...mxLink(params),
@@ -33,15 +33,16 @@ export default function (params) {
             }
         },
         get modeThread() {
-            if(!this.ui || !this.ui.mode) return false;
+            if (!this.ui || !this.ui.mode) return false;
             return this.ui.mode == 'thread'
         },
         get showline() {
-            if(!this.ui) return false;
+            if (!this.ui) return false;
             return this.ui.showline
         },
         // METHODS
         setValues(params) {
+            this.item = params;
             this.id = params.id;
             this.profile = params.profile || this.profile;
             this.content = params.content || {};
@@ -56,7 +57,6 @@ export default function (params) {
                 showline: params.showline,
             };
             this.actions = params.actions;
-            this.item = params;
         },
         close() {
             this.open = false;
@@ -72,7 +72,7 @@ export default function (params) {
                 <div class="flex max-w h-full rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                                         
                     <!--Profile image-->    
-                    <div class="flex sm:w-10 w-9 flex items-center justify-center">
+                    <div  class="cursor-pointer flex sm:w-10 w-9 flex items-center justify-center">
                         <div class="flex flex-col h-full items-center">
                             <div x-show="!ui.condense" x-data="aclMediaImage( {
                                 src: profile.img,
@@ -80,6 +80,7 @@ export default function (params) {
                             })"></div>
                             <!-- Comment line -->
                             <div x-show="showline" class="w-1 top-0 bottom-0 h-full flex-grow bg-gray-200"></div>
+                       
                         </div>
                         <!-- Updated -->
                         <!--
@@ -91,33 +92,34 @@ export default function (params) {
                     <div class="ml-0 pt-0 pl-2 w-full">
                         <!-- Header -->
                         <div class="font-medium flex rtl:text-right justify-between" x-show="!ui.condense">
-                            <div @click="showMenu = !showMenu" class="cursor-pointer">
+                            <div class="cursor-pointer" >
                                 <!-- User Link-->
                                 <span x-data="aclCardProfileHover(profile)"></span>
+                                <!-- Rating -->
+                                <span x-text="metrics.rating" class="text-sm px-1 pt-1 font-medium text-gray-300 dark:text-gray-300">
+                                </span>
                                 <!-- Updated -->
                                 <time x-text="_mxDate_FormatString(content.date)" datetime="content.date" class="pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
+                                
                             </div>
                             <div class="mr-2 flex">
-                                <!-- Rating -->
-                                <span x-text="metrics.rating" class="text-sm px-1 pt-1 font-medium text-gray-300 dark:text-gray-300"> 
-                                </span>
-                                <!--
-                                <span class="pt-1" x-data="aclIconsSvg({ mxIcon_name: 'chevronUp', mxIcon_class:'w-5 h-5 text-gray-300 dark:text-gray-300'})"></span>
-                                -->
+
+                                <template x-for="btn in actions.filter(x => x.overlay)">
+                                    <div x-data="aclButton(btn)"></div>
+                                </template>
                                 <!-- More Button -->
                                 <span x-data="aclDropdownMenuButton(dropdownParams)"></span>
                             </div>
                         </div> 
-
                         <!-- Content -->
-                        <div class="w-full justify-items-end">
+                        <div class="w-full pb-2 justify-items-end">
                             <!-- Text -->
                             <template x-if="content.text">
-                                <div @click="showMenu = !showMenu" x-text="content.text" class="w-full align-center cursor-pointer mb-3 font-normal text-gray-700 dark:text-gray-400"></div>
+                                <divx-text="content.text" class="w-full align-center cursor-pointer mb-3 font-normal text-gray-700 dark:text-gray-400"></div>
                             </template>
                             <!-- Formats --> 
                             <template x-if="content.formats != null && content.formats.length > 0">
-                                <div @click="showMenu = !showMenu"  class="full-w cursor-pointer" x-data="aclPluginEditorJsParser({ value: content.formats })"></div>
+                                <div  class="full-w cursor-pointer" x-data="aclPluginEditorJsParser({ value: content.formats })"></div>
                             </template>
                             <!-- Media --> 
                             <template x-if="content.media != null && content.media.length > 0">
@@ -125,20 +127,31 @@ export default function (params) {
                             </template>
                         </div>
 
-                        <!-- Commands -->
-                        <div class="flex justify-between mb-2" x-show="showMenu">
+                        <!-- Hidden Content -->
+                        <div class="flex justify-between mb-0" x-show="showMenu">
                             <!-- Taxonomy -->
-                            <div x-show="taxonomy">
-                                <span x-show="taxonomy.category" x-text="taxonomy.category" class="cursor-pointer relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                            <div>
+                                <span x-show="taxonomy.category" x-text="taxonomy.category" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                            </div>
+                            <div x-show="taxonomy.tags">
+                                <template x-for="tag in taxonomy.tags">
+                                     <span x-text="tag" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                                </template>
+                            </div>
+                            <div x-show="taxonomy.labels">
+                                <template x-for="label in taxonomy.labels">
+                                     <span x-text="label" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                                </template>
                             </div>
                             <!-- Actions -->
+                            <!--
                             <div class="flex mr-2">
-                                <template x-for="btn in actions">
+                                <template x-for="btn in actions.filter(x => !x.overlay)">
                                     <div x-data="aclButton(btn)"></div>
                                 </template>
-                                <!-- More Button -->
                                 <span class="" x-show="ui.condense && showMenu" x-data="aclDropdownMenuButton(dropdownParams)"></span>
                             </div>
+                            -->
                         </div>
 
                         <!-- Link card -->
@@ -159,6 +172,6 @@ export default function (params) {
                 </div>
             `
             this.$nextTick(() => { this.$root.innerHTML = html });
-      }
+        }
     }
 }

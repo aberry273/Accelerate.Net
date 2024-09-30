@@ -4,7 +4,9 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http 
 @model ThreadEditPage
-
+@{
+    Layout = "/Views/Shared/_ContentPageLayout.cshtml";
+}
 <div class="fixed-scroll-container" x-data="{
     isScrollSet: false,
     filterEvent: 'onFilterChange',
@@ -64,10 +66,12 @@
         excludeItems: ['@Model.Item.Id']
     })">
     </div>
-    @if(Model.Item.ParentId != null)
+    <!--
+    if(Model.Item.ParentId != null)
     {
         <div class="line-background"></div>
     }
+    -->
 
     <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.EditForm))"></div>
    

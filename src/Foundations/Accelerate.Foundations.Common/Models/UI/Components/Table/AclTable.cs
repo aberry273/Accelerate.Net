@@ -10,6 +10,10 @@ namespace Accelerate.Foundations.Common.Models.UI.Components.Table
     {
         public List<string> Values { get; set; }
     }
+    public class AclTableRow<T>
+    {
+        public List<T> Values { get; set; }
+    }
     public enum AclTableHeaderType
     {
         String, Link, Number, Date
@@ -26,12 +30,12 @@ namespace Accelerate.Foundations.Common.Models.UI.Components.Table
         public AclTableHeaderType Type { get; set; }
         public dynamic Data { get; set; }
         public string Label { get; set; }
-        public string Name { get; set; }
+        public string Text { get; set; }
     }
     public class AclTable<T>
     {
-        public List <AclTableHeader> Headers { get; set; }
-        public List<T> Rows { get; set; }
+        public List<AclTableHeader> Headers { get; set; }
+        public List<List<T>> Items { get; set; }
     }
 
     public class AjaxAclTable<T> : AclTable<T>

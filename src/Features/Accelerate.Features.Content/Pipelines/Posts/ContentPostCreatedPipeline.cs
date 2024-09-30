@@ -25,6 +25,10 @@ using Accelerate.Foundations.Media.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.EventPipelines.Services;
 using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Content.Models.View;
+using Accelerate.Features.Content.Hydrators;
+using System.Reflection.Metadata;
+using Accelerate.Features.Content.Services;
 
 namespace Accelerate.Features.Content.Pipelines.Posts
 {
@@ -32,6 +36,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
     {
         private UserManager<AccountUser> _userManager;
         IContentPostService _contentPostService;
+        IContentViewSearchService _contentViewSearchService;
         IElasticService<AccountUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IElasticService<ContentPostActionsDocument> _elasticPostActionsService;
@@ -40,7 +45,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IEntityService<ContentChannelEntity> _channelService;
         IEntityService<MediaBlobEntity> _mediaService;
         IEntityService<ContentPostMediaEntity> _mediaPostService;
-        IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
+        IHubContext<BaseHub<ContentPostViewDocument>, IBaseHubClient<WebsocketMessage<ContentPostViewDocument>>> _messageHub;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
         IEntityService<ContentPostEntity> _entityService;
         IEntityService<ContentPostActionsSummaryEntity> _entityActionsSummaryService;
@@ -48,6 +53,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
             UserManager<AccountUser> userManager,
+            IContentViewSearchService contentViewSearchService,
             IElasticService<ContentPostDocument> elasticService,
             IElasticService<ContentPostActionsDocument> elasticPostActionsService,
             IElasticService<ContentPostActionsSummaryDocument> elasticPostActionsSummaryService,
@@ -58,12 +64,13 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService,
             IEntityService<MediaBlobEntity> mediaService,
             IEntityService<ContentPostMediaEntity> mediaPostService,
-            IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub,
+            IHubContext<BaseHub<ContentPostViewDocument>, IBaseHubClient<WebsocketMessage<ContentPostViewDocument>>> messageHub,
             IElasticService<AccountUserDocument> accountElasticService)
         {
             _contentPostService = contentPostService;
             _elasticPostActionsService = elasticPostActionsService;
             _entityActionsSummaryService = entityActionsSummaryService;
+            _contentViewSearchService = contentViewSearchService;
             _pipelineActivityService = pipelineActivityService;
             _elasticPostActionsSummaryService = elasticPostActionsSummaryService;
             _entityService = entityService;
@@ -119,15 +126,15 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             var response = await _elasticPostActionsSummaryService.Index(doc);
         }
 
-        private List<ContentPostMediaSubdocument> GetMedia(IPipelineArgs<ContentPostEntity> args)
+        private List<ContentPostContentMediaSubdocument> GetMedia(IPipelineArgs<ContentPostEntity> args)
         {
             var mediaLinks = _mediaPostService
                 .Find(x => x.ContentPostId == args.Value.Id)
                 .Select(x => x.MediaBlobId)
                 .ToList();
             var media = _mediaService.Find(x => mediaLinks.Contains(x.Id));
-            var mediaItems = media.Select(x => new ContentPostMediaSubdocument(){
-                FilePath = x.FilePath,
+            var mediaItems = media.Select(x => new ContentPostContentMediaSubdocument(){
+                Src = x.FilePath,
                 Type = Enum.GetName(x.Type),
                 Name = x.Name,
                 Id = x.Id.ToString()
@@ -137,12 +144,12 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         private ContentPostTaxonomySubdocument GetTaxonomy(IPipelineArgs<ContentPostEntity> args)
         {
             var taxonomy = _contentPostService.GetTaxonomy(args.Value.Id);
-            if (taxonomy == null) return null;
+            var channel = GetChannel(args);
 
             return new ContentPostTaxonomySubdocument()
             {
-                Category = taxonomy.Category,
-                Tags = taxonomy.TagItems?.ToList()
+                Category = taxonomy?.Category,
+                Tags = taxonomy?.TagItems?.ToList(),
             };
         }
         private ContentPostSettingsSubdocument GetSettings(IPipelineArgs<ContentPostEntity> args)
@@ -174,10 +181,10 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 Url = link.Url
             };
         }
-        private List<ContentPostQuoteSubdocument> GetQuotes(IPipelineArgs<ContentPostEntity> args)
+        private async Task<List<ContentPostQuoteSubdocument>> GetQuotes(IPipelineArgs<ContentPostEntity> args)
         {
             var quotes = _quoteService.Find(x => x.ContentPostId == args.Value.Id);
-            
+
             return quotes.Select(x => new ContentPostQuoteSubdocument()
             {
                 ContentPostQuoteThreadId = GuidExtensions.ShortenBase64(x.QuotedContentPostId.ToBase64()),
@@ -188,69 +195,96 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         {
             return _contentPostService.GetPostParent(args.Value);
         }
-        private ContentChannelEntity? GetChannelName(IPipelineArgs<ContentPostEntity> args)
+        private async Task<ContentPostRelatedPostsSubdocument> GetRelatedDocument(IPipelineArgs<ContentPostEntity> args)
+        {
+            var model = new ContentPostRelatedPostsSubdocument();
+            // Quotes
+            model.Quotes = await this.GetQuotes(args);
+            // Parents
+            var parent = GetParent(args);
+            model.ParentId = parent?.ParentId;
+            model.ParentIds = parent?.ParentIdItems?.ToList();
+            // Channel
+            var channel = GetChannel(args);
+            if(channel != null)
+            {
+                model.ChannelId = channel?.Id;
+            }
+            // Chat
+            var chat = GetChat(args);
+            if (chat != null)
+            {
+                model.ChatId = chat?.Id;
+            }
+            // List
+            var list = GetList(args);
+            if (list != null)
+            {
+                model.ListId = list?.Id;
+            }
+            return model;
+        }
+        private ContentListEntity? GetList(IPipelineArgs<ContentPostEntity> args)
+        {
+            return _contentPostService.GetPostList(args.Value);
+        }
+        private ContentChatEntity? GetChat(IPipelineArgs<ContentPostEntity> args)
+        {
+            return _contentPostService.GetPostChat(args.Value);
+        }
+        private ContentChannelEntity? GetChannel(IPipelineArgs<ContentPostEntity> args)
         {
             return _contentPostService.GetPostChannel(args.Value);
         }
+        private async Task<ContentPostUserProfileSubdocument> GetUserDocument(IPipelineArgs<ContentPostEntity> args)
+        {
+            var result = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
+            var doc = result?.Source;
+
+            var model = new ContentPostUserProfileSubdocument();
+            doc?.Hydrate(model);
+            return model;
+        }
+        private async Task<ContentPostMetricsSubdocument> GetMetricsDocument(IPipelineArgs<ContentPostEntity> args)
+        {
+            var model = new ContentPostMetricsSubdocument();
+            return model;
+        }
+        private async Task<ContentPostContentSubdocument> GetContentDocument(IPipelineArgs<ContentPostEntity> args)
+        {
+            var model = new ContentPostContentSubdocument();
+            model.Text = args.Value.Text;
+            model.Formats = args.Value.FormatItems;
+            model.Media = this.GetMedia(args);
+            model.Date = args.Value.UpdatedOn.ToString();
+            return model;
+        }
+
         // ASYNC PROCESSORS
         public async Task IndexDocument(IPipelineArgs<ContentPostEntity> args)
         {
             try
             {
-                var user = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
                 var indexModel = new ContentPostDocument();
-                var profile = user.Source != null
-                    ? new ContentPostUserSubdocument()
-                    {
-                        Username = user?.Source?.Username,
-                        Image = user?.Source?.Image
-                    } : null;
+                args.Value.Hydrate(indexModel);
 
-                args.Value.Hydrate(indexModel, profile);
-                var channel = GetChannelName(args);
-                indexModel.ChannelName = channel?.Name;
-                indexModel.ChannelId = channel?.Id;
-                indexModel.QuotedPosts = GetQuotes(args);
-                indexModel.Media = GetMedia(args);
-                indexModel.Link = GetLink(args);
-                indexModel.Settings = GetSettings(args);
+                // skip indexing but send
                 indexModel.Taxonomy = GetTaxonomy(args);
-                // If a reply
-                var postParent = GetParent(args);
-                if (postParent != null && postParent.ParentId != null)
-                {
-                    indexModel.ParentId = postParent.ParentId;
-
-                    indexModel.ParentIds = postParent.ParentIdItems != null && postParent.ParentIdItems.Any()
-                        ? postParent.ParentIdItems.ToList()
-                        : null;
-
-                    //If the user has voted on the parent, get the action item
-                    var action = await this.GetUserParentAction(indexModel);
-                    if(action != null)
-                    {
-                        if (action.Agree.GetValueOrDefault())
-                        {
-                            indexModel.ParentVote = "Agree";
-                        }
-                        if (action.Disagree.GetValueOrDefault())
-                        {
-                            indexModel.ParentVote = "Disagree";
-                        }
-                    }
-                    //await UpdateParentDocument(postParent, indexModel, args);
-                }
+                indexModel.Content = await this.GetContentDocument(args);
+                indexModel.Related = await this.GetRelatedDocument(args);
+                indexModel.Metrics = await this.GetMetricsDocument(args);
                 await _elasticService.Index(indexModel);
-                await SendWebsocketUpdate(args);
+                await SendWebsocketUpdate(indexModel);
             }
             catch(Exception ex)
             {
                 throw ex;
             }
-        }
+        } 
         public async Task<ContentPostActionsDocument> GetUserParentAction(ContentPostDocument post)
         {
             var query = new QueryDescriptor<ContentPostActionsDocument>();
+            /*
             if (post.ParentId != null && post.UserId != null)
             {
                 query.MatchAll();
@@ -259,6 +293,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                     .Term(x => x.ContentPostId.Suffix("keyword"), post.ParentId)
                 ;
             }
+            */
             var results = await _elasticPostActionsService.Search<ContentPostActionsDocument>(query, 0, 1);
 
             //Get the action associated with the reply
@@ -269,27 +304,20 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             return results.Documents?.FirstOrDefault();
         }
 
-        public async Task SendWebsocketUpdate(IPipelineArgs<ContentPostEntity> args)
+        public async Task SendWebsocketUpdate(ContentPostDocument doc)
         {
-            ContentPostDocument doc;
-            var response = await _elasticService.GetDocument<ContentPostDocument>(args.Value.Id.ToString());
-            doc = response.Source;
-            // If its a reply to own thread by the user, send the parent as the update instead
-            if (doc.PostType == ContentPostType.Page)
-            {
-                var parentResponse = await _elasticService.GetDocument<ContentPostDocument>(doc.ParentId.ToString());
-                doc = parentResponse.Source;
-            }
-            var payload = new WebsocketMessage<ContentPostDocument>()
+            var model = await _contentViewSearchService.UpdatePostDocument(doc);
+            
+            var payload = new WebsocketMessage<ContentPostViewDocument>()
             {
                 Message = "Create successful",
                 Code = 200,
-                Data = doc,
+                Data = model,
                 UpdateType = DataRequestCompleteType.Created,
                 Group = "Post",
                 Alert = true
             };
-            await _messageHub.Clients.All.SendMessage(args.Value.UserId.ToString(), payload);
+            await _messageHub.Clients.All.SendMessage(doc.UserId.ToString(), payload);
         } 
     }
 }

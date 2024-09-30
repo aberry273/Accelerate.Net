@@ -6,7 +6,7 @@ using Accelerate.Foundations.Content.Models.Data;
 
 namespace Accelerate.Features.Content.Models.Views
 {
-    public class ChannelsPage : BasePage
+    public class ChannelsPage : ContentBasePage
     {
         public NavigationGroup ChannelsTabs { get; set; }
         public NavigationGroup ChannelsDropdown { get; set; }
@@ -20,7 +20,7 @@ namespace Accelerate.Features.Content.Models.Views
         public NavigationFilter Filters { get; set; }
         public string FilterEvent { get; set; } = "filter:update";
         public string ActionEvent { get; set; } = "action:post";
-        public ChannelsPage(BasePage model) : base(model)
+        public ChannelsPage(ContentBasePage model) : base(model)
         {
         }
     }

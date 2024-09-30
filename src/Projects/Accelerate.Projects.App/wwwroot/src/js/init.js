@@ -45,6 +45,16 @@ Object.keys(services).forEach(svc => {
     }
 });
 
+// WEBSOCKETS
+import * as websockets from './websockets/index.js';
+Object.keys(websockets).forEach(svc => {
+    let settings = wssSettings.filter(x => x.serviceName == svc)[0]
+    if (settings != null) {
+        let data = websockets[svc](settings);
+        alpinejs.store(svc, data);
+    }
+});
+
 // COMPONENTS
 import * as components from './components/index.js';
 Object.keys(components).forEach(component => {

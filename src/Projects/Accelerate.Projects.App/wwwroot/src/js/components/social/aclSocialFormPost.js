@@ -34,10 +34,16 @@ export default function (params) {
             }
         },
         // METHODS
-        submitSettings(data){
-            console.log('submitSettings');
-            console.log(data);
-            console.log(this.form.fields)
+        submitSettings(data) {
+            // 
+        },
+        updateFormFields(form) {
+            // Update any formfields to be ready for the API
+            for (var i = 0; i < form.fields.length; i++) {
+                // Serialize Format
+                if (form.fields[i].name == 'Formats') form.fields[i].value = JSON.stringify(form.fields[i].value)
+            }
+            return form;
         },
         setValues(params) {
             this.mxContent_title = params.title;
@@ -47,61 +53,28 @@ export default function (params) {
         },
         clearFields() {
             for(var i = 0; i < this.form.fields.length; i++) {
-                this.form.fields[i].value = null;
-                this.form.fields[i].updated = new Date().toISOString();
+                if (this.form.fields[i].clearOnSubmit) {
+                    this.form.fields[i].value = null;
+                    this.form.fields[i].updated = new Date().toISOString();
+                }
             } 
         },
         async submit() {
             this.loading = true;
-            console.log(this.form)
             try {
-                const formData = this._mxForm_GetFileFormData(this.form); 
-                const response = this.$fetch.POST(this.form.action, formData, this.mxForm_FileFormHeaders, false);
-                //this._mxEvent_Emit(this.$store.svcComments.svcComments_eventCreate, response)
-                //this.clearFields();
-                //console.log(this.$store.svcComments);
-            } catch(e) {
+                this.updateFormFields(this.form);
+                const formData = this._mxForm_GetFileFormData(this.form);
+                const response = await this.$fetch.POST(this.form.action, formData, this.mxForm_FileFormHeaders, false);
+           
+                if (response.status == 200) {
+                    this.clearFields();
+                } else {
+                    console.log('error creating post');
+                }
+            } catch (e) {
                 //console.log(e);
             }
-            const dummyData = this._mxForm_GetFormData(this.form);
-            const dummyItem = this.createDummyComment(dummyData);
-            
-            this._mxEvent_Emit(this.$store.svcComments.svcComments_eventCreate, dummyItem);
-            this.clearFields();
             this.loading = false;
-        },
-        createDummyComment(data) {
-            return { 
-                id: data.id,
-                profile: {
-                    icon: 'calendar',
-                    displayName: 'Deb peterson',
-                    username: '@johnwes',
-                    description: 'Blogger, thraser, skaterboi, etc',
-                    date: '10/07/2024',
-                    href: '#',
-                    img: 'https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/roberta-casas.png',
-                },
-                settings: {},
-                content: {
-                    date: '2024-07-20T00:38:52.0421225Z',
-                    text: data.text,
-                    formats: data.formats,
-                    media: [
-                        {
-                            src: "https://cdn.devdojo.com/images/june2023/mountains-01.jpeg",
-                            id: "855c493e-e09d-4a82-ba84-5781a2af83a9",
-                            name: "example-aaa.png",
-                            type: "Image"
-                        },
-                    ]
-                },
-                replies: { },
-                metrics: { },
-                taxonomy: { },
-                menu: [ 'CopyLink' ],
-                actions: [ 'reply', 'quote', 'upvote', 'downvote', 'tag' ],
-            };
         },
         indexOf(fieldName) {
             if (!this.form.fields) return -1;
@@ -120,7 +93,6 @@ export default function (params) {
             this.form.fields[index].hidden = !this.form.fields[index].hidden;
         },
         toggleFieldModal(fieldName) {
-            console.log(fieldName)
             this._mxEvent_Emit(this.getFieldEvent(fieldName), quoteFormData);
             //this.form.fields[index].hidden = !this.form.fields[index].hidden;
         },
@@ -165,15 +137,16 @@ export default function (params) {
                     <!--Fields-->
                     <div 
                         x-data="aclFormFieldset(form)" 
-                        @onfieldchange.window="(ev) => { updateFieldValue(ev.detail) }"></div>
+                        @onfieldchange.window="(ev) => { updateFieldValue(ev.detail) }">
+                    </div>
                     
                     <div class="w-full">
                         <div class="flex items-center justify-between px-3 py-2 border-b dark:border-gray-600">
                             <div class="flex flex-wrap items-center">
                                  
-                                <div @click="toggleFieldVisibility('Image')" x-data="aclButton({ icon: 'image' })"></div>
-                                <div @click="toggleFieldVisibility('Video')" x-data="aclButton({ icon: 'video' })"></div>
-                                <div @click="toggleFieldVisibility('Mention')" x-data="aclButton({ icon: 'userPlus' })"></div>
+                                <div @click="toggleFieldVisibility('Images')" x-data="aclButton({ icon: 'image' })"></div>
+                                <div @click="toggleFieldVisibility('Videos')" x-data="aclButton({ icon: 'video' })"></div>
+                                <div @click="toggleFieldVisibility('Mentions')" x-data="aclButton({ icon: 'userPlus' })"></div>
                                 <!--
                                 <div @click="switchTextField" x-data="aclButton({ icon: 'documentText' })"></div>
                                 <div @click="toggleFieldVisibility('Top')" x-data="aclButton({ icon: 'presentationChart' })"></div>
@@ -190,7 +163,7 @@ export default function (params) {
                             
                             <div class="flex flex-wrap items-center divide-gray-200 sm:divide-x sm:rtl:divide-x-reverse dark:divide-gray-600"> 
                                 <button 
-                                    @click="submit"
+                                    @click="await submit()"
                                     class="end-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <svg class="w-5 h-5" x-data="aclIconsSvg({ mxIcon_name: 'send' })"></svg>
                                 </button>

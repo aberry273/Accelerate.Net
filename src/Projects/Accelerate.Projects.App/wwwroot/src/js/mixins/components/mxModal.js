@@ -5,6 +5,7 @@ export default function (params) {
         mxModal_clickOutside: false,
         mxModal_showNext: false,
         mxModal_showPrev: false,
+        mxModal_component: '',
         mxModal_eventNext: '',
         mxModal_eventPrev: '',
         init() {},

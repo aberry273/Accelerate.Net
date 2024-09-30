@@ -1,71 +1,94 @@
 import { mxContent, mxForm } from '/src/js/mixins/index.js';
 
 export default function (params) {
-	return {
+    return {
         ...mxContent(params),
         ...mxForm(params),
         // PROPERTIES
         header: '',
+
         // INIT
         init() {
-            this.setValues(params);
+            this._mxForm_SetValues(params);
             this.render();
         },
         // GETTERS
         // METHODS
-        setValues(params) {
-            this.mxContent_title = params.title;
-            this.mxContent_subtitle = params.subtitle;
-            this.mxContent_text = params.text;
-            this.mxForm_class = params.class || this.mxForm_formClass;
-            this.mxForm_fields = params.fields;
-            this.mxForm_method = params.method;
-            this.mxForm_action = params.action;
-            this.mxForm_submit = params.submit;
-            this.mxForm_label = params.label || this.mxForm_label;
-        },
         updateField(ev) {
             const field = ev.detail;
             this._mxForm_SetFieldValue(this.mxForm_fields, field);
         },
+        getPayload() {
+            return !this.mxForm_isFile
+                ? this._mxForm_GetFormData({ fields: this.mxForm_fields })
+                : this._mxForm_GetFileFormData({ fields: this.mxForm_fields });
+        },
         async submit() {
-            if(this.mxForm_submit) {
-                const payload = this._mxForm_GetFormData( { fields: this.mxForm_fields } ); 
-                this.mxForm_submit(payload);
-                return;
-            }
-            this.loading = true;
+            // else
+            this.mxForm_loading = true;
             try {
-                const payload = this._mxForm_GetFormData( { fields: this.mxForm_fields } ); 
-                const result = await this._mxForm_SubmitAjaxRequest(this.mxForm_action, this.mxForm_method, payload);
-            if(this.event) {
-                this.$dispatch(this.event, result)
-            }
-            this.$dispatch(this.localEvent, result)
-            
-            } catch(e) {
+                const payload = this.getPayload();
+                // if overwriting the submit function
+                if (this.mxForm_submit) {
+                    this.mxForm_submit(payload);
+                    return;
+                }
+                const result =
+                    !this.mxForm_isFile
+                        ? await this._mxForm_SubmitAjaxRequest(this.mxForm_method, this.mxForm_action, payload)
+                        : await this._mxForm_SubmitAjaxRequest(this.mxForm_method, this.mxForm_action, payload, this.mxForm_FileFormHeaders, false)
+
+                if (result.status == 200) {
+                    this.mxForm_responseClass = this.mxForm_successResponseClass;
+                    this.mxForm_response = result.message || 'Update successful';
+                }
+                else {
+                    this.mxForm_response = result.message || 'Update failed';
+                }
+
+                if (this.mxForm_event) {
+                    this.$dispatch(this.mxForm_event, result)
+                }
+                this.$dispatch(this.localEvent, result)
+
+            } catch (e) {
                 console.log(e);
             }
-            this.loading = false;
+            this.mxForm_loading = false;
         },
         render() {
             const html = `
+                <div x-show="mxForm_loading" x-data="aclCommonProgress({})"></div>
+
                 <div :class="mxForm_class">
-                    <h4 :class="mxContent_titleClass" x-text="mxContent_title"></h4>
-                    <p :class="mxContent_textClass" x-text="mxContent_text"></p>
-                    <form novalidate class="group relative w-full mt-10 space-y-8">
+                    <template x-if="mxContent_title">
+                        <h4 :class="mxContent_titleClass" x-text="mxContent_title"></h4>
+                    </template>
+                    <template x-if="mxContent_subtitle">
+                        <p :class="mxContent_subtitleClass" x-text="mxContent_subtitle"></p>
+                    </template>
+                    <template x-if="mxContent_text">
+                        <p :class="mxContent_textClass" x-text="mxContent_text"></p>
+                    </template>
+                    <div novalidate class="group relative w-full space-y-8">
                         <!--Fields-->
                         <div x-data="aclFormFieldset({ fields: mxForm_fields })" @onfieldchange="updateField"></div>
+                        <!--Response message-->
+                        <template x-if="mxForm_response">
+                            <p :class="mxForm_responseClass" x-text="mxForm_response"></p>
+                        </template>
                         <!--Submit-->
                         <div class="relative">
-                            <button type="button" @click="submit" role="button" 
-                            x-text="mxForm_label" 
-                            :class="mxForm_submitClass" />
+                            <button 
+                                @click="await submit()"
+                                x-text="mxForm_label" 
+                                :class="mxForm_submitClass"
+                            />
                         </div>
-                    </form>
+                    </div>
                 </div>
             `
             this.$nextTick(() => { this.$root.innerHTML = html });
-      },
+        },
     }
 }
