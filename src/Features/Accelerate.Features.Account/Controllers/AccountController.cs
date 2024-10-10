@@ -14,7 +14,6 @@ using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using MassTransit.DependencyInjection;
 using MassTransit;
-using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Features.Account.Models;
 using Accelerate.Foundations.Account.Models;
@@ -33,6 +32,7 @@ using Twilio.TwiML.Messaging;
 using Microsoft.AspNetCore.Authentication.Google;
 using Accelerate.Foundations.Content.Models.Entities;
 using static MassTransit.ValidationResultExtensions;
+using Accelerate.Foundations.Account.EventBus;
 
 namespace Accelerate.Features.Account.Controllers
 {
@@ -92,7 +92,7 @@ namespace Accelerate.Features.Account.Controllers
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null) return null;
-            var profile = _profileService.Get(user.AccountProfileId);
+            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
             user.AccountProfile = profile;
             return user;
         }
@@ -733,7 +733,7 @@ namespace Accelerate.Features.Account.Controllers
         private async Task<AccountUser> UpdateUserProfile(AccountUser user, ExternalLoginInfo info)
         {
             var profile = user.AccountProfileId != Guid.Empty
-                ? _profileService.Get(user.AccountProfileId)
+                ? _profileService.Get(user.AccountProfileId.GetValueOrDefault())
                 : null;
             var firstname = info.Principal.FindFirstValue(ClaimTypes.GivenName);
             var lastname = info.Principal.FindFirstValue(ClaimTypes.Surname);

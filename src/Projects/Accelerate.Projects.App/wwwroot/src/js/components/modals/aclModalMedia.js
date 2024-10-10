@@ -9,7 +9,9 @@ export default function (params) {
         ...mxMedia(params),
         ...mxEvent(params),
         // PROPERTIES
+        index: 0,
         media: null,
+        src: '',
         // INIT
         init() {
             this.setValues(params);
@@ -43,14 +45,16 @@ export default function (params) {
             })
         },
         onPrev() {
+            this.index--;
             this._mxEvent_Emit(this.mxModal_eventPrev)
         },
         onNext() {
+            this.index++;
             this._mxEvent_Emit(this.mxModal_eventNext)
         },
         close() {
             this.mxModal_open = false;
-            this.media = null;
+            this.media = {};
         },
         render() {
             const html = `
@@ -83,12 +87,7 @@ export default function (params) {
                                 <template x-if="media">
                                     <div class="relative w-auto pb-8 w-full h-full justify-center text-center">
                                         <div class="flex select-none h-max-full items-top justify-center"  >
-                                            <template x-if="media.type == mxMedia_video">
-                                                <div x-data="aclMediaVideo(media)"></div>
-                                            </template>
-                                            <template x-if="media.type == mxMedia_image">
-                                                <div x-data="aclMediaImage(media)"></div>
-                                            </template>
+                                            <div x-show="toggle" x-data="aclMedia(media)"></div>
                                         </div> 
                                     </div>
                                 </template>
@@ -100,7 +99,7 @@ export default function (params) {
                                 @click="onPrev"
                                 x-data="aclButton({ 
                                     icon: 'chevronLeft', 
-                                    class: 'absolute left-4 z-30 flex items-center justify-center px-3 py-2 mt-3 mr-3 space-x-1 text-xs font-medium uppercase border rounded-md border-neutral-200 text-neutral-600 hover:bg-neutral-100'
+                                    class: 'absolute left-4 z-30 flex items-center justify-center px-3 py-2 mt-3 mr-3 space-x-1 text-xs font-medium uppercase border bg-white rounded-md border-neutral-200 text-neutral-600 hover:bg-neutral-100'
                                 })">
                             </div>
                             <!-- Next -->
@@ -109,7 +108,7 @@ export default function (params) {
                                 @click="onNext" 
                                 x-data="aclButton({
                                     icon: 'chevronRight', 
-                                    class: 'absolute right-4 z-30 flex items-center justify-center px-3 py-2 mt-3 mr-3 space-x-1 text-xs font-medium uppercase border rounded-md border-neutral-200 text-neutral-600 hover:bg-neutral-100'
+                                    class: 'absolute right-4 z-30 flex items-center justify-center px-3 py-2 mt-3 mr-3 space-x-1 text-xs font-medium uppercase border bg-white rounded-md border-neutral-200 text-neutral-600 hover:bg-neutral-100'
                                 })">
                             </div>
                         </div>

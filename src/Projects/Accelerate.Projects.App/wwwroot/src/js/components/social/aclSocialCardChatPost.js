@@ -12,6 +12,8 @@ export default function (params) {
         id: '',
         showMenu: false,
         label: '',
+        channel: null,
+        link: null,
         metrics: {},
         settings: {},
         taxonomy: {},
@@ -44,6 +46,8 @@ export default function (params) {
         setValues(params) {
             this.item = params;
             this.id = params.id;
+            this.link = params.link;
+            this.channel = params.channel;
             this.profile = params.profile || this.profile;
             this.content = params.content || {};
             this.settings = params.settings || {};
@@ -127,20 +131,37 @@ export default function (params) {
                             </template>
                         </div>
 
+                        <!-- Link card -->
+                        <template x-if="link != null">
+                            <div class="flex flex-col w-full bg-white items-center border border-gray-200 rounded-lg shadow md:flex-row  hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                <img class="object-cover w-full h-96 md:h-auto md:w-48" :src="link.image" alt="">
+                                <div class="grid justify-between p-2 leading-normal">
+                                    <h5 class="mb-0 font-bold tracking-tight text-gray-900 dark:text-white" x-text="link.title"></h5>
+                                    <p class="mb-0 font-normal text-gray-700 dark:text-gray-400" x-text="link.description"></p>
+                                    <a target="_blank" :href="link.url" class="underline font-semibold truncate ..." x-text="link.url"></a>
+                                </div>
+                            </div>
+                        </template>
+
                         <!-- Hidden Content -->
                         <div class="flex justify-between mb-0" x-show="showMenu">
-                            <!-- Taxonomy -->
-                            <div>
-                                <span x-show="taxonomy.category" x-text="taxonomy.category" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                             <!-- Taxonomy -->
+                            <div class="px-3">
+                                <div class="px-3 font-medium text-sm text-gray-900">Category</div>
+                                <span x-show="taxonomy.category" style="background-color: #f1f5f9; color: #475569;" x-text="taxonomy.category" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
                             </div>
-                            <div x-show="taxonomy.tags">
+                            <div x-show="taxonomy.tags" class="gap-2">
+                                <div class="px-3 font-medium text-sm text-gray-900">Tags</div>
+                                <div class="flex-row">
                                 <template x-for="tag in taxonomy.tags">
-                                     <span x-text="tag" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                                    <span x-text="tag" style="background-color: #f1f5f9; color: #475569;"
+                                    class="rounded-md  py-0.5 px-2.5 border border-transparent text-sm text-white transition-all shadow-sm relative rounded-md px-3 mr-1 mt-1 pt-1"></span>
                                 </template>
+                                </div>
                             </div>
                             <div x-show="taxonomy.labels">
                                 <template x-for="label in taxonomy.labels">
-                                     <span x-text="label" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                                    <span x-text="label" class="relative rounded-md px-3 pt-1 font-small text-gray-600 hover:bg-gray-100"></span>
                                 </template>
                             </div>
                             <!-- Actions -->

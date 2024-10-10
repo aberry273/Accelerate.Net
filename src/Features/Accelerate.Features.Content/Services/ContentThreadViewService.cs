@@ -18,11 +18,11 @@ using System.Threading.Channels;
 
 namespace Accelerate.Features.Content.Services
 {
-    public class ContentViewService : IContentViewService
+    public class ContentThreadViewService : IContentThreadViewService
     {
         IMetaContentService _metaContentService;
         IContentViewSearchService _viewSearchService;
-        public ContentViewService(IMetaContentService metaContent, IContentViewSearchService viewSearchService)
+        public ContentThreadViewService(IMetaContentService metaContent, IContentViewSearchService viewSearchService)
         {
             _metaContentService = metaContent;
             _viewSearchService = viewSearchService;
@@ -44,8 +44,14 @@ namespace Accelerate.Features.Content.Services
             var sectionName = "Thread";
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{sectionName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(sectionName, pageName); 
-            viewModel.PageLinks.Items.AddRange(GetThreadLinks(posts)); 
+
+            var links = CreatePageNavigationGroup(sectionName, sectionName);
+            links.Items.AddRange(GetThreadLinks(posts));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(sectionName, pageName);
 
             viewModel.Filters = _viewSearchService.CreateNavigationFilters(aggregateResponse);
@@ -69,8 +75,14 @@ namespace Accelerate.Features.Content.Services
             viewModel.RedirectRoute = $"/{sectionName}s";
 
             viewModel.SideNavigation.Selected = $"{sectionName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(sectionName, sectionName);
-            viewModel.PageLinks.Items.AddRange(GetThreadLinks(posts));
+
+            var links = CreatePageNavigationGroup(sectionName, sectionName);
+            links.Items.AddRange(GetThreadLinks(posts));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(sectionName, pageName);
 
             viewModel.UserId = user != null ? user.Id : null;
@@ -86,8 +98,14 @@ namespace Accelerate.Features.Content.Services
             viewModel.RedirectRoute = $"/{sectionName}s";
 
             viewModel.SideNavigation.Selected = $"{sectionName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(sectionName, sectionName);
-            viewModel.PageLinks.Items.AddRange(GetThreadLinks(items));
+
+            var links = CreatePageNavigationGroup(sectionName, sectionName);
+            links.Items.AddRange(GetThreadLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(sectionName, pageName);
 
             viewModel.UserId = user != null ? user.Id : null;
@@ -264,7 +282,8 @@ namespace Accelerate.Features.Content.Services
         }
         private string GetContentPostReplyValue(ContentPostViewDocument post)
         {
-            return $"Reply to @{post?.Profile?.Username}";
+            if (post?.Profile == null) return "Reply";
+            return $"Reply to {post?.Profile?.Username}";
         }
         public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostViewDocument post)
         {
@@ -282,7 +301,7 @@ namespace Accelerate.Features.Content.Services
                 Label = "Reply",
                 Fields = new List<FormField>()
                 {
-                    FormFieldReplyTo(post),
+                    //FormFieldReplyTo(post),
                     FormFieldMentions(post),
                     FormFieldQuotes(post),
                     FormFieldCharLimit(post),

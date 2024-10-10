@@ -49,7 +49,7 @@ namespace Accelerate.Features.Account.Pipelines
         }
         public async Task DeleteProfile(IPipelineArgs<AccountUser> args)
         {
-            var profile = _profileService.Get(args.Value.AccountProfileId);
+            var profile = _profileService.Get(args.Value.AccountProfileId.GetValueOrDefault());
             if (profile != null)
             {
                 await _profileService.Delete(profile);

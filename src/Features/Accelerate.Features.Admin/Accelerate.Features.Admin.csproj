@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Communication\Accelerate.Foundations.Communication.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Operations\Accelerate.Foundations.Operations.csproj" />
   </ItemGroup>
 

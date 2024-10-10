@@ -29,6 +29,7 @@ namespace Accelerate.Foundations.Content.Models.Entities
         public ContentPostType Type { get; set; } = ContentPostType.Post;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContentPostEntityStatus Status { get; set; } = ContentPostEntityStatus.Private;
+        public string? ExternalId { get; set; }
         public string? Text { get; set; }
         public string? Formats { get; set; }
         [NotMapped]

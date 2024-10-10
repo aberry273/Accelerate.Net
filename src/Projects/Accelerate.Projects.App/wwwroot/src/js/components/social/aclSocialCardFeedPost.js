@@ -1,7 +1,7 @@
 import { mxContent, mxNavigation, mxLink, mxIcon, mxDate, } from '/src/js/mixins/index.js';
 
 export default function (params) {
-	return {
+    return {
         ...mxNavigation(params),
         ...mxContent(params),
         ...mxLink(params),
@@ -10,8 +10,10 @@ export default function (params) {
         // PROPERTIES
         item: null,
         id: '',
-        showMenu: true,
+        showMenu: false,
         label: '',
+        channel: null,
+        link: null,
         metrics: {},
         settings: {},
         taxonomy: {},
@@ -33,16 +35,18 @@ export default function (params) {
             }
         },
         get modeThread() {
-            if(!this.ui || !this.ui.mode) return false;
+            if (!this.ui || !this.ui.mode) return false;
             return this.ui.mode == 'thread'
         },
         get showline() {
-            if(!this.ui) return false;
+            if (!this.ui) return false;
             return this.ui.showline
         },
         // METHODS
         setValues(params) {
             this.id = params.id;
+            this.link = params.link;
+            this.channel = params.channel;
             this.profile = params.profile || this.profile;
             this.content = params.content || {};
             this.settings = params.settings || {};
@@ -69,8 +73,8 @@ export default function (params) {
         },
         render() {
             const html = `
-                <a :href="ui.href" target="_blank">
-                    <div class="flex cursor-pointer  max-w h-full my-2 mx-8 px-2 py-2 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <a :href="ui.href">
+                    <div class="flex cursor-pointer  max-w h-full my-2 lg:mx-8 md:mx-8 sm:mx-1 xs:mx-1 px-1 py-2 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                                         
                         <!--Profile image-->    
                         <div class="flex sm:w-10 w-9 flex items-center justify-center">
@@ -92,18 +96,32 @@ export default function (params) {
                         <div class="ml-0 pt-0 pl-2 w-full">
                             <!-- Header -->
                             <div class="font-medium flex rtl:text-right justify-between" x-show="!ui.condense">
-                                <div>
+                                <div class="flex flex-row align-middle	">
                                     <!-- User Link-->
                                     <span x-data="aclCardProfileHover(profile)"></span>
-                                    <!-- Rating -->
-                                    <span x-text="metrics.rating" class="text-sm px-1 pt-1 font-medium text-gray-300 dark:text-gray-300">
-                                    </span>
                                     <!-- Updated -->
-                                    <time x-text="_mxDate_FormatString(content.date)" datetime="content.date" class="pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
-                                     
+                                    <time x-text="_mxDate_FormatString(content.date)" datetime="content.date" class="mt-1 pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
+
                                 </div>
                                 <div class="mr-2 flex">
-                                   
+                                     <!-- Rating -->
+                                    <span x-text="metrics.rating" class="align-middle px-1 pt-1 font-medium text-gray-300 dark:text-gray-300">
+                                    </span>
+                                    <!--Toggle tags-->
+                                    <div x-data="aclButton({
+                                            icon: 'tag',
+                                        })" :class="bg-gray" @click="showMenu = !showMenu" >
+                                    </div>
+                                    <!--Channel-->
+                                    <template x-if="channel != null">
+                                        <a :href="channel.url" class="flex flex-row rounded-md px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100">
+                                            <span class="pr-1" x-data="aclIconsSvg({ mxIcon_name: 'rectangleStack', mxIcon_class:'w-4 h-4'})"></span>
+                                            <span x-show="channel.name" x-text="channel.name" ></span>
+                                        </a>
+                                    </template>
+                                    <!-- More Button -->
+                                    <span x-data="aclDropdownMenuButton(dropdownParams)"></span>
+
                                     <!--
                                     <span class="pt-1" x-data="aclIconsSvg({ mxIcon_name: 'ellipsisHorizontal', mxIcon_class:'w-5 h-5 text-gray-300 dark:text-gray-300'})"></span>
                                     -->
@@ -114,11 +132,11 @@ export default function (params) {
                             <div class="w-full justify-items-end">
                                 <!-- Text -->
                                 <template x-if="content.text">
-                                    <div  x-text="content.text" class="w-full align-center cursor-pointer mb-3 font-normal text-gray-700 dark:text-gray-400"></div>
+                                    <div x-text="content.text" class="w-full align-center cursor-pointer mb-3 font-normal text-gray-700 dark:text-gray-400"></div>
                                 </template>
                                 <!-- Formats --> 
                                 <template x-if="content.formats != null && content.formats.length > 0">
-                                    <div   class="full-w cursor-pointer" x-data="aclPluginEditorJsParser({ value: content.formats })"></div>
+                                    <div class="full-w cursor-pointer" x-data="aclPluginEditorJsParser({ value: content.formats })"></div>
                                 </template>
                                 <!-- Media --> 
                                 <template x-if="content.media != null && content.media.length > 0">
@@ -126,38 +144,54 @@ export default function (params) {
                                 </template>
                             </div>
 
-                            <!-- Commands -->
-                            <div class="flex justify-between mb-0" x-show="showMenu">
-                             
-                                <!-- Actions -->
-                                <div class="flex mr-2">
-                                    <template x-for="btn in actions">
-                                        <div x-data="aclButton(btn)"></div>
-                                    </template>
-                                    <!-- More Button -->
-                                    <span class="" x-show="ui.condense && showMenu" x-data="aclDropdownMenuButton(dropdownParams)"></span>
-                                </div>
-                            </div>
-
                             <!-- Link card -->
-                            <!--
-                            <template x-if="hasReplies(item)">
-                                <div class="flex max-w bg-grey rounded-lg hover:bg-gray-50">
-                                    <a href="#" class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
-                                        <img class="object-cover w-full rounded-t-lg h-96 md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" src="/docs/images/blog/image-4.jpg" alt="">
-                                        <div class="flex flex-col justify-between p-4 leading-normal">
-                                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Noteworthy technology acquisitions 2021</h5>
-                                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-                                        </div>
-                                    </a>
+                            <template x-if="link != null">
+                                <div class="flex flex-col my-2 w-full bg-white items-center border border-gray-200 rounded-lg shadow md:flex-row  hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                    <img class="object-cover w-full h-72 md:h-auto md:w-48" :src="link.image" alt="">
+                                    <div class="grid justify-between p-2 leading-normal">
+                                        <h5 class="mb-0 font-bold tracking-tight text-gray-900 dark:text-white" x-text="link.title"></h5>
+                                        <p class="mb-0 font-normal text-gray-700 dark:text-gray-400" x-text="link.description"></p>
+                                        <a target="_blank" :href="link.url" class="underline font-semibold truncate ..." x-text="link.url"></a>
+                                    </div>
                                 </div>
                             </template>
-                            -->
+
+                            <!-- Commands -->
+                            <div class="flex justify-between mb-0 p-2" x-show="showMenu">
+                                <!-- Taxonomy -->
+                                <div class="px-3">
+                                    <div class="px-3 font-medium text-sm text-gray-900">Category</div>
+                                    <span x-show="taxonomy.category" style="background-color: #f1f5f9; color: #475569;" x-text="taxonomy.category" class="relative rounded-md bg-gray-50 px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100"></span>
+                                </div>
+                                <div x-show="taxonomy.tags" class="gap-2">
+                                    <div class="px-3 font-medium text-sm text-gray-900">Tags</div>
+                                    <div class="flex-row">
+                                    <template x-for="tag in taxonomy.tags">
+                                        <span x-text="tag" style="background-color: #f1f5f9; color: #475569;"
+                                        class="rounded-md  py-0.5 px-2.5 border border-transparent text-sm text-white transition-all shadow-sm relative rounded-md px-3 mr-1 mt-1 pt-1"></span>
+                                    </template>
+                                    </div>
+                                </div>
+                                <div x-show="taxonomy.labels">
+                                    <template x-for="label in taxonomy.labels">
+                                        <span x-text="label" class="relative rounded-md px-3 pt-1 font-small text-gray-600 hover:bg-gray-100"></span>
+                                    </template>
+                                </div>
+                                <!-- Actions -->
+                                <!--
+                                <div class="flex mr-2">
+                                    <template x-for="btn in actions.filter(x => !x.overlay)">
+                                        <div x-data="aclButton(btn)"></div>
+                                    </template>
+                                    <span class="" x-show="ui.condense && showMenu" x-data="aclDropdownMenuButton(dropdownParams)"></span>
+                                </div>
+                                -->
+                            </div>
                         </div>
                     </div>
                 </a>
             `
             this.$nextTick(() => { this.$root.innerHTML = html });
-      }
+        }
     }
 }

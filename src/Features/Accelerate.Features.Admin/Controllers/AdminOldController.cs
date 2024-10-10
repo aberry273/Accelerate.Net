@@ -53,7 +53,7 @@ namespace Accelerate.Features.Admin.Controllers
             {
                 return null;
             }
-            var profile = _profileService.Get(user.AccountProfileId);
+            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
             user.AccountProfile = profile;
             return user;
         }

@@ -1,7 +1,7 @@
 
 # Content
 Drop-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
-Add-Migration InitialCreate_Content27 -context ContentDbContext -project "Accelerate.Foundations.Content" 
+Add-Migration InitialCreate_Content28 -context ContentDbContext -project "Accelerate.Foundations.Content" 
 Update-Database -context ContentDbContext -project "Accelerate.Foundations.Content" 
 # Media
 Drop-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 
@@ -9,7 +9,7 @@ Add-Migration InitialCreate_Media1 -context MediaDbContext -project "Accelerate.
 Update-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 
 # Authentication
 Drop-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
-Add-Migration Initial_Account3 -context AccountDbContext -project "Accelerate.Foundations.Account" 
+Add-Migration Initial_Account4 -context AccountDbContext -project "Accelerate.Foundations.Account" 
 Update-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
 
 # Operations

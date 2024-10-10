@@ -22,7 +22,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Twilio.TwiML.Voice;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using Accelerate.Features.Content.Pipelines.ActionsSummary;
 using Accelerate.Foundations.EventPipelines.Consumers;
@@ -33,6 +32,11 @@ using Accelerate.Features.Content.Pipelines.Labels;
 using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Features.Content.Pipelines.Lists;
 using Accelerate.Features.Content.Pipelines.Feeds;
+using Microsoft.AspNetCore.Identity;
+using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.EventPipelines.Services;
+using System.Threading.Channels;
+using Accelerate.Foundations.Content.Hydrators;
 
 namespace Accelerate.Features.Content
 {
@@ -45,8 +49,37 @@ namespace Accelerate.Features.Content
             _transits.Add(bus, entity);
         }
         */
-        public static void ConfigureApp(WebApplication app)
+        public static async Task ContentGlobalChannels(WebApplication app)
         {
+            using (var scope = app.Services.CreateScope())
+            {
+                //Resolve ASP .NET Core Identity with DI help
+                var channelService = (IEntityPipelineService<ContentChannelEntity, IContentChannelBus>)scope.ServiceProvider.GetService(typeof(IEntityPipelineService<ContentChannelEntity, IContentChannelBus>));
+                var elasticService = (IElasticService<ContentChannelDocument>)scope.ServiceProvider.GetService(typeof(IElasticService<ContentChannelDocument>));
+                var globalChannel = channelService.Get(Foundations.Common.Constants.Global.ChannelNewsGuid);
+                if (globalChannel == null)
+                {
+                    var channel = new ContentChannelEntity()
+                    {
+                        Name = "News",
+                        Category = "News",
+                        Id = Foundations.Common.Constants.Global.ChannelNewsGuid,
+                        UserId = Foundations.Common.Constants.Global.GlobalAdminContent
+                    };
+                    await channelService.Create(channel);
+                    var document = new ContentChannelDocument();
+                    channel.Hydrate(document);
+                    await elasticService.Index(document);
+                }
+
+                //var userManager = (UserManager<AccountUser>)scope.ServiceProvider.GetService(typeof(UserManager<AccountUser>));
+                //Task.FromResult(CreateGlobalAccounts(userManager));
+            }
+
+         
+        }
+        public static void ConfigureApp(WebApplication app)
+        { 
             app.MapHub<BaseHub<ContentPostViewDocument>>($"/{Constants.Settings.ContentPostsHubName}");
             app.MapHub<BaseHub<ContentPostActionsDocument>>($"/{Constants.Settings.ContentPostActionsHubName}");
             app.MapHub<BaseHub<ContentChannelDocument>>($"/{Constants.Settings.ContentChannelsHubName}");
@@ -57,12 +90,12 @@ namespace Accelerate.Features.Content
             app.MapHub<BaseHub<ContentPostSettingsDocument>>($"/{Constants.Settings.ContentPostSettingsHubName}");
             app.MapHub<BaseHub<ContentPostActivityDocument>>($"/{Constants.Settings.ContentPostActivitiesHubName}");
 
-
+            System.Threading.Tasks.Task.FromResult(ContentGlobalChannels(app));
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // SERVICES
-            services.AddTransient<IContentViewService, ContentViewService>();
+            services.AddTransient<IContentThreadViewService, ContentThreadViewService>();
             services.AddTransient<IContentViewSearchService, ContentViewSearchService>();
             services.AddTransient<IBaseContentEntityViewService<ContentChannelDocument>, ContentChannelEntityViewService>();
             services.AddTransient<IBaseContentEntityViewService<ContentListDocument>, ContentListEntityViewService>();

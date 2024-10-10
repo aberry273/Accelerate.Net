@@ -59,5 +59,15 @@ namespace Accelerate.Features.Content.Services
             
             return model;
         }
+        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var viewModel = new ContentChatPage(model);
+            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentChatDocument>()
+            {
+                Items = items.Documents.ToList()
+            };
+            return viewModel;
+        }
     }
 }

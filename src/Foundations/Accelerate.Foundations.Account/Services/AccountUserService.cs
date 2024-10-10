@@ -21,6 +21,7 @@ namespace Accelerate.Foundations.Account.Services
     {
         protected readonly ILogger _logger;
         UserManager<AccountUser> _userManager;
+        IEntityService<AccountProfile> _profileService;
         public AccountUserService(
             ILogger<AccountUserService> logger,
             IEntityService<AccountProfile> profileService,
@@ -29,11 +30,38 @@ namespace Accelerate.Foundations.Account.Services
         {
             _logger = logger;
             _userManager = userManager;
+            _profileService = profileService;
         }
-        public void InitializeAdmin()
+
+        public async Task<AccountUser?> FindByNameAsync(string name)
         {
-            Task.FromResult(Foundations.Account.Startup.InitializeDefaultAdmin(_userManager));
+            return await _userManager.FindByNameAsync(name);
         }
+
+        public async Task<AccountUser?> FindByEmailAsync(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<AccountUser?> FindByIdAsync(string id)
+        {
+            return await _userManager.FindByIdAsync(id);
+        }
+
+        public async Task<AccountUser?> FindByNameAsync(string loginProvider, string providerKey)
+        {
+            return await _userManager.FindByLoginAsync(loginProvider, providerKey);
+        }
+
+        public async Task<IdentityResult?> CreateAsync(AccountUser user)
+        {
+            return await _userManager.CreateAsync(user);
+        }
+        public async Task<IdentityResult?> CreateAsync(AccountUser user, string password)
+        {
+            return await _userManager.CreateAsync(user, password);
+        }
+
         public void ClearDatabase()
         {
             try
@@ -123,11 +151,23 @@ namespace Accelerate.Foundations.Account.Services
                 throw;
             }
         }
+        private async Task CreateUserProfile(AccountUser user)
+        {
+            if(user == null)
+            {
+                Foundations.Common.Services.StaticLoggingService.Log("CreateUserProfile user null");
+                return;
+            }
+            var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
+            // Get user and update with profile id
+            user.AccountProfileId = profileId.GetValueOrDefault();
+            await _userManager.UpdateAsync(user);
+        }
         public virtual EntityEntry<AccountUser> Add(AccountUser entity)
         {
             try
             {
-                var result = _userManager.CreateAsync(entity);
+                var result = _userManager.CreateAsync(entity); 
                 var user = _userManager.FindByNameAsync(entity.UserName);
                 return null;
             }
@@ -143,6 +183,8 @@ namespace Accelerate.Foundations.Account.Services
             try
             {
                 var result = _userManager.CreateAsync(entity);
+                var user = await _userManager.FindByNameAsync(entity.UserName);
+                await this.CreateUserProfile(user);
                 return result.Result.Succeeded ? 1 : 0;
             }
             catch (Exception ex)
@@ -158,8 +200,10 @@ namespace Accelerate.Foundations.Account.Services
             {
                 var id = Guid.NewGuid();
                 entity.Id = id;
-                var creationResult = _userManager.CreateAsync(entity);
-                var result = creationResult.Result.Succeeded ? 1 : 0;
+                var creationResult = await _userManager.CreateAsync(entity);
+                var user = await _userManager.FindByNameAsync(entity.UserName);
+                await this.CreateUserProfile(user);
+                var result = creationResult.Succeeded ? 1 : 0;
                 return result > 0 ? id : null;
             }
             catch (Exception ex)

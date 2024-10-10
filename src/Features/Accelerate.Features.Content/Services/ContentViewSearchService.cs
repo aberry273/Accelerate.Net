@@ -173,19 +173,41 @@ namespace Accelerate.Features.Content.Services
                 .ToList();
             return _servicePostParents.Find(x => postIds.Contains(x.ParentId));
         }
-        public async Task<List<ContentPostViewDocument>> UpdatePostDocuments(List<ContentPostViewDocument> posts)
+        private async Task<IEnumerable<ContentPostUserProfileSubdocument>> GetUserProfiles(List<Guid> userIds)
+        {
+            // Get user entity for each ID
+            var users = await GetUsers(userIds);
+            //Create user profile objects for each user
+            return users.Select(GetUserDocument);
+        }
+        private List<Guid> GetUserIds(List<ContentPostViewDocument> posts, IEnumerable<ContentPostParentEntity> postReplies)
         {
             // Get list of userIds for each post
             List<Guid> userIds = posts.Select(x => x.UserId).ToList();
             // Get all Post/Parent entities where the post is a parent
-            var postReplies = GetReplies(posts);
             var allPostReplyUserIds = postReplies.Select(x => x.UserId);
             // Add Post Reply userIds to list
             userIds.AddRange(allPostReplyUserIds);
-            // Get user entity for each ID
-            var users = await GetUsers(userIds);
-            //Create user profile objects for each user
-            var userProfiles = users.Select(GetUserDocument);
+            return userIds;
+        }
+        private async Task<List<ContentChannelDocument>> GetPostChannels(List<ContentPostViewDocument> posts)
+        {
+            var channelIds = posts
+                .Where(x => x.Related != null && x.Related.ChannelId != null)
+                .Select(x => x.Related.ChannelId.GetValueOrDefault().ToString()).ToList();
+
+            var channelQuery = _searchChannelService.BuildIdSearchQuery(channelIds);
+            var response = await _searchChannelService.Search(channelQuery);
+            if (!response.IsSuccess()) return new List<ContentChannelDocument>(); 
+            return response.Documents.ToList();
+        }
+        public async Task<List<ContentPostViewDocument>> UpdatePostDocuments(List<ContentPostViewDocument> posts)
+        {
+            var postReplies = GetReplies(posts);
+            var userIds = this.GetUserIds(posts, postReplies);
+            var userProfiles = await GetUserProfiles(userIds);
+            var channels = await GetPostChannels(posts);
+
             for (var i = 0; i < posts.Count(); i++)
             {
                 // Get the users for all parentPosts
@@ -198,7 +220,9 @@ namespace Accelerate.Features.Content.Services
                 // Users
                 var postUserProfile = userProfiles?.FirstOrDefault(x => x.Id == posts[i].UserId);
                 var postReplyProfiles = replyProfiles?.Where(x => x.Id == posts[i].UserId).ToList();
-                posts[i] = this.UpdateViewPostModel(posts[i], postUserProfile, postReplyProfiles);
+                // Related
+                var channel = channels?.FirstOrDefault(x => x.Id == posts[i].Related?.ChannelId);
+                posts[i] = this.UpdateViewPostModel(posts[i], postUserProfile, postReplyProfiles, channel);
             }
             return posts.ToList();
         }
@@ -222,7 +246,11 @@ namespace Accelerate.Features.Content.Services
             return viewModel;
         }
 
-        public ContentPostViewDocument UpdateViewPostModel(ContentPostDocument post, ContentPostUserProfileSubdocument profile, List<ContentPostUserProfileSubdocument> Replies = null)
+        public ContentPostViewDocument UpdateViewPostModel(
+            ContentPostDocument post, 
+            ContentPostUserProfileSubdocument profile, 
+            List<ContentPostUserProfileSubdocument> Replies = null,
+            ContentChannelDocument channel = null)
         {
             var viewModel = new ContentPostViewDocument();
             viewModel.HydrateFrom(post);
@@ -247,6 +275,14 @@ namespace Accelerate.Features.Content.Services
                 Quotes = 1,
                 Rating = 10
             };
+            // Channel
+            viewModel.Channel = channel != null ? new ContentPostChannelViewSubdocument()
+                {
+                    Id = channel.Id,
+                    Name = channel.Name,
+                    Url = $"/Channels/{channel.Id}"
+                } : null;
+
             viewModel.Actions = this.PostActions();
             viewModel.Menu = this.PostMenuActions();
             return viewModel;

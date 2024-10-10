@@ -3,8 +3,7 @@ import { mxMedia } from '/src/js/mixins/index.js';
 export default function (params) {
 	return {
         ...mxMedia(params),
-        // PROPERTIES 
-        media: null,
+        // PROPERTIES  
         // INIT
         init() {
             this.setValues(params);
@@ -28,7 +27,8 @@ export default function (params) {
                         x-transition:leave-end="opacity-0 transform scale-50" 
                         :class="mxMedia_class" 
                         :src="mxMedia_src" 
-                        :alt="mxMedia_alt" /> 
+                        :alt="mxMedia_alt"
+                    />
                 </figcaption>
             `
             this.$nextTick(() => { this.$root.innerHTML = html });

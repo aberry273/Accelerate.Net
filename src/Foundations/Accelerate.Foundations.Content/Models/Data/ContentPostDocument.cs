@@ -53,15 +53,16 @@ namespace Accelerate.Foundations.Content.Models.Data
     }
     public class ContentPostDocument : EntityDocument
     {
+        public string ExternalId { get; set; }
         public Guid UserId { get; set; }
         public ContentPostEntityStatus Status { get; set; }
         
-        [NotMapped]
         public ContentPostContentSubdocument Content { get; set; }
-        public ContentPostRelatedPostsSubdocument Related { get; set; }
+        public virtual ContentPostRelatedPostsSubdocument Related { get; set; }
         public ContentPostQuoteSubdocument Quotes { get; set; }
         public ContentPostMetricsSubdocument Metrics { get; set; }
         public ContentPostTaxonomySubdocument Taxonomy { get; set; }
+        public ContentPostLinkSubdocument Link { get; set; }
     }
     /*
      * id: 0,

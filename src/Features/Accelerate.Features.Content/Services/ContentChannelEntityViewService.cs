@@ -2,6 +2,7 @@
 using Accelerate.Features.Content.Models.Views;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
@@ -26,6 +27,10 @@ namespace Accelerate.Features.Content.Services
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
             viewModel.Test = "INDEX";
+            viewModel.Listing = new AclAjaxListing<ContentChannelDocument>()
+            {
+                Items = items.Documents.ToList()
+            };
             return viewModel;
         }
         public override ContentChannelPage CreateEntityPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
@@ -58,6 +63,16 @@ namespace Accelerate.Features.Content.Services
             }
 
             return model;
+        }
+        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var viewModel = new ContentChannelPage(model);
+            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentChannelDocument>()
+            {
+                Items = items.Documents.ToList()
+            };
+            return viewModel;
         }
     }
 }

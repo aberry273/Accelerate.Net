@@ -4,7 +4,7 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http
 @using Accelerate.Foundations.Content.Models.Data
-@model ContentBasePage
+@model ContentChatPage
 @{
     Layout = "/Views/Shared/_ContentPageLayout.cshtml";
 }
@@ -25,4 +25,5 @@
     })"></div>
 
     <hr />
+    <div x-data="aclTableSimple(@JsonSerializerHelper.SerializeObject(Model.Listing))"></div>
 </div>

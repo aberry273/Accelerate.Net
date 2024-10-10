@@ -60,7 +60,7 @@ namespace Accelerate.Features.Content.Controllers.Api
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
-        IAccountUserSearchService _userSearchService;
+        IAccountUserSearchService _userSearchService; 
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentPostMediaEntity> _postMediaService;
@@ -131,11 +131,27 @@ namespace Accelerate.Features.Content.Controllers.Api
             };
         }
 
-        private ContentPostLinkEntity CreateLinkCardFromRequest(ContentPostMixedRequest obj)
+        private ContentPostLinkEntity CreateLinkCardFromUrlValue(ContentPostMixedRequest obj)
+        {
+            if (string.IsNullOrEmpty(obj.LinkUrl)) return null;
+
+            bool isUri = Uri.IsWellFormedUriString(obj.LinkUrl, UriKind.RelativeOrAbsolute);
+            if (!isUri) return null;
+            var metadata = Foundations.Common.Helpers.HtmlHelper.GetMetaDataFromUrl(obj.LinkUrl);
+             
+            return new ContentPostLinkEntity()
+            {
+                Title = metadata.Title,
+                Description = metadata.Description,
+                Image = metadata.Image,
+                Url = metadata.Url,
+            };
+        }
+        private ContentPostLinkEntity CreateLinkCardFromSerializedValue(ContentPostMixedRequest obj)
         {
             if (string.IsNullOrEmpty(obj.LinkValue)) return null;
             var linkObj = Foundations.Common.Helpers.JsonSerializerHelper.SafelyDeserializeObject<MetadataResponse>(obj?.LinkValue);
-            if (linkObj == null) return null; 
+            if (linkObj == null) return null;
             return new ContentPostLinkEntity()
             {
                 Title = linkObj.Title,
@@ -143,6 +159,18 @@ namespace Accelerate.Features.Content.Controllers.Api
                 Image = linkObj.Image,
                 Url = linkObj.Url,
             };
+        }
+        private ContentPostLinkEntity CreateLinkCardFromRequest(ContentPostMixedRequest obj)
+        {
+            if (!string.IsNullOrEmpty(obj.LinkValue))
+            {
+                return this.CreateLinkCardFromSerializedValue(obj);
+            }
+            if (!string.IsNullOrEmpty(obj.LinkUrl))
+            {
+                return this.CreateLinkCardFromUrlValue(obj);
+            }
+            return null;
         }
 
         private ContentPostTaxonomyEntity CreateTaxonomyFromRequest(ContentPostMixedRequest obj)
@@ -229,7 +257,62 @@ namespace Accelerate.Features.Content.Controllers.Api
                 .ToList();
         }
         #endregion
+        [Route("json")]
+        [HttpPost]
+        public async Task<IActionResult> Json([FromBody] ContentPostMixedRequest obj)
+        {
+            try
+            {
+                if(!string.IsNullOrEmpty(obj.ExternalId))
+                {
+                    var existingEntity = _service.Find(x => x.ExternalId == obj.ExternalId);
+                    if (existingEntity.FirstOrDefault() != null)
+                    {
+                        return Ok(new
+                        {
+                            message = $"Post with externalId {obj.ExternalId} already exists Successfully",
+                        });
+                    }
+                }
+                var parentId = obj.ParentId.GetValueOrDefault();
+                //var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
+                var channelId = obj.ChannelId.GetValueOrDefault();
+                var listId = obj.ListId.GetValueOrDefault();
+                var chatId = obj.ChatId.GetValueOrDefault();
+                var settings = CreatePostSettingsFromRequest(obj);
+                var linkCard = CreateLinkCardFromRequest(obj);
+                var taxonomy = CreateTaxonomyFromRequest(obj);
+                var quoteIds = CreateQuotesFromRequest(obj);
+                var mentions = await this.CreateMentionsFromRequest(obj);
+                var mediaIds = await CreateMediaFromRequest(obj);
 
+                var post = await _postService.CreatePost(
+                    obj,
+                    obj.ChannelId.GetValueOrDefault(),
+                    obj.ChatId.GetValueOrDefault(),
+                    obj.ListId.GetValueOrDefault(),
+                    obj.ParentId.GetValueOrDefault(),
+                    //parentIds,
+                    mentions,
+                    quoteIds,
+                    mediaIds,
+                    settings,
+                    linkCard,
+                    taxonomy
+                );
+
+                return Ok(new
+                {
+                    message = "Created Successfully",
+                    id = post.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                return BadRequest();
+            }
+        }
         [Route("mixed")]
         [HttpPost]
         [Consumes("multipart/form-data")]
@@ -237,6 +320,17 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             try
             {
+                if (!string.IsNullOrEmpty(obj.ExternalId))
+                {
+                    var existingEntity = _service.Find(x => x.ExternalId == obj.ExternalId);
+                    if (existingEntity.FirstOrDefault() != null)
+                    {
+                        return Ok(new
+                        {
+                            message = $"Post with externalId {obj.ExternalId} already exists Successfully",
+                        });
+                    }
+                }
                 var parentId = obj.ParentId.GetValueOrDefault();
                 //var parentIds = obj.ParentIdItems?.ToList() ?? new List<Guid>();
                 var channelId = obj.ChannelId.GetValueOrDefault();

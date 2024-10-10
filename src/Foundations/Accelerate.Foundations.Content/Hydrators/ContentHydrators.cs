@@ -24,12 +24,14 @@ namespace Accelerate.Foundations.Content.Hydrators
             viewModel.UpdatedOn = doc.UpdatedOn;
             viewModel.CreatedOn = doc.CreatedOn;
             viewModel.UserId = doc.UserId;
+            viewModel.ExternalId = doc.ExternalId;
             viewModel.Status = doc.Status;
             viewModel.Content = doc.Content;
             viewModel.Related = doc.Related;
             viewModel.Quotes = doc.Quotes;
             viewModel.Metrics = doc.Metrics;
             viewModel.Taxonomy = doc.Taxonomy;
+            viewModel.Link = doc.Link;
         }
         public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document)
         {

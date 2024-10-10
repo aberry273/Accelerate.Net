@@ -67,8 +67,15 @@ namespace Accelerate.Features.Admin.Services
             var viewModel = new AdminCreatePage(model);
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+
+            var links = CreatePageNavigationGroup(this.EntityName, pageName);
+            links.Items.AddRange(GetLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
              
             viewModel.UserId = user != null ? user.Id : null;
@@ -81,8 +88,14 @@ namespace Accelerate.Features.Admin.Services
             var viewModel = new AdminCreatePage(model); 
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+            var links = CreatePageNavigationGroup(this.EntityName, pageName);
+            links.Items.AddRange(GetLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
              
             viewModel.UserId = user != null ? user.Id : null;
@@ -94,22 +107,28 @@ namespace Accelerate.Features.Admin.Services
             return item.Id.ToString();
         }
 
-        public virtual AdminIndexPage<T> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminIndexPage<T>> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminIndexPage<T>(model);
             viewModel.Id = item.Id;
             var pageName = GetEntityName(item);
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName, item);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
-            viewModel.ParentUrl = $"/{this.EntityName}s";
+
+            var links = CreatePageNavigationGroup(this.EntityName, pageName);
+            links.Items.AddRange(GetLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
+            viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName, item); 
+            viewModel.ParentUrl = $"/Admin/{this.EntityName}s";
             viewModel.PostsApiUrl = this.ApiUrl;
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
             
             viewModel.UserId = user.Id;
-            viewModel.Form = CreateForm(user, item, PostbackType.PUT);
+            viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return viewModel;
         }
         public virtual AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<T> items)
@@ -120,8 +139,15 @@ namespace Accelerate.Features.Admin.Services
             viewModel.RedirectRoute = $"/{this.EntityName}s";
 
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+
+            var links = CreatePageNavigationGroup(this.EntityName, pageName);
+            links.Items.AddRange(GetLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
             viewModel.UserId = user != null ? user.Id : null;
@@ -136,13 +162,19 @@ namespace Accelerate.Features.Admin.Services
             var pageName = $"Edit {this.GetEntityName(item)}";
             viewModel.RedirectRoute = $"/{this.EntityName}s";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, item.Id.ToString());
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+            var links = CreatePageNavigationGroup(this.EntityName, pageName);
+            links.Items.AddRange(GetLinks(items));
+            viewModel.PageLinks = new List<NavigationGroup>()
+            {
+                links
+            };
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
 
             viewModel.UserId = user?.Id;
-            viewModel.Form = CreateForm(user, item, PostbackType.PUT);
+            viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return viewModel;
         }
 
@@ -648,10 +680,10 @@ namespace Accelerate.Features.Admin.Services
             model.Title = $"Edit {this.EntityName}";
             model.Text = "Test form text";
             model.Event = EventEdit;
-            model.Form = CreateForm(user, item, PostbackType.PUT);
+            model.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return model;
         } 
-        public virtual AjaxForm CreateForm(AccountUser user, T? item, PostbackType type = PostbackType.POST)
+        public virtual AjaxForm CreateEntityForm(AccountUser user, T? item, PostbackType type = PostbackType.POST)
         {
             var model = new AjaxForm()
             {
@@ -735,9 +767,74 @@ namespace Accelerate.Features.Admin.Services
             }
             return model;
         }
-        public virtual AjaxForm CreateForm(AccountUser user, PostbackType type = PostbackType.POST)
+        public virtual AjaxForm CreateEntityForm(AccountUser user)
         {
-            return this.CreateForm(user, type);
+            var model = new AjaxForm()
+            {
+                Action = $"/api/admin{this.EntityName.ToLower()}",
+                Type = PostbackType.POST,
+                Event = $"{this.EntityName.ToLower()}:create:modal",
+                Label = "Create",
+                Fields = new List<FormField>()
+                {
+                    new FormField()
+                    {
+                        Name = "Name",
+                        FieldType = FormFieldTypes.input,
+                        Placeholder = $"{this.EntityName} name",
+                        AriaInvalid = false,
+                        Value = null,
+                    },
+                    new FormField()
+                    {
+                        Name = "Status",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = ContentChannelEntityStatus.Public,
+                    },
+                    new FormField()
+                    {
+                        Name = "Category",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = false,
+                        Disabled = false,
+                        AriaInvalid = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "TagItems",
+                        Label = "Tags",
+                        //FieldType = FormFieldTypes.chips,
+                        Placeholder = "Listen to posts tagged with..",
+                        ClearOnSubmit = false,
+                        AriaInvalid = false,
+                        Hidden = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "Description",
+                        FieldType = FormFieldTypes.textarea,
+                        Placeholder = "Describe what content this channel is for",
+                        AriaInvalid = false,
+                    },
+                    new FormField()
+                    {
+                        Name = "UserId",
+                        FieldType = FormFieldTypes.input,
+                        Hidden = true,
+                        Disabled = true,
+                        AriaInvalid = false,
+                        Value = user.Id,
+                    }
+                }
+            };
+            return model;
+        }
+        public virtual AjaxForm CreateForm(AccountUser user)
+        {
+            return this.CreateEntityForm(user);
         }
         #endregion
 
@@ -753,7 +850,7 @@ namespace Accelerate.Features.Admin.Services
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/content{this.EntityName.ToLower()}/{item.Id}",
+                Action = $"/api/admin{this.EntityName.ToLower()}/{item.Id}",
                 Type = PostbackType.DELETE,
                 Event = $"{this.EntityName.ToLower()}:deleted:modal",
                 Label = "Delete",

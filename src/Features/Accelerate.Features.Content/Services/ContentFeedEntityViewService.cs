@@ -33,5 +33,15 @@ namespace Accelerate.Features.Content.Services
             viewModel.Test = "ENTITY";
             return viewModel;
         }
+        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var viewModel = new ContentFeedPage(model);
+            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentFeedDocument>()
+            {
+                Items = items.Documents.ToList()
+            };
+            return viewModel;
+        }
     }
 }

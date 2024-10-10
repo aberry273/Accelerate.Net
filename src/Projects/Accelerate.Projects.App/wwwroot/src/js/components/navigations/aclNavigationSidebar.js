@@ -55,23 +55,13 @@ export default function (params) {
                         </div>
                     </div>
 
-                    <!-- Primary Items-->
-                    <ul class="space-y-2 items-center justify-between mx-auto border-b border-gray-200 font-medium">
-                        <template x-for="item in mxNavigation_items">
-                            <li class="grid items-center">
-                                <button x-show="!mxNavigation_open && mxNavigation_canMinimize" x-data="aclButton({icon: item.icon, href: item.href})"></button> 
-                                <button x-show="mxNavigation_open || !mxNavigation_canMinimize" x-data="aclButton({
-                                    ...item,
-                                    textClass: 'ml-0',
-                                    class: _mxNavigation_selectedButtonClass(item),
-                                })"></button> 
+                    <!-- Items-->
+                    <template x-for="group in mxNavigation_groups">
+                        <ul class="space-y-2 items-center mb-2 justify-between mx-auto border-b border-gray-200 font-medium">
+                            <li class="grid items-center text-center">
+                                <div class="select-none text-sm font-light" x-show="group.title" x-text="group.title"></div>
                             </li>
-                        </template>
-                    </ul>
-                    <!--Secondary items-->
-                    <template x-if="mxNavigation_secondaryItems">
-                        <ul class="space-y-2 items-center justify-between mx-auto border-b border-gray-200 font-medium">
-                            <template x-for="item in mxNavigation_secondaryItems">
+                            <template x-for="item in group.items">
                                 <li class="grid items-center">
                                     <button x-show="!mxNavigation_open && mxNavigation_canMinimize" x-data="aclButton({icon: item.icon, href: item.href})"></button> 
                                     <button x-show="mxNavigation_open || !mxNavigation_canMinimize" x-data="aclButton({

@@ -1,5 +1,4 @@
 ﻿using Accelerate.Features.Account.Models.Views;
-using Accelerate.Features.Content.EventBus;
 using Accelerate.Foundations.Account.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
@@ -27,6 +26,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Hosting.Server;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Features.Account.Models.Data;
+using Accelerate.Foundations.Account.EventBus;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -130,7 +130,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                 {
                     await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
                 }
-                var profile = _profileService.Get(user.AccountProfileId);
+                var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
                 if (profile != null)
                 {
                     await _profileService.Delete(profile);

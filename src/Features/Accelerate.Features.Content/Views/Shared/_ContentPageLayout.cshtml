@@ -21,15 +21,15 @@
             })
         },
     }">
-    <!-- Sidebar - Desktop only -->
+    <!-- Section Sidebar - Desktop only -->
     <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
     
-    <!--Sidebar - Desktop only -->
-    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar(@JsonSerializerHelper.SerializeObject(Model.PageLinks))"></div>
-    
+    <!-- Page Sidebar - Desktop only -->
+    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar({ groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks) })"></div>
+
     <!--Sidepanel-->
     <div x-data="aclNavigationSidebarSlide({ 
-        ...@JsonSerializerHelper.SerializeObject(Model.PageLinks),
+        groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks),
         event: 'on:side' 
     })"></div>
 

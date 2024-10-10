@@ -9,6 +9,12 @@ using System.Text.Json.Serialization;
 
 namespace Accelerate.Foundations.Content.Models.View
 {
+    public class ContentPostChannelViewSubdocument
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+    }
     //View
     public class ContentPostUiSubdocument
     {
@@ -35,6 +41,7 @@ namespace Accelerate.Foundations.Content.Models.View
     public class ContentPostViewDocument : ContentPostDocument
     {
         //View model only
+        public ContentPostChannelViewSubdocument Channel { get; set; }
         public ContentPostUserProfileSubdocument Profile { get; set; }
         public ContentPostUiSubdocument Ui { get; set; } = new ContentPostUiSubdocument();
         public ContentPostRepliesSubdocument Replies { get; set; } = new ContentPostRepliesSubdocument();

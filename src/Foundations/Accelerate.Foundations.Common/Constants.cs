@@ -8,6 +8,15 @@ namespace Accelerate.Foundations.Common
 {
     public struct Constants
     {
+        public struct Global
+        {
+            public static Guid GlobalAdmin = Guid.Parse("00000000-0000-0000-0000-000000000000");
+            public static Guid GlobalAdminContent = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            public static Guid GlobalAdminMedia = Guid.Parse("00000000-0000-0000-0000-000000000002");
+            public static Guid GlobalAdminAccounts = Guid.Parse("00000000-0000-0000-0000-000000000003");
+            public static Guid GlobalAdminOperations = Guid.Parse("00000000-0000-0000-0000-000000000004");
+            public static Guid ChannelNewsGuid = Guid.Parse("d9dff599-0057-454c-bdb5-ebaad9855713");
+        }
         public struct Domains
         {
             public const string Public = "Public";

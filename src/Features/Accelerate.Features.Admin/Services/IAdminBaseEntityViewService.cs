@@ -19,9 +19,9 @@ namespace Accelerate.Features.Admin.Services
         AdminBasePage CreateAnonymousListingPage();
         AdminBasePage CreateAllPage(AccountUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
         AdminBasePage CreateIndexPage(AccountUser user, IEnumerable<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
-        AdminIndexPage<T> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<AdminIndexPage<T>> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
         AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<T> items);
         AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<T> items, T item);
-        AjaxForm CreateForm(AccountUser user, T item, PostbackType type = PostbackType.POST);
+        AjaxForm CreateEntityForm(AccountUser user, T? item, PostbackType type = PostbackType.POST);
     }
 }

@@ -37,7 +37,7 @@ namespace Accelerate.Features.Admin.Models.Views
 
         public ModalForm ModalDelete { get; set; }
         public ButtonGroup PageActions { get; set; }
-        public NavigationGroup PageLinks { get; set; }
+        public List<NavigationGroup> PageLinks { get; set; }
         ///public AjaxForm FormCreatePost { get; set; }
         public ModalForm ModalEditChannel { get; set; }
         public ModalForm ModalDeleteChannel { get; set; }

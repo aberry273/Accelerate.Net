@@ -93,9 +93,11 @@ builder.Services.AddSession(options =>
 builder.Services.AddSignalR();
 var app = builder.Build();
 
-var sp = builder.Services.BuildServiceProvider();
-var userService = sp.GetService<IAccountUserService>();
-userService.InitializeAdmin();
+// Setup local admin
+//var sp = builder.Services.BuildServiceProvider();
+//var userService = sp.GetService<IAccountUserService>();
+//userService.InitializeAdmin();
+
 
 app.UseSession();
 
@@ -146,8 +148,9 @@ app.MapControllerRoute(name: "default",
 app.MapDefaultControllerRoute();
 
 
-// Map SignalR hubs
+// Map SignalR hubs, system accounts & global content
 #pragma warning disable ASP0014 // Suggest using top level route registrations
+Accelerate.Features.Account.Startup.ConfigureApp(app);
 Accelerate.Features.Content.Startup.ConfigureApp(app);
 Accelerate.Features.Media.Startup.ConfigureApp(app);
 #pragma warning restore ASP0014 // Suggest using top level route registrations

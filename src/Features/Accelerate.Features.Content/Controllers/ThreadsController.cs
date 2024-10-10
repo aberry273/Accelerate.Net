@@ -37,12 +37,12 @@ namespace Accelerate.Features.Content.Controllers
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<ContentChannelDocument> _channelSearchService;
         IEntityService<AccountProfile> _profileService;
-        IContentViewService _contentViewService;
+        IContentThreadViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
         private const string _notFoundRazorFile = "~/Views/Threads/NotFound.cshtml";
         public ThreadsController(
             IMetaContentService service,
-            IContentViewService contentViewService,
+            IContentThreadViewService contentViewService,
             IContentPostElasticService postElasticSearchService,
             IContentViewSearchService contentViewSearchService,
             SignInManager<AccountUser> signInManager,
@@ -199,7 +199,7 @@ namespace Accelerate.Features.Content.Controllers
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null) return null;
-            var profile = _profileService.Get(user.AccountProfileId);
+            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
             user.AccountProfile = profile;
             return user;
         }

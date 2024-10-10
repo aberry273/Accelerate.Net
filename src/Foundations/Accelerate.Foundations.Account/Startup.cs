@@ -160,22 +160,5 @@ namespace Accelerate.Foundations.Account
                 throw;
             }
         }
-        public static async Task<IdentityResult> InitializeDefaultAdmin(UserManager<AccountUser> userManager)
-        {
-            try
-            {
-                var existingAdmin = await userManager.FindByNameAsync("Admin");
-                if (existingAdmin != null)
-                    return null;
-
-                var user = new AccountUser { UserName = "Admin", Email = "Admin@internal", Domain = Constants.Domains.Internal, EmailConfirmed = true, Status = AccountUserStatus.Active };
-                var password = "Password1!!";
-                return await userManager.CreateAsync(user, password);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
     }
 }

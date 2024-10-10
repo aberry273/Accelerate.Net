@@ -96,7 +96,7 @@ namespace Accelerate.Features.Admin.Services
 
         public AjaxForm EditJobForm(AccountUser user, OperationsJobEntity item)
         {
-            var model = base.CreateForm(user, item, PostbackType.PUT);
+            var model = base.CreateEntityForm(user, item, PostbackType.PUT);
             model.Label = $"Edit {item.Name}";
             model.Fields = CreateFormFields(user, item);
             return model;
@@ -107,9 +107,9 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Form = EditJobForm(user, item);
             return viewModel;
         }
-        public override AdminIndexPage<OperationsJobEntity> CreateEntityPage(AccountUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<OperationsJobEntity>> CreateEntityPage(AccountUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var viewModel = base.CreateEntityPage(user, item, items, aggregateResponse);
+            var viewModel = await base.CreateEntityPage(user, item, items, aggregateResponse);
             viewModel.Form = EditJobForm(user, item);
             viewModel.Form.Disabled = true;
             viewModel.Table = this.GetJobActivitiesTable(user, item);

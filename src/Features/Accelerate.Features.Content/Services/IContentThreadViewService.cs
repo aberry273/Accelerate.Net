@@ -11,7 +11,7 @@ using Elastic.Clients.Elasticsearch;
 
 namespace Accelerate.Features.Content.Services
 {
-    public interface IContentViewService
+    public interface IContentThreadViewService
     {
         ContentBasePage CreateAnonymousListingPage();
         NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);

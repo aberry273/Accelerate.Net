@@ -199,7 +199,7 @@ namespace Accelerate.Foundations.Common.Services
                     },
                     new NavigationItem()
                     {
-                        Icon = "userGroup",
+                        Icon = "rectangleStack",
                         Text = Foundations.Common.Constants.Paths.ChannelsLabel,
                         Href = Foundations.Common.Constants.Paths.ChannelsPath,
                     },

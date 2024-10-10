@@ -28,7 +28,10 @@ namespace Accelerate.Features.Content.Models.Data
         //public List<ContentPostSettingsFormat> Formats { get; set; }
     }
     public class ContentPostMixedRequest : ContentPostEntity
-    { 
+    {
+        // Optional request, if url is passed in it will try to retrieve this data
+        public string? LinkUrl { get; set; }
+        // optional request, if LinkValue is passed in it will try to deserialize the serialized data into a LinkCard
         public string? LinkValue { get; set; }
         public Guid? ChannelId { get; set; }
         public Guid? ChatId { get; set; }
@@ -48,6 +51,39 @@ namespace Accelerate.Features.Content.Models.Data
         public Guid? ParentId { get; set; }
         public List<IFormFile>? Videos { get; set; }
         public List<IFormFile>? Images { get; set; }
+        public List<Guid>? MediaIds { get; set; }
+        public List<Guid>? QuotedIds { get; set; }
+        //Taxonomy
+        public List<string>? Tags { get; set; }
+        public string? Category { get; set; }
+        //Settings
+        public int? CharLimit { get; set; }
+        public int? WordLimit { get; set; }
+        public int? VideoLimit { get; set; }
+        public int? ImageLimit { get; set; }
+        public int? QuoteLimit { get; set; }
+        public string? Access { get; set; }
+    }
+
+    public class ContentPostJsonRequest : ContentPostEntity
+    {
+        public string? LinkValue { get; set; }
+        public Guid? ChannelId { get; set; }
+        public Guid? ChatId { get; set; }
+        public Guid? ListId { get; set; }
+        public IEnumerable<Guid>? ParentIdItems
+        {
+            get
+            {
+                return ParentIds?.Split(',')?.Select(x => Guid.Parse(x)).ToList();
+            }
+            set
+            {
+                if (value != null) ParentIds = string.Join(',', value?.Select(x => x.ToString()));
+            }
+        }
+        public string? ParentIds { get; set; }
+        public Guid? ParentId { get; set; }
         public List<Guid>? MediaIds { get; set; }
         public List<Guid>? QuotedIds { get; set; }
         //Taxonomy

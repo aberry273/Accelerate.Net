@@ -13,6 +13,7 @@ namespace Accelerate.Foundations.Account
             public const string Deleted = "Deleted";
             public const string Deactivated = "Deactivated";
             public const string Public = "Public";
+            public const string System = "System";
             public const string Internal = "Internal";
         }
         public struct Fields

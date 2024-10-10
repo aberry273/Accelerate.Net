@@ -145,6 +145,14 @@ namespace Accelerate.Foundations.Content.Services
             ContentPostTaxonomyEntity taxonomy)
         {
             // Create Post
+            if (!string.IsNullOrEmpty(obj.ExternalId))
+            {
+                var existingEntity = _servicePosts.Find(x => x.ExternalId == obj.ExternalId);
+                if (existingEntity.FirstOrDefault() != null)
+                {
+                    return null;
+                }
+            }
             var post = await this.Create(obj);
 
             var summary = await this.CreatePostSummary(obj);

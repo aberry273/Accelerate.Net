@@ -80,7 +80,7 @@ namespace Accelerate.Features.Content.Controllers
             {
                 return null;
             }
-            var profile = _profileService.Get(user.AccountProfileId);
+            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
             user.AccountProfile = profile;
             return user;
         }
@@ -111,7 +111,7 @@ namespace Accelerate.Features.Content.Controllers
             var items = _entityService.Find(x => true);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
-            var viewModel = _contentViewService.CreateEntityPage(user, item, items, aggResponse);
+            var viewModel = await _contentViewService.CreateEntityPage(user, item, items, aggResponse);
             viewModel.RouteName = "All";
             return viewModel;
         } 

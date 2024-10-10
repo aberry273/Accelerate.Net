@@ -28,7 +28,7 @@ namespace Accelerate.Features.Content.Pipelines
         // ASYNC PROCESSORS
         public async Task UpdateDocument(IPipelineArgs<AccountUser> args)
         {
-            var profile = _profileService.Get(args.Value.AccountProfileId);
+            var profile = _profileService.Get(args.Value.AccountProfileId.GetValueOrDefault());
 
             //var user = await _userManager.FindByIdAsync(userId);
             var indexModel = new AccountUserDocument()

@@ -50,7 +50,7 @@ export default function (params) {
             //setTimeout(() => this.activeImage = {}, 300);
         },
         imageGalleryNext(self) {
-            if(self.index == self.mxGrid_items.length -1) return;
+            if (self.index == self.mxGrid_items.length - 1) return;
             self.index++;
             self._mxEvent_Emit(self.mxEvent_event, self.createModalParams());
         },
@@ -65,7 +65,7 @@ export default function (params) {
                     <div class="max-w-6xl mx-auto duration-1000 delay-300 opacity-0 select-none ease animate-fade-in-view" style="translate: none; rotate: none; scale: none; opacity: 1; transform: translate(0px, 0px);">
                         <ul x-ref="gallery" id="gallery" class="grid grid-cols-2 gap-2 lg:grid-cols-5">
                             <template x-for="(media, index) in mxGrid_items" :id="media.id">
-                                <li >
+                                <li>
                                     <div x-data="aclMedia({
                                         ...media,
                                         controls: false,

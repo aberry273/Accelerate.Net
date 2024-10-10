@@ -17,7 +17,7 @@ namespace Accelerate.Foundations.Account.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -174,7 +174,7 @@ namespace Accelerate.Foundations.Account.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("AccountProfileId")
+                    b.Property<Guid?>("AccountProfileId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -446,8 +446,7 @@ namespace Accelerate.Foundations.Account.Migrations
 
             modelBuilder.Entity("Accelerate.Foundations.Account.Models.Entities.AccountUser", b =>
                 {
-                    b.Navigation("AccountProfile")
-                        .IsRequired();
+                    b.Navigation("AccountProfile");
 
                     b.Navigation("Claims");
 

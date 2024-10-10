@@ -139,6 +139,7 @@ namespace Accelerate.Foundations.Database.Services
                 throw;
             }
         }
+        // Returns the Guid that the entity is created with
         public async Task<Guid?> CreateWithGuid(T entity)
         {
             try

@@ -56,7 +56,7 @@
     else if (Model.IsAuthenticated)
     {
         <div style="margin-bottom: 8px;" x-data="aclSocialFormPost({
-            form: @JsonSerializerHelper.SerializeObject(Model.FormCreatePost),
+            form: @JsonSerializerHelper.SerializeObject(Model.FormCreateReply),
             actions: formActions,
             formatActions: formatActions
         })"></div>

@@ -1,11 +1,12 @@
 ﻿using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Content.Models.Data;
 using Azure.Storage.Blobs.Models;
 
 namespace Accelerate.Features.Content.Models.Views
 { 
-    public class ContentBasePage : BasePage
+    public class ContentBasePage: BasePage
     {
         public ContentBasePage(ContentBasePage model) : base(model)
         {
@@ -35,10 +36,10 @@ namespace Accelerate.Features.Content.Models.Views
         public string PostsApiUrl { get; set; }
 
         public Guid Id { get; set; }
-        
+
         public ModalForm ModalDelete { get; set; }
         public ButtonGroup PageActions { get; set; }
-        public NavigationGroup PageLinks { get; set; }
+        public List<NavigationGroup> PageLinks { get; set; }
         public AjaxForm FormCreatePost { get; set; }
         public ModalForm ModalEditChannel { get; set; }
         public ModalForm ModalDeleteChannel { get; set; }

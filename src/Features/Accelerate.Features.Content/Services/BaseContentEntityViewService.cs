@@ -13,6 +13,7 @@ using Accelerate.Foundations.Integrations.Elastic.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Elastic.Clients.Elasticsearch;
 using ImageMagick;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
@@ -67,14 +68,32 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = null;
             return viewModel;
         }
+        private List<NavigationGroup> CreateSideNavigation(string pageName, SearchResponse<T> items)
+        {
+            return new List<NavigationGroup>()
+            {
+                CreatePageNavigationGroup(this.EntityName, pageName),
+                new NavigationGroup()
+                {
+                    Title = $"Your {this.EntityName}s",
+                    Items = GetLinks(items)
+                },
+                new NavigationGroup()
+                {
+                    Title = $"Saved {this.EntityName}s",
+                    Items = new List<NavigationItem>()
+                }
+            };
+        }
         public virtual ContentBasePage CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+            
+            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
             viewModel.Filters = _viewSearchService.CreateNavigationFilters(aggregateResponse);
@@ -92,8 +111,9 @@ namespace Accelerate.Features.Content.Services
             var viewModel = new ContentBasePage(model); 
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+             
+            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
             viewModel.Filters = _viewSearchService.CreateNavigationFilters(aggregateResponse);
@@ -112,9 +132,9 @@ namespace Accelerate.Features.Content.Services
             viewModel.Id = item.Id;
             var pageName = item.Name;
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items);
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName, item);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
             viewModel.ParentUrl = $"/{this.EntityName}s";
             viewModel.PostsApiUrl = this.ApiUrl;
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
@@ -136,8 +156,9 @@ namespace Accelerate.Features.Content.Services
             viewModel.RedirectRoute = $"/{this.EntityName}s";
 
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, pageName);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
             viewModel.UserId = user != null ? user.Id : null;
@@ -152,8 +173,8 @@ namespace Accelerate.Features.Content.Services
             var pageName = $"Edit {item.Name}";
             viewModel.RedirectRoute = $"/{this.EntityName}s";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-            viewModel.PageLinks = CreatePageNavigationGroup(this.EntityName, item.Name);
-            viewModel.PageLinks.Items.AddRange(GetLinks(items));
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items);
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
 
@@ -167,7 +188,6 @@ namespace Accelerate.Features.Content.Services
             var plural = $"{entity}s";
             return new NavigationGroup()
             {
-                Title = "All",
                 Selected = selected,
                 Items = new List<NavigationItem>()
                 {

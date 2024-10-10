@@ -167,7 +167,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 VideoLimit = settings.VideoLimit,
             };
         }
-        private ContentPostLinkSubdocument GetLink(IPipelineArgs<ContentPostEntity> args)
+        private ContentPostLinkSubdocument GetLinkDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var link = _contentPostService.GetLink(args.Value.Id);
             if (link == null) return null;
@@ -273,6 +273,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 indexModel.Content = await this.GetContentDocument(args);
                 indexModel.Related = await this.GetRelatedDocument(args);
                 indexModel.Metrics = await this.GetMetricsDocument(args);
+                indexModel.Link = this.GetLinkDocument(args);
                 await _elasticService.Index(indexModel);
                 await SendWebsocketUpdate(indexModel);
             }

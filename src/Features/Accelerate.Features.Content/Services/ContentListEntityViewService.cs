@@ -59,5 +59,15 @@ namespace Accelerate.Features.Content.Services
 
             return model;
         }
+        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        {
+            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var viewModel = new ContentListPage(model);
+            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentListDocument>()
+            {
+                Items = items.Documents.ToList()
+            };
+            return viewModel;
+        }
     }
 }

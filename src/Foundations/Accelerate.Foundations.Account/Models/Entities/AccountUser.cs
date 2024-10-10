@@ -20,9 +20,9 @@ namespace Accelerate.Foundations.Account.Models.Entities
 
         public DateTime? UpdatedOn { get; set; }
 
-        public Guid AccountProfileId { get; set; }
+        public Guid? AccountProfileId { get; set; }
         public AccountUserStatus Status { get; set; }
-        public virtual AccountProfile AccountProfile { get; set; }
+        public virtual AccountProfile? AccountProfile { get; set; }
         public virtual ICollection<AccountUserRole> Roles { get; } = new List<AccountUserRole>();
 
         public virtual ICollection<AccountUserClaim> Claims { get; } = new List<AccountUserClaim>();

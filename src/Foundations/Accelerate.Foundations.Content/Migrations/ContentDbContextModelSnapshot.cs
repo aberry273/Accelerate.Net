@@ -334,6 +334,9 @@ namespace Accelerate.Foundations.Content.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ExternalId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Formats")
                         .HasColumnType("nvarchar(max)");
 

@@ -4,7 +4,7 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Microsoft.AspNetCore.Http
 @using Accelerate.Foundations.Content.Models.Data
-@model ContentBasePage
+@model ContentFeedPage
 @{
     Layout = "/Views/Shared/_ContentPageLayout.cshtml";
 }
@@ -23,6 +23,6 @@
         ],
         selected: 'new URLSearchParams(window.location.search).get('t'),'
     })"></div>
-
-    <hr />
+     
+    <div x-data="aclTableSimple(@JsonSerializerHelper.SerializeObject(Model.Listing))"></div>
 </div>
