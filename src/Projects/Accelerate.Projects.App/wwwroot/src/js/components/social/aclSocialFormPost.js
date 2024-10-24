@@ -60,7 +60,7 @@ export default function (params) {
             } 
         },
         async submit() {
-            this.loading = true;
+            this.mxForm_loading = true;
             try {
                 this.updateFormFields(this.form);
                 const formData = this._mxForm_GetFileFormData(this.form);
@@ -71,10 +71,11 @@ export default function (params) {
                 } else {
                     console.log('error creating post');
                 }
+                this.$dispatch('submit', formData)
             } catch (e) {
                 //console.log(e);
             }
-            this.loading = false;
+            this.mxForm_loading = false;
         },
         indexOf(fieldName) {
             if (!this.form.fields) return -1;
@@ -135,6 +136,7 @@ export default function (params) {
             const html = `
                 <div>
                     <!--Fields-->
+                    <div x-show="mxForm_loading" x-data="aclCommonProgress({})"></div>
                     <div 
                         x-data="aclFormFieldset(form)" 
                         @onfieldchange.window="(ev) => { updateFieldValue(ev.detail) }">
@@ -162,9 +164,10 @@ export default function (params) {
                             </div>
                             
                             <div class="flex flex-wrap items-center divide-gray-200 sm:divide-x sm:rtl:divide-x-reverse dark:divide-gray-600"> 
-                                <button 
+                                <button
+                                    :disabled="mxForm_loading"
                                     @click="await submit()"
-                                    class="end-0 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    class="end-0 bg-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <svg class="w-5 h-5" x-data="aclIconsSvg({ mxIcon_name: 'send' })"></svg>
                                 </button>
                             </div>

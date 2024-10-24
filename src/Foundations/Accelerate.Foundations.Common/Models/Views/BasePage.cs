@@ -18,7 +18,7 @@ namespace Accelerate.Foundations.Common.Models.Views
 
         public NavigationGroup SideNavigation { get; set; } = new NavigationGroup();
 
-        public List<NavigationItem> Breadcrumbs { get; set; } = new List<NavigationItem>();
+        public NavigationGroup Breadcrumbs { get; set; } = new NavigationGroup();
 
         public PageMetadata Metadata { get; set; } = new PageMetadata();
 

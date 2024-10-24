@@ -17,7 +17,7 @@ namespace Accelerate.Features.Content.Services
         NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);
         ContentPage CreateThreadsPage(AccountUser user, SearchResponse<ContentPostDocument> posts, SearchResponse<ContentPostDocument> aggregateResponse);
         ContentCreatePage CreateThreadCreatePage(AccountUser user, SearchResponse<ContentPostDocument> channels);
-        ThreadPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
+        ContentPostPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
         ContentCreatePage CreateThreadEditPage(AccountUser user, SearchResponse<ContentPostDocument> posts, ContentPostViewDocument post);
         ThreadEditPage CreateEditThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
         

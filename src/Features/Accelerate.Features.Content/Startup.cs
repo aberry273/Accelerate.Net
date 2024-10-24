@@ -37,6 +37,7 @@ using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.EventPipelines.Services;
 using System.Threading.Channels;
 using Accelerate.Foundations.Content.Hydrators;
+using ImageMagick;
 
 namespace Accelerate.Features.Content
 {
@@ -49,34 +50,60 @@ namespace Accelerate.Features.Content
             _transits.Add(bus, entity);
         }
         */
-        public static async Task ContentGlobalChannels(WebApplication app)
-        {
-            using (var scope = app.Services.CreateScope())
+        public static async Task ContentGlobalFeeds(IServiceScope scope)
+        { 
+            //Resolve ASP .NET Core Identity with DI help
+            var service = (IEntityPipelineService<ContentFeedEntity, IContentFeedBus>)scope.ServiceProvider.GetService(typeof(IEntityPipelineService<ContentFeedEntity, IContentFeedBus>));
+            var elasticService = (IElasticService<ContentFeedDocument>)scope.ServiceProvider.GetService(typeof(IElasticService<ContentFeedDocument>));
+            var response = await elasticService.GetDocument<ContentFeedDocument>(Foundations.Common.Constants.Global.FeedAllGuid.ToString());
+            var document = response.Source;
+            if (document == null)
             {
-                //Resolve ASP .NET Core Identity with DI help
-                var channelService = (IEntityPipelineService<ContentChannelEntity, IContentChannelBus>)scope.ServiceProvider.GetService(typeof(IEntityPipelineService<ContentChannelEntity, IContentChannelBus>));
-                var elasticService = (IElasticService<ContentChannelDocument>)scope.ServiceProvider.GetService(typeof(IElasticService<ContentChannelDocument>));
-                var globalChannel = channelService.Get(Foundations.Common.Constants.Global.ChannelNewsGuid);
-                if (globalChannel == null)
-                {
-                    var channel = new ContentChannelEntity()
-                    {
-                        Name = "News",
-                        Category = "News",
-                        Id = Foundations.Common.Constants.Global.ChannelNewsGuid,
-                        UserId = Foundations.Common.Constants.Global.GlobalAdminContent
-                    };
-                    await channelService.Create(channel);
-                    var document = new ContentChannelDocument();
-                    channel.Hydrate(document);
-                    await elasticService.Index(document);
-                }
-
-                //var userManager = (UserManager<AccountUser>)scope.ServiceProvider.GetService(typeof(UserManager<AccountUser>));
-                //Task.FromResult(CreateGlobalAccounts(userManager));
+                document = new ContentFeedDocument();
             }
+            var entity = service.Get(Foundations.Common.Constants.Global.FeedAllGuid);
+            if (entity == null)
+            {
+                var feed = new ContentFeedEntity()
+                {
+                    Name = "All",
+                    Category = "All",
+                    Id = Foundations.Common.Constants.Global.FeedAllGuid,
+                    UserId = Foundations.Common.Constants.Global.GlobalAdminContent
+                };
 
-         
+                await service.Create(feed);
+                entity = feed;
+            }
+            entity.Hydrate(document);
+            await elasticService.Index(document);
+        }
+        public static async Task ContentGlobalChannels(IServiceScope scope)
+        {
+            //Resolve ASP .NET Core Identity with DI help
+            var service = (IEntityPipelineService<ContentChannelEntity, IContentChannelBus>)scope.ServiceProvider.GetService(typeof(IEntityPipelineService<ContentChannelEntity, IContentChannelBus>));
+            var elasticService = (IElasticService<ContentChannelDocument>)scope.ServiceProvider.GetService(typeof(IElasticService<ContentChannelDocument>));
+            var response = await elasticService.GetDocument<ContentChannelDocument>(Foundations.Common.Constants.Global.ChannelNewsGuid.ToString());
+            var document = response.Source;
+            if (document == null)
+            {
+                document = new ContentChannelDocument();
+            }
+            var entity = service.Get(Foundations.Common.Constants.Global.ChannelNewsGuid);
+            if (entity == null)
+            {
+                var channel = new ContentChannelEntity()
+                {
+                    Name = "News",
+                    Category = "News",
+                    Id = Foundations.Common.Constants.Global.ChannelNewsGuid,
+                    UserId = Foundations.Common.Constants.Global.GlobalAdminContent
+                };
+                await service.Create(channel);
+                entity = channel;
+            }
+            entity.Hydrate(document);
+            await elasticService.Index(document);
         }
         public static void ConfigureApp(WebApplication app)
         { 
@@ -90,17 +117,26 @@ namespace Accelerate.Features.Content
             app.MapHub<BaseHub<ContentPostSettingsDocument>>($"/{Constants.Settings.ContentPostSettingsHubName}");
             app.MapHub<BaseHub<ContentPostActivityDocument>>($"/{Constants.Settings.ContentPostActivitiesHubName}");
 
-            System.Threading.Tasks.Task.FromResult(ContentGlobalChannels(app));
+            using (var scope = app.Services.CreateScope())
+            {
+                var task1 = Task.Run(async () => await ContentGlobalChannels(scope));
+                task1.Wait();
+                var task2 = Task.Run(async () => await ContentGlobalFeeds(scope));
+                task2.Wait();
+            }
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             // SERVICES
+            // Redundant
             services.AddTransient<IContentThreadViewService, ContentThreadViewService>();
+            // In Use
             services.AddTransient<IContentViewSearchService, ContentViewSearchService>();
             services.AddTransient<IBaseContentEntityViewService<ContentChannelDocument>, ContentChannelEntityViewService>();
             services.AddTransient<IBaseContentEntityViewService<ContentListDocument>, ContentListEntityViewService>();
             services.AddTransient<IBaseContentEntityViewService<ContentFeedDocument>, ContentFeedEntityViewService>();
             services.AddTransient<IBaseContentEntityViewService<ContentChatDocument>, ContentChatEntityViewService>();
+            services.AddTransient<IBaseContentEntityViewService<ContentPostDocument>, ContentPostEntityViewService>();
 
             services.AddTransient<BaseHub<ContentPostViewDocument>, ContentPostHub>();
             services.AddTransient<BaseHub<ContentPostActionsDocument>, ContentPostActionsHub>();

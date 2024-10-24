@@ -5,7 +5,7 @@ using Accelerate.Foundations.Content.Models.Entities;
 
 namespace Accelerate.Features.Content.Models.Views
 {
-    public class NotFoundPage : BasePage
+    public class NotFoundPage : ContentBasePage
     {
         public Guid UserId { get; set; }
         public string Title { get; set; }

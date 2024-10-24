@@ -20,12 +20,12 @@ export default function (data) {
         },
         // GETTERS
         get mxNavigation_getSectionClass() { return 'z-50 w-full lg:px-8 md:px-4 sm:px-2 xs:px-2  py-2 text-gray-700 ' },
-        get mxNavigation_getContainerClass() { return 'container flex flex-wrap items-center justify-between mx-auto md:flex-row max-w-7xl' },
+        get mxNavigation_getContainerClass() { return 'container flex flex-row items-center justify-between mx-auto md:flex-row max-w-7xl' },
         get mxNavigation_getContainerLeftClass() { return 'relative flex md:flex-row' },
         get mxNavigation_getContainerRightClass() { return 'inline-flex items-center ml-5 space-x-6 lg:justify-end' },
 
         get mxNavigation_getLinkClass() { return 'flex items-center font-medium text-gray-900 dark:text-white lg:w-auto lg:items-center lg:justify-center md:mb-0' },
-        get mxNavigation_getTitleClass() { return 'mx-auto my-auto text-xl font-black leading-none text-gray-900 dark:text-white select-none' },
+        get mxNavigation_getTitleClass() { return 'mx-auto my-auto text-lg lg:text-xl xl:text-xl md:text-md sm:text-sm font-black leading-none text-gray-900 dark:text-white select-none' },
         get mxNavigation_getItemsClass() { return 'flex flex-wrap items-center mx-auto my-auto text-base md:mb-0 md:pl-8 md:ml-8 sm:ml-2 xs:ml-2 md:border-l md:border-gray-200' },
 
         // METHODS

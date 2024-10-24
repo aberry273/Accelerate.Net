@@ -23,7 +23,7 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentChannelController : BaseApiController<ContentChannelEntity>
+    public class ContentChannelController : BaseApiServiceController<ContentChannelEntity>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;

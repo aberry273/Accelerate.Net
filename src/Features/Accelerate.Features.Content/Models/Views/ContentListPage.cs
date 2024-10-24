@@ -26,7 +26,7 @@ namespace Accelerate.Features.Content.Models.Views
             Filters = model.Filters;
             */
         }
-        public AclAjaxListing<ContentListDocument> Listing { get; set; }
+        public AclAjaxListing<AclCard> Listing { get; set; }
         public string Test { get; set; }
     }
 }

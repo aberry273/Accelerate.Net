@@ -12,7 +12,7 @@
     var eventDelete = Model.ModalDelete != null ? Model.ModalDelete.Form.Event : "null-event";
 }
 <!--Dashboard-->
-<div class="flex h-screen h-full overflow-y-hidden" x-data="{
+<div class="flex h-screen overflow-y-hidden" x-data="{
     init() {
         this.$events.On('@eventDelete', async (e)=>
             {
@@ -25,8 +25,13 @@
     <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
     
     <!-- Page Sidebar - Desktop only -->
-    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar({ groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks) })"></div>
-
+    <!--
+    <div class="hidden lg:block md:block bg-gray-100" x-data="aclNavigationSidebar(
+        { 
+            groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks),
+            canMinimize: true
+        })"></div>
+    -->
     <!--Sidepanel-->
     <div x-data="aclNavigationSidebarSlide({ 
         groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks),
@@ -34,11 +39,21 @@
     })"></div>
 
     <!-- Dashboard -->
-    <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
+    <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-2 md:px-2 sm:px-2 xs:px-2 py-2 h-full">
+        @if (Model.Breadcrumbs != null)
+        {
+            <div class="inline-flex items-center"> 
+                <div x-data="aclNavigationBreadcrumbs(@JsonSerializerHelper.SerializeObject(Model.Breadcrumbs))" ></div> 
+            </div>
+        }
+        
         <!-- Tabs - Mobile only -->
+        <!--
         <div class="lg:hidden md:hidden sm:block xs:block" x-data="aclTabsNavigation(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+        -->
         <!--Mobile-->
         <div class="lg:hidden md:hidden sm:flex xs:flex">
+            <!--
             <div class="flex-none w-10 align-middle">
                 <button @@click="$events.Emit('on:side')"
                     x-data="aclButton({
@@ -46,6 +61,7 @@
                     })">
                 </button>
             </div>
+            -->
             <!-- Page Actions Mobile -->
             <div class="grow">
                 <div x-data="aclNavigationBarAction(@JsonSerializerHelper.SerializeObject(Model.PageActions))"></div>
@@ -58,8 +74,124 @@
         @RenderBody()
     </div>
 </div>
+<!-- Mobile Only -- Bottom Bar-->
+<div class="lg:hidden md:hidden sm:block xs:block" x-data="aclNavigationBottomBar(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+
 <!-- Modals post -->
 @if (Model.ModalDelete != null)
 {
     <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalDelete))"></div>
 }
+
+<script>
+
+    var formatActions = ['code', 'bold', 'quote', 'italic', 'mention', 'emoji']
+    var formActions = [
+        {
+            name: 'image',
+            tooltip: 'image',
+            icon: 'image',
+            event: 'on:comment:image',
+        },
+        {
+            name: 'video',
+            tooltip: 'video',
+            icon: 'video',
+            event: 'on:comment:video',
+        },
+        {
+            name: 'top',
+            tooltip: 'top',
+            icon: 'presentationChart',
+            event: 'on:comment:top',
+        },
+        {
+            name: 'settings',
+            tooltip: 'settings',
+            icon: 'cog',
+            event: 'on:comment:settings',
+        },
+    ];
+    var commentActions = [
+        {
+            name: 'upvote',
+            tooltip: 'upvote',
+            //icon: 'chevronUp',
+            icon: 'thumbsUp',
+            event: 'on:upvote',
+            value: null,
+            overlay: true,
+        },
+        {
+            name: 'downvote',
+            tooltip: 'downvote',
+            //icon: 'chevronDown',
+            icon: 'thumbsDown',
+            event: 'on:comment:downvote',
+            value: null,
+            overlay: true,
+        },
+        {
+            name: 'reply',
+            tooltip: 'reply',
+            icon: 'chatBubble',
+            event: 'on:comment:reply',
+            overlay: true,
+        },
+        {
+            name: 'OpenInSide',
+            tooltip: 'open',
+            icon: 'arrowRightRectangle',
+            event: 'on:feed:open',
+            overlay: true,
+        },
+    ];
+    var commentMenu = [
+        {
+            name: 'OpenInNew',
+            text: 'Open link',
+            tooltip: 'reply',
+            icon: 'link',
+            event: 'on:comment:copylink'
+        },
+        {
+            name: 'CopyLink',
+            text: 'Copy link',
+            tooltip: 'reply',
+            icon: 'link',
+            event: 'on:comment:copylink'
+        },
+        {
+            name: 'Flag',
+            text: 'Flag post',
+            tooltip: 'flag',
+            icon: 'chatBubbles',
+            override: true,
+            event: 'on:comment:flag',
+        },
+        {
+            name: 'Quote',
+            text: 'Quote post',
+            icon: 'chatBubbles',
+            event: 'on:comment:quote',
+            value: null,
+        },
+        {
+            name: 'Delete',
+            text: 'Delete post',
+            tooltip: 'upvote',
+            icon: 'trash',
+            override: true,
+            event: 'on:comment:delete',
+        },
+        {
+            name: 'Edit',
+            text: 'Edit post',
+            tooltip: 'downvote',
+            icon: 'edit',
+            override: true,
+            href: '#edit',
+        },
+    ];
+
+</script>

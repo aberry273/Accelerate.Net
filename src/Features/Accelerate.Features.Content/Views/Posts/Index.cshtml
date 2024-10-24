@@ -1,0 +1,96 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@using Accelerate.Foundations.Content.Models.Data
+@model ContentPostPage
+@{
+    Layout = "/Views/Shared/_ContentPageLayout.cshtml";
+}
+<div class="w-full h-full container overflow-y-scroll">
+
+    <!--Parents-->
+    <div x-data="aclSocialListChatPosts({
+        mode: 'inline',
+        key: 'parent',
+        showline: true,
+        showReplies: false,
+        websockets: false,
+        postItems: @JsonSerializerHelper.SerializeObject(Model.Thread),
+        menuItems: commentMenu,
+        actionItems: commentActions,
+    })"></div>
+ 
+    <!--Feed-->
+    <div x-data="aclSocialListChatPosts( {
+            url: '@Model.PostsApiUrl',
+            params: {
+                filters: [
+                    {
+                        name: 'related.parentId',
+                        value: '@Model.Id'
+                    }
+                ],
+                itemsPerPage: 1,
+                page: 0,
+                query: null,
+                userId: '@Model.UserId'
+            },
+            userId: '@Model.UserId',
+            mode: 'inline',
+            key: 'children',
+            websockets: true,
+            showReplies: true,
+            searchOnInit: true,
+            menuItems: commentMenu,
+            actionItems: commentActions,
+        })">
+    </div>
+     
+
+    @if (Model.IsDeactivated)
+    {
+        <div>Reactivate your account to respond</div>
+    } 
+    else if (Model.IsAuthenticated)
+    {
+        <div style="margin-bottom: 8px;" x-data="aclSocialFormPost({
+            form: @JsonSerializerHelper.SerializeObject(Model.FormCreatePost),
+            actions: formActions,
+            formatActions: formatActions
+        })"></div>
+    }
+    else
+    { 
+        <div>
+            <h4 class="w-full text-2xl font-bold">
+                Login to respond
+                <a role="button" class="flat secondary" style="right: 0" href="/account/login">Login</a>
+            </h4>
+        </div>
+    }
+</div>
+
+<div x-data="aclSocialModalFormPost(@JsonSerializerHelper.SerializeObject(Model.ModalCreateReply))"></div>
+
+<!-- Modals -->
+<!-- Edit post -->
+@if (Model.IsAuthenticated)
+{
+    <!-- Create reply -->
+    <!--
+    <div x-data="aclModalFormAjax(JsonSerializerHelper.SerializeObject(Model.ModalCreateReply))"></div>
+    -->
+    <!-- Delete post -->
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+
+    <!-- Label post -->
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalLabelReply))"></div>
+
+    <!-- Pin post -->
+    <div x-data="aclModalFormAjax(@JsonSerializerHelper.SerializeObject(Model.ModalPinReply))"></div>
+
+    <!-- Share post -->
+    <div x-data="aclModal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+}

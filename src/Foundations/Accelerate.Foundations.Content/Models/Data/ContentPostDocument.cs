@@ -51,12 +51,31 @@ namespace Accelerate.Foundations.Content.Models.Data
         public List<string> Tags { get; set; }
         public List<string> Labels { get; set; }
     }
-    public class ContentPostDocument : EntityDocument
+    public class ContentPostDocument : ContentEntityDocument
     {
-        public string ExternalId { get; set; }
-        public Guid UserId { get; set; }
+        public string? ExternalId { get; set; }
+
+       
+        public string? Category
+        {
+            get
+            {
+                if(this.Taxonomy == null) return string.Empty;
+                return this.Taxonomy.Category;
+            }
+        }
+        public IEnumerable<string>? Tags
+        {
+            get
+            {
+                if (this.Taxonomy == null) return new List<string>();
+                return this.Taxonomy.Tags;
+            }
+        }
+
         public ContentPostEntityStatus Status { get; set; }
-        
+
+        public ContentPostUserProfileSubdocument Profile { get; set; }
         public ContentPostContentSubdocument Content { get; set; }
         public virtual ContentPostRelatedPostsSubdocument Related { get; set; }
         public ContentPostQuoteSubdocument Quotes { get; set; }

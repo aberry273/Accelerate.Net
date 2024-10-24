@@ -1,7 +1,7 @@
 import { mxGrid, mxEvent } from '/src/js/mixins/index.js';
 
 export default function (params) {
-	return {
+    return {
         ...mxGrid(params),
         ...mxEvent(params),
         // PROPERTIES
@@ -14,7 +14,7 @@ export default function (params) {
         // INIT
         init() {
             this.setValues(params || {});
-          
+
             this._mxEvent_On(this.eventNext, (val) => {
                 this.imageGalleryNext();
             })
@@ -27,7 +27,7 @@ export default function (params) {
         // GETTERS
         get modalParams() {
             let media = this.activeItem;
-            if(media == null) return null;
+            if (media == null) return null;
             media.title = media.name;
             media.event = this.mxEvent_event;
             media.eventNext = this.eventNext;
@@ -37,7 +37,7 @@ export default function (params) {
             return media;
         },
         get activeSrc() {
-            if(this.activeImage == null) return '';
+            if (this.activeImage == null) return '';
             return this.activeImage.src;
         },
         get activeItem() {
@@ -58,13 +58,13 @@ export default function (params) {
             setTimeout(() => this.activeImage = {}, 300);
         },
         imageGalleryNext() {
-            if(this.index == this.mxGrid_items.length -1) return;
+            if (this.index == this.mxGrid_items.length - 1) return;
             this.index++;
             this.activeImage = this.mxGrid_items[this.index];
             this._mxEvent_Emit(this.mxEvent_event, this.modalParams);
         },
         imageGalleryPrev() {
-            if(this.index == 0) return;
+            if (this.index == 0) return;
             this.index--;
             this.activeImage = this.mxGrid_items[this.index];
             this._mxEvent_Emit(this.mxEvent_event, this.modalParams);
@@ -73,16 +73,10 @@ export default function (params) {
             const html = `
                 <div class="w-full h-full select-none">
                     <div class="max-w-6xl mx-auto duration-1000 delay-300 opacity-0 select-none ease animate-fade-in-view" style="translate: none; rotate: none; scale: none; opacity: 1; transform: translate(0px, 0px);">
-                        <ul x-ref="gallery" id="gallery" class="grid grid-cols-2 gap-2 lg:grid-cols-5">
-                            <template x-for="(image, index) in mxGrid_items">
-                                <li>
-                                    <div x-data="aclMediaImage({
-                                        src: image.src,
-                                        alt: image.alt,
-                                        class: 'object-cover select-none w-full h-auto bg-gray-200 rounded cursor-pointer aspect-[5/6] lg:aspect-[2/3] xl:aspect-[3/4]'
-                                        })"
-                                        @click="(ev) => { imageGalleryOpen(index) }">
-                                    </div>
+                        <ul x-ref="gallery" id="gallery" class="grid grid-cols-2 gap-2 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                            <template x-for="(item, index) in mxGrid_items">
+                                <li> 
+                                    <div x-data="aclCardVertical(item)"></div>
                                 </li>
                             </template>
                         </ul>
@@ -92,6 +86,6 @@ export default function (params) {
                 </div>
             `
             this.$nextTick(() => { this.$root.innerHTML = html });
-      }
+        }
     }
 }

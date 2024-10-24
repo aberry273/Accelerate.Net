@@ -8,7 +8,7 @@
 @{
     Layout = "/Views/Shared/_ContentPageLayout.cshtml";
 }
-<div class="w-full h-full container overflow-y-scroll">
+<div class="w-full h-full flex">
     <!-- Channels panel -->
     <div x-data="aclTabsNavigation({
         items: [
@@ -24,50 +24,40 @@
         selected: 'new URLSearchParams(window.location.search).get('t'),'
     })"></div>
 
-    @if (Model.IsDeactivated)
-    {
-        <div>Reactivate your account to respond</div>
-    }
-    else if (Model.IsAuthenticated)
-    {
-        <div style="margin-bottom: 8px;" x-data="aclSocialFormPost({
-            form: @JsonSerializerHelper.SerializeObject(Model.FormCreatePost),
-            actions: formActions,
-            formatActions: formatActions
-        })"></div>
-    }
-    else
-    {
-        <div>
-            <h4 class="w-full text-2xl font-bold">
-                Login to respond
-                <a role="button" class="flat secondary" style="right: 0" href="/account/login">Login</a>
-            </h4>
-        </div>
-    }
-
+    <!-- Filters
+        {
+            name: 'related.feedId',
+            value: '@Model.Id'
+        }
+    -->
     <!--Feed-->
-    <div x-data="aclSocialListFeedPosts( {
-        url: '@Model.PostsApiUrl',
-        params: {
-            filters: [
-            {
-                name: 'related.feedId',
-                value: '@Model.Id'
-            }],
-            itemsPerPage: 1,
-            page: 0,
-            query: null,
-            userId: '@Model.UserId'
-        },
-        mode: 'inline',
-        websockets: true,
-        searchOnInit: true,
-        commentItems: [],
-        menuItems: [],
-        actionItems: [],
-        })">
+    <div class="flex w-full gap-2">
+
+        <div class="flex-none h-full py-5 w-96 overflow-y-scroll ">
+
+            <div x-data="aclSocialListFeedPosts( {
+                    url: '@Model.PostsApiUrl',
+                    params: {
+                        filters: [
+            
+                        ],
+                        itemsPerPage: 1,
+                        page: 0,
+                        query: null,
+                        userId: '@Model.UserId'
+                    },
+                    mode: 'inline',
+                    websockets: true,
+                    searchOnInit: true,
+                    menuItems: commentMenu,
+                    actionItems: commentActions,
+                })">
+            </div>
+        </div>
+
+        <div class="flex-1 h-full py-5 border-neutral-100/70">
+            <div x-data="aclSocialModalListChatPosts(@JsonSerializerHelper.SerializeObject(Model.ModalCreateReply))"></div>
+        </div>
     </div>
 
-    <hr />
 </div>

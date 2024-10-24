@@ -28,23 +28,26 @@ namespace Accelerate.Foundations.Account
         {
             // CONFIGS
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
-            services.Configure<AccountConfiguration>(options =>
+            
+            try
             {
-                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
-            });
+                services.Configure<OAuthConfiguration>(options =>
+                {
+                    configuration.GetSection(Constants.Config.OAuthConfigurationName).Bind(options);
 
-            services.Configure<OAuthConfiguration>(options =>
+                    options.GoogleAppSecret = configuration[Constants.Config.GoogleAppSecretKey];
+                    options.GoogleAppId = configuration[Constants.Config.GoogleAppIdKey];
+                    options.GoogleRedirectUri = configuration[Constants.Config.GoogleRedirectUri];
+
+                    options.FacebookAppSecret = configuration[Constants.Config.FacebookAppSecretKey];
+                    options.FacebookAppId = configuration[Constants.Config.FacebookAppIdKey];
+                    options.FacebookRedirectUri = configuration[Constants.Config.FacebookRedirectUri];
+                });
+            }
+            catch(Exception ex)
             {
-                configuration.GetSection(Constants.Config.OAuthConfigurationName).Bind(options);
-
-                options.GoogleAppSecret = configuration[Constants.Config.GoogleAppSecretKey];
-                options.GoogleAppId = configuration[Constants.Config.GoogleAppIdKey];
-                options.GoogleRedirectUri = configuration[Constants.Config.GoogleRedirectUri];
-
-                options.FacebookAppSecret = configuration[Constants.Config.FacebookAppSecretKey];
-                options.FacebookAppId = configuration[Constants.Config.FacebookAppIdKey];
-                options.FacebookRedirectUri = configuration[Constants.Config.FacebookRedirectUri];
-            });
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+            }
             // CONTEXT
             services.AddDbContext<Foundations.Database.Services.BaseContext<AccountProfile>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<AccountDbContext>(options => options.UseSqlServer(connString));
@@ -70,71 +73,92 @@ namespace Accelerate.Foundations.Account
 
             services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<AccountUser>, AccountEmailSender>();
             //services.AddSingleton<IEmailSender, EmailSender>();
-           
-            
+
             //services.AddScoped<IUserClaimsPrincipalFactory<AccountUser>, AdditionalUserClaimsPrincipalFactory>();
             //services.AddAuthorization(options => options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
-            services.AddAuthentication(options =>
+            services.Configure<AccountConfiguration>(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
-            })
-            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                options => configuration.Bind("JwtSettings", options))
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/signin";
-                options.LogoutPath = "/signout";
-            })
-            /*
-            .AddTwitter(options =>
-            {
-                options.ClientId = configuration["Twitter:ClientId"] ?? string.Empty;
-                options.ClientSecret = configuration["Twitter:ClientSecret"] ?? string.Empty;
-            })
-            .AddMicrosoftAccount(microsoftOptions =>
-            {
-                microsoftOptions.ClientId = configuration["MicrosoftKeysClientId"];
-                microsoftOptions.ClientSecret = configuration["MicrosoftKeysClientSecret"];
-
-                microsoftOptions.Events = new OAuthEvents
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+            
+                if (!bool.Parse(configuration[Constants.Config.EnableOAuth]))
                 {
-                    OnRedirectToAuthorizationEndpoint = context =>
+                    services.AddAuthentication(options =>
                     {
-                        // Force the user to select an account on the Microsoft login page
-                        context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
-                        return Task.CompletedTask;
-                    }
-                };
-            })
-            */
-            .AddGoogle(options =>
-            {
-                options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
-                options.SaveTokens = true; 
-                options.SignInScheme = IdentityConstants.ExternalScheme;
-                options.ClientId = configuration[Constants.Config.GoogleAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
-                options.ClientSecret = configuration[Constants.Config.GoogleAppSecretKey] ?? string.Empty;
-            })
-            .AddFacebook(options =>
-            {
-                options.SaveTokens = true;
-                options.SignInScheme = IdentityConstants.ExternalScheme;
-                   options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
-                options.ClientId = configuration[Constants.Config.FacebookAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
-                options.ClientSecret = configuration[Constants.Config.FacebookAppSecretKey] ?? string.Empty;
+                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    })
+                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                        options => configuration.Bind("JwtSettings", options))
+                    .AddCookie(options =>
+                    {
+                        options.LoginPath = "/signin";
+                        options.LogoutPath = "/signout";
+                    });
+                }
+                else
+                {
+                    services.AddAuthentication(options =>
+                    {
+                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
+                    })
+                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                        options => configuration.Bind("JwtSettings", options))
+                    .AddCookie(options =>
+                    {
+                        options.LoginPath = "/signin";
+                        options.LogoutPath = "/signout";
+                    }) 
+                    .AddGoogle(options =>
+                    {
+                        options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                        options.SaveTokens = true; 
+                        options.SignInScheme = IdentityConstants.ExternalScheme;
+                        options.ClientId = configuration[Constants.Config.GoogleAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                        options.ClientSecret = configuration[Constants.Config.GoogleAppSecretKey] ?? string.Empty;
+                    })
+                    .AddFacebook(options =>
+                    {
+                        options.SaveTokens = true;
+                        options.SignInScheme = IdentityConstants.ExternalScheme;
+                           options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                        options.ClientId = configuration[Constants.Config.FacebookAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                        options.ClientSecret = configuration[Constants.Config.FacebookAppSecretKey] ?? string.Empty;
 
-                options.Events.OnTicketReceived = (context) =>
-                {
-                    Console.WriteLine(context.HttpContext.User);
-                    return Task.CompletedTask;
-                };
-                options.Events.OnCreatingTicket = (context) =>
-                {
-                    Console.WriteLine(context.Identity);
-                    return Task.CompletedTask;
-                };
+                        options.Events.OnTicketReceived = (context) =>
+                        {
+                            Console.WriteLine(context.HttpContext.User);
+                            return Task.CompletedTask;
+                        };
+                        options.Events.OnCreatingTicket = (context) =>
+                        {
+                            Console.WriteLine(context.Identity);
+                            return Task.CompletedTask;
+                        };
+                    });
+                    /*
+                    .AddTwitter(options =>
+                    {
+                        options.ClientId = configuration["Twitter:ClientId"] ?? string.Empty;
+                        options.ClientSecret = configuration["Twitter:ClientSecret"] ?? string.Empty;
+                    })
+                    .AddMicrosoftAccount(microsoftOptions =>
+                    {
+                        microsoftOptions.ClientId = configuration["MicrosoftKeysClientId"];
+                        microsoftOptions.ClientSecret = configuration["MicrosoftKeysClientSecret"];
+
+                        microsoftOptions.Events = new OAuthEvents
+                        {
+                            OnRedirectToAuthorizationEndpoint = context =>
+                            {
+                                // Force the user to select an account on the Microsoft login page
+                                context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
+                                return Task.CompletedTask;
+                            }
+                        };
+                    })
+                    */
+
+                }
             });
-
             // Set email timeout to 7 days
 
             services.ConfigureApplicationCookie(o => {

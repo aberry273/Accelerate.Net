@@ -19,9 +19,11 @@ namespace Accelerate.Features.Content.Services
         Task<ContentSearchResults> SearchPosts(RequestQuery query);
         Task<ContentSearchResults> SearchPostsRelated(Guid channelId, RequestQuery query);
         Task<ContentSearchResults> SearchChannels(RequestQuery query);
-         
-        Task<List<ContentPostViewDocument>> UpdatePostDocuments(List<ContentPostViewDocument> posts);
-        Task<ContentPostViewDocument> UpdatePostDocument(ContentPostDocument post);
+        Task<ContentSearchResults> SearchFeedPosts(RequestQuery query);
+
+        Task<List<ContentPostViewDocument>> UpdatePostDocuments(Guid? userId, List<ContentPostViewDocument> posts);
+        Task<ContentPostViewDocument> UpdatePostDocument(Guid? userId, ContentPostDocument post);
+        ContentPostViewDocument CreatePostViewModel(ContentPostDocument post);
 
         // Helper methods
         List<NavigationFilterValue> GetFilterSortOptions();

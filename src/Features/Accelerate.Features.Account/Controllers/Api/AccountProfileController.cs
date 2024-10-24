@@ -25,7 +25,7 @@ namespace Accelerate.Features.Account.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountProfileController : BaseApiController<AccountProfile>
+    public class AccountProfileController : BaseApiServiceController<AccountProfile>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;

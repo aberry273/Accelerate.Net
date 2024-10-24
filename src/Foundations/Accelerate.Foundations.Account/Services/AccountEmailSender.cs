@@ -21,11 +21,18 @@ namespace Accelerate.Foundations.Account.Services
         IEmailSender _emailSender;
         public AccountEmailSender(IEmailSender emailSender)
         {
-            _emailSender = emailSender;
-            var path = Path.Combine("Templates", "Email/EmailTemplate.html");
-            using (StreamReader reader = new StreamReader(path))
+            try
             {
-                _emailTemplate = reader.ReadToEnd();
+                _emailSender = emailSender;
+                var path = Path.Combine("Templates", "Email/EmailTemplate.html");
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    _emailTemplate = reader.ReadToEnd();
+                }
+            }
+            catch(Exception ex)
+            {
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
             }
         }
         

@@ -9,8 +9,8 @@ export default function (params) {
         open: false,
         // INIT
         init() {
-            this.mxIcon_class = params.mxIcon_class;
-            this.mxIcon_name = params.mxIcon_name;
+            this.mxIcon_class = params.mxIcon_class || params.class;
+            this.mxIcon_name = params.mxIcon_name || params.icon;
             this.render();
         },
         // GETTERS

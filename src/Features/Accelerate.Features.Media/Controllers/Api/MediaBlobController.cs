@@ -24,7 +24,7 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MediaBlobController : BaseApiController<MediaBlobEntity>
+    public class MediaBlobController : BaseApiServiceController<MediaBlobEntity>
     {
         readonly Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
         UserManager<AccountUser> _userManager;

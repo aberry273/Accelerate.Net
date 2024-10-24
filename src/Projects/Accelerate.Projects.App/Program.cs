@@ -45,8 +45,9 @@ builder.Services.AddRazorPages();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
- 
+
 // Add Foundation references to the container
+
 Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
@@ -55,6 +56,8 @@ Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Ser
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
+Accelerate.Foundations.Mediator.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
@@ -63,6 +66,9 @@ Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, build
 Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
+Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);

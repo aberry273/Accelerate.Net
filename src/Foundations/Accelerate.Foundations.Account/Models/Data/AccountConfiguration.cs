@@ -9,5 +9,6 @@ namespace Accelerate.Foundations.Account.Models.Data
     public class AccountConfiguration
     {
         public string UserIndexName { get; set; }
+        public bool EnableOAuth { get; set; }
     }
 }

@@ -96,6 +96,7 @@
     <ProjectReference Include="..\..\Features\Accelerate.Features.Admin\Accelerate.Features.Admin.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Media\Accelerate.Features.Media.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />

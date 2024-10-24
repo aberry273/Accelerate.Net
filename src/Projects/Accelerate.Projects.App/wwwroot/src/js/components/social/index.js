@@ -4,6 +4,8 @@ import aclSocialCardReplies from './aclSocialCardReplies.js'
 import aclSocialListChatPosts from './aclSocialListChatPosts.js'
 import aclSocialListFeedPosts from './aclSocialListFeedPosts.js'
 import aclSocialFormPost from './aclSocialFormPost.js'
+import aclSocialModalFormPost from './aclSocialModalFormPost.js'
+import aclSocialModalListChatPosts from './aclSocialModalListChatPosts.js'
 
 export {
     aclSocialListChatPosts,
@@ -12,4 +14,6 @@ export {
     aclSocialCardFeedPost,
     aclSocialCardReplies,
     aclSocialFormPost,
+    aclSocialModalFormPost,
+    aclSocialModalListChatPosts,
 }

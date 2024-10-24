@@ -27,17 +27,17 @@ namespace Accelerate.Features.Content.Services
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
             viewModel.Test = "INDEX";
-            viewModel.Listing = new AclAjaxListing<ContentChannelDocument>()
+            viewModel.Listing = new AclAjaxListing<AclCard>()
             {
-                Items = items.Documents.ToList()
+                Items = items.Documents.Select(CreateCardFromContent).ToList()
             };
             return viewModel;
         }
-        public override ContentChannelPage CreateEntityPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = base.CreateEntityPage(user, item, items, aggregateResponse);
+            var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
-            viewModel.FormCreatePost = this.CreatePostForm(user, PostbackType.POST, null, item);
+            viewModel.FormCreatePost = this.CreatePostForm(user, null, item);
             viewModel.Test = "ENTITY";
             return viewModel;
         }
@@ -53,9 +53,9 @@ namespace Accelerate.Features.Content.Services
                 Value = listId,
             };
         }
-        public override ContentSubmitForm CreatePostForm(AccountUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, ContentChannelDocument doc = null)
+        public override ContentSubmitForm CreatePostForm(AccountUser user,  ContentPostViewDocument item = null, ContentChannelDocument doc = null)
         {
-            var model = base.CreatePostForm(user, type, item);
+            var model = base.CreatePostForm(user, item);
 
             if (doc != null)
             {
@@ -64,13 +64,15 @@ namespace Accelerate.Features.Content.Services
 
             return model;
         }
-        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
-            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentChannelDocument>()
+            viewModel.Listing = new AclAjaxListing<AclCard>()
             {
-                Items = items.Documents.ToList()
+                Items = items.IsSuccess()
+                    ? items.Documents.Select(CreateCardFromContent).ToList()
+                    : new List<AclCard>()
             };
             return viewModel;
         }

@@ -167,6 +167,29 @@ namespace Accelerate.Features.Content.Pipelines.Posts
                 VideoLimit = settings.VideoLimit,
             };
         }
+        private async Task<ContentPostUserProfileSubdocument> GetBasicUserProfile(IPipelineArgs<ContentPostEntity> args)
+        {
+            if(args.Value.UserId == Guid.Empty)
+            {
+                return new ContentPostUserProfileSubdocument()
+                {
+                    Username = "Unknown"
+                };
+            }
+            var user = await _userManager.FindByIdAsync(args.Value.UserId.ToString());
+            if (user == null)
+            {
+                return new ContentPostUserProfileSubdocument()
+                {
+                    Username = "Unknown"
+                };
+            }
+
+            return new ContentPostUserProfileSubdocument()
+            {
+                Username = user.UserName,
+            };
+        }
         private ContentPostLinkSubdocument GetLinkDocument(IPipelineArgs<ContentPostEntity> args)
         {
             var link = _contentPostService.GetLink(args.Value.Id);
@@ -266,14 +289,17 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             try
             {
                 var indexModel = new ContentPostDocument();
-                args.Value.Hydrate(indexModel);
 
                 // skip indexing but send
+                indexModel.Profile = await GetBasicUserProfile(args);
                 indexModel.Taxonomy = GetTaxonomy(args);
                 indexModel.Content = await this.GetContentDocument(args);
                 indexModel.Related = await this.GetRelatedDocument(args);
                 indexModel.Metrics = await this.GetMetricsDocument(args);
                 indexModel.Link = this.GetLinkDocument(args);
+
+                args.Value.Hydrate(indexModel);
+                
                 await _elasticService.Index(indexModel);
                 await SendWebsocketUpdate(indexModel);
             }
@@ -307,7 +333,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 
         public async Task SendWebsocketUpdate(ContentPostDocument doc)
         {
-            var model = await _contentViewSearchService.UpdatePostDocument(doc);
+            var model = await _contentViewSearchService.UpdatePostDocument(doc.UserId, doc);
             
             var payload = new WebsocketMessage<ContentPostViewDocument>()
             {

@@ -33,6 +33,32 @@ namespace Accelerate.Foundations.Content.Hydrators
             viewModel.Taxonomy = doc.Taxonomy;
             viewModel.Link = doc.Link;
         }
+        private static string GetPostName(ContentPostDocument document)
+        {
+            var dateStr = Foundations.Common.Extensions.DateExtensions.ToDateShort(document.UpdatedOn);
+            var isReply = document.Related.ParentId != null;
+            var postPrefix = !isReply ? "Posted" : $"Replied to {document.Profile.Username}";
+            var text = string.Empty;
+            if (!string.IsNullOrEmpty(document.Content.Text))
+            {
+                int textMax = document.Content.Text.Length <= 32 ? document.Content.Text.Length : 32;
+                text = $"{document.Content.Text.Substring(0, textMax)} - ";
+            }
+            return $"{text} {postPrefix} on {dateStr}";
+        }
+        private static string GetPostDescription(ContentPostDocument document)
+        {
+            if (document.Content.Text == null && document.Content.Formats == null) return string.Empty;
+            if (!string.IsNullOrEmpty(document.Content.Text))
+            {
+                int textMax = document.Content.Text.Length <= 128 ? document.Content.Text.Length : 128;
+                return document.Content.Text.Substring(0, textMax);
+            }
+            if (document.Content.Formats.FirstOrDefault() == null) return string.Empty;
+            var text = document.Content.Formats.FirstOrDefault()?.data?.text ?? string.Empty;
+            int formatMax = text.Length <= 128 ? text.Length : 128;
+            return text.Substring(0, formatMax);
+        }
         public static void Hydrate(this ContentPostEntity entity, ContentPostDocument document)
         {
             document.Id = entity.Id;
@@ -40,6 +66,9 @@ namespace Accelerate.Foundations.Content.Hydrators
             document.UpdatedOn = entity.UpdatedOn;
             document.UserId = entity.UserId;
             document.Status = entity.Status;
+            document.Name = GetPostName(document);
+            document.Description = GetPostDescription(document);
+
             /*
             document.Content = entity.Content;
             document.UserId = entity.UserId;

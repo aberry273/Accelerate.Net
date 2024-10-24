@@ -29,10 +29,14 @@ export default function (params) {
             // Fallback to dispatch
             this.$dispatch('onselect', btn);
         },
+        hasItems() {
+            console.log(this.mxDropdown_groups)
+            return (!!this.mxButton_items && this.mxButton_items.length > 0)
+                || (!!this.mxDropdown_groups && this.mxDropdown_groups.length > 0);
+        },
         render() {
             const html = `
             <div class="relative">
-         
             <div x-data="aclButton({ icon: 'dots', disabled: mxButton_disabled })" @onclick="mxDropdown_open = true"></div>
                             
             <div x-show="mxDropdown_open" 
@@ -45,10 +49,10 @@ export default function (params) {
                 <!-- Buttons -->
                 <div class="p-1 mt-1 bg-white border rounded-md shadow-md border-neutral-200/70 text-neutral-700">
                  
-                <template x-for="item in mxButton_items">
-                    <div x-data="aclButton(item)" @onclick="onButtonClick(item)"></div>
-                </template>  
-                <!-- Grouped Buttons -->
+                    <template x-for="item in mxButton_items">
+                        <div x-data="aclButton(item)" @onclick="onButtonClick(item)"></div>
+                    </template>  
+                    <!-- Grouped Buttons -->
                     <template x-for="group in mxDropdown_groups">
                         <div>
                             <div class="px-2 py-1.5 text-sm font-semibold" x-text="group.title"></div>

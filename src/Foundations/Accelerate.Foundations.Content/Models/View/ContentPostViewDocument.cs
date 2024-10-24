@@ -38,9 +38,23 @@ namespace Accelerate.Foundations.Content.Models.View
         public string Text { get; set; }
         public string Date { get; set; }
     }
+    //View
+    public class ContentPostParentSummarySubdocument
+    {
+        public string Href { get; set; }
+        public string Text { get; set; }
+        public string Description { get; set; }
+        [JsonProperty("img")]
+        public string Image { get; set; }
+        public string Username { get; set; }
+        public string Date { get; set; }
+    }
     public class ContentPostViewDocument : ContentPostDocument
     {
         //View model only
+        //Feed only
+        public ContentPostParentSummarySubdocument Parent { get; set; }
+        //Feed and chat
         public ContentPostChannelViewSubdocument Channel { get; set; }
         public ContentPostUserProfileSubdocument Profile { get; set; }
         public ContentPostUiSubdocument Ui { get; set; } = new ContentPostUiSubdocument();

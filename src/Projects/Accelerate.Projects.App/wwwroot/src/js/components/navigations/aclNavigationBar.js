@@ -22,7 +22,7 @@ export default function (params) {
         render() {
             const html = `
             <section class="z-40 bg-white" :class="mxNavigation_getSectionClass" :style {!! $attributes ?? '' !!}>
-                <div class="flex flex-row" :class="mxNavigation_getContainerClass">
+                <div class="flex flex-rows" :class="mxNavigation_getContainerClass">
                     <div :class="mxNavigation_getContainerLeftClass">
                         <a href="#_" :class="mxNavigation_getLinkClass">
                             <span :class="mxNavigation_getTitleClass" x-text="mxContent_title"></span>

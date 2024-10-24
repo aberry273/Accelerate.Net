@@ -9,10 +9,10 @@ namespace Accelerate.Foundations.Content.Models.Data
 {
     public class ContentEntityDocument : EntityDocument
     {
-        public string Name { get; set; }
-        public string? Description { get; set; }
-        public Guid? UserId { get; set; }
-        public string? Category { get; set; }
-        public IEnumerable<string>? Tags { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string? Description { get; set; }
+        public virtual Guid? UserId { get; set; }
+        public virtual string? Category { get; set; }
+        public virtual IEnumerable<string>? Tags { get; set; }
     }
 }

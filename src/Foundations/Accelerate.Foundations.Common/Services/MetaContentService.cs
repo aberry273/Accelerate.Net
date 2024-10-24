@@ -111,7 +111,6 @@ namespace Accelerate.Foundations.Common.Services
             {
                 Url = _siteConfig.Domain,
                 ServiceSettings = this.CreateContentServiceSettings(null, _siteConfig.Domain),
-                Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(), 
@@ -131,7 +130,6 @@ namespace Accelerate.Foundations.Common.Services
                 SideNavigation = profile.Domain == Constants.Domains.Internal 
                     ? CreateInternalSideNavigation()
                     : CreatePublicSideNavigation(),
-                Breadcrumbs = new List<NavigationItem>(),
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(),
@@ -181,6 +179,19 @@ namespace Accelerate.Foundations.Common.Services
                     },
                     new NavigationItem()
                     {
+                        Icon = "chatBubble",
+                        Text = Foundations.Common.Constants.Paths.PostsLabel,
+                        Href = Foundations.Common.Constants.Paths.PostsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "photo",
+                        Text = Foundations.Common.Constants.Paths.MediaLabel,
+                        Href = Foundations.Common.Constants.Paths.MediaPath,
+                    },
+                    /*
+                    new NavigationItem()
+                    {
                         Icon = "chatBubbles",
                         Text = Foundations.Common.Constants.Paths.ChatsLabel,
                         Href = Foundations.Common.Constants.Paths.ChatsPath,
@@ -193,16 +204,11 @@ namespace Accelerate.Foundations.Common.Services
                     },
                     new NavigationItem()
                     {
-                        Icon = "chatBubble",
-                        Text = Foundations.Common.Constants.Paths.ThreadsLabel,
-                        Href = Foundations.Common.Constants.Paths.ThreadsPath,
-                    },
-                    new NavigationItem()
-                    {
                         Icon = "rectangleStack",
                         Text = Foundations.Common.Constants.Paths.ChannelsLabel,
                         Href = Foundations.Common.Constants.Paths.ChannelsPath,
                     },
+                    */
                 }
             };
         }

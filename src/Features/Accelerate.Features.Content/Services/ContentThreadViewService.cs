@@ -172,17 +172,17 @@ namespace Accelerate.Features.Content.Services
             };
         }
 
-        public ThreadPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
+        public ContentPostPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
-            var viewModel = new ThreadPage(model);
+            var viewModel = new ContentPostPage(model);
             viewModel.Item = item;
             #pragma warning restore CS8601 // Possible null reference assignment.
             viewModel.ChannelLink = GetThreadLink(item);
             if (user != null)
             {
                 viewModel.UserId = user.Id;
-                viewModel.FormCreateReply = CreateReplyForm(user, item);
+                //viewModel.FormCreateReply = CreateReplyForm(user, item);
                 viewModel.ModalCreateReply = CreateModalCreateReplyForm(user, item);
                 viewModel.ModalDeleteReply = CreateModalDeleteReplyForm(user);
                 viewModel.ModalLabelReply = CreateModalCreateLabelForm(user);
@@ -307,7 +307,7 @@ namespace Accelerate.Features.Content.Services
                     FormFieldCharLimit(post),
                     FormFieldImageLimit(post),
                     FormFieldVideoLimit(post),
-                    FormFieldContentFormats(post),
+                    FormFieldContentFormats(post, "Formats", "acl-reply-field"),
                     FormFieldLink(post),
                     FormFieldImages(post),
                     FormFieldVideos(post),
@@ -496,11 +496,11 @@ namespace Accelerate.Features.Content.Services
                 //Max = post?.Settings?.CharLimit ?? 512,
             };
         }
-        private FormField FormFieldContentFormats(ContentPostViewDocument post, string name = "Formats")
+        private FormField FormFieldContentFormats(ContentPostViewDocument post, string name = "Formats", string id = "aclFieldEditorJs")
         {
             return new FormField()
             {
-                Id = "aclFieldEditorJs",
+                Id = id,
                 Name = name,
                 FieldComponent = FormFieldComponents.aclFieldEditorJs,
                 Event = "form:input:user",
@@ -963,7 +963,7 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = post.Id.ToString(),
-                Href = this._metaContentService.GetActionUrl(nameof(ThreadsController.Thread), ControllerHelper.NameOf<ThreadsController>(), new { id = post.Id })
+                Href = this._metaContentService.GetActionUrl(nameof(PostsController.Index), ControllerHelper.NameOf<PostsController>(), new { id = post.Id })
             };
         }
         public NavigationItem? GetThreadLink(Guid? parentId)
@@ -972,7 +972,7 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = $"Return to parent",
-                Href = this._metaContentService.GetActionUrl(nameof(ThreadsController.Thread), ControllerHelper.NameOf<ThreadsController>(), new { id = parentId })
+                Href = this._metaContentService.GetActionUrl(nameof(PostsController.Index), ControllerHelper.NameOf<PostsController>(), new { id = parentId })
             };
         } 
         public NavigationItem? GetReturnLink()
@@ -980,7 +980,7 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = "Return",
-                Href = this._metaContentService.GetActionUrl(nameof(ThreadsController.Index), ControllerHelper.NameOf<ThreadsController>(), new { })
+                Href = this._metaContentService.GetActionUrl(nameof(PostsController.Index), ControllerHelper.NameOf<PostsController>(), new { })
             };
         } 
 

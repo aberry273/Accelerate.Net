@@ -21,7 +21,7 @@ using Accelerate.Foundations.Operations.Models.Entities;
 
 namespace Accelerate.Features.Admin.Controllers.Api
 { 
-    public class AdminActionController : BaseApiController<OperationsActionEntity>
+    public class AdminActionController : BaseApiServiceController<OperationsActionEntity>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;  

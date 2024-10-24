@@ -97,6 +97,12 @@ namespace Accelerate.Features.Content.Controllers.Api
         {
             return Ok(await _contentViewSearchService.SearchPosts(query));
         }
+        [Route("Posts/Feed")]
+        [HttpPost]
+        public async Task<IActionResult> SearchFeedPosts([FromBody] RequestQuery query)
+        {
+            return Ok(await _contentViewSearchService.SearchFeedPosts(query));
+        }
         [Route("Posts/Related/{channelId}")]
         [HttpPost]
         public async Task<IActionResult> SearchPostsRelated(Guid channelId, [FromBody] RequestQuery query)

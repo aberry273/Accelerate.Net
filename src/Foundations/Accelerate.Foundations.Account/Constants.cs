@@ -26,6 +26,7 @@ namespace Accelerate.Foundations.Account
         {
             public const string ConfigName = "AccountConfiguration";
             public const string UserIndexName = "UserIndexName";
+            public const string EnableOAuth = "EnableOAuth";
 
             public const string LocalDatabaseKey = "LocalAccountContext";
             public const string DatabaseKey = "AccountContext";

@@ -12,7 +12,7 @@ export default function (data) {
         mxSocial_websockets: true,
         mxSocial_toggleChat: false,
         mxSocial_mode: '',
-        mxSocial_showline: '',
+        mxSocial_showline: false,
         mxSocial_url: '',
         mxSocial_userId: '',
         mxSocial_params: {},
@@ -32,7 +32,7 @@ export default function (data) {
             this.mxSocial_userId = params.userId;
             this.mxSocial_url = params.url;
             this.mxSocial_params = params.params;
-        },
+        }, 
 
         async _mxSocial_WssPushItem() {
             this._mxEvent_On(this.$store.wssSvcPosts.getMessageEvent(), (result) => {
@@ -46,11 +46,22 @@ export default function (data) {
                 this.mxSocial_postItems.unshift(data);
             })
         },
+        async _mxSocial_Fetch(url, id) {
+            const self = this;
+            self.loading = true;
+            const existingPost = this.mxSocial_postItems.filter(x => x.id == id)[0];
+            if (!!existingPost) return existingPost;
+            if (url) {
+                let result = await self._mxFetch_Post(url, self.mxSocial_params);
+                return result.posts;
+                self.loading = false;
+            } 
+        },
         async _mxSocial_Search() {
             const self = this;
             self.loading = true;
             var delayInMilliseconds = 400;
-            setTimeout(async function () {
+            //setTimeout(async function () {
                 if (self.mxSocial_url) {
                     let result = await self._mxFetch_Post(self.mxSocial_url, self.mxSocial_params);
                     self.mxSocial_postItems = result.status == 200
@@ -58,7 +69,7 @@ export default function (data) {
                         : [];
                     self.loading = false;
                 }
-            }, delayInMilliseconds);
+            //}, delayInMilliseconds);
         },
         _mxSocial_TogglePostReplies(post) {
             post.toggle = !post.toggle;
@@ -67,9 +78,11 @@ export default function (data) {
             // assign the menu actions to only what is available in the items menu array
             const menu = this._mxSocial_FilterAvailableActions(this.mxSocial_menuItems, item.menu);
             item.menu = this._mxSocial_AssignActionsItemAsValue(menu, item);
-
+        
             const actions = this._mxSocial_FilterAvailableActions(this.mxSocial_actionItems, item.actions);
+
             const itemActions = this._mxSocial_AssignActionsItemAsValue(actions, item);
+            
             item.actions = JSON.parse(JSON.stringify(itemActions));
             item.ui = {
                 ...item.ui,
@@ -86,11 +99,14 @@ export default function (data) {
         _mxSocial_AssignActionsItemAsValue(actions, item) {
             return actions.map(x => {
                 if (x.href && item.ui.href) x.href = item.ui.href;
-                x.value = item.id;
+                x.value = { ...item };
                 return x;
             });
         },
         _mxSocial_HasReplies(post) {
+            //const children = this.mxSocial_postItems.filter(x => x.id == post.related.parentId);
+         
+            //return this.mxSocial_showReplies && children.length;
             return this.mxSocial_showReplies
                 && post.replies != null
                 && post.replies.profiles != null

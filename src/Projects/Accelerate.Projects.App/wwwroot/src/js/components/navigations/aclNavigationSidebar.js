@@ -58,7 +58,7 @@ export default function (params) {
                     <!-- Items-->
                     <template x-for="group in mxNavigation_groups">
                         <ul class="space-y-2 items-center mb-2 justify-between mx-auto border-b border-gray-200 font-medium">
-                            <li class="grid items-center text-center">
+                            <li class="grid items-center text-center" x-show="mxNavigation_open">
                                 <div class="select-none text-sm font-light" x-show="group.title" x-text="group.title"></div>
                             </li>
                             <template x-for="item in group.items">

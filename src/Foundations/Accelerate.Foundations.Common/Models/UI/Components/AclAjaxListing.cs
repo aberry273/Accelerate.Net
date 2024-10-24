@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Common.Models.UI.Components.Table
+namespace Accelerate.Foundations.Common.Models.UI.Components
 {
     public class AclListing<T>
     {

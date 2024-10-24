@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.EventPipelines.Controllers
 {
-    public class BaseApiPipelineController<T, B> : BaseApiController<T> where T : BaseEntity where B : IBus
+    public class BaseApiPipelineController<T, B> : BaseApiServiceController<T> where T : BaseEntity where B : IBus
     {
         new IEntityPipelineService<T, B> _service;
 

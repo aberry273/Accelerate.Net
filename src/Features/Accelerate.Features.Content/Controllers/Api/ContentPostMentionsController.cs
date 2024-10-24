@@ -25,7 +25,7 @@ namespace Accelerate.Features.Content.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContentPostMentionsController : BaseApiController<ContentPostMentionEntity>
+    public class ContentPostMentionsController : BaseApiServiceController<ContentPostMentionEntity>
     { 
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;

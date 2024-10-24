@@ -21,9 +21,9 @@ using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Hydrators;
-using static MassTransit.ValidationResultExtensions;
 using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.EventPipelines.Services;
+using Accelerate.Features.Content.Models.Views;
 
 namespace Accelerate.Features.Content.Services
 {
@@ -57,14 +57,14 @@ namespace Accelerate.Features.Content.Services
             var sortOrder = this.GetSortOrderField(query.Filters);
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchPost(query, postId, GetFilterSortField(query), sortOrder);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<ContentSearchResults> SearchUserPosts(RequestQuery query, Guid userId)
         {
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchUserPosts(userId, query.Page, query.ItemsPerPage);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
 
@@ -72,7 +72,7 @@ namespace Accelerate.Features.Content.Services
         {
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchPostParents(query, postId, query.UserId.GetValueOrDefault());
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<List<ContentPostPinDocument>> SearchPostPinned(Guid postId, RequestQuery query)
@@ -110,7 +110,7 @@ namespace Accelerate.Features.Content.Services
             Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchPostReplies(postId, query, GetFilterSortField(query), sortOrder);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<ContentSearchResults> SearchPostReplies(RequestQuery query)
@@ -120,7 +120,17 @@ namespace Accelerate.Features.Content.Services
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchPostReplies(query, GetFilterSortField(query), sortOrder);
             var posts = result.Posts.ToList();
-            result.Posts = await this.UpdatePostDocuments(posts);
+            result.Posts = await this.UpdatePostDocuments(query.UserId, posts);
+            return result;
+        }
+        public async Task<ContentSearchResults> SearchFeedPosts(RequestQuery query)
+        {
+            SortOrder sortOrder = SortOrder.Desc;
+            Enum.TryParse<SortOrder>(query.SortBy, out sortOrder);
+            query.Filters = this.GetActualFilterKeys(query.Filters);
+            var sortBy = this.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
+            var result = await _searchService.SearchPosts(query, GetFilterSortField(query), sortOrder);
+            result.Posts = await this.UpdateFeedPostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<ContentSearchResults> SearchPosts(RequestQuery query)
@@ -130,7 +140,7 @@ namespace Accelerate.Features.Content.Services
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var sortBy = this.GetFilterSortOptions().FirstOrDefault(x => x.Name == query.Sort);
             var result = await _searchService.SearchPosts(query, GetFilterSortField(query), sortOrder);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<ContentSearchResults> SearchPostsRelated(Guid channelId, RequestQuery query)
@@ -138,14 +148,14 @@ namespace Accelerate.Features.Content.Services
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var channel = await _searchChannelService.GetDocument<ContentChannelDocument>(channelId.ToString());
             var result = await _searchService.SearchRelatedPosts(channel.Source, query);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         public async Task<ContentSearchResults> SearchChannels(RequestQuery query)
         {
             query.Filters = this.GetActualFilterKeys(query.Filters);
             var result = await _searchService.SearchPosts(query);
-            result.Posts = await this.UpdatePostDocuments(result.Posts.ToList());
+            result.Posts = await this.UpdatePostDocuments(query.UserId, result.Posts.ToList());
             return result;
         }
         #endregion
@@ -165,6 +175,25 @@ namespace Accelerate.Features.Content.Services
             var userResult = await _userSearchService.SearchUsers(query, userIdStrings);
             return userResult.Users;
         }
+        private async Task<List<ContentPostDocument>> GetParents(IEnumerable<ContentPostDocument> posts)
+        {
+            var postIds = posts
+                .Select(x => x?.Id)
+                .Distinct()
+                .ToList();
+
+            var childParentEntities = _servicePostParents.Find(x => postIds.Contains(x.ParentId));
+            var parentIds = childParentEntities.Select(x => x.ParentId.ToString()).ToList();
+
+            var query = new RequestQuery() { ItemsPerPage = parentIds.Count() };
+            return  await _searchService.SearchPostByIds(query, parentIds);
+        }
+        private async Task<ContentPostDocument> GetParent(ContentPostDocument post)
+        {
+            var query = new RequestQuery() { ItemsPerPage = 1 };
+            var results = await _searchService.SearchPostByIds(query, new List<string>() { post.Id.ToString() });
+            return results?.FirstOrDefault();
+        }
         private IEnumerable<ContentPostParentEntity> GetReplies(IEnumerable<ContentPostDocument> posts)
         {
             var postIds = posts
@@ -183,7 +212,7 @@ namespace Accelerate.Features.Content.Services
         private List<Guid> GetUserIds(List<ContentPostViewDocument> posts, IEnumerable<ContentPostParentEntity> postReplies)
         {
             // Get list of userIds for each post
-            List<Guid> userIds = posts.Select(x => x.UserId).ToList();
+            List<Guid> userIds = posts.Select(x => x.UserId.GetValueOrDefault()).ToList();
             // Get all Post/Parent entities where the post is a parent
             var allPostReplyUserIds = postReplies.Select(x => x.UserId);
             // Add Post Reply userIds to list
@@ -201,12 +230,49 @@ namespace Accelerate.Features.Content.Services
             if (!response.IsSuccess()) return new List<ContentChannelDocument>(); 
             return response.Documents.ToList();
         }
-        public async Task<List<ContentPostViewDocument>> UpdatePostDocuments(List<ContentPostViewDocument> posts)
+        public async Task<List<ContentPostViewDocument>> UpdateFeedPostDocuments(Guid? userId, List<ContentPostViewDocument> posts)
+        {
+            var parents = await GetParents(posts);
+            var parentUserIds = parents.Select(x => x.UserId.GetValueOrDefault());
+            var postReplies = GetReplies(posts);
+            var userIds = this.GetUserIds(posts, postReplies);
+            userIds.AddRange(parentUserIds);
+            var userProfiles = await GetUserProfiles(userIds);
+            var channels = await GetPostChannels(posts);
+
+            for (var i = 0; i < posts.Count(); i++)
+            {
+                // Get the users for all parentPosts
+                var postReplyUserIds = postReplies
+                    .Where(x => x.ParentId == posts[i].Id)
+                    .Select(x => x.UserId);
+                var replyProfiles = userProfiles
+                    .Where(x => postReplyUserIds.Contains(x.Id))
+                    .ToList();
+                var parentProfile = userProfiles.FirstOrDefault(x => parentUserIds.Contains(x.Id));
+                // Users
+                var postUserProfile = userProfiles?.FirstOrDefault(x => x.Id == posts[i].UserId);
+                var postReplyProfiles = replyProfiles?.Where(x => x.Id == posts[i].UserId).ToList();
+                // Related
+                var channel = channels?.FirstOrDefault(x => x.Id == posts[i].Related?.ChannelId);
+                // Parent
+                var parent = parents?.FirstOrDefault(x => x.Id == posts[i].Related?.ParentId);
+                if(parent != null)
+                {
+                    parent.Profile = parentProfile;
+                }
+                posts[i] = this.UpdateViewPostModel(userId, posts[i], postUserProfile, postReplyProfiles, channel, parent);
+                posts[i].Actions = this.PostFeedActions(userId, posts[i]);
+            }
+            return posts.ToList();
+        }
+        public async Task<List<ContentPostViewDocument>> UpdatePostDocuments(Guid? userId, List<ContentPostViewDocument> posts)
         {
             var postReplies = GetReplies(posts);
             var userIds = this.GetUserIds(posts, postReplies);
             var userProfiles = await GetUserProfiles(userIds);
             var channels = await GetPostChannels(posts);
+            //var parents = await GetParents(posts);
 
             for (var i = 0; i < posts.Count(); i++)
             {
@@ -222,18 +288,26 @@ namespace Accelerate.Features.Content.Services
                 var postReplyProfiles = replyProfiles?.Where(x => x.Id == posts[i].UserId).ToList();
                 // Related
                 var channel = channels?.FirstOrDefault(x => x.Id == posts[i].Related?.ChannelId);
-                posts[i] = this.UpdateViewPostModel(posts[i], postUserProfile, postReplyProfiles, channel);
+                // Parent
+                //var parent = parents?.FirstOrDefault(x => x.Id == posts[i].Related?.ParentId);
+                posts[i] = this.UpdateViewPostModel(userId, posts[i], postUserProfile, postReplyProfiles, channel);
             }
             return posts.ToList();
         }
-        public async Task<ContentPostViewDocument> UpdatePostDocument(ContentPostDocument post)
+        public async Task<ContentPostViewDocument> UpdatePostDocument(Guid? userId, ContentPostDocument post)
         {
+            // Get parent
+            var parent = await this.GetParent(post);
             // Get all Post/Parent entities where the post is a parent
             var replies = this.GetReplies(new List<ContentPostDocument>() { post });
             // Add Post Reply userIds to list
             var postReplyUserIds = replies.Select(x => x.UserId).ToList();
             // Add current post user to list
-            var userIds = new List<Guid>(postReplyUserIds) { post.UserId };
+            var userIds = new List<Guid>(postReplyUserIds) { post.UserId.GetValueOrDefault() };
+            if(parent != null && parent.UserId.HasValue)
+            {
+                userIds.Add(parent.UserId.GetValueOrDefault());
+            }
             // Get user entity for each ID
             var users = await GetUsers(userIds);
             //Create user profile objects for each user
@@ -242,18 +316,45 @@ namespace Accelerate.Features.Content.Services
             // Users
             var postUserProfile = userProfiles?.FirstOrDefault(x => x.Id == post.UserId);
             var postReplyProfiles = replyProfiles?.Where(x => x.Id == post.UserId).ToList();
-            var viewModel = this.UpdateViewPostModel(post, postUserProfile, postReplyProfiles);
+            // Metrics
+            // 
+            // Parent
+            if(parent != null && parent.UserId.HasValue)
+            {
+                parent.Profile = userProfiles?.FirstOrDefault(x => x.Id == parent.UserId);
+            }
+            var viewModel = this.UpdateViewPostModel(userId, post, postUserProfile, postReplyProfiles, null, parent);
             return viewModel;
         }
-
-        public ContentPostViewDocument UpdateViewPostModel(
-            ContentPostDocument post, 
-            ContentPostUserProfileSubdocument profile, 
-            List<ContentPostUserProfileSubdocument> Replies = null,
-            ContentChannelDocument channel = null)
+        public ContentPostViewDocument CreatePostViewModel(ContentPostDocument post)
         {
             var viewModel = new ContentPostViewDocument();
             viewModel.HydrateFrom(post);
+            return viewModel;
+        }
+        public ContentPostViewDocument UpdateViewPostModel(
+            Guid? userId,
+            ContentPostDocument post, 
+            ContentPostUserProfileSubdocument profile, 
+            List<ContentPostUserProfileSubdocument> Replies = null,
+            ContentChannelDocument channel = null,
+            ContentPostDocument parent = null)
+        {
+            var viewModel = CreatePostViewModel(post);
+            // Parent
+            if(parent != null)
+            {
+                viewModel.Parent = new ContentPostParentSummarySubdocument()
+                {
+
+                    Href = this.GetPostHref(parent),
+                    Date = parent.Content.Date,
+                    Text = parent.Name,
+                    Description = parent.Description,
+                    Image = parent.Profile?.Img,
+                    Username = parent.Profile?.Username,
+                };
+            }
             // Users
             viewModel.Profile = profile;
             // Href
@@ -261,19 +362,20 @@ namespace Accelerate.Features.Content.Services
             // Replies
             if(Replies != null)
             {
+                var latestUpdate = Replies?.OrderByDescending(x => x.Date).FirstOrDefault();
                 viewModel.Replies = new ContentPostRepliesSubdocument()
                 {
                     Profiles = Replies,
                     Text = "Replies",
-                    Date = "01/01/2000"
+                    Date = latestUpdate?.Date
                 };
             }
             // Metrics
             viewModel.Metrics = new ContentPostMetricsSubdocument()
             {
-                Replies = 22,
-                Quotes = 1,
-                Rating = 10
+                Replies = 0,
+                Quotes = 0,
+                Rating = 0
             };
             // Channel
             viewModel.Channel = channel != null ? new ContentPostChannelViewSubdocument()
@@ -283,23 +385,52 @@ namespace Accelerate.Features.Content.Services
                     Url = $"/Channels/{channel.Id}"
                 } : null;
 
-            viewModel.Actions = this.PostActions();
-            viewModel.Menu = this.PostMenuActions();
+            viewModel.Actions = this.PostActions(userId, post);
+            viewModel.Menu = this.PostMenuActions(userId, post);
             return viewModel;
         }
-        private List<string> PostActions()
+        private List<string> PostFeedActions(Guid? userId, ContentPostDocument post)
         {
-            return new List<string>()
+            var actions = new List<string>()
             {
-                "reply", "open", "quote", "upvote", "downvote", "tag"
+                //"reply", 
+                //"quote", 
+                "OpenInSide"
             };
+
+            if (post.UserId == userId)
+            {
+                actions.Add("upvote");
+                actions.Add("downvote");
+            }
+            return actions;
         }
-        private List<string> PostMenuActions()
+        private List<string> PostActions(Guid? userId, ContentPostDocument post)
         {
-            return new List<string>()
+            var actions = new List<string>()
             {
-                "CopyLink", "Flag", "Delete", "Edit"
+                "reply", "quote", "tag"
             };
+
+            if (post.UserId == userId)
+            {
+                actions.Add("upvote");
+                actions.Add("downvote");
+            }
+            return actions;
+        }
+        private List<string> PostMenuActions(Guid? userId, ContentPostDocument post)
+        {
+            var actions = new List<string>()
+            {
+                "OpenInNew", "CopyLink", "Flag"
+            };
+            if (post.UserId == userId)
+            {
+                actions.Add("Delete");
+                actions.Add("Edit");
+            }
+            return actions;
         }
 
         private ContentPostUserProfileSubdocument GetUserDocument(AccountUserDocument user)
@@ -311,7 +442,7 @@ namespace Accelerate.Features.Content.Services
 
         private string GetPostHref(ContentPostDocument post)
         {
-            return $"/{ControllerHelper.NameOf<ThreadsController>()}/{post.Id}";
+            return $"/{ControllerHelper.NameOf<PostsController>()}/{post.Id}";
         }
 
         private string GetFilterSortField(RequestQuery query)

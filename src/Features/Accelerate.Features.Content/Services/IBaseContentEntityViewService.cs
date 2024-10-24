@@ -16,13 +16,13 @@ namespace Accelerate.Features.Content.Services
     {
         NotFoundPage CreateNotFoundPage(AccountUser user, string title = null, string description = null);
         ContentBasePage CreateAnonymousListingPage();
-        ContentBasePage CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
         ContentBasePage CreateIndexPage(AccountUser user, SearchResponse<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
-        ContentBasePage CreateEntityPage(AccountUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<ContentBasePage> CreateEntityPage(AccountUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
         ContentCreatePage CreateAddPage(AccountUser user, SearchResponse<T> items);
         ContentCreatePage CreateEditPage(AccountUser user, SearchResponse<T> items, T item);
         AjaxForm CreateForm(AccountUser user, PostbackType type = PostbackType.POST, T? item = null);
 
-        ContentSubmitForm CreatePostForm(AccountUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, T doc = null);
+        ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, T doc = null);
     }
 }

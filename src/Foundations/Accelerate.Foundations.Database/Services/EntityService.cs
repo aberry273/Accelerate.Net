@@ -156,7 +156,23 @@ namespace Accelerate.Foundations.Database.Services
                 _logger.LogError(ex.ToString());
                 throw;
             }
-        } 
+        }
+        // Returns the Guid that the entity is created with
+        public async Task<T?> CreateAndReturn(T entity)
+        {
+            try
+            {
+                var entityResult = await _dbContext.AddAsync<T>(entity);
+                var result = await _dbContext.SaveChangesAsync();
+                return result > 0 ? entityResult.Entity : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(string.Format(Constants.Exceptions.Service.ExceptionMessage, nameof(EntityService<T>), nameof(this.Create), ex.Message));
+                _logger.LogError(ex.ToString());
+                throw;
+            }
+        }
         public async Task<int> AddRange(IEnumerable<T> entities)
         {
             try

@@ -303,5 +303,9 @@ namespace Accelerate.Foundations.Account.Services
             }
         }
 
+        public Task<AccountUser?> CreateAndReturn(AccountUser entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

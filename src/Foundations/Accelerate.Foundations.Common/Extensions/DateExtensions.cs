@@ -10,6 +10,11 @@ namespace Accelerate.Foundations.Common.Extensions
 {
     public static class DateExtensions
     {
+        public static string ToDateShort(this DateTime? value)
+        {
+            if (value == null) return string.Empty;
+            return value?.ToString("dd/MM/yy");
+        }
         public static string ToDateSimple(this DateTime? value)
         {
             if (value == null) return string.Empty;

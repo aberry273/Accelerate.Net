@@ -14,6 +14,7 @@ export default function (params) {
         label: '',
         channel: null,
         link: null,
+        parent: null,
         metrics: {},
         settings: {},
         taxonomy: {},
@@ -47,6 +48,7 @@ export default function (params) {
             this.id = params.id;
             this.link = params.link;
             this.channel = params.channel;
+            this.parent = params.parent;
             this.profile = params.profile || this.profile;
             this.content = params.content || {};
             this.settings = params.settings || {};
@@ -73,9 +75,42 @@ export default function (params) {
         },
         render() {
             const html = `
-                <a :href="ui.href">
-                    <div class="flex cursor-pointer  max-w h-full my-2 lg:mx-8 md:mx-8 sm:mx-1 xs:mx-1 px-1 py-2 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                                        
+                <!-- Parent card -->
+                <template x-if="!!parent">
+                    <a :href="parent.href">
+                        <div class="flex cursor-pointer bg-gray-50 max-w h-full px-1 pt-1 border rounded-t-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                            <div class="flex py-1 max-w cursor-pointer hover:bg-gray-50">
+                                <div class="flex w-full max-w h-9 items-center md:flex-row hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+                                    <!--Profile Images-->
+                                    <div class="flex-shrink-0 flex mx-2">
+                                        <div x-data="aclMediaImage( {
+                                            src: parent.img,
+                                            class: 'rounded-md w-8 h-8'
+                                        })"></div>
+                                    </div>
+                                    <!--Link-->
+                                    <div class="ml-0 pt-0 w-full">
+                                        <div class="w-full justify-items-end">
+                                            <div class="pl-2 font-bold text-sm text-gray-900 dark:text-white">
+                                                @<span x-text="parent.username"></span>
+                                                <time x-show="parent.date" x-text="parent.date" datetime="date" class="pl-2 text-xs text-gray-300 dark:text-gray-300"></time>
+                                            </div>
+                                            <div>
+                                                <span x-text="parent.description" class="pl-2 text-sm text-gray-900 dark:text-white" ></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </template>
+
+                <a  class="hover:border hover:rounded-t-lg hover:bg-gray-100">
+                    <!-- Card -->
+                    <div :class="parent != null ? 'mb-2 rounded-b-lg ' : 'my-2 rounded-lg'"
+                        class="flex cursor-pointer max-w h-full px-1 py-2 border hover:bg-gray-100 dark:hover:bg-gray-800">
+                     
                         <!--Profile image-->    
                         <div class="flex sm:w-10 w-9 flex items-center justify-center">
                             <div class="flex flex-col h-full items-center">
@@ -100,18 +135,26 @@ export default function (params) {
                                     <!-- User Link-->
                                     <span x-data="aclCardProfileHover(profile)"></span>
                                     <!-- Updated -->
-                                    <time x-text="_mxDate_FormatString(content.date)" datetime="content.date" class="mt-1 pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
+                                    <time x-text="content.date" datetime="content.date" class="mt-1 pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
 
                                 </div>
                                 <div class="mr-2 flex">
                                      <!-- Rating -->
                                     <span x-text="metrics.rating" class="align-middle px-1 pt-1 font-medium text-gray-300 dark:text-gray-300">
                                     </span>
+
+                                    <template x-for="btn in actions.filter(x => x.overlay)">
+                                        <div x-data="aclButton(btn)"></div>
+                                    </template>
                                     <!--Toggle tags-->
+                                    <!--
                                     <div x-data="aclButton({
                                             icon: 'tag',
-                                        })" :class="bg-gray" @click="showMenu = !showMenu" >
+                                        })"
+                                        class="bg-gray"
+                                        @click="showMenu = !showMenu" >
                                     </div>
+                                    -->
                                     <!--Channel-->
                                     <template x-if="channel != null">
                                         <a :href="channel.url" class="flex flex-row rounded-md px-3 pt-1 font-medium text-gray-600 hover:bg-gray-100">
@@ -129,7 +172,7 @@ export default function (params) {
                             </div> 
 
                             <!-- Content -->
-                            <div class="w-full justify-items-end">
+                            <a :href="ui.href" class="w-full justify-items-end">
                                 <!-- Text -->
                                 <template x-if="content.text">
                                     <div x-text="content.text" class="w-full align-center cursor-pointer mb-3 font-normal text-gray-700 dark:text-gray-400"></div>
@@ -142,7 +185,7 @@ export default function (params) {
                                 <template x-if="content.media != null && content.media.length > 0">
                                     <div class="full-w" x-data="aclGridMedia({ items: content.media, event: 'modal:'+id })"></div>
                                 </template>
-                            </div>
+                            </a>
 
                             <!-- Link card -->
                             <template x-if="link != null">

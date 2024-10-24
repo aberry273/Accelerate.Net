@@ -44,7 +44,7 @@ export default function (params) {
         render() {
             const html = `
                 <template x-for="(field, i) in mxForm_fields" :key="getFieldKey(field, i)">
-                    <div>
+                    <div class="mt-2">
                         <label x-cloak :for="field.id || field.name" class="relative" x-show="!field.hidden">
                             <span x-show="field.label && field.component != 'aclFieldSwitch'" class="font-medium text-gray-900" x-text="field.label"></span>
                             <div x-data="getFieldComponent(field)" @oninputchange="(ev) => { onFieldChange(ev.detail) }"></div>

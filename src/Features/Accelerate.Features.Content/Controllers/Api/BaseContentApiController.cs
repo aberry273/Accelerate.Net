@@ -18,7 +18,7 @@ using Accelerate.Foundations.EventPipelines.EventBus;
 namespace Accelerate.Features.Content.Controllers.Api
 {
     [ApiController]
-    public class BaseContentApiController<E, D, B> : BaseApiController<E> 
+    public class BaseContentApiController<E, D, B> : BaseApiServiceController<E> 
         where E : IBaseEntity
         where D : EntityDocument
         where B : IDataBus<E>

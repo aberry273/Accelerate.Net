@@ -22,6 +22,7 @@ export default function (params) {
             <section class="z-40 px-0 my-2">
                 <div class="flex flex-row" :class="mxNavigation_getContainerClass">
                     <div :class="mxNavigation_getContainerLeftClass">
+
                         <span :class="mxNavigation_getTitleClass" x-text="mxContent_title"></span>
                         
                         <div 

@@ -9,13 +9,15 @@ import { aclDropdownMenuProfile, aclDropdownMenuButton } from './dropdowns/index
 // NAVIGATIONS
 import {
     aclNavigationBar,
+    aclNavigationBottomBar,
     aclNavigationSidebar,
     aclNavigationBarAction,
     aclNavigationSidebarFixed,
     aclNavigationBarDropdown,
     aclNavigationFooter,
     aclNavigationFilter,
-    aclNavigationSidebarSlide
+    aclNavigationSidebarSlide,
+    aclNavigationBreadcrumbs
 } from './navigations/index.js'
 // TABS
 import {
@@ -27,7 +29,7 @@ import { aclToastNotification } from './toasts/index.js'
 // TABLES
 import { aclTableSimple } from './tables/index.js'
 // GRID
-import { aclGridMedia } from './grid/index.js'
+import { aclGridMedia, aclGridCard } from './grid/index.js'
 // FORMS
 import { aclFormPostback, aclFormAjax, aclFormFieldset } from './forms/index.js'
 // FIELDS
@@ -65,6 +67,8 @@ import {
     aclSocialCardFeedPost,
     aclSocialCardReplies,
     aclSocialFormPost,
+    aclSocialModalFormPost,
+    aclSocialModalListChatPosts,
 } from './social/index.js'
 
 
@@ -83,6 +87,7 @@ export {
     aclMedia,
     // NAVIGATIONS
     aclNavigationBar,
+    aclNavigationBottomBar,
     aclNavigationSidebar,
     aclNavigationSidebarFixed,
     aclNavigationBarDropdown,
@@ -90,6 +95,7 @@ export {
     aclNavigationFooter,
     aclNavigationFilter,
     aclNavigationSidebarSlide,
+    aclNavigationBreadcrumbs,
     // DROPDOWNS
     aclDropdownMenuProfile,
     aclDropdownMenuButton,
@@ -102,6 +108,7 @@ export {
     aclToastNotification,
     // GRID
     aclGridMedia,
+    aclGridCard,
     // FORMS,
     aclFormPostback,
     aclFormAjax,
@@ -144,6 +151,8 @@ export {
     aclSocialCardFeedPost,
     aclSocialCardReplies,
     aclSocialFormPost,
+    aclSocialModalFormPost,
+    aclSocialModalListChatPosts,
 
     // PLUGINS
     aclPluginEditorJs,

@@ -19,6 +19,7 @@ namespace Accelerate.Foundations.Database.Services
         Task<int> AddRange(IEnumerable<T> entities);
         Task<Guid?> CreateWithGuid(T entity);
         Task<int> Create(T entity);
+        Task<T?> CreateAndReturn(T entity);
         Task<int> SaveChangesAsync();
         T Get(Guid guid);
         Task<T> GetAsync(Guid id);

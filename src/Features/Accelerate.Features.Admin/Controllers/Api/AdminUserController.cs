@@ -31,7 +31,7 @@ using Elastic.Clients.Elasticsearch.Core.Search;
 namespace Accelerate.Features.Admin.Controllers.Api
 { 
 
-    public class AdminUserController : BaseApiController<AccountUser>
+    public class AdminUserController : BaseApiServiceController<AccountUser>
     {
         UserManager<AccountUser> _userManager;
         IMetaContentService _contentService;  

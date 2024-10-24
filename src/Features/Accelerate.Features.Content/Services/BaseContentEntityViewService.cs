@@ -17,14 +17,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
+using Twilio.TwiML.Voice;
 
 namespace Accelerate.Features.Content.Services
 {
     public class BaseContentEntityViewService<T> : IBaseContentEntityViewService<T> where T : ContentEntityDocument
     {
-        IElasticService<T> _searchService;
-        IMetaContentService _metaContentService;
-        IContentViewSearchService _viewSearchService;
+        protected IElasticService<T> _searchService;
+        protected IMetaContentService _metaContentService;
+        protected IContentViewSearchService _viewSearchService;
         protected string ItemUrl { get; set; } 
         protected string EntityName { get; set; }
         protected string ApiUrl { get; set; }
@@ -68,31 +69,61 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        private List<NavigationGroup> CreateSideNavigation(string pageName, SearchResponse<T> items)
+        private List<NavigationGroup> CreateSideNavigation(string pageName, SearchResponse<T> documents, AccountUser user)
         {
-            return new List<NavigationGroup>()
+            var items = new List<T>();
+            var userItems = new List<T>();
+            var savedItems = new List<T>();
+
+            if (documents != null && documents.IsValidResponse)
             {
-                CreatePageNavigationGroup(this.EntityName, pageName),
-                new NavigationGroup()
+                var docs = documents.Documents;
+                userItems = docs?.Where(x => x.UserId == user.Id).ToList();
+                //savedItems = docs?.Where(x => x.UserId == user.Id).ToList();
+            }
+
+            var model = new List<NavigationGroup>()
+            {
+                CreatePageNavigationGroup(this.EntityName, pageName), 
+            };
+            if(userItems.Count > 0)
+            {
+                model.Add(new NavigationGroup()
                 {
                     Title = $"Your {this.EntityName}s",
-                    Items = GetLinks(items)
-                },
-                new NavigationGroup()
+                    Items = GetLinks(userItems)
+                });
+            }
+            if(savedItems.Count > 0)
+            {
+                model.Add(new NavigationGroup()
                 {
                     Title = $"Saved {this.EntityName}s",
                     Items = new List<NavigationItem>()
-                }
+                });
+            }
+            return model;
+        }
+        public AclCard CreateCardFromContent(T item)
+        {
+            return new AclCard()
+            {
+                Href = GetUrl(item),
+                Title = item.Name,
+                Text = item.Description,
+                Label = item.Category,
+                Image = "https://cdn.devdojo.com/images/may2021/workstation.jpg"
             };
         }
-        public virtual ContentBasePage CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
-            var pageName = "All";
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            var pluralEntity = $"{this.EntityName}s";
+            var pageName = $"Browse {pluralEntity}";
+            viewModel.SideNavigation.Selected = pluralEntity;
             
-            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+            viewModel.PageLinks = CreateSideNavigation(pageName, items, user);
 
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
@@ -108,11 +139,12 @@ namespace Accelerate.Features.Content.Services
         public virtual ContentBasePage CreateIndexPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
-            var viewModel = new ContentBasePage(model); 
-            var pageName = "All";
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
-             
-            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+            var viewModel = new ContentBasePage(model);
+            var pluralEntity = $"{this.EntityName}s";
+            var pageName = $"Browse {pluralEntity}";
+            viewModel.SideNavigation.Selected = pluralEntity;
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items, user);
 
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
@@ -125,7 +157,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public virtual ContentBasePage CreateEntityPage(AccountUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<ContentBasePage> CreateEntityPage(AccountUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
@@ -133,7 +165,11 @@ namespace Accelerate.Features.Content.Services
             var pageName = item.Name;
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
 
-            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+
+            viewModel.Breadcrumbs = this.CreateBreadcrumbs(EntityName);
+            viewModel.Breadcrumbs.Items.Add(this.GetLink(item));
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items, user);
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName, item);
             viewModel.ParentUrl = $"/{this.EntityName}s";
             viewModel.PostsApiUrl = this.ApiUrl;
@@ -142,7 +178,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.Filters = _viewSearchService.CreateNavigationFilters(aggregateResponse);
 
             viewModel.UserId = user.Id;
-            viewModel.FormCreatePost = CreatePostForm(user, PostbackType.POST);
+            viewModel.FormCreatePost = CreatePostForm(user);
             viewModel.ActionsApiUrl = "/api/contentpostactions";
             viewModel.FilterEvent = "filter:update";
             viewModel.ActionEvent = "action:post";
@@ -155,9 +191,10 @@ namespace Accelerate.Features.Content.Services
             var pageName = $"Create {this.EntityName}";
             viewModel.RedirectRoute = $"/{this.EntityName}s";
 
+            viewModel.Breadcrumbs = this.CreateBreadcrumbs(EntityName);
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
 
-            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+            viewModel.PageLinks = CreateSideNavigation(pageName, items, user);
 
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
 
@@ -174,7 +211,9 @@ namespace Accelerate.Features.Content.Services
             viewModel.RedirectRoute = $"/{this.EntityName}s";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
 
-            viewModel.PageLinks = CreateSideNavigation(pageName, items);
+            viewModel.Breadcrumbs = this.CreateBreadcrumbs(EntityName);
+
+            viewModel.PageLinks = CreateSideNavigation(pageName, items, user);
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
 
@@ -183,7 +222,23 @@ namespace Accelerate.Features.Content.Services
             return viewModel;
         }
 
-        private NavigationGroup CreatePageNavigationGroup(string entity, string selected)
+        protected NavigationGroup CreateBreadcrumbs(string entity)
+        {
+            var plural = $"{entity}s";
+            return  new Foundations.Common.Models.Views.NavigationGroup()
+            {
+                Items = new List<Foundations.Common.Models.Views.NavigationItem>()
+                {
+                    new Foundations.Common.Models.Views.NavigationItem()
+                    {
+                        Text = plural,
+                        Href = $"/{plural}",
+                    },
+                }
+            };
+        }
+
+        protected NavigationGroup CreatePageNavigationGroup(string entity, string selected)
         {
             var plural = $"{entity}s";
             return new NavigationGroup()
@@ -199,7 +254,7 @@ namespace Accelerate.Features.Content.Services
                     },
                     new NavigationItem()
                     {
-                        Text = "All",
+                        Text = $"Browse {plural}",
                         Href = $"/{plural}",
                     }
                 }
@@ -256,7 +311,7 @@ namespace Accelerate.Features.Content.Services
                 Href = "#"//this._metaContentService.GetActionUrl(nameof(ChannelsController.Index), ControllerHelper.NameOf<ChannelsController>(), new { })
             };
         }
-        public virtual ContentSubmitForm CreatePostForm(AccountUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, T doc = null)
+        public virtual ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, T doc = null)
         {
             var model = new ContentSubmitForm()
             {
@@ -285,6 +340,7 @@ namespace Accelerate.Features.Content.Services
                     FormFieldTags(item),
                     FormFieldCategory(item),
                     FormFieldUser(user.Id),
+                    FormFieldParent(item),
                     FormFieldType(ContentPostType.Post),
                 }
             };
@@ -294,10 +350,48 @@ namespace Accelerate.Features.Content.Services
                 model.Fields.Add(FormFieldChannel(channel.Id));
             }
             */
-            if(item != null)
+            if(doc != null)
             {
-                model.Fields.Add(FormFieldId(item.Id));
+                model.Fields.Add(FormFieldId(doc.Id));
             }
+            return model;
+        }
+        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        {
+            //var parentIdThread = post.Related.Parents != null ? post.Related.Parents : new List<Guid>();
+            //parentIdThread.Add(post.Id);
+            var model = new ContentSubmitForm()
+            {
+                Id = $"form-reply-{post?.Id}",
+                UserId = user.Id,
+                SearchUsersUrl = "/api/accountsearch/users",
+                FetchMetadataUrl = "/api/contentpost/metadata",
+                Action = "/api/contentpost/mixed",
+                Type = PostbackType.POST,
+                Event = "post:created",
+                ActionEvent = "action:post",
+                Label = "Reply",
+                Fields = new List<FormField>()
+                {
+                    //FormFieldReplyTo(post),
+                    FormFieldMentions(post),
+                    FormFieldQuotes(post),
+                    FormFieldCharLimit(post),
+                    FormFieldImageLimit(post),
+                    FormFieldVideoLimit(post),
+                    FormFieldContentFormats(post, "Formats", "acl-content-reply"),
+                    FormFieldLink(post),
+                    FormFieldImages(post),
+                    FormFieldVideos(post),
+                    FormFieldTags(post),
+                    FormFieldCategory(post),
+                    FormFieldUser(user.Id),
+                    //FormFieldParents(parentIdThread),
+                    FormFieldParent(post),
+                    FormFieldChannel(null),//post?.ChannelId
+                    FormFieldStatus(post),
+                }
+            };
             return model;
         }
         private string GetContentPostReplyValue(ContentPostViewDocument post)
@@ -428,11 +522,11 @@ namespace Accelerate.Features.Content.Services
                 //Max = post?.Settings?.CharLimit ?? 512,
             };
         }
-        private FormField FormFieldContentFormats(ContentPostViewDocument post, string name = "Formats")
+        private FormField FormFieldContentFormats(ContentPostViewDocument post, string name = "Formats", string id = "aclFieldEditorJs")
         {
             return new FormField()
             {
-                Id = "aclFieldEditorJs",
+                Id = id,
                 Name = name,
                 FieldComponent = FormFieldComponents.aclFieldEditorJs,
                 Event = "form:input:user",
@@ -808,13 +902,12 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
 
-        public List<NavigationItem> GetLinks(SearchResponse<T> searchResponse = null, string selectedName = null)
+        public List<NavigationItem> GetLinks(List<T> searchResponse = null, string selectedName = null)
         {
             var model = new List<NavigationItem>();
-            if (searchResponse != null && searchResponse.IsValidResponse)
+            if(searchResponse != null)
             {
-                var channelItems = searchResponse.Documents.Select(GetLink);
-                model.AddRange(channelItems);
+                model.AddRange(searchResponse?.Select(GetLink));
             }
             return model;
         }
@@ -824,8 +917,12 @@ namespace Accelerate.Features.Content.Services
             return new NavigationItem()
             {
                 Text = $"{x.Name}",
-                Href = $"/{this.EntityName}s/{x.Id}",
+                Href = GetUrl(x),
             };
+        }
+        public string GetUrl(T x)
+        {
+            return $"/{this.EntityName}s/{x.Id}";
         }
     }
 }

@@ -15,7 +15,9 @@ namespace Accelerate.Foundations.Common
             public static Guid GlobalAdminMedia = Guid.Parse("00000000-0000-0000-0000-000000000002");
             public static Guid GlobalAdminAccounts = Guid.Parse("00000000-0000-0000-0000-000000000003");
             public static Guid GlobalAdminOperations = Guid.Parse("00000000-0000-0000-0000-000000000004");
+
             public static Guid ChannelNewsGuid = Guid.Parse("d9dff599-0057-454c-bdb5-ebaad9855713");
+            public static Guid FeedAllGuid = Guid.Parse("82d000e8-d735-45bd-922f-cd8f76917d98");
         }
         public struct Domains
         {
@@ -40,8 +42,8 @@ namespace Accelerate.Foundations.Common
             public const string AboutLabel = "About";
             public const string FeedsPath = "/Feeds";
             public const string FeedsLabel = "Feeds";
-            public const string ThreadsPath = "/Threads";
-            public const string ThreadsLabel = "Threads";
+            public const string PostsPath = "/Posts";
+            public const string PostsLabel = "Posts"; 
             public const string ChatsPath = "/Chats";
             public const string ChatsLabel = "Chats";
             public const string ChannelsPath = "/Channels";
@@ -50,8 +52,6 @@ namespace Accelerate.Foundations.Common
             public const string ListsLabel = "Lists";
             public const string ProfilePath = "/Account/Profile";
             public const string ProfileLabel = "Profile";
-            public const string PostsPath = "/Account/Posts";
-            public const string PostsLabel = "Posts";
             public const string NotificationsPath = "/Account/Notifications";
             public const string NotificationsLabel = "Notifications";
             public const string MediaPath = "/Account/Media";

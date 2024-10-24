@@ -36,6 +36,7 @@ namespace Accelerate.Features.Content.Models.Views
         public ModalForm ModalDeleteReply { get; set; }
         public ModalForm ModalPinReply { get; set; }
         public ModalForm ModalLabelReply { get; set; }
+        public string Test { get; set; }
         public ThreadPage(ContentBasePage model) : base(model)
         {
 

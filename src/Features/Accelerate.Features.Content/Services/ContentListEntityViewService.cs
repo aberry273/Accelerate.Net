@@ -28,12 +28,13 @@ namespace Accelerate.Features.Content.Services
             viewModel.Test = "INDEX";
             return viewModel;
         }
-        public override ContentListPage CreateEntityPage(AccountUser user, ContentListDocument item, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentListDocument item, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = base.CreateEntityPage(user, item, items, aggregateResponse);
+            var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentListPage(model);
-            viewModel.FormCreatePost = this.CreatePostForm(user, PostbackType.POST, null, item);
-            viewModel.Test = "ENTITY";
+            viewModel.FormCreatePost = this.CreatePostForm(user, null, item);
+            viewModel.Test = "ENTITY"; 
+
             return viewModel;
         }
         private FormField FormFieldList(Guid? listId)
@@ -48,9 +49,9 @@ namespace Accelerate.Features.Content.Services
                 Value = listId,
             };
         }
-        public override ContentSubmitForm CreatePostForm(AccountUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, ContentListDocument doc = null)
+        public override ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, ContentListDocument doc = null)
         {
-            var model = base.CreatePostForm(user, type, item);
+            var model = base.CreatePostForm(user, item);
 
             if (doc != null)
             {
@@ -59,13 +60,15 @@ namespace Accelerate.Features.Content.Services
 
             return model;
         }
-        public override ContentBasePage CreateAllPage(AccountUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = base.CreateAllPage(user, items, aggregateResponse);
+            var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentListPage(model);
-            viewModel.Listing = new Foundations.Common.Models.UI.Components.Table.AclAjaxListing<ContentListDocument>()
+            viewModel.Listing = new AclAjaxListing<AclCard>()
             {
-                Items = items.Documents.ToList()
+                Items = items.IsSuccess()
+                    ? items.Documents.Select(CreateCardFromContent).ToList()
+                    : new List<AclCard>()
             };
             return viewModel;
         }

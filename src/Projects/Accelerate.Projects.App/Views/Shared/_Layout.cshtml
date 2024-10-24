@@ -402,7 +402,7 @@
             taxonomy: {
                 category: 'Marketing',
             },
-            menu: [ 'CopyLink', 'Edit', 'Delete' ],
+            menu: [ 'OpenInNew', 'CopyLink', 'Edit', 'Delete' ],
             actions: [ 'reply', 'quote', 'upvote', 'downvote', 'tag' ],
         },
         { 
@@ -531,106 +531,6 @@
             actions: [ 'reply', 'quote', 'upvote', 'downvote', 'tag' ],
         },
     ];
-    var formatActions = [ 'code','bold','quote','italic','mention','emoji']
-    var formActions = [
-        {
-            name: 'image',
-            tooltip: 'image',
-            icon: 'image',
-            event: 'on:comment:image',
-        },
-        {
-            name: 'video',
-            tooltip: 'video',
-            icon: 'video',
-            event: 'on:comment:video',
-        },
-        {
-            name: 'top',
-            tooltip: 'top',
-            icon: 'presentationChart',
-            event: 'on:comment:top',
-        },
-        {
-            name: 'settings',
-            tooltip: 'settings',
-            icon: 'cog',
-            event: 'on:comment:settings',
-        },
-    ];
-    var commentActions = [
-        {
-            name: 'upvote',
-            tooltip: 'upvote',
-            icon: 'chevronUp',
-            event: 'on:upvote',
-            value: null,
-            overlay: true,
-        },
-        {
-            name: 'downvote',
-            tooltip: 'downvote',
-            icon: 'chevronDown',
-            event: 'on:comment:downvote',
-            value: null,
-            overlay: true,
-        },
-        {
-            name: 'open',
-            tooltip: 'open',
-            icon: 'openNew',
-            href: '#',
-            overlay: true,
-        },
-        {
-            name: 'reply',
-            tooltip: 'reply',
-            icon: 'chatBubble',
-            event: 'on:comment:reply',
-            overlay: true,
-        },
-    ];
-    var commentMenu = [
-        {
-            name: 'CopyLink',
-            text: 'Copy link',
-            tooltip: 'reply',
-            icon: 'link',
-            event: 'on:comment:copylink'
-        },
-        {
-            name: 'Flag',
-            text: 'Flag post',
-            tooltip: 'flag',
-            icon: 'chatBubbles',
-            override: true,
-            event: 'on:comment:flag',
-        },
-        {
-            name: 'Quote',
-            text: 'Quote post',
-            icon: 'chatBubbles',
-            event: 'on:comment:quote',
-            value: null,
-        },
-        {
-            name: 'Delete',
-            text: 'Delete post',
-            tooltip: 'upvote',
-            icon: 'trash',
-            override: true,
-            event: 'on:comment:delete',
-        },
-        {
-            name: 'Edit',
-            text: 'Edit post',
-            tooltip: 'downvote',
-            icon: 'edit',
-            override: true,
-            href: '#edit',
-        },
-    ];
-
     var replyItems = [
         { 
             id: 221,

@@ -103,11 +103,10 @@ export default function (params) {
                                 <span x-text="metrics.rating" class="text-sm px-1 pt-1 font-medium text-gray-300 dark:text-gray-300">
                                 </span>
                                 <!-- Updated -->
-                                <time x-text="_mxDate_FormatString(content.date)" datetime="content.date" class="pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
-                                
+                                <time x-text="content.date" datetime="content.date" class="mt-1 pl-2 text-sm text-gray-300 dark:text-gray-300"></time>
+
                             </div>
                             <div class="mr-2 flex">
-
                                 <template x-for="btn in actions.filter(x => x.overlay)">
                                     <div x-data="aclButton(btn)"></div>
                                 </template>

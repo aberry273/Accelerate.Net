@@ -1,4 +1,5 @@
 ﻿using Accelerate.Features.Content.Models.Data;
+using Accelerate.Features.Content.Models.UI;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Models.Views;
@@ -26,7 +27,9 @@ namespace Accelerate.Features.Content.Models.Views
             Filters = model.Filters;
             */
         }
-        public AclAjaxListing<ContentFeedDocument> Listing { get; set; }
+        public AclAjaxListing<AclCard> AllListing { get; set; }
+        public AclAjaxListing<AclCard> UserListing { get; set; }
+        public ModalCreateContentPostReply ModalCreateReply { get; set; }
         public string Test { get; set; }
     }
 }

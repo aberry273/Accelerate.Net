@@ -41,7 +41,7 @@ namespace Accelerate.Features.Content.Controllers
         const string _unauthenticatedRedirectUrl = "/Account/login";
         protected string _entityName;
         protected string _razorPath;
-        private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
+        private const string _notFoundRazorFile = "~/Views/Shared/ContentNotFound.cshtml";
         public BaseContentController(
             string entityName,
             SignInManager<AccountUser> signInManager,
@@ -64,14 +64,16 @@ namespace Accelerate.Features.Content.Controllers
             _postSearchService = postSearchService;
             _contentElasticSearchService = contentElasticSearchService;
         }
-
-        protected QueryDescriptor<T> GetUserItemsQuery(AccountUser user)
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public virtual QueryDescriptor<T> BuildGetEntitiesQuery(AccountUser user)
         {
-            var query = new QueryDescriptor<T>();
-            query.MatchAll();
-            query.Term(x => x.UserId.Suffix("keyword"), user != null ? user.Id.ToString() : null);
-            return query;
+            var query = new RequestQuery();
+            var filter = _searchService.FilterValues("userId", ElasticCondition.Filter, QueryOperator.Contains, new List<string>() { user.Id.ToString(), Foundations.Common.Constants.Global.GlobalAdminContent.ToString() }, true );
+            query.Filters.Add(filter);
+
+            return _searchService.CreateQuery(query);
         }
+
         protected async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
@@ -85,7 +87,7 @@ namespace Accelerate.Features.Content.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> Landing()
         {
             var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
@@ -94,20 +96,24 @@ namespace Accelerate.Features.Content.Controllers
             {
                 _postSearchService.Filter(Foundations.Content.Constants.Fields.PostType, "Post")
             };
-            var items = await _searchService.Search(GetUserItemsQuery(user), 0, 100);
+            var query = this.BuildGetEntitiesQuery(user);
+            var items = await _searchService.Search(query, 0, 100);
+
+            //var items = await _searchService.Search(GetUserItemsQuery(user), 0, 100);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
 
-            var viewModel = _contentViewService.CreateAllPage(user, items, aggResponse);
+            var viewModel = await _contentViewService.CreateAllPage(user, items, aggResponse);
 
             return View(viewModel);
         }
 
         protected async Task<ContentBasePage> CreateIndexPage(AccountUser user, T item)
         {
-            var channels = await _searchService.Search(GetUserItemsQuery(user));
+            var query = this.BuildGetEntitiesQuery(user);
+            var channels = await _searchService.Search(query);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
-            var viewModel = _contentViewService.CreateEntityPage(user, item, channels, aggResponse);
+            var viewModel = await _contentViewService.CreateEntityPage(user, item, channels, aggResponse);
             viewModel.RouteName = "All";
             return viewModel;
         } 
@@ -156,7 +162,7 @@ namespace Accelerate.Features.Content.Controllers
         public async Task<IActionResult> Edit([FromRoute] Guid id)
         {
             var user = await GetUserWithProfile(this.User);
-            var channels = await _searchService.Search(GetUserItemsQuery(user));
+            var channels = await _searchService.Search(BuildGetEntitiesQuery(user));
             var item = await _searchService.GetDocument<T>(id.ToString());
             var viewModel = _contentViewService.CreateEditPage(user, channels, item.Source);
             return View($"{_razorPath}s/Create.cshtml", viewModel);
@@ -166,7 +172,7 @@ namespace Accelerate.Features.Content.Controllers
         public virtual async Task<IActionResult> Create()
         {
             var user = await GetUserWithProfile(this.User);
-            var channels = await _searchService.Search(GetUserItemsQuery(user));
+            var channels = await _searchService.Search(BuildGetEntitiesQuery(user));
 
             var viewModel = _contentViewService.CreateAddPage(user, channels);
             return View($"{_razorPath}s/Create.cshtml", viewModel);
