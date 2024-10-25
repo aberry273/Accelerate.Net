@@ -1,12 +1,15 @@
 using Accelerate.Foundations.Account.Models;
 using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Account.Services;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Integrations.Twilio.Models;
+using Accelerate.Foundations.Websockets.Hubs;
 using Azure.Identity;
 using MassTransit.JobService;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using System.Configuration;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 
@@ -44,7 +47,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add Foundation references to the container
-
 Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
@@ -59,10 +61,21 @@ Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builde
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
+
 // Add Feature references to the container
-//Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
+
+
+// Add Database Exception filter
+// provides helpful error information in the development environment for EF migrations errors.
+
+// enable MVC
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 // enable sessionState
 builder.Services.AddDistributedMemoryCache();
@@ -74,7 +87,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Setup local admin
@@ -86,10 +99,11 @@ var app = builder.Build();
 app.UseSession();
 
 // Add WebAPI based authentication
+/*
 app.MapGroup($"/{Accelerate.Projects.Api.Constants.Routes.WebApiAuthentication}")
     .MapIdentityApi<AccountUser>()
     ;
-
+*/
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -122,6 +136,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapRazorPages();
 app.MapControllers();
 /*
 app.MapControllerRoute(name: "default",
@@ -129,5 +144,7 @@ app.MapControllerRoute(name: "default",
 */
 app.MapDefaultControllerRoute();
 
+
 app.Run();
+
 

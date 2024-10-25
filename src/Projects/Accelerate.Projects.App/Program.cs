@@ -75,7 +75,7 @@ Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
-
+Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 
 // Add Database Exception filter

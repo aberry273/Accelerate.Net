@@ -10,7 +10,7 @@ namespace Accelerate.Foundations.Mediator
 {
     public static class Startup
     {
-        public static void ConfigureServices<T, B>(IServiceCollection services)// where B : class, IDataBus<T>
+        public static void ConfigureServices(IServiceCollection services)// where B : class, IDataBus<T>
         {
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

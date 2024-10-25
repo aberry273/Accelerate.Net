@@ -86,12 +86,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Accounts\Accelerate.Features.Accounts.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Account\Accelerate.Features.Account.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Admin\Accelerate.Features.Admin.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
