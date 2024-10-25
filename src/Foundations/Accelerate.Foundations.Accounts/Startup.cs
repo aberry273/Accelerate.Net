@@ -26,12 +26,14 @@ namespace Accelerate.Foundations.Accounts
 
             services.AddDbContext<BaseContext<AccountsCustomerEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<AccountsBankAccountEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
-           
+            services.AddDbContext<BaseContext<AccountsFundingSourceEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+
             //Services
             // Core
             services.AddTransient<IEntityService<AccountsCustomerEntity>, EntityService<AccountsCustomerEntity>>();
             services.AddTransient<IEntityService<AccountsBankAccountEntity>, EntityService<AccountsBankAccountEntity>>();
-           
+            services.AddTransient<IEntityService<AccountsFundingSourceEntity>, EntityService<AccountsFundingSourceEntity>>();
+
             // Logic
             //services.AddTransient<IContentPostService, ContentPostService>();
 

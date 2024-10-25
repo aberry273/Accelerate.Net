@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Accounts.Models.Entities
 {
-    [Table("AccountsFunding")]
+    [Table("AccountsBankAccount")]
     public class AccountsBankAccountEntity : AccountsBaseEntity
     {
         #region Required 

@@ -10,14 +10,17 @@ namespace Accelerate.Foundations.Accounts.Database
     {
         public BaseContext<AccountsCustomerEntity> Customers { get; set; }
         public BaseContext<AccountsBankAccountEntity> BankAccounts { get; set; }
+        public BaseContext<AccountsFundingSourceEntity> FundingSource { get; set; }
         public AccountsDbContext(DbContextOptions<AccountsDbContext> options,
                 BaseContext<AccountsCustomerEntity> customerContext,
-                BaseContext<AccountsBankAccountEntity> bankAccountContext
+                BaseContext<AccountsBankAccountEntity> bankAccountContext,
+                BaseContext<AccountsFundingSourceEntity> fundingSourceContext
             )
             : base(options)
         {
             Customers = customerContext;
             BankAccounts = bankAccountContext;
+            FundingSource = fundingSourceContext;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -25,6 +28,7 @@ namespace Accelerate.Foundations.Accounts.Database
             base.OnModelCreating(builder);
             builder.Entity<AccountsCustomerEntity>().HasKey(c => c.Id);
             builder.Entity<AccountsBankAccountEntity>().HasKey(c => c.Id);
+            builder.Entity<AccountsFundingSourceEntity>().HasKey(c => c.Id);
 
         }
     }

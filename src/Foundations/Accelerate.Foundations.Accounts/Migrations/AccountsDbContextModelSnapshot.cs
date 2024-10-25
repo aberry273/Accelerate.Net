@@ -85,7 +85,7 @@ namespace Accelerate.Foundations.Accounts.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("AccountsFunding");
+                    b.ToTable("AccountsBankAccount");
                 });
 
             modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", b =>
@@ -171,11 +171,79 @@ namespace Accelerate.Foundations.Accounts.Migrations
                     b.ToTable("AccountsCustomer");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsFundingSourceEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BankAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Postcode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StreetAddress1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetAddress2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Suburb")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BankAccountId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("AccountsFundingSource");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsBankAccountEntity", b =>
                 {
                     b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsFundingSourceEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsBankAccountEntity", "BankAccount")
+                        .WithMany()
+                        .HasForeignKey("BankAccountId");
+
+                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BankAccount");
 
                     b.Navigation("Customer");
                 });

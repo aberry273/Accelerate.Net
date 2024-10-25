@@ -106,8 +106,12 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Quartz\Accelerate.Foundations.Integrations.Quartz.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Kyc\Accelerate.Foundations.Kyc.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Operations\Accelerate.Foundations.Operations.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Orders\Accelerate.Foundations.Orders.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Rates\Accelerate.Foundations.Rates.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transfers\Accelerate.Foundations.Transfers.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>
 

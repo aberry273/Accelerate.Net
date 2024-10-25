@@ -68,6 +68,11 @@ Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, bu
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Transfers.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Orders.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+//Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+//Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
 
 // Add Feature references to the container
