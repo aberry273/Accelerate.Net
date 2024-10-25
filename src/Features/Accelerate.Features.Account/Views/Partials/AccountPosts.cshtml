@@ -1,0 +1,19 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{ }
+
+<script>
+</script> 
+<!--Feed-->
+<div x-data="listCards( {
+    actionUrl: '/api/contentpostactivity',
+    searchUrl: '/api/contentsearch/posts',
+    filterEvent: null,
+    userId: '@Model.UserId',
+    actionEvent: 'action:post',
+    itemEvent: $store.wssContentPosts.getMessageEvent(),w
+    })">
+               

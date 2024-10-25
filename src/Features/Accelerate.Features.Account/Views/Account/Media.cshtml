@@ -1,0 +1,39 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{
+    Layout = "/Views/Account/_ManagePageLayout.cshtml";
+}
+<section>
+    <div>
+        <nav>
+            <ul>
+
+                <div x-data="appNavFilters({
+                    filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+                    header: 'Posts',
+                    event: '@Model.FilterEvent'
+                })"></div>
+            </ul>
+            <ul>
+                <button class="material-icon flat primary" @@click="$events.emit('@Model.ModalCreateMedia.Target', { target: '@Model.ModalCreateMedia.Target' })">Add</button>
+            </ul>
+        </nav>
+        <!-- Filters -->
+        <div x-data="gridCardMedia( {
+                    actionUrl: '@Model.ActionUrl',
+                    searchUrl: '@Model.SearchUrl',
+                    filterEvent: '@Model.FilterEvent',
+                    actionEvent: 'action:post',
+                    initSearch: true,
+                    quoteEvent: 'quote:post',
+                    userId: '@Model.UserId',
+                    itemEvent: $store.wssContentPosts.getMessageEvent(),
+                    items: []
+                })">
+        </div>
+    </div>
+</section>
+<div x-data="modalFormFile(@JsonSerializerHelper.SerializeObject(Model.ModalCreateMedia))"></div>

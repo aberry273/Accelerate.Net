@@ -1,0 +1,155 @@
+﻿ @using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@model ChannelPage
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+    var currentTab = Model.Item.Name;
+}
+
+<div class="grid" x-data="{ 
+        showDetails: false,
+        init() { 
+            this.$events.on($store.wssContentChannels.getMessageEvent(), async (e)=>
+                {
+                    const data = e.data;
+                    if (!data) return;
+                    
+                    if(data.update == 'Deleted') {
+                        location.reload();
+                    }
+                })
+            },
+        }">
+    <!-- Channels panel -->
+    <div>
+        <nav>
+            <header>
+                <hgroup>
+                    <h1 >Channels</h1>
+                </hgroup>
+            </header>
+        </nav>
+
+        <nav class="noscrollbar"  style="width:100%;overflow-x: scroll;">
+            <ul>
+                @foreach (var tab in Model.ChannelsTabs.Items)
+                {
+                    var tabClass = currentTab == tab.Text ? "selected" : "";
+                    <a role="button" style="width: 100%" class="flat primary tab @tabClass" href="@tab.Href">@tab.Text</a>
+                }
+            </ul> 
+        </nav>
+
+        <hr />
+
+        <nav>
+            <header style="width: 50%; white-space: nowrap;">
+                <hgroup >
+                    <h3 style="overflow: hidden;text-overflow: ellipsis;">@Model.Item.Name</h3>
+                </hgroup>
+            </header>
+            <ul>
+                <button x-show="showDetails" class="material-icons click flat " @@click="showDetails = false">unfold_less</button>
+                <button x-show="!showDetails" class="material-icons click flat " @@click="showDetails = true">unfold_more</button>
+
+                @if (Model.UserId == Model.Item.UserId)
+                {
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalDeleteChannel.Target', { target: '@Model.ModalDeleteChannel.Target' })">delete</button>
+                    <button class="material-icons click flat small secondary" @@click="$events.emit('@Model.ModalEditChannel.Target', { target: '@Model.ModalEditChannel.Target' })">edit</button>
+                }
+            </ul>
+        </nav>
+        <div x-show="showDetails" x-transition>
+            <div class="grid">
+                <div>
+                    <strong><sup>Category</sup></strong>
+                    <div class="chips">
+                        @if(!string.IsNullOrEmpty(Model.Item.Category))
+                        {
+                            <a style="text-decoration:none" class="tag flat closable secondary small">
+                                <strong><sup>@Model.Item.Category</sup></strong>
+                            </a>
+                        }
+                        else
+                        {
+                            <sup>No category set</sup>
+                        }
+                    </div>
+                </div>
+                <div>
+                    <strong><sup>Tags</sup></strong>
+                    @if (Model.Item.Tags != null)
+                    {
+                        <div class="chips">
+                            <template x-for="item in @JsonSerializerHelper.SerializeObject(Model.Item.Tags)">
+                                <a style="text-decoration:none" class="tag flat closable secondary small">
+                                    <strong><sup x-text="item"></sup></strong>
+                                </a>
+                            </template>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="chips">
+                            <sup>No tags set</sup>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div>
+                <strong><sup>Description</sup></strong>
+                <p>@Model.Item.Description</p>
+            </div>
+            <hr />
+        </div>
+        <nav class="padded">
+            <ul>
+                <div x-data="dropdown(
+                    { title: '@Model.RouteName', items: @JsonSerializerHelper.SerializeObject(Model.ChannelDropdown) },
+                    {
+                        class: 'flat secondary bold'
+                    })"></div>
+            </ul>
+        </nav>
+
+        <!--Feed-->
+        <!--
+        <nav>
+            <ul>
+                foreach (var tab in Model.Tabs)
+                {
+                    var tabClass = currentTab == tab.Text ? "selected" : "";
+                    <a role="button" style="width: 100%" class="flat secondary tab tabClass" href="tab.Href">tab.Text</a>
+                }
+            </ul>
+        </nav>
+        -->
+        <section>
+            @RenderBody()
+        </section>
+       
+    </div>
+</div>
+
+<!-- Modals -->
+<!-- Edit channel -->
+@if (Model.IsAuthenticated)
+{
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalDeleteChannel))"></div>
+
+    <div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
+
+    <!--
+    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+    -->
+    <!-- Delete post -->
+    <!--
+    <div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+    -->
+    <!-- Share post -->
+    <div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>
+}

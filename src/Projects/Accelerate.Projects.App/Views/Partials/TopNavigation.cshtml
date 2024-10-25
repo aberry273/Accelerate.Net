@@ -1,0 +1,92 @@
+﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
+<nav x-data="{fixed: false}" class="topnav article">
+<div class="container ">
+    <template x-if="fixed">
+        <nav style="height:66px"><ul></ul></nav>
+    </template>
+    <!-- Header -->
+    @if (Model.Authenticated)
+    {
+            <nav :class="fixed ? 'floating container topnav' : 'topnav'"
+             :style="fixed ?  'padding-left:0px; width: 91.45%; padding: 0px 8px;' : 'padding: 0px 8px;'"
+             @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+            <ul>
+                <li>
+                    <strong>
+                        <a href="@Model.Href" style="text-decoration:none;">
+                            <img src="@Model.Logo" style="max-width:35px" />
+                            @Model.Title
+                        </a>
+                    </strong>
+                </li>
+            </ul>
+            <ul>
+                @foreach(var link in Model.Items)
+                {
+                    if(link.Disabled == true)
+                    {
+                        <li>@link.Text</li>
+                    }
+                    else
+                    {
+                        <li><a href="@link.Href" style="text-decoration:none;">@link.Text</a></li>
+                    }
+                }
+                @if(Model.Dropdown != null)
+                {
+                    var profilePicture = !string.IsNullOrEmpty(Model.Dropdown.Image)
+                        ? $"{Model.Dropdown.Image}?w=50"
+                        : null;
+                    <details class="dropdown avatar">
+                        <summary role="link">
+                            @if (!string.IsNullOrEmpty(@profilePicture))
+                            {
+                                <img src="@profilePicture" />
+                            }
+                            else
+                            {
+                                <i class="icon material-icons icon-click">person</i>
+                            }
+                        </summary>
+                        <ul>
+                            @foreach (var link in Model.Dropdown.Items)
+                            {
+                                if (link.Disabled == true)
+                                {
+                                    <li><strong>@link.Text</strong></li>
+                                }
+                                else
+                                {
+                                    <li><a href="@link.Href" style="text-decoration:none;">@link.Text</a></li>
+                                }
+                            }
+                        </ul>
+                    </details>
+                }
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <nav x-data="{fixed: false}"
+                 :class="fixed ? 'container  floating topnav' : 'topnav'"
+                 :style="fixed ?  'padding-left:0px; width: 91.45%; padding: 0px 8px;' : 'padding: 0px 8px;'"
+                 @@scroll.window="fixed = (window.pageYOffset < 1) ? false: true">
+            <ul><li><strong><a href="@Model.Href">@Model.Title</a></strong></li></ul>
+            <ul>
+                @foreach (var link in Model.Items)
+                {
+                    if (link.Disabled == true)
+                    {
+                        <li>@link.Text</li>
+                    }
+                    else
+                    {
+                        <li><a href="@link.Href">@link.Text</a></li>
+                    }
+                }
+            </ul>
+        </nav>
+    }
+</div>
+</nav>

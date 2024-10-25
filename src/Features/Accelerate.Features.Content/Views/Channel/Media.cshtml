@@ -1,0 +1,46 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model ChannelPage
+@{
+    Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
+}
+<div class="grid">
+     <!--Filter-->
+    <div x-data="appNavFilters({
+        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        header: 'Filter By',
+        event: '@Model.FilterEvent'
+    })"></div>
+         
+    <!--Feed-->
+<div x-data="listCards( {
+        actionUrl: '@Model.ActionsApiUrl',
+        searchUrl: '@Model.PostsApiUrl',
+        filterEvent: '@Model.FilterEvent',
+        userId: '@Model.UserId',
+        forceLoad: true,
+        actionEvent: 'action:post',
+        channelId: '@Model.Item.Id',
+        itemEvent: $store.wssContentPosts.getMessageEvent(),
+        })">
+    </div>
+</div>
+ 
+
+<!-- Modals -->
+<!-- Create channel -->
+<div x-data="modalForm(@JsonSerializerHelper.SerializeObject(Model.ModalEditChannel))"></div>
+
+<!-- Edit post -->
+<!--
+<div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalEditReply))"></div>
+-->
+<!-- Delete post -->
+<!--
+<div x-data="modalForm(JsonSerializerHelper.SerializeObject(Model.ModalDeleteReply))"></div>
+-->
+<!-- Share post -->
+<div x-data="modal({target: 'modal-share-post', title: 'Share post', text: 'test 123'  })"></div>

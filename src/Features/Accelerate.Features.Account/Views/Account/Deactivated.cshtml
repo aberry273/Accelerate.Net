@@ -1,0 +1,46 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.AccountFormPage
+@{ ViewData["Title"] = "Log in"; }
+<div class="grid container">
+    <div class="panel center-vertical">
+
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Deactivated</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed-->
+        <div>
+            <div x-data="formPostback({
+                feed: $store.feedFilters.current,
+                fields: [
+                  {
+                    name: 'Username',
+                    type: 'input',
+                    placeholder: 'Username',
+                    label: 'Username',
+                    autocomplete: null,
+                    ariaInvalid: true,
+                    helper: 'error'
+                  },
+                  {
+                    name: 'Password',
+                    type: 'password',
+                    placeholder: 'Password',
+                    label: 'Password',
+                    autocomplete: null
+                  }
+                ]
+              })"></div>
+        </div>
+    </div>
+    <!-- Other panel -->
+    <div>
+    </div>
+</div>

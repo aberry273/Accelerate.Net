@@ -1,0 +1,44 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model ChannelPage
+@{
+    Layout = "/Views/Shared/_ChannelPageLayout.cshtml";
+}
+<div class="">
+
+    @if (Model.IsDeactivated)
+    {
+        <article>Reactivate your account to respond</article>
+    }
+    else if (Model.IsAuthenticated)
+    {
+        <div style="margin-bottom: 8px;" x-data="appFormResponse(@JsonSerializerHelper.SerializeObject(Model.FormCreateReply))"></div>
+    }
+    else
+    {
+        <article>Login to respond</article>
+    }
+    <!--Filter-->
+    <div x-data="appNavFilters({
+        filters: @JsonSerializerHelper.SerializeObject(Model.Filters),
+        header: 'Filter By',
+        event: '@Model.FilterEvent'
+    })"></div>
+    <!--Feed-->
+    <div x-data="listCards( {
+        actionUrl: '@Model.ActionsApiUrl',
+        searchUrl: '@Model.PostsApiUrl',
+        filterEvent: '@Model.FilterEvent',
+        actionEvent: '@Model.ActionEvent',
+        forceLoad: true,
+        userId: '@Model.UserId',
+        filters: {
+            channelId: ['@Model.Item.Id']
+        },
+        itemEvent: $store.wssContentPosts.getMessageEvent(),
+        })">
+    </div>
+</div>

@@ -1,0 +1,30 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Content.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model NotFoundPage
+
+<div>
+    <nav>
+        <ul>
+            <li>
+                <a href="@Model.ReturnLink.Href">
+                    <i aria-label="Agree" class="icon material-icons icon-click" rel="prev">chevron_left</i>
+                </a>
+            </li>
+            <li>
+                <strong>???</strong>
+            </li>
+        </ul>
+    </nav>
+    <article>
+        <h2>@Model.Title</h2>
+        <p>
+            @Model.Description
+        </p>
+        <footer>
+            <button href="@Model.ReturnLink.Href">Return</button>
+        </footer>
+    </article>
+</div>

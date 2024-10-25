@@ -1,0 +1,92 @@
+﻿@inject Microsoft.Extensions.Hosting.IHostEnvironment env
+@inject UserManager<AccountUser> UserManager
+@model BasePage
+@{
+    var lang = Model.Metadata.LanguageCode ?? "en"; 
+}
+<!DOCTYPE html>
+<html lang="@lang">
+<head>
+    @{
+        if (Model.Metadata != null)
+            await Html.RenderPartialAsync("~/Views/Shared/PageMetadata.cshtml", Model.Metadata);
+        if (Model.SEO != null)
+            await Html.RenderPartialAsync("~/Views/Shared/PageSeoMetadata.cshtml", Model.SEO);
+        if (Model.SocialMetadata != null)
+            await Html.RenderPartialAsync("~/Views/Shared/PageSocialMetadata.cshtml", Model.SocialMetadata);
+    }
+    <!-- Icons -->
+    <link defer href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Round|Material+Icons+Outlined" rel="stylesheet">
+
+    <!-- CSS Libraries -->
+    <!-- Classbased -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.min.css" />
+    <!-- Classless - centered viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.classless.min.css" /> -->
+    <!-- Classless - fluid viewport -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@picocss/pico@2/css/pico.fluid.classless.min.css" /> -->
+    <!-- CSS Overrides -->
+    <link rel="stylesheet" href="~/src/css/app.css" />
+    <link rel="stylesheet" href="~/src/css/overrides.css" />
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- PWA -->
+    <link rel="manifest" href="~/src/manifest.json" />
+
+</head>
+
+<body style="background-color: min-height: 100%; height: 100vh;">
+
+    <!-- Header -->
+    @{
+        await Html.RenderPartialAsync("~/Views/Partials/TopNavigation.cshtml", Model.TopNavigation);
+    }
+    <div class="container">
+        <!-- Body -->
+        @RenderBody()
+        <!-- Footer -->
+        <div x-data="footer(footerData)"></div>
+    </div>
+
+    <!-- Alerts -->
+    <!--
+    <div x-data="snackbar({event: 'snackbar-success', type: 'success' })" x-on:show:alert.window="show"></div>
+    <div x-data="snackbar({event: 'snackbar-error', type: 'error' })" x-on:show:alert.window="show"></div>
+    <div x-data="snackbar({event: 'snackbar-information', type: 'information' })" x-on:show:alert.window="show"></div>
+    -->
+    <div x-data="snackbarList({event: 'snackbar-add', limit: 5 })" x-on:show:alert.window="show"></div>
+
+    <!-- JS Libraries -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+    <!-- For componentizing and lazy loading Alpine -->
+    <script type="module" src="~/src/js/init.js" defer></script>
+    <script>
+        let wssSettings = @Html.Raw(JsonSerializerHelper.SerializeObject(Model.ServiceSettings))
+    </script>
+   
+    <!-- DATA -->
+    <script>
+        let footerData = {
+            title: 'parot.app',
+            subtitle: 'The new bird in town',
+            text: 'parot.app'
+        }
+    </script>
+
+    <script defer>
+        let _emojiJson = [];
+        const emojiJsonUrl = "https://unpkg.com/emoji.json@15.1.0/emoji.json";
+        fetch(emojiJsonUrl)
+            .then(res => res.json())
+            .then(out => {
+                _emojiJson = out;
+            })
+            .catch(err => { throw err });
+    </script>
+</body>
+</html>

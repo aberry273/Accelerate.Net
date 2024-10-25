@@ -12,6 +12,5 @@ bin
 obj
 packages
 src/.vs/ProjectEvaluation/
-src/secrets.json,src/*/**/*.secrets.json
-src/api.secrets.json
 src/secrets.json
+backups/

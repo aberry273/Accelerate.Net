@@ -1,0 +1,63 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{
+    Layout = "/Views/Account/_ManagePageLayout.cshtml";
+}
+
+<script>
+    const tabs = [
+        "profile",
+        "posts",
+        "media",
+        "contact",
+        "settings",
+    ]
+</script>
+<div class=" container">
+    <div class="center-vertical">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>Manage profile</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        <!--Feed--> 
+        <div x-data>
+            <nav>
+                <ul>
+                    <template x-for="tab in tabs" x-init="$store.tabs.setTab(tabs[0])">
+                        <button style="width: 100%" class="flat primary tab" :class="tab == $store.tabs.current ? 'selected': ''" @@click="$store.tabs.setTab(tab)" x-text="tab"></button>
+                    </template>
+                </ul>
+            </nav>
+                
+                <section x-show="$store.tabs.isSelected('posts')">
+                    @{
+                        await Html.RenderPartialAsync("~/Views/Partials/AccountPosts.cshtml", Model);
+                    }
+                </section>
+                <section x-show="$store.tabs.isSelected('media')">
+                    @{
+                        await Html.RenderPartialAsync("~/Views/Partials/AccountMedia.cshtml", Model);
+                    }
+                </section>
+                <section x-show="$store.tabs.isSelected('contact')">
+                    <div >
+                        contact form
+                    </div>
+                </section>
+                <section x-show="$store.tabs.isSelected('settings')">
+                    <div>
+                        settings form
+                    </div>
+                </section> 
+        </div>
+    </div>
+    <!-- Other panel -->
+</div>

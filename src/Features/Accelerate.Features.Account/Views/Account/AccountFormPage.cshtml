@@ -1,0 +1,101 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.AccountFormPage
+@{ }
+<div class="container center-vertical">
+    <div class="form">
+        <nav>
+            <ul>
+                <header>
+                    <hgroup>
+                        <h1>@Model.Title</h1>
+                    </hgroup>
+                </header>
+            </ul>
+        </nav>
+        @if (Model.Message != null)
+        {
+            <i>@Model.Message</i>
+        }
+        <!--Form-->
+        <article>
+            <header>@Model.Form.Header</header>
+            @if (!string.IsNullOrEmpty(Model.Form.Response))
+            {
+                <strong><i>@Model.Form.Response</i></strong>
+            }
+            @if(Model.Form != null && Model.Form.Fields != null)
+            {
+                <div x-data="formPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+            }
+        </article>
+    </div> 
+    <section>
+    @if(Model.Providers != null)
+    {
+        <article class="form py-0">
+            <form action="@Model.ExternalLoginPostbackUrl" asp-action="@Model.ExternalLoginAction" method="post">
+               <nav>
+                    @foreach (var provider in Model.Providers)
+                    {
+                        if(provider.Name == "Facebook")
+                        {
+                                <button name="provider" type="submit" x-model="@provider.Name" value="@provider.Name" class="" type="submit" style="margin: 2px 2px; border-color:transparent; color: #FFF; background-color: #4267B2">
+                                <div>
+                                    <i aria-label="Facebook" class="icon" style="display: contents;">
+                                        <svg style="margin-top: 10px;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 36 36">
+                                            <path d="M12,2C6.477,2,2,6.477,2,12c0,5.013,3.693,9.153,8.505,9.876V14.65H8.031v-2.629h2.474v-1.749 c0-2.896,1.411-4.167,3.818-4.167c1.153,0,1.762,0.085,2.051,0.124v2.294h-1.642c-1.022,0-1.379,0.969-1.379,2.061v1.437h2.995 l-0.406,2.629h-2.588v7.247C18.235,21.236,22,17.062,22,12C22,6.477,17.523,2,12,2z"></path>
+                                        </svg>
+                                    </i>
+                                    Continue with @provider.Name
+                                </div>
+                            </button>
+                        }
+                        else if (provider.Name == "Google")
+                        {
+                                <button name="provider" type="submit" x-model="@provider.Name" value="@provider.Name" class="outline" type="submit" style="margin: 2px 2px; border-color: transparent;color:  #FFF;background-color: #4285F4">
+                                <div>
+                                    <i aria-label="Google" class="icon" style="display: contents;">
+                                        <svg style="margin-top: 10px;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 36 36">
+                                            <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032 s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2 C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"></path>
+                                        </svg>
+                                    </i>
+                                    Continue with @provider.Name
+                                </div>
+                            </button>
+                        }
+                        else if (provider.Name == "Microsoft")
+                        {
+                            <button name="provider" x-model="@provider.Name" value="@provider.Name" class="outline" type="submit" style="border-color: transparent; color: #FFF; background-color: #000">
+                                <div>
+                                    <i aria-label="Google" class="icon" style="display: contents; ">
+                                        <svg style="margin-top: 10px;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 36 36">
+                                            <path d="M 5 4 C 4.448 4 4 4.447 4 5 L 4 24 L 24 24 L 24 4 L 5 4 z M 26 4 L 26 24 L 46 24 L 46 5 C 46 4.447 45.552 4 45 4 L 26 4 z M 4 26 L 4 45 C 4 45.553 4.448 46 5 46 L 24 46 L 24 26 L 4 26 z M 26 26 L 26 46 L 45 46 C 45.552 46 46 45.553 46 45 L 46 26 L 26 26 z"></path>
+                                        </svg>
+                                    </i>
+                                    Continue with @provider.Name
+                                </div>
+                            </button>
+                        }
+                    }
+                    </nav>
+            </form>
+        </article>
+    }
+    </section>
+    <section>
+    <!-- Other links -->
+        <article class="form">
+            <div class="margin-spacing">
+                @foreach(var link in Model.Links)
+                {
+                    <a href="@link.Href" style="text-decoration: none;">
+                        <div role="button" class="@link.Class" tabindex="2">@link.Text</div>
+                    </a>
+                }
+            </div>
+        </article>
+    </section>
+</div>

@@ -1,0 +1,75 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Account.Models.Views.ManagePage
+@{
+    Layout = "/Views/Account/_ManagePageLayout.cshtml";
+}
+<section x-data="{
+        init() {
+            this.$events.on('@Model.UserForm.Event', (val) => {
+                location.reload();
+            })
+            this.$events.on('@Model.DeactivateForm.Event', (val) => {
+                location.reload();
+            })
+            this.$events.on('@Model.ReactivateForm.Event', (val) => {
+                location.reload();
+            })
+            this.$events.on('@Model.DeleteForm.Event', (val) => {
+                location.reload();
+            })
+        }
+    }">
+    <article class="" x-transition>
+        <header><strong>Account</strong></header>
+        <div class="grids">
+            <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.UserForm))"></div>
+        </div>
+    </article>
+</section>
+<section>
+</section>
+    <article class="" x-transition>
+        <header><strong>Profile</strong></header>
+        <div class="grids">
+            <div class="form" x-data="formFile(@JsonSerializerHelper.SerializeObject(Model.ProfileImageForm))"></div>
+            <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
+        </div>
+    </article>
+</section>
+@if(Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Active)
+{
+    <section>
+        <article class="" x-transition>
+            <header><strong>Deactivate account</strong></header>
+            <i>Your account will be automatically deleted 30 days after deactivating your account</i>
+            <i>Your posts will not be deleted, but will not be associated with your account anymore</i>
+            <div class="grids">
+                <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.DeactivateForm))"></div>
+            </div>
+        </article>
+    </section>
+}
+@if (Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
+{
+    <section>
+        <article class="" x-transition>
+            <header><strong>Re-activate account</strong></header>
+            <i>Click the button below to re-activate your account</i>
+            <div class="grids">
+                <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ReactivateForm))"></div>
+            </div>
+        </article>
+    </section>
+    <section>
+        <article class="" x-transition>
+            <header><strong>Delete account</strong></header>
+            <i>Click the button below to delete your account. Your posts will continue to exist but will not be associated with your account. Your account will be scrubbed.</i>
+            <div class="grids">
+                <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.DeleteForm))"></div>
+            </div>
+        </article>
+    </section>
+}
