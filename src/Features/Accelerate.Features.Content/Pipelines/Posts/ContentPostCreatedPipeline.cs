@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -24,7 +24,7 @@ using Accelerate.Foundations.Content.Hydrators;
 using Accelerate.Foundations.Media.Models.Entities;
 using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.EventPipelines.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Features.Content.Hydrators;
 using System.Reflection.Metadata;
@@ -34,10 +34,10 @@ namespace Accelerate.Features.Content.Pipelines.Posts
 {
     public class ContentPostCreatedPipeline : DataCreateEventPipeline<ContentPostEntity>
     {
-        private UserManager<AccountUser> _userManager;
+        private UserManager<UsersUser> _userManager;
         IContentPostService _contentPostService;
         IContentViewSearchService _contentViewSearchService;
-        IElasticService<AccountUserDocument> _accountElasticService;
+        IElasticService<UsersUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IElasticService<ContentPostActionsDocument> _elasticPostActionsService;
         IElasticService<ContentPostActionsSummaryDocument> _elasticPostActionsSummaryService;
@@ -52,7 +52,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         public ContentPostCreatedPipeline(
             IContentPostService contentPostService,
-            UserManager<AccountUser> userManager,
+            UserManager<UsersUser> userManager,
             IContentViewSearchService contentViewSearchService,
             IElasticService<ContentPostDocument> elasticService,
             IElasticService<ContentPostActionsDocument> elasticPostActionsService,
@@ -65,7 +65,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
             IEntityService<MediaBlobEntity> mediaService,
             IEntityService<ContentPostMediaEntity> mediaPostService,
             IHubContext<BaseHub<ContentPostViewDocument>, IBaseHubClient<WebsocketMessage<ContentPostViewDocument>>> messageHub,
-            IElasticService<AccountUserDocument> accountElasticService)
+            IElasticService<UsersUserDocument> accountElasticService)
         {
             _contentPostService = contentPostService;
             _elasticPostActionsService = elasticPostActionsService;
@@ -261,7 +261,7 @@ namespace Accelerate.Features.Content.Pipelines.Posts
         }
         private async Task<ContentPostUserProfileSubdocument> GetUserDocument(IPipelineArgs<ContentPostEntity> args)
         {
-            var result = await _accountElasticService.GetDocument<AccountUserDocument>(args.Value.UserId.ToString());
+            var result = await _accountElasticService.GetDocument<UsersUserDocument>(args.Value.UserId.ToString());
             var doc = result?.Source;
 
             var model = new ContentPostUserProfileSubdocument();

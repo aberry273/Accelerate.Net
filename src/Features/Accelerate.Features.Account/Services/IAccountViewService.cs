@@ -1,5 +1,5 @@
 ﻿using Accelerate.Features.Account.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
@@ -10,9 +10,9 @@ namespace Accelerate.Features.Account.Services
 {
     public interface IAccountViewService
     {
-        ManagePage GetMentionsPage(AccountUser user);
-        ManagePage GetNotificationsPage(AccountUser user, IEnumerable<ContentPostActivityEntity> activitiesResponse, int totalActivities);
-        ManagePage GetManagePage(AccountUser user);
+        ManagePage GetMentionsPage(UsersUser user);
+        ManagePage GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activitiesResponse, int totalActivities);
+        ManagePage GetManagePage(UsersUser user);
         Task<AccountFormPage> GetLoginPage(string? username);
         AccountFormPage GetRegisterPage(string? username, string? email);
         AccountFormPage GetForgotPasswordPage(string? usernameOrEmail);

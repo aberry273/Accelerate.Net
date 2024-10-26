@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Controllers;
 using Accelerate.Features.Media.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models;

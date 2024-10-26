@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Integrations.AzureStorage.Models;
 using Azure;
 using Azure.Identity;

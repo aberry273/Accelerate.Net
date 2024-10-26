@@ -1,6 +1,6 @@
 ﻿
 using Accelerate.Features.Media.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -28,13 +28,13 @@ namespace Accelerate.Features.Media.Controllers.Api
     [ApiController]
     public class MediaSearchController : ControllerBase
     {
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMediaViewService _contentService;
         IElasticService<MediaBlobDocument> _searchBlobService;
         public MediaSearchController(
             IMediaViewService contentService, 
             IElasticService<MediaBlobDocument> searchBlobService,
-            UserManager<AccountUser> userManager)
+            UserManager<UsersUser> userManager)
         {
             _userManager = userManager;
             _contentService = contentService;

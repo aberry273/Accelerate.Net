@@ -1,5 +1,5 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;

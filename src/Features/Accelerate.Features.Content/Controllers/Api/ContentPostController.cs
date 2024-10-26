@@ -1,7 +1,7 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Models.Data;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -36,7 +36,7 @@ using System.Text.RegularExpressions;
 using Accelerate.Foundations.Content.Services;
 using static Elastic.Clients.Elasticsearch.JoinField;
 using System.ComponentModel;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Services;
 using System.Security.Policy;
 using System; 
 
@@ -57,10 +57,10 @@ namespace Accelerate.Features.Content.Controllers.Api
     [ApiController]
     public class ContentPostController : BaseApiServiceController<ContentPostEntity>
     { 
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentPostBus, IPublishEndpoint> _publishEndpoint;
-        IAccountUserSearchService _userSearchService; 
+        IUsersUserSearchService _userSearchService; 
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostQuoteEntity> _quoteService;
         IEntityService<ContentPostMediaEntity> _postMediaService;
@@ -75,8 +75,8 @@ namespace Accelerate.Features.Content.Controllers.Api
             IMediaService mediaService,
             Bind<IContentPostBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
-            IAccountUserSearchService userSearchService,
-            UserManager<AccountUser> userManager) : base(service)
+            IUsersUserSearchService userSearchService,
+            UserManager<UsersUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
             _postService = postService;
@@ -196,7 +196,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                 {
                     new QueryFilter()
                     {
-                        Name = Foundations.Account.Constants.Fields.Username,
+                        Name = Foundations.Users.Constants.Fields.Username,
                         Keyword = true,
                         Condition = ElasticCondition.Filter,
                         Values = mentions,

@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
@@ -21,7 +21,7 @@ namespace Accelerate.Features.Content.Services
         {
             EntityName = "Feed";
         }
-        public override ContentFeedPage CreateIndexPage(AccountUser user, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override ContentFeedPage CreateIndexPage(UsersUser user, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentFeedPage(model);
@@ -30,7 +30,7 @@ namespace Accelerate.Features.Content.Services
 
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentFeedDocument item, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(UsersUser user, ContentFeedDocument item, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentFeedPage(model);
@@ -41,7 +41,7 @@ namespace Accelerate.Features.Content.Services
 
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<ContentFeedDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentFeedPage(model);
@@ -62,7 +62,7 @@ namespace Accelerate.Features.Content.Services
            
             return viewModel;
         }
-        public ModalCreateContentPostReply CreateModalCreateReplyForm(AccountUser user, ContentPostViewDocument? post)
+        public ModalCreateContentPostReply CreateModalCreateReplyForm(UsersUser user, ContentPostViewDocument? post)
         {
             var model = new ModalCreateContentPostReply();
             model.UserId = user.Id;

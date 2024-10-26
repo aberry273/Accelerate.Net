@@ -1,7 +1,7 @@
 ﻿
 using Accelerate.Features.Admin.Services;
-using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models.Entities;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Communication.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.EventPipelines.Consumers;
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Admin
             services.AddTransient<IAdminViewService, AdminViewService>();
             services.AddTransient<IAdminBaseEntityViewService<OperationsJobEntity>, AdminJobEntityViewService>();
             services.AddTransient<IAdminBaseEntityViewService<OperationsActionEntity>, AdminActionEntityViewService>();
-            services.AddTransient<IAdminBaseEntityViewService<AccountUser>, AdminUserEntityViewService>();
+            services.AddTransient<IAdminBaseEntityViewService<UsersUser>, AdminUserEntityViewService>();
 
         }
     }

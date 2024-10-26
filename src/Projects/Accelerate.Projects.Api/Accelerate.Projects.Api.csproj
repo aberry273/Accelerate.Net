@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Quartz\Accelerate.Foundations.Integrations.Quartz.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Twilio\Accelerate.Foundations.Integrations.Twilio.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Mediator\Accelerate.Foundations.Mediator.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
   </ItemGroup>
 
   <ItemGroup>

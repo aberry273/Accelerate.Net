@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,28 +8,28 @@ using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Features.Content.Controllers;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Services;
 namespace Accelerate.Projects.App.Controllers
 {
     //[Authorize]
     public class HomeController : BaseController
     {
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
-        IAccountUserService _accountUserService;
+        IUsersUserService _UsersUserService;
         public HomeController(
-            IAccountUserService accountUserService,
-            UserManager<AccountUser> userManager,
+            IUsersUserService UsersUserService,
+            UserManager<UsersUser> userManager,
             IMetaContentService contentService)
             : base(contentService)
         {
             _contentService = contentService;
             _userManager = userManager;
-            _accountUserService = accountUserService;
+            _UsersUserService = UsersUserService;
         }
-        private BasePage CreateBaseContent(AccountUser user)
+        private BasePage CreateBaseContent(UsersUser user)
         { 
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
             return _contentService.CreatePageBaseContent(profile);
         }
 

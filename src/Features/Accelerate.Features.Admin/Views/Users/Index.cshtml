@@ -1,6 +1,6 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
-@using Accelerate.Foundations.Account.Models.Entities
+@using Accelerate.Foundations.Users.Models.Entities
 @using Accelerate.Foundations.Common.Helpers
 @using Accelerate.Features.Admin.Models.Views
 @using Microsoft.AspNetCore.Http
@@ -58,7 +58,7 @@
             </div>
         </div>
     }
-    @if (Model.Item.Status == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Active)
+    @if (Model.Item.Status == Accelerate.Foundations.Users.Models.Entities.UsersUserStatus.Active)
     {
         <section>
             <div class="" x-transition>
@@ -71,7 +71,7 @@
             </div>
         </section>
     }
-    @if (Model.Item.Status == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
+    @if (Model.Item.Status == Accelerate.Foundations.Users.Models.Entities.UsersUserStatus.Deactivated)
     {
         <section>
             <div class="" x-transition>

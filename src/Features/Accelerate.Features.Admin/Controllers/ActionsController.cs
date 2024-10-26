@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Admin.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
@@ -13,6 +13,7 @@ using Accelerate.Foundations.Content.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Operations.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Aggregations;
 using Elastic.Clients.Elasticsearch.QueryDsl;
@@ -30,9 +31,9 @@ namespace Accelerate.Features.Content.Controllers
     {
         const string channelName = "Action";
         public ActionsController(
-            SignInManager<AccountUser> signInManager,
-            UserManager<AccountUser> userManager,
-            IEntityService<AccountProfile> profileService,
+            SignInManager<UsersUser> signInManager,
+            UserManager<UsersUser> userManager,
+            IEntityService<UsersProfile> profileService,
             IMetaContentService contentService,
             IEntityService<OperationsActionEntity> entityService,
             IAdminBaseEntityViewService<OperationsActionEntity> contentViewService,

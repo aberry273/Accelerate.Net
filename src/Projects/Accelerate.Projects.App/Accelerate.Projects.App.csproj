@@ -25,49 +25,6 @@
 
   <ItemGroup>
     <Content Remove="Views\Shared\_Layout.Backup.cshtml" />
-    <Content Remove="wwwroot\src - Copy (2)\css\app.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\components\_amount.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\components\_input-amount.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\components\_invoice-table.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\components\_priority-range.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\layout\_body.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\postcss.config.js" />
-    <Content Remove="wwwroot\src - Copy (2)\css\theme\_dark.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\theme\_light.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\theme\_schemes.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\css\theme\_styles.scss" />
-    <Content Remove="wwwroot\src - Copy (2)\favicon\site.webmanifest" />
-    <Content Remove="wwwroot\src - Copy (2)\js\bindings\button.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\bindings\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\alerts\snackbar.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\cards\card.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\content\header.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\input.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\forms\fields\textArea.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\lists\feed.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\appbar.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\footer.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\components\navigation\navbar.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\data\content\contentPostsManager.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\data\dropdown.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\data\html.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\data\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\directives\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\directives\log.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\directives\reactiveLog.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\directives\render.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\directives\uppercase.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\init.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\magics\fetch.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\magics\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\magics\now.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\magics\render.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\minimal-theme-switcher.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\stores\darkmode.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\stores\feedFilters.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\stores\index.js" />
-    <Content Remove="wwwroot\src - Copy (2)\js\stores\tabs.js" />
     <Content Remove="wwwroot\src\js\data\contentPosts.js" />
   </ItemGroup>
 
@@ -77,7 +34,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.3.2" />
-    <PackageReference Include="Azure.Identity" Version="1.12.0" />
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
@@ -99,7 +56,6 @@
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Media\Accelerate.Features.Media.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
-    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Account\Accelerate.Foundations.Account.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AzureSecrets\Accelerate.Foundations.Integrations.AzureSecrets.csproj" />
@@ -112,6 +68,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Orders\Accelerate.Foundations.Orders.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Rates\Accelerate.Foundations.Rates.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transfers\Accelerate.Foundations.Transfers.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>
 

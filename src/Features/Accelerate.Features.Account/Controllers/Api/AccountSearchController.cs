@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
@@ -17,8 +17,8 @@ using Microsoft.AspNetCore.SignalR;
 using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Services;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
@@ -26,11 +26,11 @@ namespace Accelerate.Features.Content.Controllers.Api
     [ApiController]
     public class AccountSearchController : ControllerBase
     {
-        UserManager<AccountUser> _userManager;
-        IAccountUserSearchService _searchService;
+        UserManager<UsersUser> _userManager;
+        IUsersUserSearchService _searchService;
         public AccountSearchController(
-            IAccountUserSearchService searchService,
-            UserManager<AccountUser> userManager)
+            IUsersUserSearchService searchService,
+            UserManager<UsersUser> userManager)
         {
             _searchService = searchService;
         }

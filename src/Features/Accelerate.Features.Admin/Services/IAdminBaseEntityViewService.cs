@@ -1,6 +1,6 @@
 ﻿
 using Accelerate.Features.Admin.Models.Views; 
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
@@ -15,13 +15,13 @@ namespace Accelerate.Features.Admin.Services
 {
     public interface IAdminBaseEntityViewService<T> where T : IBaseEntity
     {
-        NotFoundPage CreateNotFoundPage(AccountUser user, string title = null, string description = null);
+        NotFoundPage CreateNotFoundPage(UsersUser user, string title = null, string description = null);
         AdminBasePage CreateAnonymousListingPage();
-        AdminBasePage CreateAllPage(AccountUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
-        AdminBasePage CreateIndexPage(AccountUser user, IEnumerable<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
-        Task<AdminIndexPage<T>> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
-        AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<T> items);
-        AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<T> items, T item);
-        AjaxForm CreateEntityForm(AccountUser user, T? item, PostbackType type = PostbackType.POST);
+        AdminBasePage CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        AdminBasePage CreateIndexPage(UsersUser user, IEnumerable<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<T> items);
+        AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<T> items, T item);
+        AjaxForm CreateEntityForm(UsersUser user, T? item, PostbackType type = PostbackType.POST);
     }
 }

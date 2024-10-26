@@ -2,9 +2,9 @@
 using Accelerate.Features.Account.Pipelines;
 using Accelerate.Features.Account.Services;
 using Accelerate.Features.Content.Pipelines;
-using Accelerate.Foundations.Account.EventBus;
-using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.EventBus;
+using Accelerate.Foundations.Users.Models.Entities;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Communication.Services;
 using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Content.Models.Data;
@@ -31,7 +31,7 @@ namespace Accelerate.Features.Account
 {
     public static class Startup
     {
-        public static async Task<IdentityResult> CreateUser(UserManager<AccountUser> userService, Guid id, string name, string password)
+        public static async Task<IdentityResult> CreateUser(UserManager<UsersUser> userService, Guid id, string name, string password)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Accelerate.Features.Account
                 if (existingUser != null)
                     return null;
 
-                var user = new AccountUser { Id = id, UserName = name, Email = $"{name}@internal", Domain = Foundations.Account.Constants.Domains.Internal, EmailConfirmed = true, Status = AccountUserStatus.Active };
+                var user = new UsersUser { Id = id, UserName = name, Email = $"{name}@internal", Domain = Foundations.Users.Constants.Domains.Internal, EmailConfirmed = true, Status = UsersUserStatus.Active };
                 return await userService.CreateAsync(user, password);
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace Accelerate.Features.Account
                 throw;
             }
         }
-        public static async Task CreateGlobalAccounts(UserManager<AccountUser> userService)
+        public static async Task CreateGlobalAccounts(UserManager<UsersUser> userService)
         {
             await CreateUser(userService, Foundations.Common.Constants.Global.GlobalAdminMedia, "Admin", "Password1!!");
             await CreateUser(userService, Foundations.Common.Constants.Global.GlobalAdminAccounts, "AccountAdmin", "Password1!!");
@@ -61,7 +61,7 @@ namespace Accelerate.Features.Account
             using (var scope = app.Services.CreateScope())
             {
                 //Resolve ASP .NET Core Identity with DI help
-                var userManager = (UserManager<AccountUser>)scope.ServiceProvider.GetService(typeof(UserManager<AccountUser>));
+                var userManager = (UserManager<UsersUser>)scope.ServiceProvider.GetService(typeof(UserManager<UsersUser>));
                 //Task.FromResult(CreateGlobalAccounts(userManager));
                 var task = Task.Run(async () => await CreateGlobalAccounts(userManager));
 
@@ -75,9 +75,9 @@ namespace Accelerate.Features.Account
         {
             services.AddTransient<IAccountViewService, AccountViewService>();
 
-            Foundations.EventPipelines.Startup.ConfigurePipelineServices<AccountUser, AccountUserCreatedPipeline, AccountUserUpdatedPipeline, AccountUserDeletedPipeline>(services);
-            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<AccountUser>(services);
-            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<AccountUser, IAccountBus>(services); 
+            Foundations.EventPipelines.Startup.ConfigurePipelineServices<UsersUser, UsersUserCreatedPipeline, UsersUserUpdatedPipeline, UsersUserDeletedPipeline>(services);
+            Foundations.EventPipelines.Startup.ConfigureEmptyCompletedPipelineServices<UsersUser>(services);
+            Foundations.EventPipelines.Startup.ConfigureMassTransitServices<UsersUser, IUsersBus>(services); 
         }
     }
 }

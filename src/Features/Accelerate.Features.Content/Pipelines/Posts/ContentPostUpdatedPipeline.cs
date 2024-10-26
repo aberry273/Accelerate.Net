@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Pipelines.Actions;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Common.Services;
@@ -23,14 +23,14 @@ namespace Accelerate.Features.Content.Pipelines.Posts
     public class ContentPostUpdatedPipeline : DataUpdateEventPipeline<ContentPostEntity>
     {
         IContentPostService _contentPostService;
-        IElasticService<AccountUserDocument> _accountElasticService;
+        IElasticService<UsersUserDocument> _accountElasticService;
         IElasticService<ContentPostDocument> _elasticService;
         IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> _messageHub;
         IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> _pipelineActivityService;
         public ContentPostUpdatedPipeline(
             IContentPostService contentPostService,
             IElasticService<ContentPostDocument> elasticService,
-            IElasticService<AccountUserDocument> accountElasticService,
+            IElasticService<UsersUserDocument> accountElasticService,
             IEntityPipelineService<ContentPostActivityEntity, IContentPostActivityBus> pipelineActivityService,
             IHubContext<BaseHub<ContentPostDocument>, IBaseHubClient<WebsocketMessage<ContentPostDocument>>> messageHub)
         {

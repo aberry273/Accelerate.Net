@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
@@ -14,12 +14,12 @@ namespace Accelerate.Features.Content.Services
     public interface IContentThreadViewService
     {
         ContentBasePage CreateAnonymousListingPage();
-        NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description);
-        ContentPage CreateThreadsPage(AccountUser user, SearchResponse<ContentPostDocument> posts, SearchResponse<ContentPostDocument> aggregateResponse);
-        ContentCreatePage CreateThreadCreatePage(AccountUser user, SearchResponse<ContentPostDocument> channels);
-        ContentPostPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
-        ContentCreatePage CreateThreadEditPage(AccountUser user, SearchResponse<ContentPostDocument> posts, ContentPostViewDocument post);
-        ThreadEditPage CreateEditThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
+        NotFoundPage CreateNotFoundPage(UsersUser user, string title, string description);
+        ContentPage CreateThreadsPage(UsersUser user, SearchResponse<ContentPostDocument> posts, SearchResponse<ContentPostDocument> aggregateResponse);
+        ContentCreatePage CreateThreadCreatePage(UsersUser user, SearchResponse<ContentPostDocument> channels);
+        ContentPostPage CreateThreadPage(UsersUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
+        ContentCreatePage CreateThreadEditPage(UsersUser user, SearchResponse<ContentPostDocument> posts, ContentPostViewDocument post);
+        ThreadEditPage CreateEditThreadPage(UsersUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null);
         
     }
 }

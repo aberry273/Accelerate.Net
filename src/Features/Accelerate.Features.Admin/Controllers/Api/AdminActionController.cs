@@ -1,5 +1,5 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -23,14 +23,14 @@ namespace Accelerate.Features.Admin.Controllers.Api
 { 
     public class AdminActionController : BaseApiServiceController<OperationsActionEntity>
     { 
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;  
         IEntityService<ContentPostEntity> _postService;
         public AdminActionController(
             IMetaContentService contentService,
             IEntityService<OperationsActionEntity> service,
             IEntityService<ContentPostEntity> postService,  
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         { 
             _userManager = userManager;
             _contentService = contentService; 

@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Admin.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
@@ -27,16 +27,16 @@ using Twilio.TwiML.Voice;
 namespace Accelerate.Features.Content.Controllers
 {
     [Route("Admin/[controller]")]
-    public class UsersController : BaseAdminController<AccountUser>
+    public class UsersController : BaseAdminController<UsersUser>
     {
         const string channelName = "User";
         public UsersController(
-            SignInManager<AccountUser> signInManager,
-            UserManager<AccountUser> userManager,
-            IEntityService<AccountProfile> profileService,
+            SignInManager<UsersUser> signInManager,
+            UserManager<UsersUser> userManager,
+            IEntityService<UsersProfile> profileService,
             IMetaContentService contentService,
-            IEntityService<AccountUser> entityService,
-            IAdminBaseEntityViewService<AccountUser> contentViewService,
+            IEntityService<UsersUser> entityService,
+            IAdminBaseEntityViewService<UsersUser> contentViewService,
             IElasticService<ContentPostDocument> postSearchService,
             IContentPostElasticService contentElasticSearchService)
             : base(channelName, signInManager, userManager, profileService, contentService, entityService, contentViewService, postSearchService, contentElasticSearchService)

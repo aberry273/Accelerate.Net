@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Account.Controllers;
 using Accelerate.Features.Account.Models.Views;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models;
@@ -33,11 +33,11 @@ namespace Accelerate.Features.Account.Services
 {
     public class AccountViewService : IAccountViewService
     {
-        private readonly SignInManager<AccountUser> _signInManager;
+        private readonly SignInManager<UsersUser> _signInManager;
         private OAuthConfiguration _OAuthConfig;
         private IMetaContentService _contentService;
         public AccountViewService(
-            SignInManager<AccountUser> signInManager,
+            SignInManager<UsersUser> signInManager,
             IMetaContentService contentService,
             IOptions<OAuthConfiguration> options)
         {
@@ -47,7 +47,7 @@ namespace Accelerate.Features.Account.Services
         }
         #region Notifications
 
-        public ManagePage GetNotificationsPage(AccountUser user, IEnumerable<ContentPostActivityEntity> activities, int totalActivities)
+        public ManagePage GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activities, int totalActivities)
         {
             var viewModel = new MentionPage(GetManagePage(user));
             viewModel.Table = this.GetMentionsTable();
@@ -71,7 +71,7 @@ namespace Accelerate.Features.Account.Services
         #endregion
         #region Mentions
 
-        public ManagePage GetMentionsPage(AccountUser user)
+        public ManagePage GetMentionsPage(UsersUser user)
         {
             var viewModel = new MentionPage(GetManagePage(user));
             viewModel.Table = this.GetMentionsTable();
@@ -109,9 +109,9 @@ namespace Accelerate.Features.Account.Services
         #endregion
         #region Manage
 
-        public ManagePage GetManagePage(AccountUser user)
+        public ManagePage GetManagePage(UsersUser user)
         {
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
 
             var viewModel = new ManagePage(_contentService.CreatePageBaseContent(profile));
             viewModel.UserId = user.Id;
@@ -416,16 +416,16 @@ namespace Accelerate.Features.Account.Services
         }
         #endregion
 
-        public AjaxForm CreateProfileImageForm(AccountUser user)
+        public AjaxForm CreateProfileImageForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountprofile/{user?.AccountProfileId}/image",
+                Action = $"/api/UsersProfile/{user?.UsersProfileId}/image",
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
                 IsFile = true,
                 Label = "Update",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -436,7 +436,7 @@ namespace Accelerate.Features.Account.Services
                         Placeholder = "Upload image",
                         Multiple = false,
                         ClearOnSubmit = true,
-                        Value = user?.AccountProfile?.Image?.ToString(),
+                        Value = user?.UsersProfile?.Image?.ToString(),
                         Icon = "photo_camera",
                         AriaInvalid = false,
                         Hidden = false,
@@ -448,17 +448,17 @@ namespace Accelerate.Features.Account.Services
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
-                        Value = user?.AccountProfileId,
+                        Value = user?.UsersProfileId,
                     }
                 }
             };
             return model;
         }
-        public AjaxForm CreateDeactivateForm(AccountUser user)
+        public AjaxForm CreateDeactivateForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountuser/deactivate",
+                Action = $"/api/UsersUser/deactivate",
                 Type = PostbackType.POST,
                 Event = "user:deactivate",
                 Label = "Deactivate",
@@ -485,11 +485,11 @@ namespace Accelerate.Features.Account.Services
             return model;
         }
 
-        public AjaxForm CreateDeleteForm(AccountUser user)
+        public AjaxForm CreateDeleteForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountuser/delete",
+                Action = $"/api/UsersUser/delete",
                 Type = PostbackType.POST,
                 Event = "user:delete",
                 Label = "Delete",
@@ -516,11 +516,11 @@ namespace Accelerate.Features.Account.Services
             return model;
         }
 
-        public AjaxForm CreateReactivateForm(AccountUser user)
+        public AjaxForm CreateReactivateForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountuser/reactivate",
+                Action = $"/api/UsersUser/reactivate",
                 Type = PostbackType.POST,
                 Event = "user:Reactivate",
                 Label = "Reactivate",
@@ -546,14 +546,14 @@ namespace Accelerate.Features.Account.Services
             };
             return model;
         }
-        public AjaxForm CreateUserForm(AccountUser user)
+        public AjaxForm CreateUserForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountuser/{user?.Id}",
+                Action = $"/api/UsersUser/{user?.Id}",
                 Type = PostbackType.PUT,
                 Event = "user:create",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Label = "Update",
                 Fields = new List<FormField>()
                 {
@@ -572,7 +572,7 @@ namespace Accelerate.Features.Account.Services
                         Name = "Username",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Username",
-                        Disabled = user.Email != user.UserName || user.Status == AccountUserStatus.Deactivated,
+                        Disabled = user.Email != user.UserName || user.Status == UsersUserStatus.Deactivated,
                         Value = user?.UserName,
                     }, 
                     new FormField()
@@ -587,15 +587,15 @@ namespace Accelerate.Features.Account.Services
             };
             return model;
         }
-        public AjaxForm CreateProfileForm(AccountUser user)
+        public AjaxForm CreateProfileForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/accountprofile/{user?.AccountProfileId}",
+                Action = $"/api/UsersProfile/{user?.UsersProfileId}",
                 Type = PostbackType.PUT,
                 Event = "on:user:delete",
                 Label = "Update",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -604,8 +604,8 @@ namespace Accelerate.Features.Account.Services
                         Name = "Firstname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Firstname",
-                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
-                        Value = user?.AccountProfile?.Firstname,
+                        Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
+                        Value = user?.UsersProfile?.Firstname,
                     },
                     new FormField()
                     {
@@ -613,8 +613,8 @@ namespace Accelerate.Features.Account.Services
                         Name = "Lastname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Lastname",
-                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
-                        Value = user?.AccountProfile?.Lastname,
+                        Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
+                        Value = user?.UsersProfile?.Lastname,
                     },
                     new FormField()
                     {
@@ -630,13 +630,13 @@ namespace Accelerate.Features.Account.Services
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
-                        Value = user?.AccountProfileId,
+                        Value = user?.UsersProfileId,
                     }
                 }
             };
             return model;
         }
-        public ModalForm CreateModalMediaForm(AccountUser user)
+        public ModalForm CreateModalMediaForm(UsersUser user)
         {
             var model = new ModalForm();
             model.Title = "Create media";
@@ -645,13 +645,13 @@ namespace Accelerate.Features.Account.Services
             model.Form = CreateMediaForm(user);
             return model;
         }
-        public AjaxForm CreateMediaForm(AccountUser user)
+        public AjaxForm CreateMediaForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
                 Action = "/api/mediablob/image",
                 Type = PostbackType.POST,
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Event = "channel:create:modal",
                 Label = "Create",
                 Fields = new List<FormField>()
@@ -665,7 +665,7 @@ namespace Accelerate.Features.Account.Services
                         Multiple = false,
                         ClearOnSubmit = true,
                         Icon = "photo_camera",
-                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                        Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                         AriaInvalid = false,
                         Hidden = false,
                         Accept = ".png,.jpg",

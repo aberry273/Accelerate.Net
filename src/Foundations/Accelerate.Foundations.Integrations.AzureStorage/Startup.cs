@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Integrations.AzureStorage.Services;
 
 namespace Accelerate.Foundations.Integrations.AzureStorage

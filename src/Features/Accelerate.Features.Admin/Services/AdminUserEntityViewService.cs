@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Admin.Models.Views;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Services;
@@ -14,19 +14,19 @@ using System.Collections.Generic;
 
 namespace Accelerate.Features.Admin.Services
 {
-    public class AdminUserEntityViewService : AdminBaseEntityViewService<AccountUser>
+    public class AdminUserEntityViewService : AdminBaseEntityViewService<UsersUser>
     {
         protected string EventProfile { get { return $"on:{this.EntityName.ToLower()}:profile"; } }
         protected string EventModalProfile { get { return $"{this.EventProfile}:modal"; } }
         protected string EventIndex { get { return $"on:{this.EntityName.ToLower()}:index"; } }
         protected string EventModalIndex { get { return $"{this.EventIndex}:modal"; } }
-        IEntityService<AccountUser> _userService;
-        IEntityService<AccountProfile> _profileService;
-        IElasticService<AccountUserDocument> _userSearchService;
+        IEntityService<UsersUser> _userService;
+        IEntityService<UsersProfile> _profileService;
+        IElasticService<UsersUserDocument> _userSearchService;
         public AdminUserEntityViewService(
-            IElasticService<AccountUserDocument> userSearchService,
-            IEntityService<AccountUser> userService,
-            IEntityService<AccountProfile> profileService,
+            IElasticService<UsersUserDocument> userSearchService,
+            IEntityService<UsersUser> userService,
+            IEntityService<UsersProfile> profileService,
             IMetaContentService metaContent)
             : base(metaContent)
         {
@@ -35,12 +35,12 @@ namespace Accelerate.Features.Admin.Services
             _profileService = profileService;
             EntityName = "User";
         }
-        public override string GetEntityName(AccountUser item)
+        public override string GetEntityName(UsersUser item)
         {
             return item.UserName;
         }
           
-        public AjaxForm CreateActionForm(AccountUser user)
+        public AjaxForm CreateActionForm(UsersUser user)
         {
             var model = base.CreateForm(user);
 
@@ -48,7 +48,7 @@ namespace Accelerate.Features.Admin.Services
 
             return model;
         }
-        public override AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<AccountUser> items)
+        public override AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<UsersUser> items)
         {
             var viewModel = base.CreateAddPage(user, items);
             viewModel.Form = CreateActionForm(user);
@@ -57,10 +57,10 @@ namespace Accelerate.Features.Admin.Services
 
         private List<KeyValuePair<string, string>> GetActionStateItems()
         {
-            var values = Enum.GetNames<AccountUserStatus>().ToList();
+            var values = Enum.GetNames<UsersUserStatus>().ToList();
             var kv = values.Select(x => new KeyValuePair<string, string>(
                 x,
-                ((int)Enum.Parse<AccountUserStatus>(x, true)).ToString()
+                ((int)Enum.Parse<UsersUserStatus>(x, true)).ToString()
             )).ToList();
             return kv;
         }
@@ -68,18 +68,18 @@ namespace Accelerate.Features.Admin.Services
         {
             return new List<string>()
             {
-                Foundations.Account.Constants.Domains.Public,
-                Foundations.Account.Constants.Domains.Internal,
-                Foundations.Account.Constants.Domains.System,
-                Foundations.Account.Constants.Domains.Deactivated,
-                Foundations.Account.Constants.Domains.Deleted,
+                Foundations.Users.Constants.Domains.Public,
+                Foundations.Users.Constants.Domains.Internal,
+                Foundations.Users.Constants.Domains.System,
+                Foundations.Users.Constants.Domains.Deactivated,
+                Foundations.Users.Constants.Domains.Deleted,
             };
         }
-        private string GetStateItem(AccountUser item)
+        private string GetStateItem(UsersUser item)
         {
-            return Enum.GetName<AccountUserStatus>(item?.Status ?? AccountUserStatus.Active);
+            return Enum.GetName<UsersUserStatus>(item?.Status ?? UsersUserStatus.Active);
         }
-        public List<FormField> CreateFormFields(AccountUser user, AccountUser? item)
+        public List<FormField> CreateFormFields(UsersUser user, UsersUser? item)
         {
             return new List<FormField>()
                 {
@@ -111,29 +111,29 @@ namespace Accelerate.Features.Admin.Services
                     FormFieldSelect("State", GetActionStateItems(), GetStateItem(item)),
                 };
         }
-        public AjaxForm EditUserForm(AccountUser user, AccountUser item)
+        public AjaxForm EditUserForm(UsersUser user, UsersUser item)
         {
             var model = base.CreateEntityForm(user, item, PostbackType.PUT);
             model.Label = $"Edit {item.UserName}";
             model.Fields = CreateFormFields(user, item);
             return model;
         }
-        public override AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<AccountUser> items, AccountUser item)
+        public override AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<UsersUser> items, UsersUser item)
         {
             var viewModel = base.CreateEditPage(user, items, item);
             viewModel.Form = EditUserForm(user, item);
             return viewModel;
         }
-        public override async Task<AdminIndexPage<AccountUser>> CreateEntityPage(AccountUser user, AccountUser item, IEnumerable<AccountUser> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<UsersUser>> CreateEntityPage(UsersUser user, UsersUser item, IEnumerable<UsersUser> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new AdminUserPage(model);
             viewModel.Form = EditUserForm(user, item);
             viewModel.Form.Disabled = true;
             viewModel.Item = item;
-            var profile = _profileService.Get(item.AccountProfileId.GetValueOrDefault());
+            var profile = _profileService.Get(item.UsersProfileId.GetValueOrDefault());
             viewModel.HasProfile = profile != null;
-            item.AccountProfile = profile;
+            item.UsersProfile = profile;
             
             viewModel.ProfileImageForm = CreateProfileImageForm(item);
             viewModel.UserForm = CreateUserForm(item);
@@ -143,7 +143,7 @@ namespace Accelerate.Features.Admin.Services
             viewModel.ReactivateForm = CreateReactivateForm(item);
 
             // If index not found
-            var indexModel = await this._userSearchService.GetDocument<AccountUserDocument>(user.Id.ToString());
+            var indexModel = await this._userSearchService.GetDocument<UsersUserDocument>(user.Id.ToString());
 
             viewModel.ModalIndex = this.ModalIndexForm(user, item);
             viewModel.PageActions.Items.Add(new Foundations.Common.Models.Views.ButtonItem()
@@ -175,7 +175,7 @@ namespace Accelerate.Features.Admin.Services
             return viewModel;
         }
 
-        public ModalForm ModalProfileForm(AccountUser user, AccountUser item)
+        public ModalForm ModalProfileForm(UsersUser user, UsersUser item)
         {
             var model = new ModalForm();
             model.Title = $"Create profile for {this.EntityName}";
@@ -185,7 +185,7 @@ namespace Accelerate.Features.Admin.Services
             return model;
         }
 
-        public ModalForm ModalIndexForm(AccountUser user, AccountUser item)
+        public ModalForm ModalIndexForm(UsersUser user, UsersUser item)
         {
             var model = new ModalForm();
             model.Title = $"Index {this.EntityName}";
@@ -194,7 +194,7 @@ namespace Accelerate.Features.Admin.Services
             model.Form = CreateIndexEntityForm(user, item, PostbackType.PUT);
             return model;
         }
-        public virtual AjaxForm CreateIndexEntityForm(AccountUser user, AccountUser? item, PostbackType type = PostbackType.POST)
+        public virtual AjaxForm CreateIndexEntityForm(UsersUser user, UsersUser? item, PostbackType type = PostbackType.POST)
         {
             var model = new AjaxForm()
             {
@@ -211,7 +211,7 @@ namespace Accelerate.Features.Admin.Services
                         Hidden = true,
                         Disabled = true,
                         AriaInvalid = false,
-                        Value = user.AccountProfileId,
+                        Value = user.UsersProfileId,
                     },
                     new FormField()
                     {
@@ -230,16 +230,16 @@ namespace Accelerate.Features.Admin.Services
         #region User Form
 
 
-        public AjaxForm CreateProfileImageForm(AccountUser user)
+        public AjaxForm CreateProfileImageForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/adminuser/profile/{user?.AccountProfileId}/image",
+                Action = $"/api/adminuser/profile/{user?.UsersProfileId}/image",
                 Type = PostbackType.PUT,
                 Event = "profile:updated",
                 IsFile = true,
                 Label = "Update",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -250,7 +250,7 @@ namespace Accelerate.Features.Admin.Services
                         Placeholder = "Upload image",
                         Multiple = false,
                         ClearOnSubmit = true,
-                        Value = user?.AccountProfile?.Image?.ToString(),
+                        Value = user?.UsersProfile?.Image?.ToString(),
                         Icon = "photo_camera",
                         AriaInvalid = false,
                         Hidden = false,
@@ -262,13 +262,13 @@ namespace Accelerate.Features.Admin.Services
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
-                        Value = user?.AccountProfileId,
+                        Value = user?.UsersProfileId,
                     }
                 }
             };
             return model;
         }
-        public AjaxForm CreateDeactivateForm(AccountUser user)
+        public AjaxForm CreateDeactivateForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -299,7 +299,7 @@ namespace Accelerate.Features.Admin.Services
             return model;
         }
 
-        public AjaxForm CreateDeleteForm(AccountUser user)
+        public AjaxForm CreateDeleteForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -330,7 +330,7 @@ namespace Accelerate.Features.Admin.Services
             return model;
         }
 
-        public AjaxForm CreateReactivateForm(AccountUser user)
+        public AjaxForm CreateReactivateForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -360,14 +360,14 @@ namespace Accelerate.Features.Admin.Services
             };
             return model;
         }
-        public AjaxForm CreateUserForm(AccountUser user)
+        public AjaxForm CreateUserForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
                 Action = $"/api/adminuser/{user?.Id}",
                 Type = PostbackType.PUT,
                 Event = "user:create",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Label = "Update",
                 Fields = new List<FormField>()
                 {
@@ -386,7 +386,7 @@ namespace Accelerate.Features.Admin.Services
                         Name = "Username",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Username",
-                        Disabled = user.Email != user.UserName || user.Status == AccountUserStatus.Deactivated,
+                        Disabled = user.Email != user.UserName || user.Status == UsersUserStatus.Deactivated,
                         Value = user?.UserName,
                     },
                     new FormField()
@@ -401,7 +401,7 @@ namespace Accelerate.Features.Admin.Services
             };
             return model;
         }
-        public AjaxForm CreateProfileForm(AccountUser user)
+        public AjaxForm CreateProfileForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -409,7 +409,7 @@ namespace Accelerate.Features.Admin.Services
                 Type = PostbackType.POST,
                 Event = "on:profile:create",
                 Label = "Update",
-                Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
+                Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
                 Fields = new List<FormField>()
                 {
                     new FormField()
@@ -418,8 +418,8 @@ namespace Accelerate.Features.Admin.Services
                         Name = "Firstname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Firstname",
-                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
-                        Value = user?.AccountProfile?.Firstname,
+                        Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
+                        Value = user?.UsersProfile?.Firstname,
                     },
                     new FormField()
                     {
@@ -427,8 +427,8 @@ namespace Accelerate.Features.Admin.Services
                         Name = "Lastname",
                         FieldType = FormFieldTypes.input,
                         Placeholder = "Lastname",
-                        Disabled = user.Status == AccountUserStatus.Deactivated ? true : null,
-                        Value = user?.AccountProfile?.Lastname,
+                        Disabled = user.Status == UsersUserStatus.Deactivated ? true : null,
+                        Value = user?.UsersProfile?.Lastname,
                     },
                     new FormField()
                     {
@@ -444,7 +444,7 @@ namespace Accelerate.Features.Admin.Services
                         FieldType = FormFieldTypes.input,
                         Hidden = true,
                         Disabled = true,
-                        Value = user?.AccountProfileId,
+                        Value = user?.UsersProfileId,
                     }
                 }
             };

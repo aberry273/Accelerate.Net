@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Account.EventBus;
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.EventBus;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Data;
@@ -25,26 +25,26 @@ namespace Accelerate.Features.Account.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountProfileController : BaseApiServiceController<AccountProfile>
+    public class UsersProfileController : BaseApiServiceController<UsersProfile>
     { 
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
         IBlobStorageService _blobStorageService;
         IMediaService _mediaService;
-        readonly Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
+        readonly Bind<IUsersBus, IPublishEndpoint> _publishEndpoint;
         //readonly Bind<IContentChannelBus, IPublishEndpoint> _publishEndpoint;
         //IElasticService<ContentChannelDocument> _searchService;
         //IEntityService<ContentPostEntity> _postService;
-        public AccountProfileController(
+        public UsersProfileController(
             IMetaContentService contentService,
             IBlobStorageService blobStorageService,
             IMediaService mediaService,
-            IEntityService<AccountProfile> service,
-            Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
+            IEntityService<UsersProfile> service,
+            Bind<IUsersBus, IPublishEndpoint> publishEndpoint,
             //IEntityService<ContentPostEntity> postService,
            // Bind<IContentChannelBus, IPublishEndpoint> publishEndpoint,
             //IElasticService<ContentChannelDocument> searchService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;
@@ -56,18 +56,18 @@ namespace Accelerate.Features.Account.Controllers.Api
         }
 
 
-        protected override async Task PostCreateSteps(AccountProfile obj)
+        protected override async Task PostCreateSteps(UsersProfile obj)
         {
-            //await _publishEndpoint.Value.Publish(new CreateDataContract<AccountProfile>() { Data = obj });
+            //await _publishEndpoint.Value.Publish(new CreateDataContract<UsersProfile>() { Data = obj });
         }
-        protected override async Task PostUpdateSteps(AccountProfile obj)
+        protected override async Task PostUpdateSteps(UsersProfile obj)
         {
         }
-        protected override async Task PostDeleteSteps(AccountProfile obj)
+        protected override async Task PostDeleteSteps(UsersProfile obj)
         {
-            //await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountProfile>() { Data = obj });
+            //await _publishEndpoint.Value.Publish(new DeleteDataContract<UsersProfile>() { Data = obj });
         }
-        protected override void UpdateValues(AccountProfile from, dynamic to)
+        protected override void UpdateValues(UsersProfile from, dynamic to)
         {
             from.Firstname = to.Firstname;
             from.Lastname = to.Lastname;
@@ -112,7 +112,7 @@ namespace Accelerate.Features.Account.Controllers.Api
                     var result = await base._service.Update(profile);
 
                     //TODO: Create profile pipelines instead of running the user pipeline on the profile
-                    await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>() { Data = user });
+                    await _publishEndpoint.Value.Publish(new UpdateDataContract<UsersUser>() { Data = user });
                     return Ok(profile);
                 }
                 return NotFound();

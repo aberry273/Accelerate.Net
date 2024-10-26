@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Features.Account.Models.Views;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
@@ -16,7 +16,7 @@ using MassTransit.DependencyInjection;
 using MassTransit;
 using Accelerate.Foundations.EventPipelines.Models.Contracts;
 using Accelerate.Features.Account.Models;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Accelerate.Features.Account.Services;
 using Elastic.Clients.Elasticsearch;
 using Accelerate.Features.Account.Models.Data;
@@ -32,40 +32,40 @@ using Twilio.TwiML.Messaging;
 using Microsoft.AspNetCore.Authentication.Google;
 using Accelerate.Foundations.Content.Models.Entities;
 using static MassTransit.ValidationResultExtensions;
-using Accelerate.Foundations.Account.EventBus;
+using Accelerate.Foundations.Users.EventBus;
 
 namespace Accelerate.Features.Account.Controllers
 {
     //[Authorize]
     public class AccountController : BaseController
     {
-        readonly Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
-        IElasticService<AccountUserDocument> _searchService;
-        private SignInManager<AccountUser> _signInManager;
-        private UserManager<AccountUser> _userManager;
+        readonly Bind<IUsersBus, IPublishEndpoint> _publishEndpoint;
+        IElasticService<UsersUserDocument> _searchService;
+        private SignInManager<UsersUser> _signInManager;
+        private UserManager<UsersUser> _userManager;
         private IAccountViewService _accountViewService;
         IContentPostElasticService _contentElasticSearchService;
-        private IEmailSender<AccountUser> _emailSender;
+        private IEmailSender<UsersUser> _emailSender;
         private IMetaContentService _contentService;
         IContentActivityElasticService _contentActivityElasticService;
         IEntityService<ContentPostActivityEntity> _postActivityEntityService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<MediaBlobDocument> _mediaSearchService;
-        private IEntityService<AccountProfile> _profileService;
+        private IEntityService<UsersProfile> _profileService;
         public AccountController(
             IMetaContentService contentService,
-            SignInManager<AccountUser> signInManager,
-            UserManager<AccountUser> userManager,
-            IEmailSender<AccountUser> emailSender,
+            SignInManager<UsersUser> signInManager,
+            UserManager<UsersUser> userManager,
+            IEmailSender<UsersUser> emailSender,
             IAccountViewService accountViewService,
-            IEntityService<AccountProfile> profileService,
+            IEntityService<UsersProfile> profileService,
             IContentPostElasticService contentElasticSearchService,
             IContentActivityElasticService contentActivityElasticService,
             IEntityService<ContentPostActivityEntity> postActivityEntityService,
             IElasticService<ContentPostDocument> postSearchService,
             IElasticService<MediaBlobDocument> mediaSearchService,
-            Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
-            IElasticService<AccountUserDocument> searchService)
+            Bind<IUsersBus, IPublishEndpoint> publishEndpoint,
+            IElasticService<UsersUserDocument> searchService)
             : base(contentService)
         {
             _contentService = contentService;
@@ -88,12 +88,12 @@ namespace Accelerate.Features.Account.Controllers
         private const string _unauthenticatedRedirectUrl = "/Account/login";
         private const string _accountFormRazorFile = "~/Views/Account/AccountFormPage.cshtml";
         
-        private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        private async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null) return null;
-            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
-            user.AccountProfile = profile;
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
             return user;
         }
         public async Task<IActionResult> Index()
@@ -248,30 +248,30 @@ namespace Accelerate.Features.Account.Controllers
         }
         #region Pipelines
 
-        private string GetTarget(AccountUser obj) => obj.Id.ToString();
-        //private string GetTarget(AccountUser obj) => obj.threadId ?? obj.channelId;
-        protected async Task PostCreateSteps(AccountUser obj)
+        private string GetTarget(UsersUser obj) => obj.Id.ToString();
+        //private string GetTarget(UsersUser obj) => obj.threadId ?? obj.channelId;
+        protected async Task PostCreateSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new CreateDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new CreateDataContract<UsersUser>()
             {
                 Data = obj,
                 Target = GetTarget(obj),
                 UserId = obj.Id
             });
         }
-        protected async Task PostUpdateSteps(AccountUser obj)
+        protected async Task PostUpdateSteps(UsersUser obj)
         {
             obj.Logins.Clear();
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<UsersUser>()
             {
                 Data = obj,
                 Target = GetTarget(obj),
                 UserId = obj.Id
             });
         }
-        protected async Task PostDeleteSteps(AccountUser obj)
+        protected async Task PostDeleteSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<UsersUser>()
             {
                 Data = obj,
                 Target = GetTarget(obj),
@@ -341,7 +341,7 @@ namespace Accelerate.Features.Account.Controllers
             viewModel.Form.Response = "Please check your email to reset your password";
             return View(_accountFormRazorFile, viewModel);
         }
-        private async Task SendResetPasswordEmail(AccountUser user)
+        private async Task SendResetPasswordEmail(UsersUser user)
         {
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = ResetPasswordCallbackLink(user.Id.ToString(), code, Request.Scheme);
@@ -534,7 +534,7 @@ namespace Accelerate.Features.Account.Controllers
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             var user = await this._userManager.FindByEmailAsync(email);
             // If user already exists - not deactivated
-            if(user != null && user.Status == AccountUserStatus.Active)
+            if(user != null && user.Status == UsersUserStatus.Active)
             {
                 var alreadyLinkedResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
                 if(alreadyLinkedResult.Succeeded)
@@ -542,7 +542,7 @@ namespace Accelerate.Features.Account.Controllers
                     var firstname = info.Principal.FindFirstValue(ClaimTypes.GivenName);
                     var lastname = info.Principal.FindFirstValue(ClaimTypes.Surname);
                     // Update user
-                    if (user.Id == Guid.Empty || user?.AccountProfile?.Firstname != firstname || user?.AccountProfile?.Lastname != lastname)
+                    if (user.Id == Guid.Empty || user?.UsersProfile?.Firstname != firstname || user?.UsersProfile?.Lastname != lastname)
                         await this.UpdateUserProfile(user, info);
                     var login = await _userManager.AddLoginAsync(user, info);
                     RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
@@ -550,7 +550,7 @@ namespace Accelerate.Features.Account.Controllers
                 return RedirectToAction(nameof(ExternalLoginExistingUser), new { username = user.UserName, provider = info.LoginProvider });
             }
             // if user exists - deactivated
-            else if (user != null && user.Status == AccountUserStatus.Deactivated)
+            else if (user != null && user.Status == UsersUserStatus.Deactivated)
             {
                 return RedirectToAction(nameof(ExternalLoginDeactivatedUser), new { username = user.UserName });
             }
@@ -611,7 +611,7 @@ namespace Accelerate.Features.Account.Controllers
             {
                 return RedirectToAction(nameof(ExternalLoginNewUser), new { username = username, message = "Username must be between 3 and 20 characters", returnUrl = returnUrl });
             }
-            var userCreateResult = await this.CreateUser(username, email, Foundations.Account.Constants.Domains.Public, tempPassword);
+            var userCreateResult = await this.CreateUser(username, email, Foundations.Users.Constants.Domains.Public, tempPassword);
             if (!userCreateResult.Succeeded)
             {
                 var message = string.Join(',', userCreateResult.Errors.Select(x => x.Description));
@@ -730,22 +730,22 @@ namespace Accelerate.Features.Account.Controllers
 
         }
         #endregion
-        private async Task<AccountUser> UpdateUserProfile(AccountUser user, ExternalLoginInfo info)
+        private async Task<UsersUser> UpdateUserProfile(UsersUser user, ExternalLoginInfo info)
         {
-            var profile = user.AccountProfileId != Guid.Empty
-                ? _profileService.Get(user.AccountProfileId.GetValueOrDefault())
+            var profile = user.UsersProfileId != Guid.Empty
+                ? _profileService.Get(user.UsersProfileId.GetValueOrDefault())
                 : null;
             var firstname = info.Principal.FindFirstValue(ClaimTypes.GivenName);
             var lastname = info.Principal.FindFirstValue(ClaimTypes.Surname);
             if (profile == null)
             {
-                profile = new AccountProfile();
+                profile = new UsersProfile();
                 profile.Firstname = firstname;
                 profile.Lastname = lastname;
                 var guid = await _profileService.CreateWithGuid(profile);
                 if (guid == null) return user;
 
-                user.AccountProfileId = guid.GetValueOrDefault();
+                user.UsersProfileId = guid.GetValueOrDefault();
                 await _userManager.UpdateAsync(user);
                 await PostUpdateSteps(user);
             }
@@ -760,11 +760,11 @@ namespace Accelerate.Features.Account.Controllers
             }
             return user;
         }
-        private async Task<AccountUser> ResetDeactivatedUserDetails(ExternalLoginInfo info, AccountUser user, string password)
+        private async Task<UsersUser> ResetDeactivatedUserDetails(ExternalLoginInfo info, UsersUser user, string password)
         {
             await UpdateUserProfile(user, info);
 
-            user.Status = AccountUserStatus.Active;
+            user.Status = UsersUserStatus.Active;
             await _userManager.UpdateAsync(user);
 
             await this.PostUpdateSteps(user);
@@ -776,13 +776,13 @@ namespace Accelerate.Features.Account.Controllers
             var tempPassword = Guid.NewGuid().ToString().ToUpper() + "lower";
             var user = await this._userManager.FindByEmailAsync(email);
             // If currently de-activated, update user with details again
-            if(user != null && user.Status == AccountUserStatus.Deactivated)
+            if(user != null && user.Status == UsersUserStatus.Deactivated)
             {
                 user = await ResetDeactivatedUserDetails(info, user, tempPassword);
             }
             if(user == null)
             {
-                var result = await this.CreateUser(email, email, Foundations.Account.Constants.Domains.Public, tempPassword);
+                var result = await this.CreateUser(email, email, Foundations.Users.Constants.Domains.Public, tempPassword);
                 if (!result.Succeeded) {
                     var message = string.Join(',', result.Errors.Select(x => x.Description));
                     throw new Exception(message);
@@ -875,7 +875,7 @@ namespace Accelerate.Features.Account.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await this.CreateUser(request.Username, request.Email, Foundations.Account.Constants.Domains.Public, request.Password);
+                    var result = await this.CreateUser(request.Username, request.Email, Foundations.Users.Constants.Domains.Public, request.Password);
                     if(result.Errors != null && result.Errors.Any())
                     {
                         viewModel.Form.Response = result.Errors.FirstOrDefault().Description;
@@ -922,16 +922,16 @@ namespace Accelerate.Features.Account.Controllers
         #region Create User Account
         private async Task<IdentityResult> CreateUser(string username, string email, string domain, string password)
         {
-            var user = new AccountUser { UserName = username, Email = email, Domain = domain, Status = AccountUserStatus.Active };
+            var user = new UsersUser { UserName = username, Email = email, Domain = domain, Status = UsersUserStatus.Active };
 
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
                 // Create profile
-                var profileId = await _profileService.CreateWithGuid(new AccountProfile() { UserId = user.Id });
+                var profileId = await _profileService.CreateWithGuid(new UsersProfile() { UserId = user.Id });
                 // Get user and update with profile id
                 user = await _userManager.FindByNameAsync(username);
-                user.AccountProfileId = profileId.GetValueOrDefault();
+                user.UsersProfileId = profileId.GetValueOrDefault();
                 await _userManager.UpdateAsync(user);
                 await PostCreateSteps(user);
             }
@@ -1027,7 +1027,7 @@ namespace Accelerate.Features.Account.Controllers
                 protocol: scheme);
         }
 
-        private async Task SendAccountConfirmationEmail(AccountUser user)
+        private async Task SendAccountConfirmationEmail(UsersUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var callbackUrl = AccountConfirmationCallbackLink(user.Id.ToString(), code, Request.Scheme);

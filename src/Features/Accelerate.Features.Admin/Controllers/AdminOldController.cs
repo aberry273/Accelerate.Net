@@ -1,7 +1,7 @@
 ﻿
 using Accelerate.Features.Admin.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Database.Services;
@@ -16,19 +16,19 @@ namespace Accelerate.Features.Admin.Controllers
 { 
     public class AdminOldController: BaseController
     {
-        protected SignInManager<AccountUser> _signInManager;
-        UserManager<AccountUser> _userManager;
-        IEntityService<AccountProfile> _profileService;
+        protected SignInManager<UsersUser> _signInManager;
+        UserManager<UsersUser> _userManager;
+        IEntityService<UsersProfile> _profileService;
         IMetaContentService _contentService;
         IAdminViewService _adminViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
         protected string _razorPath;
         private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
         public AdminOldController(
-            SignInManager<AccountUser> signInManager,
-            UserManager<AccountUser> userManager,
+            SignInManager<UsersUser> signInManager,
+            UserManager<UsersUser> userManager,
             IAdminViewService adminViewService,
-            IEntityService<AccountProfile> profileService,
+            IEntityService<UsersProfile> profileService,
             IMetaContentService contentService) : base(contentService)
         {
             _signInManager = signInManager;
@@ -46,15 +46,15 @@ namespace Accelerate.Features.Admin.Controllers
                 : RedirectToAction("Login");
         }
 
-        protected async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        protected async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null)
             {
                 return null;
             }
-            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
-            user.AccountProfile = profile;
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
             return user;
         }
         [HttpGet]

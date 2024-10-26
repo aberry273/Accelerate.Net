@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
@@ -21,14 +21,14 @@ namespace Accelerate.Features.Content.Services
         {
             EntityName = "Chat";
         }
-        public override ContentChatPage CreateIndexPage(AccountUser user, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override ContentChatPage CreateIndexPage(UsersUser user, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentChatPage(model);
             viewModel.Test = "INDEX";
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentChatDocument item, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(UsersUser user, ContentChatDocument item, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentChatPage(model);
@@ -48,7 +48,7 @@ namespace Accelerate.Features.Content.Services
                 Value = chatId,
             };
         }
-        public override ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, ContentChatDocument doc = null)
+        public override ContentSubmitForm CreatePostForm(UsersUser user, ContentPostViewDocument item = null, ContentChatDocument doc = null)
         {
             var model = base.CreatePostForm(user, item);
 
@@ -59,7 +59,7 @@ namespace Accelerate.Features.Content.Services
             
             return model;
         }
-        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<ContentChatDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentChatPage(model);

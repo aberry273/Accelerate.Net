@@ -1,9 +1,9 @@
-﻿using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 
 namespace Accelerate.Features.Admin.Models.Views
 {
-    public class AdminUserPage : AdminIndexPage<AccountUser>
+    public class AdminUserPage : AdminIndexPage<UsersUser>
     {
         public string LastIndex { get; set; }
         public bool HasProfile { get; set; }
@@ -17,7 +17,7 @@ namespace Accelerate.Features.Admin.Models.Views
         public AjaxForm ProfileImageForm { get; set; }
         public AjaxForm ProfileForm { get; set; }
 
-        public AdminUserPage(AdminIndexPage<AccountUser> model) : base(model)
+        public AdminUserPage(AdminIndexPage<UsersUser> model) : base(model)
         {
             this.Id = model.Id;
             this.UserId = model.UserId;

@@ -1,6 +1,6 @@
 ﻿
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Pipelines;

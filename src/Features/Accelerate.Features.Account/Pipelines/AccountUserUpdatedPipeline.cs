@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Account.Models;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.EventPipelines.Pipelines;
@@ -9,29 +9,29 @@ using Elastic.Clients.Elasticsearch.Ingest;
 
 namespace Accelerate.Features.Content.Pipelines
 {
-    public class AccountUserUpdatedPipeline : DataUpdateEventPipeline<AccountUser>
+    public class UsersUserUpdatedPipeline : DataUpdateEventPipeline<UsersUser>
     {
-        IElasticService<AccountUserDocument> _elasticService;
-        IEntityService<AccountProfile> _profileService;
-        public AccountUserUpdatedPipeline(
-            IEntityService<AccountProfile> profileService,
-            IElasticService<AccountUserDocument> elasticService)
+        IElasticService<UsersUserDocument> _elasticService;
+        IEntityService<UsersProfile> _profileService;
+        public UsersUserUpdatedPipeline(
+            IEntityService<UsersProfile> profileService,
+            IElasticService<UsersUserDocument> elasticService)
         {
             _profileService = profileService;
             _elasticService = elasticService;
             // To update as reflection / auto load based on inheritance classes in library
-            _asyncProcessors = new List<AsyncPipelineProcessor<AccountUser>>()
+            _asyncProcessors = new List<AsyncPipelineProcessor<UsersUser>>()
             {
                 UpdateDocument,
             };
         }
         // ASYNC PROCESSORS
-        public async Task UpdateDocument(IPipelineArgs<AccountUser> args)
+        public async Task UpdateDocument(IPipelineArgs<UsersUser> args)
         {
-            var profile = _profileService.Get(args.Value.AccountProfileId.GetValueOrDefault());
+            var profile = _profileService.Get(args.Value.UsersProfileId.GetValueOrDefault());
 
             //var user = await _userManager.FindByIdAsync(userId);
-            var indexModel = new AccountUserDocument()
+            var indexModel = new UsersUserDocument()
             {
                 Id = args.Value.Id,
                 CreatedOn = args.Value.CreatedOn,
@@ -43,7 +43,7 @@ namespace Accelerate.Features.Content.Pipelines
                 Firstname = profile.Firstname,
                 Lastname = profile.Lastname,
             };
-            await _elasticService.UpdateDocument<AccountUserDocument>(indexModel, args.Value.Id.ToString());
+            await _elasticService.UpdateDocument<UsersUserDocument>(indexModel, args.Value.Id.ToString());
         }
     }
 }

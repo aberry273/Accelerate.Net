@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Controllers;
 using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
@@ -44,14 +44,14 @@ namespace Accelerate.Features.Content.Services
             //ItemUrl = this._metaContentService.GetActionUrl(nameof(FeedsController.Feed), ControllerHelper.NameOf<FeedsController>(), new { id = x.Id });
         }
 
-        private ContentBasePage CreateBaseContent(AccountUser user)
+        private ContentBasePage CreateBaseContent(UsersUser user)
         {
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
             var baseModel = _metaContentService.CreatePageBaseContent(profile);
             var viewModel = new ContentBasePage(baseModel);
             return viewModel;
         }
-        public NotFoundPage CreateNotFoundPage(AccountUser user, string title = null, string description = null)
+        public NotFoundPage CreateNotFoundPage(UsersUser user, string title = null, string description = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new NotFoundPage(model);
@@ -69,7 +69,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        private List<NavigationGroup> CreateSideNavigation(string pageName, SearchResponse<T> documents, AccountUser user)
+        private List<NavigationGroup> CreateSideNavigation(string pageName, SearchResponse<T> documents, UsersUser user)
         {
             var items = new List<T>();
             var userItems = new List<T>();
@@ -115,7 +115,7 @@ namespace Accelerate.Features.Content.Services
                 Image = "https://cdn.devdojo.com/images/may2021/workstation.jpg"
             };
         }
-        public virtual async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
@@ -136,7 +136,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public virtual ContentBasePage CreateIndexPage(AccountUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual ContentBasePage CreateIndexPage(UsersUser user, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
@@ -157,7 +157,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public virtual async Task<ContentBasePage> CreateEntityPage(AccountUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<ContentBasePage> CreateEntityPage(UsersUser user, T item, SearchResponse<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentBasePage(model);
@@ -184,7 +184,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         }
-        public ContentCreatePage CreateAddPage(AccountUser user, SearchResponse<T> items)
+        public ContentCreatePage CreateAddPage(UsersUser user, SearchResponse<T> items)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentCreatePage(model); 
@@ -203,7 +203,7 @@ namespace Accelerate.Features.Content.Services
             return viewModel;
         } 
 
-        public ContentCreatePage CreateEditPage(AccountUser user, SearchResponse<T> items, T item)
+        public ContentCreatePage CreateEditPage(UsersUser user, SearchResponse<T> items, T item)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentCreatePage(model);
@@ -311,7 +311,7 @@ namespace Accelerate.Features.Content.Services
                 Href = "#"//this._metaContentService.GetActionUrl(nameof(ChannelsController.Index), ControllerHelper.NameOf<ChannelsController>(), new { })
             };
         }
-        public virtual ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, T doc = null)
+        public virtual ContentSubmitForm CreatePostForm(UsersUser user, ContentPostViewDocument item = null, T doc = null)
         {
             var model = new ContentSubmitForm()
             {
@@ -356,7 +356,7 @@ namespace Accelerate.Features.Content.Services
             }
             return model;
         }
-        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        public ContentSubmitForm CreateReplyForm(UsersUser user, ContentPostViewDocument post)
         {
             //var parentIdThread = post.Related.Parents != null ? post.Related.Parents : new List<Guid>();
             //parentIdThread.Add(post.Id);
@@ -766,7 +766,7 @@ namespace Accelerate.Features.Content.Services
         }
         #endregion
         #region Channel
-        public ModalForm EditModalForm(AccountUser user, T item)
+        public ModalForm EditModalForm(UsersUser user, T item)
         {
             var model = new ModalForm();
             model.Title = $"Edit {this.EntityName}";
@@ -775,7 +775,7 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateForm(user, PostbackType.PUT, item);
             return model;
         } 
-        public virtual AjaxForm CreateForm(AccountUser user, PostbackType type = PostbackType.POST, T? item = null)
+        public virtual AjaxForm CreateForm(UsersUser user, PostbackType type = PostbackType.POST, T? item = null)
         {
             var model = new AjaxForm()
             {
@@ -861,7 +861,7 @@ namespace Accelerate.Features.Content.Services
         }  
         #endregion 
        
-        public ModalForm CreateModalDeleteForm(AccountUser user, T item)
+        public ModalForm CreateModalDeleteForm(UsersUser user, T item)
         {
             var model = new ModalForm();
             model.Title = $"Delete {this.EntityName}";
@@ -869,7 +869,7 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateFormDelete(user, item);
             return model;
         }
-        public AjaxForm CreateFormDelete(AccountUser user, T item)
+        public AjaxForm CreateFormDelete(UsersUser user, T item)
         {
             var model = new AjaxForm()
             {

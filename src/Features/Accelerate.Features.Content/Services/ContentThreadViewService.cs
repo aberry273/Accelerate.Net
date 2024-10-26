@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Controllers;
 using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
@@ -28,15 +28,15 @@ namespace Accelerate.Features.Content.Services
             _viewSearchService = viewSearchService;
         }
 
-        private ContentBasePage CreateBaseContent(AccountUser user)
+        private ContentBasePage CreateBaseContent(UsersUser user)
         {
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
             var baseModel = _metaContentService.CreatePageBaseContent(profile);
             var viewModel = new ContentBasePage(baseModel);
            
             return viewModel;
         }
-        public ContentPage CreateThreadsPage(AccountUser user, SearchResponse<ContentPostDocument> posts, SearchResponse<ContentPostDocument> aggregateResponse)
+        public ContentPage CreateThreadsPage(UsersUser user, SearchResponse<ContentPostDocument> posts, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentPage(model);
@@ -66,7 +66,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.ActionEvent = "action:post";
             return viewModel;
         } 
-        public ContentCreatePage CreateThreadCreatePage(AccountUser user, SearchResponse<ContentPostDocument> posts)
+        public ContentCreatePage CreateThreadCreatePage(UsersUser user, SearchResponse<ContentPostDocument> posts)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentCreatePage(model);
@@ -89,7 +89,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.Form = CreatePostForm(user);
             return viewModel;
         }
-        public ContentCreatePage CreateThreadEditPage(AccountUser user, SearchResponse<ContentPostDocument> items, ContentPostViewDocument item)
+        public ContentCreatePage CreateThreadEditPage(UsersUser user, SearchResponse<ContentPostDocument> items, ContentPostViewDocument item)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentCreatePage(model);
@@ -172,7 +172,7 @@ namespace Accelerate.Features.Content.Services
             };
         }
 
-        public ContentPostPage CreateThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
+        public ContentPostPage CreateThreadPage(UsersUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ContentPostPage(model);
@@ -197,7 +197,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.Filters = _viewSearchService.CreateNavigationFilters(aggregateResponse);
             return viewModel;
         }
-        public ThreadEditPage CreateEditThreadPage(AccountUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
+        public ThreadEditPage CreateEditThreadPage(UsersUser user, ContentPostViewDocument item, SearchResponse<ContentPostDocument> aggregateResponse, ContentChannelDocument? channel = null)
         {
             var model = CreateBaseContent(user);
             var viewModel = new ThreadEditPage(model);
@@ -229,7 +229,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        public NotFoundPage CreateNotFoundPage(AccountUser user, string title, string description)
+        public NotFoundPage CreateNotFoundPage(UsersUser user, string title, string description)
         {
             var model = CreateBaseContent(user);
             var viewModel = new NotFoundPage(model);
@@ -238,7 +238,7 @@ namespace Accelerate.Features.Content.Services
             viewModel.Description = "We are unable to retrieve this post, this may have been deleted or made private.";
             return viewModel;
         }
-        public ContentSubmitForm CreatePostForm(AccountUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, ContentChannelDocument channel = null)
+        public ContentSubmitForm CreatePostForm(UsersUser user, PostbackType type = PostbackType.POST, ContentPostViewDocument item = null, ContentChannelDocument channel = null)
         {
             var model = new ContentSubmitForm()
             {
@@ -285,7 +285,7 @@ namespace Accelerate.Features.Content.Services
             if (post?.Profile == null) return "Reply";
             return $"Reply to {post?.Profile?.Username}";
         }
-        public ContentSubmitForm CreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        public ContentSubmitForm CreateReplyForm(UsersUser user, ContentPostViewDocument post)
         {
             //var parentIdThread = post.Related.Parents != null ? post.Related.Parents : new List<Guid>();
             //parentIdThread.Add(post.Id);
@@ -322,7 +322,7 @@ namespace Accelerate.Features.Content.Services
             }; 
             return model;
         }
-        public ContentSubmitForm CreateEditPostForm(AccountUser user, ContentPostDocument post)
+        public ContentSubmitForm CreateEditPostForm(UsersUser user, ContentPostDocument post)
         {
             var parentIdThread = post.Related.ParentIds != null ? post.Related.ParentIds : new List<Guid>();
             parentIdThread.Add(post.Id);
@@ -736,7 +736,7 @@ namespace Accelerate.Features.Content.Services
             };
         }
         #endregion 
-        public ModalForm CreateModalCreatePinForm(AccountUser user, ContentPostDocument post)
+        public ModalForm CreateModalCreatePinForm(UsersUser user, ContentPostDocument post)
         {
             var model = new ModalForm();
             model.Title = "Pin post";
@@ -745,7 +745,7 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateFormAddPin(user, post);
             return model;
         }
-        public AjaxForm CreateFormAddPin(AccountUser user, ContentPostDocument post)
+        public AjaxForm CreateFormAddPin(UsersUser user, ContentPostDocument post)
         {
             var model = new AjaxForm()
             {
@@ -764,7 +764,7 @@ namespace Accelerate.Features.Content.Services
 
         }
 
-        public ModalForm CreateModalCreateLabelForm(AccountUser user)
+        public ModalForm CreateModalCreateLabelForm(UsersUser user)
         {
             var model = new ModalForm();
             model.Title = "Label post";
@@ -774,7 +774,7 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
 
-        public AjaxForm CreateFormAddLabel(AccountUser user)
+        public AjaxForm CreateFormAddLabel(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -794,7 +794,7 @@ namespace Accelerate.Features.Content.Services
             return model;
 
         }
-        public ModalCreateContentPostReply CreateModalCreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        public ModalCreateContentPostReply CreateModalCreateReplyForm(UsersUser user, ContentPostViewDocument post)
         {
             var model = new ModalCreateContentPostReply();
             model.Title = "Reply to post";
@@ -809,7 +809,7 @@ namespace Accelerate.Features.Content.Services
             };
             return model;
         } 
-        public ModalForm EditModalReplyForm(AccountUser user)
+        public ModalForm EditModalReplyForm(UsersUser user)
         {
             var model = new ModalForm();
             model.Title = "Edit post";
@@ -818,7 +818,7 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateFormEditReply(user);
             return model;
         }
-        public AjaxForm CreateFormEditReply(AccountUser user)
+        public AjaxForm CreateFormEditReply(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -870,7 +870,7 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
          
-        public ModalForm CreateModalDeleteReplyForm(AccountUser user)
+        public ModalForm CreateModalDeleteReplyForm(UsersUser user)
         {
             var model = new ModalForm();
             model.Title = "Delete post";
@@ -879,7 +879,7 @@ namespace Accelerate.Features.Content.Services
             model.Form = CreateFormDeleteReply(user);
             return model;
         }
-        public AjaxForm CreateFormDeleteReply(AccountUser user)
+        public AjaxForm CreateFormDeleteReply(UsersUser user)
         {
             var model = new AjaxForm()
             {

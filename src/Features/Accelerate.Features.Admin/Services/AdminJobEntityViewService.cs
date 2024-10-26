@@ -1,5 +1,5 @@
 ﻿using Accelerate.Features.Admin.Models.Views; 
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Services;
@@ -31,13 +31,13 @@ namespace Accelerate.Features.Admin.Services
         {
             return item.Name;
         }
-        public AjaxForm CreateJobForm(AccountUser user)
+        public AjaxForm CreateJobForm(UsersUser user)
         {
             var model = base.CreateForm(user);
             model.Fields = this.CreateFormFields(user, null);
             return model;
         }
-        public override AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<OperationsJobEntity> items)
+        public override AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<OperationsJobEntity> items)
         {
             var viewModel = base.CreateAddPage(user, items);
             viewModel.Form = CreateJobForm(user);
@@ -57,7 +57,7 @@ namespace Accelerate.Features.Admin.Services
         {
             return Enum.GetName<OperationsJobState>(item?.State ?? OperationsJobState.Published);
         }
-        public List<FormField> CreateFormFields(AccountUser user, OperationsJobEntity? item)
+        public List<FormField> CreateFormFields(UsersUser user, OperationsJobEntity? item)
         {
             var scheduleValue = item != null
                 ? item?.Schedule.ToString()
@@ -94,20 +94,20 @@ namespace Accelerate.Features.Admin.Services
             };
         }
 
-        public AjaxForm EditJobForm(AccountUser user, OperationsJobEntity item)
+        public AjaxForm EditJobForm(UsersUser user, OperationsJobEntity item)
         {
             var model = base.CreateEntityForm(user, item, PostbackType.PUT);
             model.Label = $"Edit {item.Name}";
             model.Fields = CreateFormFields(user, item);
             return model;
         }
-        public override AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<OperationsJobEntity> items, OperationsJobEntity item)
+        public override AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<OperationsJobEntity> items, OperationsJobEntity item)
         {
             var viewModel = base.CreateEditPage(user, items, item);
             viewModel.Form = EditJobForm(user, item);
             return viewModel;
         }
-        public override async Task<AdminIndexPage<OperationsJobEntity>> CreateEntityPage(AccountUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<OperationsJobEntity>> CreateEntityPage(UsersUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var viewModel = await base.CreateEntityPage(user, item, items, aggregateResponse);
             viewModel.Form = EditJobForm(user, item);
@@ -115,7 +115,7 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Table = this.GetJobActivitiesTable(user, item);
             return viewModel;
         }
-        private AclTable<string> GetJobActivitiesTable(AccountUser user, OperationsJobEntity item)
+        private AclTable<string> GetJobActivitiesTable(UsersUser user, OperationsJobEntity item)
         {
             var model = new AclTable<string>();
             var jobActivities = GetJobActivities(user, item);
@@ -152,7 +152,7 @@ namespace Accelerate.Features.Admin.Services
                 }
             };
         }
-        private List<AclTableHeader> GetJobActivitiesHeader(AccountUser user, OperationsJobEntity item)
+        private List<AclTableHeader> GetJobActivitiesHeader(UsersUser user, OperationsJobEntity item)
         {
             return new List<AclTableHeader>()
             {
@@ -170,7 +170,7 @@ namespace Accelerate.Features.Admin.Services
                 },
             };
         }
-        private IEnumerable<OperationsActivityEntity> GetJobActivities(AccountUser user, OperationsJobEntity item)
+        private IEnumerable<OperationsActivityEntity> GetJobActivities(UsersUser user, OperationsJobEntity item)
         {
             return _activityService.Find(x => x.OperationsJobId == item.Id);
         }

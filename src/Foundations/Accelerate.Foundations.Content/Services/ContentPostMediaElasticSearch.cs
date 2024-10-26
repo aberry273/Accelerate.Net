@@ -1,5 +1,5 @@
 ﻿using Accelerate.Foundations.Content.Models.Data;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;

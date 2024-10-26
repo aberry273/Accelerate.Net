@@ -1,5 +1,5 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -18,10 +18,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using Accelerate.Foundations.Operations.Models.Entities;
-using Accelerate.Foundations.Account.EventBus;
+using Accelerate.Foundations.Users.EventBus;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Features.Admin.Models.Data;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.StaticFiles;
 using Accelerate.Foundations.Common.Models.Data;
@@ -31,24 +31,24 @@ using Elastic.Clients.Elasticsearch.Core.Search;
 namespace Accelerate.Features.Admin.Controllers.Api
 { 
 
-    public class AdminUserController : BaseApiServiceController<AccountUser>
+    public class AdminUserController : BaseApiServiceController<UsersUser>
     {
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;  
         IEntityService<ContentPostEntity> _postService;
-        IEntityService<AccountProfile> _profileService;
-        IElasticService<AccountUserDocument> _searchService;
+        IEntityService<UsersProfile> _profileService;
+        IElasticService<UsersUserDocument> _searchService;
         IMediaService _mediaService;
-        Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
+        Bind<IUsersBus, IPublishEndpoint> _publishEndpoint;
         public AdminUserController(
             IMetaContentService contentService,
-            IEntityService<AccountUser> service,
+            IEntityService<UsersUser> service,
             IEntityService<ContentPostEntity> postService,
-            IEntityService<AccountProfile> profileService,
-            IElasticService<AccountUserDocument> searchService,
+            IEntityService<UsersProfile> profileService,
+            IElasticService<UsersUserDocument> searchService,
             IMediaService mediaService,
-            Bind<IAccountBus, IPublishEndpoint> publishEndpoint,
-            UserManager<AccountUser> userManager) : base(service)
+            Bind<IUsersBus, IPublishEndpoint> publishEndpoint,
+            UserManager<UsersUser> userManager) : base(service)
         { 
             _userManager = userManager;
             _contentService = contentService; 
@@ -58,31 +58,31 @@ namespace Accelerate.Features.Admin.Controllers.Api
             _searchService = searchService;
             _mediaService = mediaService;
         }
-        protected override async Task PostCreateSteps(AccountUser obj)
+        protected override async Task PostCreateSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new CreateDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new CreateDataContract<UsersUser>()
             {
                 Data = obj,
                 UserId = obj.Id
             });
         }
-        protected override async Task PostUpdateSteps(AccountUser obj)
+        protected override async Task PostUpdateSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<UsersUser>()
             {
                 Data = obj,
                 UserId = obj.Id
             });
         }
-        protected override async Task PostDeleteSteps(AccountUser obj)
+        protected override async Task PostDeleteSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<UsersUser>()
             {
                 Data = obj,
                 UserId = obj.Id
             });
         }
-        protected override void UpdateValues(AccountUser from, dynamic to)
+        protected override void UpdateValues(UsersUser from, dynamic to)
         {
             from.Domain = to.Domain;
             from.UserName = to.UserName;
@@ -104,7 +104,7 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 }
                 var profile = request.ProfileId != null ? _profileService.Get(request.ProfileId.GetValueOrDefault()) : null;
 
-                var indexModel = new AccountUserDocument()
+                var indexModel = new UsersUserDocument()
                 {
                     CreatedOn = user.CreatedOn,
                     UpdatedOn = user.UpdatedOn,
@@ -127,14 +127,14 @@ namespace Accelerate.Features.Admin.Controllers.Api
         }
 
         /// <summary>
-        /// TODO: Share same functions form accountuser api controlller
+        /// TODO: Share same functions form UsersUser api controlller
         /// </summary>
         /// <param name="id"></param>
         /// <param name="model"></param>
         /// <returns></returns>
         /// 
         [HttpPost("{id}/profile")]
-        public virtual async Task<IActionResult> CreateProfile([FromRoute] Guid id, [FromBody] AccountProfile obj)
+        public virtual async Task<IActionResult> CreateProfile([FromRoute] Guid id, [FromBody] UsersProfile obj)
         {
             try
             {
@@ -143,24 +143,24 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 {
                     return NotFound();
                 }
-                var profile = user.AccountProfileId != null ? _profileService.Get(user.AccountProfileId.GetValueOrDefault()) : null;
+                var profile = user.UsersProfileId != null ? _profileService.Get(user.UsersProfileId.GetValueOrDefault()) : null;
 
                 if (profile != null)
                 {
                     return Ok();
                 }
-                var profileModel = new AccountProfile();
+                var profileModel = new UsersProfile();
                 UpdateValues(profileModel, obj);
                 profileModel.UserId = user.Id;
                 profileModel.UpdatedOn = DateTime.Now;
                 var guid = await _profileService.CreateWithGuid(profileModel);
-                user.AccountProfileId = guid;
+                user.UsersProfileId = guid;
 
                 await _userManager.UpdateAsync(user);
                 //To override
                 var updatedEntity = _profileService.Get(id);
 
-                var indexModel = new AccountUserDocument()
+                var indexModel = new UsersUserDocument()
                 {
                     CreatedOn = user.CreatedOn,
                     UpdatedOn = user.UpdatedOn,
@@ -186,7 +186,7 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 return BadRequest();
             }
         }
-        protected void UpdateValues(AccountProfile from, dynamic to)
+        protected void UpdateValues(UsersProfile from, dynamic to)
         {
             from.Firstname = to.Firstname;
             from.Lastname = to.Lastname;
@@ -232,7 +232,7 @@ namespace Accelerate.Features.Admin.Controllers.Api
                     var result = await _profileService.Update(profile);
 
                     //TODO: Create profile pipelines instead of running the user pipeline on the profile
-                    await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>() { Data = user });
+                    await _publishEndpoint.Value.Publish(new UpdateDataContract<UsersUser>() { Data = user });
                     return Ok(profile);
                 }
                 return NotFound();
@@ -264,23 +264,23 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 {
                     return NotFound();
                 }
-                if (user.Status != AccountUserStatus.Deactivated)
+                if (user.Status != UsersUserStatus.Deactivated)
                 {
                     return Problem("User not deactivated");
                 }
                 var deactivatedUsername = user.Id.ToString();
-                user.Status = AccountUserStatus.Deleted;
+                user.Status = UsersUserStatus.Deleted;
                 user.Email = deactivatedUsername + "@deleted.parot.app";
                 user.UserName = deactivatedUsername;
                 user.UpdatedOn = DateTime.Now;
-                user.AccountProfileId = Guid.Empty;
+                user.UsersProfileId = Guid.Empty;
                 await _userManager.UpdateAsync(user);
                 var logins = await _userManager.GetLoginsAsync(user);
                 foreach (var login in logins)
                 {
                     await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
                 }
-                var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
+                var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
                 if (profile != null)
                 {
                     await _profileService.Delete(profile);
@@ -304,7 +304,7 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 {
                     return NotFound();
                 }
-                user.Status = AccountUserStatus.Deactivated;
+                user.Status = UsersUserStatus.Deactivated;
                 await _userManager.UpdateAsync(user);
                 await PostUpdateSteps(user);
 
@@ -326,7 +326,7 @@ namespace Accelerate.Features.Admin.Controllers.Api
                 {
                     return NotFound();
                 }
-                user.Status = AccountUserStatus.Active;
+                user.Status = UsersUserStatus.Active;
                 await _userManager.UpdateAsync(user);
                 await PostUpdateSteps(user);
 

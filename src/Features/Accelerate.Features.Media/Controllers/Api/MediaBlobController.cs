@@ -1,5 +1,5 @@
 ﻿
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Data;
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Controllers.Api
     public class MediaBlobController : BaseApiServiceController<MediaBlobEntity>
     {
         readonly Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMediaService _mediaService;
         IMetaContentService _contentService;
         public MediaBlobController(
@@ -35,7 +35,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             Bind<IMediaBlobEventBus, IPublishEndpoint> publishEndpoint,
             IEntityService<MediaBlobEntity> service,
             IMediaService mediaService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;

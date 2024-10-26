@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Admin.Models.Views;
 using Accelerate.Features.Admin.Services; 
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.Views;
@@ -12,6 +12,7 @@ using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.Integrations.Elastic.Models;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Operations.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using System;
 using System.Collections.Generic;
@@ -36,14 +37,14 @@ namespace Accelerate.Features.Admin.Services
             //ItemUrl = this._metaContentService.GetActionUrl(nameof(FeedsController.Feed), ControllerHelper.NameOf<FeedsController>(), new { id = x.Id });
         }
 
-        private AdminBasePage CreateBaseAdminPage(AccountUser user)
+        private AdminBasePage CreateBaseAdminPage(UsersUser user)
         {
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
             var baseModel = _metaContentService.CreatePageBaseContent(profile);
             var viewModel = new AdminBasePage(baseModel);
             return viewModel;
         }
-        public NotFoundPage CreateNotFoundPage(AccountUser user, string title = null, string description = null)
+        public NotFoundPage CreateNotFoundPage(UsersUser user, string title = null, string description = null)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new NotFoundPage(model);
@@ -61,7 +62,7 @@ namespace Accelerate.Features.Admin.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        public virtual AdminBasePage CreateAllPage(AccountUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual AdminBasePage CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
@@ -82,7 +83,7 @@ namespace Accelerate.Features.Admin.Services
             //viewModel.FormCreatePost = user != null ? CreateForm(user) : null;
             return viewModel;
         }
-        public virtual AdminBasePage CreateIndexPage(AccountUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual AdminBasePage CreateIndexPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
@@ -107,7 +108,7 @@ namespace Accelerate.Features.Admin.Services
             return item.Id.ToString();
         }
 
-        public virtual async Task<AdminIndexPage<T>> CreateEntityPage(AccountUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminIndexPage<T>(model);
@@ -131,7 +132,7 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return viewModel;
         }
-        public virtual AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<T> items)
+        public virtual AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<T> items)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
@@ -155,7 +156,7 @@ namespace Accelerate.Features.Admin.Services
             return viewModel;
         } 
 
-        public virtual AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<T> items, T item)
+        public virtual AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<T> items, T item)
         {
             var model = CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
@@ -674,7 +675,7 @@ namespace Accelerate.Features.Admin.Services
         }
         #endregion
         #region Channel
-        public ModalForm EditModalForm(AccountUser user, T item)
+        public ModalForm EditModalForm(UsersUser user, T item)
         {
             var model = new ModalForm();
             model.Title = $"Edit {this.EntityName}";
@@ -683,7 +684,7 @@ namespace Accelerate.Features.Admin.Services
             model.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return model;
         } 
-        public virtual AjaxForm CreateEntityForm(AccountUser user, T? item, PostbackType type = PostbackType.POST)
+        public virtual AjaxForm CreateEntityForm(UsersUser user, T? item, PostbackType type = PostbackType.POST)
         {
             var model = new AjaxForm()
             {
@@ -767,7 +768,7 @@ namespace Accelerate.Features.Admin.Services
             }
             return model;
         }
-        public virtual AjaxForm CreateEntityForm(AccountUser user)
+        public virtual AjaxForm CreateEntityForm(UsersUser user)
         {
             var model = new AjaxForm()
             {
@@ -832,13 +833,13 @@ namespace Accelerate.Features.Admin.Services
             };
             return model;
         }
-        public virtual AjaxForm CreateForm(AccountUser user)
+        public virtual AjaxForm CreateForm(UsersUser user)
         {
             return this.CreateEntityForm(user);
         }
         #endregion
 
-        public ModalForm CreateModalDeleteForm(AccountUser user, T item)
+        public ModalForm CreateModalDeleteForm(UsersUser user, T item)
         {
             var model = new ModalForm();
             model.Title = $"Delete {this.EntityName}";
@@ -846,7 +847,7 @@ namespace Accelerate.Features.Admin.Services
             model.Form = CreateFormDelete(user, item);
             return model;
         }
-        public AjaxForm CreateFormDelete(AccountUser user, T item)
+        public AjaxForm CreateFormDelete(UsersUser user, T item)
         {
             var model = new AjaxForm()
             {

@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
@@ -21,14 +21,14 @@ namespace Accelerate.Features.Content.Services
         {
             EntityName = "List";
         }
-        public override ContentListPage CreateIndexPage(AccountUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override ContentListPage CreateIndexPage(UsersUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentListPage(model);
             viewModel.Test = "INDEX";
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentListDocument item, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(UsersUser user, ContentListDocument item, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentListPage(model);
@@ -49,7 +49,7 @@ namespace Accelerate.Features.Content.Services
                 Value = listId,
             };
         }
-        public override ContentSubmitForm CreatePostForm(AccountUser user, ContentPostViewDocument item = null, ContentListDocument doc = null)
+        public override ContentSubmitForm CreatePostForm(UsersUser user, ContentPostViewDocument item = null, ContentListDocument doc = null)
         {
             var model = base.CreatePostForm(user, item);
 
@@ -60,7 +60,7 @@ namespace Accelerate.Features.Content.Services
 
             return model;
         }
-        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<ContentListDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentListPage(model);

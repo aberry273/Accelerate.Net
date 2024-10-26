@@ -1,6 +1,6 @@
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Models.Entities;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Models.Entities;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Communication.Models;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Integrations.Twilio.Models;
@@ -62,7 +62,7 @@ Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builde
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Content.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Account.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
@@ -106,7 +106,7 @@ var app = builder.Build();
 
 // Setup local admin
 //var sp = builder.Services.BuildServiceProvider();
-//var userService = sp.GetService<IAccountUserService>();
+//var userService = sp.GetService<IUsersUserService>();
 //userService.InitializeAdmin();
 
 
@@ -114,7 +114,7 @@ app.UseSession();
 
 // Add WebAPI based authentication
 app.MapGroup($"/{Accelerate.Projects.App.Constants.Routes.WebApiAuthentication}")
-    .MapIdentityApi<AccountUser>()
+    .MapIdentityApi<UsersUser>()
     ;
 
 // Configure the HTTP request pipeline.

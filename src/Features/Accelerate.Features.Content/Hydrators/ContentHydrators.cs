@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Account.Models;
+﻿using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Content.Models.View;
@@ -7,7 +7,7 @@ namespace Accelerate.Features.Content.Hydrators
 {
     public static class ContentHydrators
     {
-        public static void Hydrate(this AccountUserDocument user, ContentPostUserProfileSubdocument document)
+        public static void Hydrate(this UsersUserDocument user, ContentPostUserProfileSubdocument document)
         {
             document.Id = user.Id;
             document.Date = user.CreatedOn.ToString();

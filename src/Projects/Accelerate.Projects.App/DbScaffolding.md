@@ -9,9 +9,9 @@ Add-Migration InitialCreate_Media1 -context MediaDbContext -project "Accelerate.
 Update-Database -context MediaDbContext -project "Accelerate.Foundations.Media" 
 
 # Authentication
-Drop-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
-Add-Migration Initial_Account4 -context AccountDbContext -project "Accelerate.Foundations.Account" 
-Update-Database -context AccountDbContext -project "Accelerate.Foundations.Account" 
+Drop-Database -context UsersDbContext -project "Accelerate.Foundations.Users" 
+Add-Migration Initial_Users1 -context AccountDbContext -project "Accelerate.Foundations.Users" 
+Update-Database -context AccountDbContext -project "Accelerate.Foundations.Users" 
 
 # Operations
 Drop-Database -context OperationsDbContext -project "Accelerate.Foundations.Operations" 

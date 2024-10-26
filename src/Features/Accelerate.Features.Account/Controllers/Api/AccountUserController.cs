@@ -1,5 +1,5 @@
 ﻿using Accelerate.Features.Account.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.Data;
@@ -26,26 +26,26 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Hosting.Server;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Features.Account.Models.Data;
-using Accelerate.Foundations.Account.EventBus;
+using Accelerate.Foundations.Users.EventBus;
 
 namespace Accelerate.Features.Content.Controllers.Api
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountUserController : ControllerBase
+    public class UsersUserController : ControllerBase
     {
-        readonly Bind<IAccountBus, IPublishEndpoint> _publishEndpoint;
-        SignInManager<AccountUser> _signInManager;
-        UserManager<AccountUser> _userManager;
-        IEntityService<AccountProfile> _profileService;
+        readonly Bind<IUsersBus, IPublishEndpoint> _publishEndpoint;
+        SignInManager<UsersUser> _signInManager;
+        UserManager<UsersUser> _userManager;
+        IEntityService<UsersProfile> _profileService;
         IMetaContentService _contentService;
-        public AccountUserController(
+        public UsersUserController(
             IMetaContentService contentService,
-            UserManager<AccountUser> userManager,
-            SignInManager<AccountUser> signInManager,
-            IEntityService<AccountProfile> profileService,
-            Bind<IAccountBus, IPublishEndpoint> publishEndpoint)
+            UserManager<UsersUser> userManager,
+            SignInManager<UsersUser> signInManager,
+            IEntityService<UsersProfile> profileService,
+            Bind<IUsersBus, IPublishEndpoint> publishEndpoint)
         {
             _userManager = userManager;
             _contentService = contentService;
@@ -114,23 +114,23 @@ namespace Accelerate.Features.Content.Controllers.Api
                 {
                     return NotFound();
                 }
-                if(user.Status != AccountUserStatus.Deactivated)
+                if(user.Status != UsersUserStatus.Deactivated)
                 {
                     return Problem("User not deactivated");
                 }
                 var deactivatedUsername = user.Id.ToString();
-                user.Status = AccountUserStatus.Deleted;
+                user.Status = UsersUserStatus.Deleted;
                 user.Email = deactivatedUsername + "@deleted.parot.app";
                 user.UserName = deactivatedUsername;
                 user.UpdatedOn = DateTime.Now;
-                user.AccountProfileId = Guid.Empty;
+                user.UsersProfileId = Guid.Empty;
                 await _userManager.UpdateAsync(user);
                 var logins = await _userManager.GetLoginsAsync(user);
                 foreach(var login in logins)
                 {
                     await _userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
                 }
-                var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
+                var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
                 if (profile != null)
                 {
                     await _profileService.Delete(profile);
@@ -157,7 +157,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                 {
                     return NotFound();
                 }
-                user.Status = AccountUserStatus.Deactivated;
+                user.Status = UsersUserStatus.Deactivated;
                 await _userManager.UpdateAsync(user);
                 await PostUpdateSteps(user);
                 
@@ -179,7 +179,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                 {
                     return NotFound();
                 }
-                user.Status = AccountUserStatus.Active;
+                user.Status = UsersUserStatus.Active;
                 await _userManager.UpdateAsync(user);
                 await PostUpdateSteps(user);
 
@@ -190,17 +190,17 @@ namespace Accelerate.Features.Content.Controllers.Api
                 return Problem(ex.ToString());
             }
         }
-        protected async Task PostDeleteSteps(AccountUser obj)
+        protected async Task PostDeleteSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new DeleteDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new DeleteDataContract<UsersUser>()
             {
                 Data = obj,
                 UserId = obj.Id
             });
         }
-        protected async Task PostUpdateSteps(AccountUser obj)
+        protected async Task PostUpdateSteps(UsersUser obj)
         {
-            await _publishEndpoint.Value.Publish(new UpdateDataContract<AccountUser>()
+            await _publishEndpoint.Value.Publish(new UpdateDataContract<UsersUser>()
             {
                 Data = obj,
                 UserId = obj.Id

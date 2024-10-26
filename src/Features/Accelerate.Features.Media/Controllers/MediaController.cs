@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -16,11 +16,11 @@ namespace Accelerate.Projects.App.Controllers
     //[Authorize]
     public class MediaController : BaseController
     {
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
         IMediaService _mediaService;
         public MediaController(
-            UserManager<AccountUser> userManager,
+            UserManager<UsersUser> userManager,
             IMetaContentService contentService,
             IMediaService mediaService)
             : base(contentService)

@@ -1,4 +1,4 @@
-﻿namespace Accelerate.Foundations.Account.Models
+﻿namespace Accelerate.Foundations.Users.Models
 {
     public class AzureStorageConfiguration
     {

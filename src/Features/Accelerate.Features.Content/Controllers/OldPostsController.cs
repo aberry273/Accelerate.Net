@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Models.Views;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
@@ -29,14 +29,14 @@ namespace Accelerate.Features.Content.Controllers
 {
     public class ThreadsController : BaseController
     {
-        SignInManager<AccountUser> _signInManager;
-        UserManager<AccountUser> _userManager;
+        SignInManager<UsersUser> _signInManager;
+        UserManager<UsersUser> _userManager;
         IContentViewSearchService _contentViewSearchService;
         IMetaContentService _contentService;
         IContentPostElasticService _contentElasticSearchService;
         IElasticService<ContentPostDocument> _postSearchService;
         IElasticService<ContentChannelDocument> _channelSearchService;
-        IEntityService<AccountProfile> _profileService;
+        IEntityService<UsersProfile> _profileService;
         IContentThreadViewService _contentViewService;
         const string _unauthenticatedRedirectUrl = "/Account/login";
         private const string _notFoundRazorFile = "~/Views/Threads/NotFound.cshtml";
@@ -45,12 +45,12 @@ namespace Accelerate.Features.Content.Controllers
             IContentThreadViewService contentViewService,
             IContentPostElasticService postElasticSearchService,
             IContentViewSearchService contentViewSearchService,
-            SignInManager<AccountUser> signInManager,
+            SignInManager<UsersUser> signInManager,
             IEntityService<ContentPostEntity> postService,
-            IEntityService<AccountProfile> profileService,
+            IEntityService<UsersProfile> profileService,
             IElasticService<ContentPostDocument> searchService,
             IElasticService<ContentChannelDocument> channelService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -195,12 +195,12 @@ namespace Accelerate.Features.Content.Controllers
             return View(viewModel);
         }
 
-        private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        private async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null) return null;
-            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
-            user.AccountProfile = profile;
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
             return user;
         }
 

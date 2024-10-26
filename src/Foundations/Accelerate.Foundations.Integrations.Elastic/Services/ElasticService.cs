@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Account.Models;
+﻿using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
 using Elastic.Clients.Elasticsearch;

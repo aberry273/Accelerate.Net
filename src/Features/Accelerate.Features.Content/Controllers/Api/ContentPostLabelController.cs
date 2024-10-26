@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Controllers.Api
     [ApiController]
     public class ContentPostLabelController : BaseApiPipelineController<ContentPostLabelEntity, IContentPostLabelBus>
     { 
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
         IElasticService<ContentPostDocument> _searchService;
         IEntityService<ContentPostEntity> _postService;
@@ -36,7 +36,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             IEntityPipelineService<ContentPostLabelEntity, IContentPostLabelBus> service,
             IEntityService<ContentPostEntity> postService,
             IElasticService<ContentPostDocument> searchService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         {
             _userManager = userManager;
             _contentService = contentService;

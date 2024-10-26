@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Controllers;
 using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Helpers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
@@ -30,14 +30,14 @@ namespace Accelerate.Features.Content.Services
             EntityName = "Post";
             _contentElasticSearchService = contentElasticSearchService;
         }
-        public override ContentPostPage CreateIndexPage(AccountUser user, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override ContentPostPage CreateIndexPage(UsersUser user, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentPostPage(model);
             
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(UsersUser user, ContentPostDocument item, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentPostPage(model);
@@ -76,7 +76,7 @@ namespace Accelerate.Features.Content.Services
             //
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<ContentPostDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentPostPage(model);
@@ -94,7 +94,7 @@ namespace Accelerate.Features.Content.Services
             
             return viewModel;
         }
-        public ModalCreateContentPostReply CreateModalCreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        public ModalCreateContentPostReply CreateModalCreateReplyForm(UsersUser user, ContentPostViewDocument post)
         {
             var model = new ModalCreateContentPostReply();
             model.Title = "Reply to post";
@@ -112,7 +112,7 @@ namespace Accelerate.Features.Content.Services
             return model;
         }
 
-        public ContentSubmitForm OldCreatePostForm(AccountUser user, ContentPostViewDocument item = null, ContentChannelDocument channel = null)
+        public ContentSubmitForm OldCreatePostForm(UsersUser user, ContentPostViewDocument item = null, ContentChannelDocument channel = null)
         {
             var model = new ContentSubmitForm()
             {
@@ -154,7 +154,7 @@ namespace Accelerate.Features.Content.Services
             }
             return model;
         }
-        public ContentSubmitForm OldCreateReplyForm(AccountUser user, ContentPostViewDocument post)
+        public ContentSubmitForm OldCreateReplyForm(UsersUser user, ContentPostViewDocument post)
         {
             //var parentIdThread = post.Related.Parents != null ? post.Related.Parents : new List<Guid>();
             //parentIdThread.Add(post.Id);

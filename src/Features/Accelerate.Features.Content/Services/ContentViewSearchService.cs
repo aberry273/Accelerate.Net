@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Foundations.Content.Models.Entities;
 using Accelerate.Foundations.Database.Services;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Services;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Microsoft.VisualBasic;
-using Accelerate.Foundations.Account.Models;
+using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Common.Pipelines;
 using Accelerate.Features.Content.Hydrators;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -33,16 +33,16 @@ namespace Accelerate.Features.Content.Services
         IEntityService<ContentPostPinEntity> _pinnedContentService;
         IEntityService<ContentPostParentEntity> _servicePostParents { get; set; }
 
-        IAccountUserSearchService _userSearchService;
+        IUsersUserSearchService _userSearchService;
         IElasticService<ContentChannelDocument> _searchChannelService;
-        IElasticService<AccountUserDocument> _accountElasticService;
+        IElasticService<UsersUserDocument> _accountElasticService;
         public ContentViewSearchService(
             IContentPostElasticService searchService,
             IEntityService<ContentPostPinEntity> pinnedContentService,
             IEntityService<ContentPostParentEntity> servicePostParents,
-            IAccountUserSearchService userSearchService,
+            IUsersUserSearchService userSearchService,
             IElasticService<ContentChannelDocument> searchChannelService,
-            IElasticService<AccountUserDocument> accountElasticService)
+            IElasticService<UsersUserDocument> accountElasticService)
         {
             _searchService = searchService;
             _pinnedContentService = pinnedContentService;
@@ -161,14 +161,14 @@ namespace Accelerate.Features.Content.Services
         #endregion
 
         #region Helper methods 
-        private async Task<List<AccountUserDocument>> GetUsers(IEnumerable<Guid> UserIds)
+        private async Task<List<UsersUserDocument>> GetUsers(IEnumerable<Guid> UserIds)
         {
             var userIds = UserIds.Distinct().Select(x => x.ToString()).ToList();
             var query = new RequestQuery() { ItemsPerPage = userIds.Count() };
             var userResult = await _userSearchService.SearchUsers(query, userIds);
             return userResult.Users;
         }
-        private async Task<List<AccountUserDocument>> GetUserProfiles(IEnumerable<Guid> userIds)
+        private async Task<List<UsersUserDocument>> GetUserProfiles(IEnumerable<Guid> userIds)
         {
             var userIdStrings = userIds.Select(x => x.ToString()).ToList();
             var query = new RequestQuery() { ItemsPerPage = userIds.Count() };
@@ -433,7 +433,7 @@ namespace Accelerate.Features.Content.Services
             return actions;
         }
 
-        private ContentPostUserProfileSubdocument GetUserDocument(AccountUserDocument user)
+        private ContentPostUserProfileSubdocument GetUserDocument(UsersUserDocument user)
         {
             var model = new ContentPostUserProfileSubdocument();
             user?.Hydrate(model);

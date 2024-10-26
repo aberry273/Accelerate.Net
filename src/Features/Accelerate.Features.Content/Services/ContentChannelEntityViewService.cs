@@ -1,6 +1,6 @@
 ﻿using Accelerate.Features.Content.Models.UI;
 using Accelerate.Features.Content.Models.Views;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Services;
@@ -22,7 +22,7 @@ namespace Accelerate.Features.Content.Services
         {
             EntityName = "Channel";
         }
-        public override ContentChannelPage CreateIndexPage(AccountUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override ContentChannelPage CreateIndexPage(UsersUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = base.CreateIndexPage(user, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
@@ -33,7 +33,7 @@ namespace Accelerate.Features.Content.Services
             };
             return viewModel;
         }
-        public override async Task<ContentBasePage> CreateEntityPage(AccountUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateEntityPage(UsersUser user, ContentChannelDocument item, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);
@@ -53,7 +53,7 @@ namespace Accelerate.Features.Content.Services
                 Value = listId,
             };
         }
-        public override ContentSubmitForm CreatePostForm(AccountUser user,  ContentPostViewDocument item = null, ContentChannelDocument doc = null)
+        public override ContentSubmitForm CreatePostForm(UsersUser user,  ContentPostViewDocument item = null, ContentChannelDocument doc = null)
         {
             var model = base.CreatePostForm(user, item);
 
@@ -64,7 +64,7 @@ namespace Accelerate.Features.Content.Services
 
             return model;
         }
-        public override async Task<ContentBasePage> CreateAllPage(AccountUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<ContentBasePage> CreateAllPage(UsersUser user, SearchResponse<ContentChannelDocument> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var model = await base.CreateAllPage(user, items, aggregateResponse);
             var viewModel = new ContentChannelPage(model);

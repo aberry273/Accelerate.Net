@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -27,7 +27,7 @@ namespace Accelerate.Features.Content.Controllers.Api
     [ApiController]
     public class ContentPostActionsController : BaseApiServiceController<ContentPostActionsEntity>
     { 
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
         readonly Bind<IContentActionsBus, IPublishEndpoint> _publishEndpoint;
         IElasticService<ContentPostDocument> _searchService;
@@ -38,7 +38,7 @@ namespace Accelerate.Features.Content.Controllers.Api
             IContentPostService postService,
             Bind<IContentActionsBus, IPublishEndpoint> publishEndpoint,
             IElasticService<ContentPostDocument> searchService,
-            UserManager<AccountUser> userManager) : base(service)
+            UserManager<UsersUser> userManager) : base(service)
         {
             _publishEndpoint = publishEndpoint;
             _userManager = userManager;

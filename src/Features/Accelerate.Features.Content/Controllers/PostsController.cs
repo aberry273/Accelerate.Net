@@ -1,7 +1,7 @@
 ﻿using Accelerate.Features.Content.Models.Views;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
@@ -30,9 +30,9 @@ namespace Accelerate.Features.Content.Controllers
     {
         const string channelName = "Post";
         public PostsController(
-            SignInManager<AccountUser> signInManager, 
-            UserManager<AccountUser> userManager, 
-            IEntityService<AccountProfile> profileService, 
+            SignInManager<UsersUser> signInManager, 
+            UserManager<UsersUser> userManager, 
+            IEntityService<UsersProfile> profileService, 
             IMetaContentService contentService,
             IElasticService<ContentPostDocument> searchService, 
             IBaseContentEntityViewService<ContentPostDocument> contentViewService, 
@@ -41,7 +41,7 @@ namespace Accelerate.Features.Content.Controllers
             : base(channelName, signInManager, userManager, profileService, contentService, searchService, contentViewService, postSearchService, contentElasticSearchService)
         {
         }
-        public override QueryDescriptor<ContentPostDocument> BuildGetEntitiesQuery(AccountUser user)
+        public override QueryDescriptor<ContentPostDocument> BuildGetEntitiesQuery(UsersUser user)
         {
             var query = new RequestQuery();
             var filter = _searchService.Filter("userId", user.Id.ToString(), true);

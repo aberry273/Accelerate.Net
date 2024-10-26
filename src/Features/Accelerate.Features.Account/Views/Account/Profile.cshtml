@@ -35,7 +35,7 @@
         <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
     </div>
 </div>
-@if(Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Active)
+@if(Model.UserStatus == Accelerate.Foundations.Users.Models.Entities.UsersUserStatus.Active)
 {
     <section>
         <div class="" x-transition>
@@ -48,7 +48,7 @@
         </div>
     </section>
 }
-@if (Model.UserStatus == Accelerate.Foundations.Account.Models.Entities.AccountUserStatus.Deactivated)
+@if (Model.UserStatus == Accelerate.Foundations.Users.Models.Entities.UsersUserStatus.Deactivated)
 {
     <section>
         <div class="" x-transition>

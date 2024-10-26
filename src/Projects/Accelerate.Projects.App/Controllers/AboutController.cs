@@ -1,5 +1,5 @@
-﻿using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -15,34 +15,34 @@ namespace Accelerate.Projects.App.Controllers
     //[Authorize]
     public class AboutController : BaseController
     {
-        UserManager<AccountUser> _userManager;
+        UserManager<UsersUser> _userManager;
         IMetaContentService _contentService;
-        IEntityService<AccountProfile> _profileService;
+        IEntityService<UsersProfile> _profileService;
         public AboutController(
-            UserManager<AccountUser> userManager,
+            UserManager<UsersUser> userManager,
             IMetaContentService contentService,
-            IEntityService<AccountProfile> profileService)
+            IEntityService<UsersProfile> profileService)
             : base(contentService)
         {
             _contentService = contentService;
             _userManager = userManager;
             _profileService = profileService;
         }
-        private BasePage CreateBaseContent(AccountUser user)
+        private BasePage CreateBaseContent(UsersUser user)
         { 
-            var profile = Accelerate.Foundations.Account.Helpers.AccountHelpers.CreateUserProfile(user);
+            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
             return _contentService.CreatePageBaseContent(profile);
         }
 
-        private async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        private async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null)
             {
                 return null;
             }
-            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
-            user.AccountProfile = profile;
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
             return user;
         }
         public async Task<IActionResult> Index()

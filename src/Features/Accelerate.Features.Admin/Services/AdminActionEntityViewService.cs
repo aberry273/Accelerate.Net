@@ -1,11 +1,11 @@
-﻿using Accelerate.Features.Admin.Models.Views; 
-using Accelerate.Foundations.Account.Models.Entities;
+﻿using Accelerate.Features.Admin.Models.Views;  
 using Accelerate.Foundations.Common.Models.UI.Components;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Content.Models.Data;
 using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Operations.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using MassTransit;
 using System;
@@ -28,7 +28,7 @@ namespace Accelerate.Features.Admin.Services
             return item.Name;
         }
 
-        public AjaxForm CreateActionForm(AccountUser user)
+        public AjaxForm CreateActionForm(UsersUser user)
         {
             var model = base.CreateForm(user);
 
@@ -36,7 +36,7 @@ namespace Accelerate.Features.Admin.Services
 
             return model;
         }
-        public override AdminCreatePage CreateAddPage(AccountUser user, IEnumerable<OperationsActionEntity> items)
+        public override AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<OperationsActionEntity> items)
         {
             var viewModel = base.CreateAddPage(user, items);
             viewModel.Form = CreateActionForm(user);
@@ -56,7 +56,7 @@ namespace Accelerate.Features.Admin.Services
         {
             return Enum.GetName<OperationsActionState>(item?.State ?? OperationsActionState.Public);
         }
-        public List<FormField> CreateFormFields(AccountUser user, OperationsActionEntity? item)
+        public List<FormField> CreateFormFields(UsersUser user, OperationsActionEntity? item)
         {
             var actionValue = item != null
                 ? item?.Action
@@ -105,20 +105,20 @@ namespace Accelerate.Features.Admin.Services
             };
         }
 
-        public AjaxForm EditJobForm(AccountUser user, OperationsActionEntity item)
+        public AjaxForm EditJobForm(UsersUser user, OperationsActionEntity item)
         {
             var model = base.CreateEntityForm(user, item, PostbackType.PUT);
             model.Label = $"Edit {item.Name}";
             model.Fields = CreateFormFields(user, item);
             return model;
         }
-        public override AdminCreatePage CreateEditPage(AccountUser user, IEnumerable<OperationsActionEntity> items, OperationsActionEntity item)
+        public override AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<OperationsActionEntity> items, OperationsActionEntity item)
         {
             var viewModel = base.CreateEditPage(user, items, item);
             viewModel.Form = EditJobForm(user, item);
             return viewModel;
         }
-        public override async Task<AdminIndexPage<OperationsActionEntity>> CreateEntityPage(AccountUser user, OperationsActionEntity item, IEnumerable<OperationsActionEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<OperationsActionEntity>> CreateEntityPage(UsersUser user, OperationsActionEntity item, IEnumerable<OperationsActionEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
             var viewModel = await base.CreateEntityPage(user, item, items, aggregateResponse);
             viewModel.Form = EditJobForm(user, item);

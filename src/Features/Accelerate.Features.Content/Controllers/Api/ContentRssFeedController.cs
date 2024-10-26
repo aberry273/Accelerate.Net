@@ -1,6 +1,6 @@
 ﻿using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Features.Content.Services;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Services;
@@ -26,8 +26,8 @@ using Microsoft.AspNetCore.SignalR;
 using Twilio.Rest.Proxy.V1.Service.Session.Participant;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Services;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Services;
 using Microsoft.Extensions.Primitives;
 
 namespace Accelerate.Features.Content.Controllers.Api

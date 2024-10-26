@@ -1,9 +1,9 @@
 ﻿
 using Accelerate.Features.Admin.Models.Views;
 using Accelerate.Features.Admin.Services;
-using Accelerate.Foundations.Account.Attributes;
-using Accelerate.Foundations.Account.Models;
-using Accelerate.Foundations.Account.Models.Entities;
+using Accelerate.Foundations.Users.Attributes;
+using Accelerate.Foundations.Users.Models;
+using Accelerate.Foundations.Users.Models.Entities;
 using Accelerate.Foundations.Common.Controllers;
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
@@ -31,9 +31,9 @@ namespace Accelerate.Features.Content.Controllers
     [Route("[controller]")]
     public class BaseAdminController<T> : BaseController where T : IBaseEntity
     {
-        protected SignInManager<AccountUser> _signInManager;
-        UserManager<AccountUser> _userManager;
-        IEntityService<AccountProfile> _profileService;
+        protected SignInManager<UsersUser> _signInManager;
+        UserManager<UsersUser> _userManager;
+        IEntityService<UsersProfile> _profileService;
         IMetaContentService _contentService;
         protected IEntityService<T> _entityService;
         protected IAdminBaseEntityViewService<T> _contentViewService;
@@ -45,9 +45,9 @@ namespace Accelerate.Features.Content.Controllers
         private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
         public BaseAdminController(
             string entityName,
-            SignInManager<AccountUser> signInManager,
-            UserManager<AccountUser> userManager,
-            IEntityService<AccountProfile> profileService,
+            SignInManager<UsersUser> signInManager,
+            UserManager<UsersUser> userManager,
+            IEntityService<UsersProfile> profileService,
             IMetaContentService contentService,
             IEntityService<T> entityService,
             IAdminBaseEntityViewService<T> contentViewService,
@@ -66,22 +66,22 @@ namespace Accelerate.Features.Content.Controllers
             _contentElasticSearchService = contentElasticSearchService;
         }
 
-        protected QueryDescriptor<T> GetUserItemsQuery(AccountUser user)
+        protected QueryDescriptor<T> GetUserItemsQuery(UsersUser user)
         {
             var query = new QueryDescriptor<T>();
             query.MatchAll();
             //query.Term(x => x.UserId.Suffix("keyword"), user != null ? user.Id.ToString() : null);
             return query;
         }
-        protected async Task<AccountUser> GetUserWithProfile(ClaimsPrincipal principle)
+        protected async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
             if (user == null)
             {
                 return null;
             }
-            var profile = _profileService.Get(user.AccountProfileId.GetValueOrDefault());
-            user.AccountProfile = profile;
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
             return user;
         }
 
@@ -105,7 +105,7 @@ namespace Accelerate.Features.Content.Controllers
             return View(viewModel);
         }
 
-        protected async Task<AdminIndexPage<T>> CreateIndexPage(AccountUser user, T item)
+        protected async Task<AdminIndexPage<T>> CreateIndexPage(UsersUser user, T item)
         {
             //var channels = await _searchService.Search(GetUserItemsQuery(user));
             var items = _entityService.Find(x => true);

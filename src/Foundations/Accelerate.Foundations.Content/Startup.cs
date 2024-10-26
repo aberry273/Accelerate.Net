@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Account.Models;
+﻿using Accelerate.Foundations.Users.Models;
 using Accelerate.Foundations.Content.EventBus;
 using Accelerate.Foundations.Content.Models;
 using Accelerate.Foundations.Content.Models.Data;
