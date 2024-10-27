@@ -74,7 +74,6 @@ Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.
 Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
-
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

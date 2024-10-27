@@ -28,7 +28,11 @@ namespace Accelerate.Foundations.Users
         {
             // CONFIGS
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
-            
+            services.Configure<UsersConfiguration>(options =>
+            {
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+            });
+
             try
             {
                 services.Configure<OAuthConfiguration>(options =>
@@ -56,9 +60,9 @@ namespace Accelerate.Foundations.Users
             services.AddTransient<IEntityService<UsersProfile>, EntityService<UsersProfile>>(); 
             services.AddTransient<IEntityService<UsersUser>, UsersUserService>(); 
             services.AddTransient<IUsersUserService, UsersUserService>();
-
+            
             services.AddTransient<IUsersUserSearchService, UsersUserSearchService>();
-
+             
             services.AddTransient<IElasticService<UsersUserDocument>, UsersUserSearchService>();
             // services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
 
@@ -78,90 +82,65 @@ namespace Accelerate.Foundations.Users
 
             //services.AddScoped<IUserClaimsPrincipalFactory<UsersUser>, AdditionalUserClaimsPrincipalFactory>();
             //services.AddAuthorization(options => options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
-            services.Configure<UsersConfiguration>(options =>
+            services.AddAuthentication(options =>
             {
-                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                options => configuration.Bind("JwtSettings", options))
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/signin";
+                options.LogoutPath = "/signout";
+            })
+            /*
+            .AddTwitter(options =>
+            {
+                options.ClientId = configuration["Twitter:ClientId"] ?? string.Empty;
+                options.ClientSecret = configuration["Twitter:ClientSecret"] ?? string.Empty;
+            })
+            .AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = configuration["MicrosoftKeysClientId"];
+                microsoftOptions.ClientSecret = configuration["MicrosoftKeysClientSecret"];
 
-                var enableOAuth = !configuration.GetValue<bool>(Constants.Config.EnableOAuth);
-                if (!enableOAuth)
+                microsoftOptions.Events = new OAuthEvents
                 {
-                    services.AddAuthentication(options =>
+                    OnRedirectToAuthorizationEndpoint = context =>
                     {
-                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    })
-                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                        options => configuration.Bind("JwtSettings", options))
-                    .AddCookie(options =>
-                    {
-                        options.LoginPath = "/signin";
-                        options.LogoutPath = "/signout";
-                    });
-                }
-                else
+                        // Force the user to select an account on the Microsoft login page
+                        context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
+                        return Task.CompletedTask;
+                    }
+                };
+            })
+            */
+            .AddGoogle(options =>
+            {
+                options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                options.SaveTokens = true;
+                options.SignInScheme = IdentityConstants.ExternalScheme;
+                options.ClientId = configuration[Constants.Config.GoogleAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                options.ClientSecret = configuration[Constants.Config.GoogleAppSecretKey] ?? string.Empty;
+            })
+            .AddFacebook(options =>
+            {
+                options.SaveTokens = true;
+                options.SignInScheme = IdentityConstants.ExternalScheme;
+                options.AccessDeniedPath = "/account/AccessDeniedPathInfo";
+                options.ClientId = configuration[Constants.Config.FacebookAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
+                options.ClientSecret = configuration[Constants.Config.FacebookAppSecretKey] ?? string.Empty;
+
+                options.Events.OnTicketReceived = (context) =>
                 {
-                    services.AddAuthentication(options =>
-                    {
-                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme; 
-                    })
-                    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                        options => configuration.Bind("JwtSettings", options))
-                    .AddCookie(options =>
-                    {
-                        options.LoginPath = "/signin";
-                        options.LogoutPath = "/signout";
-                    }) 
-                    .AddGoogle(options =>
-                    {
-                        options.AccessDeniedPath = "/Users/AccessDeniedPathInfo";
-                        options.SaveTokens = true; 
-                        options.SignInScheme = IdentityConstants.ExternalScheme;
-                        options.ClientId = configuration[Constants.Config.GoogleAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
-                        options.ClientSecret = configuration[Constants.Config.GoogleAppSecretKey] ?? string.Empty;
-                    })
-                    .AddFacebook(options =>
-                    {
-                        options.SaveTokens = true;
-                        options.SignInScheme = IdentityConstants.ExternalScheme;
-                           options.AccessDeniedPath = "/Users/AccessDeniedPathInfo";
-                        options.ClientId = configuration[Constants.Config.FacebookAppIdKey] ?? string.Empty;//configuration["Google:ClientId"] ?? string.Empty;
-                        options.ClientSecret = configuration[Constants.Config.FacebookAppSecretKey] ?? string.Empty;
-
-                        options.Events.OnTicketReceived = (context) =>
-                        {
-                            Console.WriteLine(context.HttpContext.User);
-                            return Task.CompletedTask;
-                        };
-                        options.Events.OnCreatingTicket = (context) =>
-                        {
-                            Console.WriteLine(context.Identity);
-                            return Task.CompletedTask;
-                        };
-                    })
-                    ;
-                    /*
-                    .AddTwitter(options =>
-                    {
-                        options.ClientId = configuration["Twitter:ClientId"] ?? string.Empty;
-                        options.ClientSecret = configuration["Twitter:ClientSecret"] ?? string.Empty;
-                    })
-                    .AddMicrosoftUsers(microsoftOptions =>
-                    {
-                        microsoftOptions.ClientId = configuration["MicrosoftKeysClientId"];
-                        microsoftOptions.ClientSecret = configuration["MicrosoftKeysClientSecret"];
-
-                        microsoftOptions.Events = new OAuthEvents
-                        {
-                            OnRedirectToAuthorizationEndpoint = context =>
-                            {
-                                // Force the user to select an Users on the Microsoft login page
-                                context.Response.Redirect(context.RedirectUri + "&prompt=select_Users");
-                                return Task.CompletedTask;
-                            }
-                        };
-                    })
-                    */
-
-                }
+                    Console.WriteLine(context.HttpContext.User);
+                    return Task.CompletedTask;
+                };
+                options.Events.OnCreatingTicket = (context) =>
+                {
+                    Console.WriteLine(context.Identity);
+                    return Task.CompletedTask;
+                };
             });
             // Set email timeout to 7 days
 
