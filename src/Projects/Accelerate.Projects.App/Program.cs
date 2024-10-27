@@ -67,20 +67,12 @@ Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder
 Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
-Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Transfers.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Orders.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-//Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-//Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-
 
 // Add Feature references to the container
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 
 // Add Database Exception filter
@@ -114,8 +106,7 @@ app.UseSession();
 
 // Add WebAPI based authentication
 app.MapGroup($"/{Accelerate.Projects.App.Constants.Routes.WebApiAuthentication}")
-    .MapIdentityApi<UsersUser>()
-    ;
+    .MapIdentityApi<UsersUser>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

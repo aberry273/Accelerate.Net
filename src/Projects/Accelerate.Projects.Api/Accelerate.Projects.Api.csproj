@@ -29,12 +29,12 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Quartz\Accelerate.Foundations.Integrations.Quartz.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Twilio\Accelerate.Foundations.Integrations.Twilio.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Kyc\Accelerate.Foundations.Kyc.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Mediator\Accelerate.Foundations.Mediator.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Orders\Accelerate.Foundations.Orders.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Rates\Accelerate.Foundations.Rates.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transfers\Accelerate.Foundations.Transfers.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

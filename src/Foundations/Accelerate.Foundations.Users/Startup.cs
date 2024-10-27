@@ -81,8 +81,9 @@ namespace Accelerate.Foundations.Users
             services.Configure<UsersConfiguration>(options =>
             {
                 configuration.GetSection(Constants.Config.ConfigName).Bind(options);
-            
-                if (!bool.Parse(configuration[Constants.Config.EnableOAuth]))
+
+                var enableOAuth = !configuration.GetValue<bool>(Constants.Config.EnableOAuth);
+                if (!enableOAuth)
                 {
                     services.AddAuthentication(options =>
                     {
@@ -135,7 +136,8 @@ namespace Accelerate.Foundations.Users
                             Console.WriteLine(context.Identity);
                             return Task.CompletedTask;
                         };
-                    });
+                    })
+                    ;
                     /*
                     .AddTwitter(options =>
                     {

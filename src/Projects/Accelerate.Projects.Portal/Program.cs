@@ -44,7 +44,7 @@ builder.Services.AddRazorPages();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();
 
 // Add Foundation references to the container
 
@@ -59,7 +59,8 @@ var isProduction = builder.Environment.IsProduction();
 Accelerate.Foundations.Mediator.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration); 
+Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction); 
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Transfers.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
@@ -67,10 +68,8 @@ Accelerate.Foundations.Orders.Startup.ConfigureServices(builder.Services, builde
 Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
-
 // Add Feature references to the container 
 Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
-
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.
@@ -97,7 +96,6 @@ var app = builder.Build();
 var sp = builder.Services.BuildServiceProvider();
 var userService = sp.GetService<IUsersUserService>();
 //userService.InitializeAdmin();
-
 
 app.UseSession();
 

@@ -61,6 +61,10 @@ namespace Accelerate.Foundations.Common
             public const string LoginPath = "/Account/Login";
             public const string LoginLabel = "Login";
         }
+        public struct ApiPaths
+        {
+            public const string VersionPath = "api/v0";
+        }
         public struct Settings
         {
             public const string SiteConfiguration = "SiteConfiguration";

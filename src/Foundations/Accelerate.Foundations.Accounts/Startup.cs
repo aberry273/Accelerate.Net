@@ -19,7 +19,7 @@ namespace Accelerate.Foundations.Accounts
             // CONFIGS
             services.Configure<AccountsConfiguration>(options =>
             {
-                //configuration.GetSection(Constants.Config.ConfigName).Bind(options);
+                configuration.GetSection(Constants.Config.ConfigName).Bind(options);
             });
             var connString = isProduction ? configuration[Constants.Config.DatabaseKey] : configuration.GetConnectionString(Constants.Config.LocalDatabaseKey);
             //Context

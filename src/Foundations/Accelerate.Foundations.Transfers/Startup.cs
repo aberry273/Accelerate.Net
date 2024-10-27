@@ -25,18 +25,15 @@ namespace Accelerate.Foundations.Transfers
             //Context
 
             services.AddDbContext<BaseContext<TransfersCustomerEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
-            services.AddDbContext<BaseContext<TransfersPayinEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
-            services.AddDbContext<BaseContext<TransfersPayoutEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
-
+            services.AddDbContext<BaseContext<TransfersTransactions>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+           
             //Services
             // Core
             services.AddTransient<IEntityService<TransfersCustomerEntity>, EntityService<TransfersCustomerEntity>>();
-            services.AddTransient<IEntityService<TransfersPayinEntity>, EntityService<TransfersPayinEntity>>();
-            services.AddTransient<IEntityService<TransfersPayoutEntity>, EntityService<TransfersPayoutEntity>>();
-
+            services.AddTransient<IEntityService<TransfersTransactions>, EntityService<TransfersTransactions>>();
+            
             // Logic
-            //services.AddTransient<IContentPostService, ContentPostService>();
-
+           
             //Parent context for mappings
             services.AddDbContext<TransfersDbContext>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
 
@@ -57,22 +54,7 @@ namespace Accelerate.Foundations.Transfers
                 throw;
             }
         }
-        public static void InitializePipeline(BaseContext<TransfersPayinEntity> context)
-        {
-            try
-            {
-                //context.Database.EnsureCreated();
-                //Load
-
-                //Config/Pipelines.xml
-
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-        public static void InitializePipeline(BaseContext<TransfersPayoutEntity> context)
+        public static void InitializePipeline(BaseContext<TransfersTransactions> context)
         {
             try
             {

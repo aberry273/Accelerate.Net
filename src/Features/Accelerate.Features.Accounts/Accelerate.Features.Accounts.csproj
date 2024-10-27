@@ -13,4 +13,8 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\Api\" />
+  </ItemGroup>
+
 </Project>
