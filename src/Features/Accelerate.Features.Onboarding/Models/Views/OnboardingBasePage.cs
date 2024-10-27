@@ -14,6 +14,6 @@ namespace Accelerate.Features.Onboarding.Models.Views
         {
         }
         public Guid Id { get; set; }
-        public AjaxForm Form { get; set; }
+        public Form Form { get; set; }
     }
 }

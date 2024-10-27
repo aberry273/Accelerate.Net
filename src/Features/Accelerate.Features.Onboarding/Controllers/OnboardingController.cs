@@ -37,11 +37,23 @@ namespace Accelerate.Features.Content.Controllers
             _signInManager = signInManager;
             _contentService = contentService;
         }
-        [RedirectUnauthenticatedRoute(url = Foundations.Users.Constants.Paths.UnauthenticatedRedirectUrl)]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
+            return RedirectToAction(nameof(SignUp), new { kycId = Guid.Empty });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SignUp()
+        {
+            if (this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
+            }
+
+            var viewModel = await _contentService.CreateSignUpPage(this.User);
+
+            return View(viewModel);
         }
 
         [RedirectUnauthenticatedRoute(url = Foundations.Users.Constants.Paths.UnauthenticatedRedirectUrl)]

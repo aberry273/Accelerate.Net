@@ -15,8 +15,10 @@
     }">
 
     <!-- Sidebar - Desktop only -->
-    <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
-
+    @if (Model.SideNavigation.Items != null && Model.SideNavigation.Items.Any())
+    {
+        <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+    }
     <!-- Dashboard -->
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
 

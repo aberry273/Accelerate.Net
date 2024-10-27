@@ -17,7 +17,7 @@ export default function (data) {
       init() {
       },
       // GETTERS
-      get mxForm_submitClass() { return 'inline-block w-full px-5 py-4 text-lg font-medium text-center text-white transition duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 ease' },
+      get mxForm_submitClass() { return 'inline-block w-full px-5 py-4 text-lg font-medium text-center dark:text-white transition duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 ease' },
       get mxForm_submitInvalidClass() { return 'group-invalid:pointer-events-none group-invalid:opacity-30' },
       get mxForm_formClass() { return 'flex flex-col items-start justify-start w-full h-full p-10 lg:p-16 xl:p-24' },
       get mxForm_formPadlessClass() { return 'flex flex-col items-start justify-start w-full h-full p-4' },

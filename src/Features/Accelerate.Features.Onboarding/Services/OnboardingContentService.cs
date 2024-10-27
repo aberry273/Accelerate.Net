@@ -43,9 +43,55 @@ namespace Accelerate.Features.Onboarding.Services
             var basePage = _metaContentService.CreatePageBaseContent(profile);
             var model = new OnboardingBasePage(basePage);
 
-
             return model;
         }
+        #region Sign Up
+        public async Task<OnboardingBasePage> CreateSignUpPage(ClaimsPrincipal userClaim)
+        {
+            var user = await GetUserWithProfile(userClaim);
+            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
+
+            var viewModel = CreateBasePage(userProfile);
+
+            var identityModel = new KycCheckIdentityEntity();
+            viewModel.Form = this.CreateSignUpForm(user, identityModel);
+
+            return viewModel;
+        }
+        private static List<dynamic> GetIndustries()
+        {
+            return new List<dynamic>(){
+                "Fintech"
+            };
+        }
+        private static List<dynamic> GetCountryCodes()
+        {
+            return new List<dynamic>(){
+                "IND"
+            };
+        }
+        public Form CreateSignUpForm(UsersUser user, KycCheckIdentityEntity item)
+        {
+            var model = new Form()
+            {
+                Title = "Sign up",
+                Label = "Submit",
+                Fields = new List<FormField>()
+                {
+                    _metaContentService.FormField("Id", FormFieldComponents.aclFieldInput, null, null, item.Id, true, true),
+                    _metaContentService.FormField("Firstname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Firstname"),
+                    _metaContentService.FormField("Lastname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Lastname"),
+                    _metaContentService.FormField("Email", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+                    _metaContentService.FormField("CompanyName", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Name"),
+                    _metaContentService.FormField("Website", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Website"),
+                    _metaContentService.FormFieldItems("Industry", FormFieldComponents.aclFieldSelect, GetIndustries(), null, null, null, false, false, null, null, null, "Industry"),
+                    _metaContentService.FormFieldItems("What are you wanting to use Superstable", FormFieldComponents.aclFieldSelect, GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
+                }
+            };
+            return model;
+        }
+        #endregion
+        #region Identity Check
         public async Task<OnboardingBasePage> CreateIdentityCheckPage(ClaimsPrincipal userClaim)
         {
             var user = await GetUserWithProfile(userClaim);
@@ -90,6 +136,6 @@ namespace Accelerate.Features.Onboarding.Services
             };
             return model;
         }
-
+        #endregion
     }
 }

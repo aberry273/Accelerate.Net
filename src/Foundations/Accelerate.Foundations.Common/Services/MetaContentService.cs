@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Azure.Core;
 using System.Security.Principal;
 using System.Security.Claims;
+using Accelerate.Foundations.Common.Models.UI.Components;
 
 namespace Accelerate.Foundations.Common.Services
 {
@@ -210,6 +211,44 @@ namespace Accelerate.Foundations.Common.Services
                     },
                     */
                 }
+            };
+        }
+
+        public FormField FormField(string name, FormFieldComponents component, string cssClass, string placeholder, object? value, bool disabled = false, bool hidden = false, int? min = null, int? max = null, bool? multiple = false, string? label = null)
+        {
+            return new FormField()
+            {
+                Name = name,
+                Label = label,
+                FieldComponent = component,
+                Class = cssClass,
+                Placeholder = placeholder,
+                Value = value,
+                Disabled = disabled,
+                AriaInvalid = disabled,
+                Hidden = hidden,
+                Min = min,
+                Max = max,
+                Multiple = multiple
+            };
+        }
+        public FormField FormFieldItems(string name, FormFieldComponents component, List<dynamic> items, string cssClass, string placeholder, object? value, bool disabled = false, bool hidden = false, int? min = null, int? max = null, bool? multiple = false, string? label = null)
+        {
+            return new FormField()
+            {
+                Name = name,
+                Label = label,
+                FieldComponent = component,
+                Class = cssClass,
+                Placeholder = placeholder,
+                Value = value,
+                Items = items,
+                Disabled = disabled,
+                AriaInvalid = disabled,
+                Hidden = hidden,
+                Min = min,
+                Max = max,
+                Multiple = multiple
             };
         }
 

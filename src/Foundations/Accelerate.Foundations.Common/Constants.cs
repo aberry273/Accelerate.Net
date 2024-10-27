@@ -56,9 +56,9 @@ namespace Accelerate.Foundations.Common
             public const string NotificationsLabel = "Notifications";
             public const string MediaPath = "/Account/Media";
             public const string MediaLabel = "Media";
-            public const string LogoutPath = "/Account/Logout";
+            public const string LogoutPath = "/authentication/Logout";
             public const string LogoutLabel = "Logout";
-            public const string LoginPath = "/Account/Login";
+            public const string LoginPath = "/authentication/Login";
             public const string LoginLabel = "Login";
         }
         public struct ApiPaths
