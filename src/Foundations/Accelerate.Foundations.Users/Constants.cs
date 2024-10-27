@@ -8,6 +8,10 @@ namespace Accelerate.Foundations.Users
 {
     public struct Constants
     {
+        public struct Paths
+        {
+            public const string UnauthenticatedRedirectUrl = "/authentication/login";
+        }
         public struct Domains
         {
             public const string Deleted = "Deleted";

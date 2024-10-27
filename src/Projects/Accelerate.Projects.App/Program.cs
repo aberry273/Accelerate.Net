@@ -69,10 +69,10 @@ Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, bu
 
 
 // Add Feature references to the container
-Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Account.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.
@@ -151,7 +151,7 @@ app.MapDefaultControllerRoute();
 
 // Map SignalR hubs, system accounts & global content
 #pragma warning disable ASP0014 // Suggest using top level route registrations
-Accelerate.Features.Account.Startup.ConfigureApp(app);
+Accelerate.Features.Authentication.Startup.ConfigureApp(app);
 Accelerate.Features.Content.Startup.ConfigureApp(app);
 Accelerate.Features.Media.Startup.ConfigureApp(app);
 #pragma warning restore ASP0014 // Suggest using top level route registrations

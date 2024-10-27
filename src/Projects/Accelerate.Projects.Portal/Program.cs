@@ -69,7 +69,9 @@ Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.C
 Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
 // Add Feature references to the container 
-Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration); Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Onboarding.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.

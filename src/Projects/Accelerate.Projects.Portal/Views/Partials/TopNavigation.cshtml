@@ -1,0 +1,8 @@
+﻿@model Accelerate.Foundations.Common.Models.Views.NavigationBar
+
+@if (Model.Authenticated) {
+    <div x-data="aclNavigationBarDropdown(@JsonSerializerHelper.SerializeObject(Model))"></div>
+}
+else {
+    <div x-data="aclNavigationBar(@JsonSerializerHelper.SerializeObject(Model))"></div>
+}

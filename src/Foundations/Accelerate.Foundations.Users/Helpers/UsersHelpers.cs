@@ -6,7 +6,7 @@ namespace Accelerate.Foundations.Users.Helpers
 {
     public class UsersHelpers
     {
-        public static UserProfile CreateUserProfile(UsersUser user)
+        public static UserProfile CreateUserProfile(UsersUser? user)
         {
             return user != null ? new UserProfile()
             {

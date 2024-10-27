@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Api\**" />
+    <Content Remove="Controllers\Api\**" />
+    <EmbeddedResource Remove="Controllers\Api\**" />
+    <None Remove="Controllers\Api\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Kyc\Accelerate.Foundations.Kyc.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Mediator\Accelerate.Foundations.Mediator.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
+  </ItemGroup>
+
+</Project>

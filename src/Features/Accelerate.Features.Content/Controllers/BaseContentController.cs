@@ -37,8 +37,7 @@ namespace Accelerate.Features.Content.Controllers
         protected IElasticService<T> _searchService;
         protected IBaseContentEntityViewService<T> _contentViewService;
         protected IElasticService<ContentPostDocument> _postSearchService;
-        protected IContentPostElasticService _contentElasticSearchService;
-        const string _unauthenticatedRedirectUrl = "/Account/login";
+        protected IContentPostElasticService _contentElasticSearchService; 
         protected string _entityName;
         protected string _razorPath;
         private const string _notFoundRazorFile = "~/Views/Shared/ContentNotFound.cshtml";
@@ -119,7 +118,7 @@ namespace Accelerate.Features.Content.Controllers
         } 
         [HttpGet]
         [Route("{id}")]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
+        [RedirectUnauthenticatedRoute(url = Foundations.Users.Constants.Paths.UnauthenticatedRedirectUrl)]
         public virtual async Task<IActionResult> Index([FromRoute] Guid id)
         {
             var user = await GetUserWithProfile(this.User);

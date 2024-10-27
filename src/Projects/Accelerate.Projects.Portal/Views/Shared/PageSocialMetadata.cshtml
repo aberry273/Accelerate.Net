@@ -1,0 +1,18 @@
+﻿@model SocialMetadata
+@{ }
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@Model.Sitename">
+<meta name="twitter:title" content="@Model.Title">
+<meta name="twitter:description" content="@Model.Description">
+<meta name="twitter:creator" content="@Model.Creator">
+<!-- Twitter Summary card images must be at least 120x120px -->
+<meta name="twitter:image:src" content="@Model.Image">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="@Model.Title" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="@Model.Url" />
+<meta property="og:image" content="@Model.Image" />
+<meta property="og:description" content="@Model.Description" />
+<meta property="og:site_name" content="@Model.Sitename" />
