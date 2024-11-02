@@ -7,6 +7,36 @@
     Layout = "/Views/Shared/_Layout.cshtml";
     var currentTab = Context.Request.Path.Value.Split('/').LastOrDefault();
 }
+
+<!--Dashboard-->
+
+<div class="flex h-screen overflow-y-hidden">
+
+    <!-- Sidebar - Desktop only -->
+    @if (Model.SideNavigation.Items != null && Model.SideNavigation.Items.Any())
+    {
+        <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+    }
+    <!-- Dashboard -->
+    <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
+
+        <!-- Tabs - Mobile only -->
+        <div class="lg:hidden md:hidden sm:block xs:block" x-data="aclTabsNavigation(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+        <!--Mobile-->
+        <div class="lg:hidden md:hidden sm:flex xs:flex">
+            <div class="flex-none w-10 align-middle">
+                <button @@click="$events.Emit('on:side')"
+                        x-data="aclButton({
+                        icon: 'menu',
+                    })">
+                </button>
+            </div>
+        </div>
+        <!-- Page Content -->
+        @RenderBody()
+    </div>
+</div>
+<!--
 <div class="container justify-center items-center mx-auto">
     
     <h4 class="w-full text-3xl font-bold">Manage profile</h4>
@@ -19,14 +49,14 @@
             </strong>
         </div>
     }
-    <!--Feed-->
+     
     <div class="relative w-full" x-init="{
             mxTab_tabButtons = $refs.tabButtons
             this._mxTab_setMarkerStyle(mxTab_tabButtons)
         }">
         <div x-data="aclTabsNavigation({
-            items: @JsonSerializerHelper.SerializeObject(Model.Tabs),
-            active: '@currentTab' 
+            items: JsonSerializerHelper.SerializeObject(Model.Tabs),
+            active: 'currentTab' 
         })"></div>
         <div class="relative w-full mt-2 content">
             <section>
@@ -37,3 +67,4 @@
    
 </div>
    
+    -->

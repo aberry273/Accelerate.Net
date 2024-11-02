@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Communication\Accelerate.Foundations.Communication.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Funding\Accelerate.Foundations.Funding.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Portal\Accelerate.Foundations.Portal.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Settlements\Accelerate.Foundations.Settlements.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transactions\Accelerate.Foundations.Transactions.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />

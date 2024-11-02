@@ -11,6 +11,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Kyc\Accelerate.Foundations.Kyc.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Mediator\Accelerate.Foundations.Mediator.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Portal\Accelerate.Foundations.Portal.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
   </ItemGroup>
 

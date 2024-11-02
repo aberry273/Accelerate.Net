@@ -32,17 +32,17 @@ namespace Accelerate.Foundations.Media.Services
         IMetaContentService _contentService;
         IBlobStorageService _blobStorageService;
         IEntityService<MediaBlobEntity> _entityService;
-        Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
+        //Bind<IMediaBlobEventBus, IPublishEndpoint> _publishEndpoint;
         private FileExtensionContentTypeProvider _contentTypeProvider;
         public MediaService(
             IMetaContentService contentService,
             IBlobStorageService blobStorageService,
-            Bind<IMediaBlobEventBus, IPublishEndpoint> publishEndpoint,
+            //Bind<IMediaBlobEventBus, IPublishEndpoint> publishEndpoint,
             IEntityService<MediaBlobEntity> entityService,
             IOptions<SiteConfiguration> siteConfig
         )
         {
-            _publishEndpoint = publishEndpoint;
+            //_publishEndpoint = publishEndpoint;
             _contentService = contentService;
             _blobStorageService = blobStorageService;
             _entityService = entityService;
@@ -50,7 +50,7 @@ namespace Accelerate.Foundations.Media.Services
             this._contentTypeProvider = new FileExtensionContentTypeProvider();
             _optimizer = new ImageOptimizer();
         }
-
+        /*
 
         protected async Task PostCreateSteps(MediaBlobEntity obj)
         {
@@ -64,6 +64,7 @@ namespace Accelerate.Foundations.Media.Services
         {
             await _publishEndpoint.Value.Publish(new DeleteDataContract<MediaBlobEntity>() { Data = obj });
         }
+        */
 
         public async Task<List<MediaBlobUploadResult>> UploadImagesFromFiles(Guid userId, List<IFormFile> files)
         {
@@ -89,12 +90,14 @@ namespace Accelerate.Foundations.Media.Services
             // TODO return IDs of all created entities rather than count
             var blobEntityGuids = await this._entityService.AddRange(mediaBlobEntities);
             //Run pipelines
+            /*
             var tasks = new List<Task>();
             for (var i = 0; i < mediaBlobEntities.Count; i++)
             {
                 tasks.Add(PostCreateSteps(mediaBlobEntities[i]));
             }
             await Task.WhenAll(tasks);
+            */
             return fileResults.ToList();
 
         }
@@ -123,12 +126,14 @@ namespace Accelerate.Foundations.Media.Services
             // TODO return IDs of all created entities rather than count
             var blobEntityGuids = await this._entityService.AddRange(mediaBlobEntities);
             //Run pipelines
+            /*
             var tasks = new List<Task>();
             for (var i = 0; i < mediaBlobEntities.Count; i++)
             {
                 tasks.Add(PostCreateSteps(mediaBlobEntities[i]));
             }
             await Task.WhenAll(tasks);
+            */
             return fileResults.ToList();
         }
 

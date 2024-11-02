@@ -52,9 +52,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v0", new OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Version = "v0",
+        Version = "v1",
         Title = "Superstable API",
         Description = "Superstables APIs to transfer funds between accounts almost instantenously.",
         TermsOfService = new Uri("https://superstable.xyz.com/terms"),

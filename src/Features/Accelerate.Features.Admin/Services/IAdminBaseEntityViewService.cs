@@ -15,13 +15,13 @@ namespace Accelerate.Features.Admin.Services
 {
     public interface IAdminBaseEntityViewService<T> where T : IBaseEntity
     {
-        NotFoundPage CreateNotFoundPage(UsersUser user, string title = null, string description = null);
-        AdminBasePage CreateAnonymousListingPage();
-        AdminBasePage CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
-        AdminBasePage CreateIndexPage(UsersUser user, IEnumerable<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<NotFoundPage> CreateNotFoundPage(UsersUser user, string title = null, string description = null);
+        Task<AdminBasePage> CreateAnonymousListingPage();
+        Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
+        Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> channels, SearchResponse<ContentPostDocument> aggregateResponse);
         Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse);
-        AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<T> items);
-        AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<T> items, T item);
+        Task<AdminBasePage> CreateAddPage(UsersUser user, IEnumerable<T> items);
+        Task<AdminBasePage> CreateEditPage(UsersUser user, IEnumerable<T> items, T item);
         AjaxForm CreateEntityForm(UsersUser user, T? item, PostbackType type = PostbackType.POST);
     }
 }

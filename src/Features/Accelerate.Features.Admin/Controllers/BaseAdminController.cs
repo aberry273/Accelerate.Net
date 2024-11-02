@@ -99,7 +99,7 @@ namespace Accelerate.Features.Content.Controllers
             //var items = await _searchService.Search(GetUserItemsQuery(user), 0, 100);
             var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
 
-            var viewModel = _contentViewService.CreateAllPage(user, items, aggResponse);
+            var viewModel = await _contentViewService.CreateAllPage(user, items, aggResponse);
 
             return View(viewModel);
         }
@@ -150,7 +150,7 @@ namespace Accelerate.Features.Content.Controllers
             var user = await GetUserWithProfile(this.User);
             var title = $"{_entityName} not found";
             var description = "We are unable to retrieve this page, it may have been deleted or made private.";
-            var viewModel = _contentViewService.CreateNotFoundPage(user, title, description);
+            var viewModel = await _contentViewService.CreateNotFoundPage(user, title, description);
             return View(_notFoundRazorFile, viewModel);
         }
 
@@ -166,7 +166,7 @@ namespace Accelerate.Features.Content.Controllers
                 return RedirectToAction(nameof(NotFound));
             }
             var items = _entityService.Find(x => true);
-            var viewModel = _contentViewService.CreateEditPage(user, items, item);
+            var viewModel = await _contentViewService.CreateEditPage(user, items, item);
             return View($"{_razorPath}s/Create.cshtml", viewModel);
         }
         [Route("Create")]
@@ -177,7 +177,7 @@ namespace Accelerate.Features.Content.Controllers
             var items = _entityService.Find(x => true);
             //var channels = await _searchService.Search(GetUserItemsQuery(user));
 
-            var viewModel = _contentViewService.CreateAddPage(user, items);
+            var viewModel = await _contentViewService.CreateAddPage(user, items);
             return View($"{_razorPath}s/Create.cshtml", viewModel);
         }
 

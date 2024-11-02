@@ -13,6 +13,13 @@ namespace Accelerate.Foundations.Accounts
         {
             
         }
+        public struct Roles
+        {
+            public const string UserAccountIndividualName = "Individual";
+            public const string UserAccountIndividualDescription = "Represents a customer that is a consumer in Superstable";
+            public const string UserAccountBusinessName = "Business";
+            public const string UserAccountBusinessDescription = "Represents a customer that is a Business in Superstable";
+        }
         public struct Config
         {
             public const string ConfigName = "ContentConfiguration";

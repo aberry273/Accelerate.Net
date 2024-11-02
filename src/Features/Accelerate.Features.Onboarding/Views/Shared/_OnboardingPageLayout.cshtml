@@ -13,7 +13,7 @@
 <div class="flex h-screen overflow-y-hidden">
 
     <!-- Sidebar - Desktop only -->
-    @if (Model.SideNavigation.Items != null && Model.SideNavigation.Items.Any())
+    @if (Model.SideNavigation != null && Model.SideNavigation.Items != null && Model.SideNavigation.Items.Any())
     {
         <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
     }

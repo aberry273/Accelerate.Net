@@ -106,9 +106,9 @@ namespace Accelerate.Features.Content.Controllers
                 {
                     var individualAccount = GetUserIndividual(user.Id);
                     var businessAccount = GetUserBusiness(user.Id);
-                    if(individualAccount == null && businessAccount == null)
+                    if (individualAccount == null && businessAccount == null)
                     {
-                        return RedirectToAction(nameof(SignUp), new { userId = user.Id });
+                        return RedirectToAction(nameof(IdentityCheck), new { userId = user.Id });
                     }
                     await _signInManager.SignOutAsync();
                 }
@@ -151,18 +151,6 @@ namespace Accelerate.Features.Content.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
-        public async Task<IActionResult> ConsumerSignUp(SignUpFormDataConsumer formData)
-        {
-            if (!this.User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
-            }
-
-            return null;
-        }
-
-        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> BusinessSignUp(string? message)
         {
@@ -176,50 +164,20 @@ namespace Accelerate.Features.Content.Controllers
             return View(signUpFormRazor, viewModel);
         }
 
-        private void SetSessionData(UsersUser user, SignUpFormDataBusiness formData)
-        {
-            // Set Session Data
-            var data = OnboardingSessions.Sessions.ContainsKey(user.Id.ToString())
-                ? OnboardingSessions.Sessions[user.Id.ToString()]
-                : new SignUpFormSessionData();
-            formData.Hydrate(data);
-            data.CustomerType = "Business";
-            if (OnboardingSessions.Sessions.ContainsKey(user.Id.ToString()))
-            {
-                OnboardingSessions.Sessions[user.Id.ToString()] = data;
-            }
-            else
-            {
-                OnboardingSessions.Sessions.Add(user.Id.ToString(), data);
-            }
-        }
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> BusinessSignUp(SignUpFormDataBusiness formData)
+        public async Task<IActionResult> ConsumerSignUp(SignUpFormDataConsumer formData)
         {
-            if (this.User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
-            }
-            // Find user
-            var existinUser = await _userService.FindByEmailAsync(formData.Email);
+
+            // If user logged in, skip to the identity check
+            if (this.User.Identity.IsAuthenticated) return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
+            // If user exists, tell them to login
+            if (await _userService.FindByEmailAsync(formData.Email) != null) return RedirectToAction(nameof(BusinessSignUp), new { message = "A user already exists with that email, try login instead" });
+
+            var user = await this.CreateUser(formData, Foundations.Accounts.Constants.Roles.UserAccountBusinessName);
 
             var provider = "Email";
-            if (existinUser != null)
-            {
-                // Check if account is created which matches the acocunt n
-                return RedirectToAction(nameof(BusinessSignUp), new { message = "A user already exists with that email, try login instead" });
-            }
-            // Create user
-            var tempPassword = Guid.NewGuid().ToString().ToUpper() + DateTime.Now.ToShortTimeString();
-
-            var result = await this._userService.CreateUser(formData.Email, formData.Email, Foundations.Users.Constants.Domains.Public, tempPassword);
-
-            var user = await _userService.FindByEmailAsync(formData.Email);
-
-            var passwordLogin = await _signInManager.PasswordSignInAsync(user, tempPassword, isPersistent: false, false);
-
             try
             {
                 // Set session data
@@ -228,10 +186,63 @@ namespace Accelerate.Features.Content.Controllers
                 // Send Email OTP
                 var code = await _userService.GenerateTwoFactorTokenAsync(user, provider);
                 var message = "Your security code is: " + code;
-                if (provider == "Email")
+                if (provider == "Email") await _messageService.SendEmailAsync(user.Email, "Security Code", message);
+              
+                return RedirectToAction(nameof(AuthenticateOtp), new { userId = user.Id, provider });
+
+            }
+            catch (Exception ex)
+            {
+                // Delete the user
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+                var deleteResult = await _userService.Delete(user);
+                if (deleteResult == 0)
                 {
-                    await _messageService.SendEmailAsync(user.Email, "Security Code", message);
-                }/*
+                    Foundations.Common.Services.StaticLoggingService.LogError($"Error deleting user: Email={user?.Email}, ID={user?.Id}");
+                }
+            }
+            return RedirectToAction(nameof(ConsumerSignUp), new { message = "There was an error creating your account, please contact support" });
+
+        }
+
+
+        private async Task<UsersUser> CreateUser(SignUpFormDataConsumer formData, string userRole = Foundations.Accounts.Constants.Roles.UserAccountBusinessName)
+        {
+            // Create user
+            var tempPassword = Guid.NewGuid().ToString().ToUpper() + DateTime.Now.ToShortTimeString();
+
+            var result = await this._userService.CreateUser(formData.Email, formData.Email, Foundations.Users.Constants.Domains.Public, tempPassword);
+
+            var user = await _userService.FindByEmailAsync(formData.Email);
+            
+            var roleResult = await this._userService.AddUserToRole(user, userRole);
+
+            var passwordLogin = await _signInManager.PasswordSignInAsync(user, tempPassword, isPersistent: false, false);
+            return user;
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> BusinessSignUp(SignUpFormDataBusiness formData)
+        {
+            // If user logged in, skip to the identity check
+            if (this.User.Identity.IsAuthenticated) return RedirectToAction(nameof(IdentityCheck), new { kycId = Guid.Empty });
+            // If user exists, tell them to login
+            if (await _userService.FindByEmailAsync(formData.Email) != null) return RedirectToAction(nameof(BusinessSignUp), new { message = "A user already exists with that email, try login instead" });
+
+            var user = await this.CreateUser(formData, Foundations.Accounts.Constants.Roles.UserAccountBusinessName);
+
+            var provider = "Email";
+            try
+            {
+                // Set session data
+                SetSessionData(user, formData);
+
+                // Send Email OTP
+                var code = await _userService.GenerateTwoFactorTokenAsync(user, provider);
+                var message = "Your security code is: " + code;
+                if (provider == "Email")  await _messageService.SendEmailAsync(user.Email, "Security Code", message);
+                /*
                 else if (provider == "Phone")
                 {
                     //await _messageService.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
@@ -252,6 +263,40 @@ namespace Accelerate.Features.Content.Controllers
             }
             return RedirectToAction(nameof(BusinessSignUp), new { message = "There was an error creating your account, please contact support" });
 
+        }
+        private void SetSessionData(UsersUser user, SignUpFormDataConsumer formData)
+        {
+            // Set Session Data
+            var data = OnboardingSessions.Sessions.ContainsKey(user.Id.ToString())
+                ? OnboardingSessions.Sessions[user.Id.ToString()]
+                : new SignUpFormSessionData();
+            formData.Hydrate(data);
+            data.CustomerType = "Individual";
+            if (OnboardingSessions.Sessions.ContainsKey(user.Id.ToString()))
+            {
+                OnboardingSessions.Sessions[user.Id.ToString()] = data;
+            }
+            else
+            {
+                OnboardingSessions.Sessions.Add(user.Id.ToString(), data);
+            }
+        }
+        private void SetSessionData(UsersUser user, SignUpFormDataBusiness formData)
+        {
+            // Set Session Data
+            var data = OnboardingSessions.Sessions.ContainsKey(user.Id.ToString())
+                ? OnboardingSessions.Sessions[user.Id.ToString()]
+                : new SignUpFormSessionData();
+            formData.Hydrate(data);
+            data.CustomerType = "Business";
+            if (OnboardingSessions.Sessions.ContainsKey(user.Id.ToString()))
+            {
+                OnboardingSessions.Sessions[user.Id.ToString()] = data;
+            }
+            else
+            {
+                OnboardingSessions.Sessions.Add(user.Id.ToString(), data);
+            }
         }
 
         [AllowAnonymous]

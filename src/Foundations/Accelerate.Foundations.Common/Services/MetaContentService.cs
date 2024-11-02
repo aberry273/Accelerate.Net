@@ -128,9 +128,6 @@ namespace Accelerate.Foundations.Common.Services
                 IsDeactivated = profile.IsDeactivated,
                 ServiceSettings = this.CreateContentServiceSettings(profile.UserId, _siteConfig.Domain),
                 Url = _siteConfig.Domain,
-                SideNavigation = profile.Domain == Constants.Domains.Internal 
-                    ? CreateInternalSideNavigation()
-                    : CreatePublicSideNavigation(),
                 Footer = new Footer(),
                 Metadata = new PageMetadata(),
                 SocialMetadata = new SocialMetadata(),
@@ -138,7 +135,8 @@ namespace Accelerate.Foundations.Common.Services
                 SEO = new SeoMetadata(),
             };
         }
-        public NavigationGroup CreateInternalSideNavigation()
+        // Redundant - moved to Foundations.Portal
+        public NavigationGroup CreateInternalSideNavigation(UserProfile? profile)
         {
             return new NavigationGroup
             {
@@ -172,44 +170,13 @@ namespace Accelerate.Foundations.Common.Services
             };
         }
 
-        public NavigationGroup CreatePublicSideNavigation()
+        // Redundant - moved to Foundations.Portal
+        public NavigationGroup CreatePublicSideNavigation(UserProfile? profile)
         {
             return new NavigationGroup
             {
                 Items = new List<NavigationItem>()
                 {
-                    new NavigationItem()
-                    {
-                        Icon = "identification",
-                        Text = Foundations.Common.Constants.Paths.OnboardingLabel,
-                        Href = Foundations.Common.Constants.Paths.OnboardingPath,
-                    },
-                    new NavigationItem()
-                    {
-                        Icon = "buildingLibrary",
-                        Text = Foundations.Common.Constants.Paths.AccountsLabel,
-                        Href = Foundations.Common.Constants.Paths.AccountsPath,
-                    },
-                    new NavigationItem()
-                    {
-                        Icon = "bankNotes",
-                        Text = Foundations.Common.Constants.Paths.TransactionsLabel,
-                        Href = Foundations.Common.Constants.Paths.TransactionsPath,
-                    },
-                    new NavigationItem()
-                    {
-                        Icon = "currencyDollar",
-                        Text = Foundations.Common.Constants.Paths.FundingLabel,
-                        Href = Foundations.Common.Constants.Paths.FundingPath,
-                    },
-                    new NavigationItem()
-                    {
-                        Icon = "documentCurrency",
-                        Text = Foundations.Common.Constants.Paths.SettlementsLabel,
-                        Href = Foundations.Common.Constants.Paths.SettlementsPath,
-                    },
-
-                    /*
                     new NavigationItem()
                     {
                         Icon = "funnel",
@@ -228,7 +195,6 @@ namespace Accelerate.Foundations.Common.Services
                         Text = Foundations.Common.Constants.Paths.MediaLabel,
                         Href = Foundations.Common.Constants.Paths.MediaPath,
                     },
-                    */
 
                     /*
                     new NavigationItem()

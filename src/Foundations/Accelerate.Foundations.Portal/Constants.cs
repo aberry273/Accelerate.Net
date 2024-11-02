@@ -4,25 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Common
+namespace Accelerate.Foundations.Portal
 {
     public struct Constants
     {
-        public struct Global
+        public struct Roles
         {
-            public static Guid GlobalAdmin = Guid.Parse("00000000-0000-0000-0000-000000000000");
-            public static Guid GlobalAdminContent = Guid.Parse("00000000-0000-0000-0000-000000000001");
-            public static Guid GlobalAdminMedia = Guid.Parse("00000000-0000-0000-0000-000000000002");
-            public static Guid GlobalAdminAccounts = Guid.Parse("00000000-0000-0000-0000-000000000003");
-            public static Guid GlobalAdminOperations = Guid.Parse("00000000-0000-0000-0000-000000000004");
-
-            public static Guid ChannelNewsGuid = Guid.Parse("d9dff599-0057-454c-bdb5-ebaad9855713");
-            public static Guid FeedAllGuid = Guid.Parse("82d000e8-d735-45bd-922f-cd8f76917d98");
-        }
-        public struct Domains
-        {
-            public const string Public = "Public";
-            public const string Internal = "Internal";
+            public const string UserIdentitedName = "Identified";
+            public const string UserAccountIndividualName = "Individual";
+            public const string UserAccountBusinessName = "Business";
         }
         public struct AdminPaths
         {
@@ -45,18 +35,7 @@ namespace Accelerate.Foundations.Common
             public const string SearchLabel = "Search";
             public const string AboutPath = "/About";
             public const string AboutLabel = "About";
-
-            public const string ChatLabel = "Chat";
-            public const string FeedsPath = "/Feeds";
-            public const string FeedsLabel = "Feeds";
-            public const string PostsPath = "/Posts";
-            public const string PostsLabel = "Posts"; 
-            public const string ChatsPath = "/Chats";
-            public const string ChatsLabel = "Chats";
-            public const string ChannelsPath = "/Channels";
-            public const string ChannelsLabel = "Channels";
-            public const string ListsPath = "/Lists";
-            public const string ListsLabel = "Lists";
+            
             // Financial
 
             public const string AccountsPath = "/Accounts";
@@ -85,14 +64,6 @@ namespace Accelerate.Foundations.Common
             public const string LoginPath = "/authentication/Login";
             public const string LoginLabel = "Login";
             public const string LockedPath = "/authentication/lockout";
-        }
-        public struct ApiPaths
-        {
-            public const string VersionPath = "api/v0";
-        }
-        public struct Settings
-        {
-            public const string SiteConfiguration = "SiteConfiguration";
         }
     }
 }

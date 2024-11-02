@@ -10,6 +10,7 @@ using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Operations.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using System.Collections.Generic;
+using Accelerate.Foundations.Portal.Services;
 
 namespace Accelerate.Features.Admin.Services
 {
@@ -20,8 +21,9 @@ namespace Accelerate.Features.Admin.Services
         public AdminJobEntityViewService(
             IEntityService<OperationsActionEntity> actionService,
             IEntityService<OperationsActivityEntity> activityService,
-            IMetaContentService metaContent)
-            : base(metaContent)
+            IMetaContentService metaContent,
+            IPortalContentService portalContentService)
+            : base(metaContent, portalContentService)
         {
             _actionService = actionService;
             _activityService = activityService;
@@ -37,9 +39,10 @@ namespace Accelerate.Features.Admin.Services
             model.Fields = this.CreateFormFields(user, null);
             return model;
         }
-        public override AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<OperationsJobEntity> items)
+        public override async Task<AdminBasePage> CreateAddPage(UsersUser user, IEnumerable<OperationsJobEntity> items)
         {
-            var viewModel = base.CreateAddPage(user, items);
+            var model = await base.CreateAddPage(user, items);
+            var viewModel = new AdminCreatePage(model);
             viewModel.Form = CreateJobForm(user);
             return viewModel;
         }
@@ -101,9 +104,10 @@ namespace Accelerate.Features.Admin.Services
             model.Fields = CreateFormFields(user, item);
             return model;
         }
-        public override AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<OperationsJobEntity> items, OperationsJobEntity item)
+        public override async Task<AdminBasePage> CreateEditPage(UsersUser user, IEnumerable<OperationsJobEntity> items, OperationsJobEntity item)
         {
-            var viewModel = base.CreateEditPage(user, items, item);
+            var model = await base.CreateEditPage(user, items, item);
+            var viewModel = new AdminCreatePage(model);
             viewModel.Form = EditJobForm(user, item);
             return viewModel;
         }

@@ -11,6 +11,7 @@ using Accelerate.Foundations.Integrations.Elastic.Services;
 using Accelerate.Foundations.Operations.Models.Entities;
 using Elastic.Clients.Elasticsearch;
 using System.Collections.Generic;
+using Accelerate.Foundations.Portal.Services;
 
 namespace Accelerate.Features.Admin.Services
 {
@@ -23,12 +24,14 @@ namespace Accelerate.Features.Admin.Services
         IEntityService<UsersUser> _userService;
         IEntityService<UsersProfile> _profileService;
         IElasticService<UsersUserDocument> _userSearchService;
+     
         public AdminUserEntityViewService(
             IElasticService<UsersUserDocument> userSearchService,
             IEntityService<UsersUser> userService,
             IEntityService<UsersProfile> profileService,
-            IMetaContentService metaContent)
-            : base(metaContent)
+            IMetaContentService metaContent,
+            IPortalContentService portalContentService)
+            : base(metaContent, portalContentService)
         {
             _userSearchService = userSearchService;
             _userService = userService;
@@ -48,9 +51,10 @@ namespace Accelerate.Features.Admin.Services
 
             return model;
         }
-        public override AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<UsersUser> items)
+        public override async Task<AdminBasePage> CreateAddPage(UsersUser user, IEnumerable<UsersUser> items)
         {
-            var viewModel = base.CreateAddPage(user, items);
+            var model = await base.CreateAddPage(user, items);
+            var viewModel = new AdminCreatePage(model);
             viewModel.Form = CreateActionForm(user);
             return viewModel;
         }
@@ -118,9 +122,10 @@ namespace Accelerate.Features.Admin.Services
             model.Fields = CreateFormFields(user, item);
             return model;
         }
-        public override AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<UsersUser> items, UsersUser item)
+        public override async Task<AdminBasePage> CreateEditPage(UsersUser user, IEnumerable<UsersUser> items, UsersUser item)
         {
-            var viewModel = base.CreateEditPage(user, items, item);
+            var model = await base.CreateEditPage(user, items, item);
+            var viewModel = new AdminCreatePage(model);
             viewModel.Form = EditUserForm(user, item);
             return viewModel;
         }

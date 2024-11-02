@@ -5,6 +5,7 @@ using Accelerate.Foundations.Common.Models.Views;
 using Accelerate.Foundations.Common.Services;
 using Accelerate.Foundations.Database.Services;
 using Accelerate.Foundations.Kyc.Models.Entities;
+using Accelerate.Foundations.Portal.Services;
 using Accelerate.Foundations.Users.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
@@ -15,10 +16,12 @@ namespace Accelerate.Features.Onboarding.Services
     {
         UserManager<UsersUser> _userManager;
         IMetaContentService _metaContentService;
+        IPortalContentService _portalContentService;
         ISharedContentService _sharedContentService;
         IEntityService<UsersProfile> _profileService;
         public OnboardingContentService(
             IMetaContentService metaContentService,
+            IPortalContentService portalContentService,
             ISharedContentService sharedContentService,
             IEntityService<UsersProfile> profileService,
             UserManager<UsersUser> userManager
@@ -26,10 +29,22 @@ namespace Accelerate.Features.Onboarding.Services
         {
             _sharedContentService = sharedContentService;
             _metaContentService = metaContentService;
+            _portalContentService = portalContentService;
             _userManager = userManager;
             _profileService = profileService;
         }
 
+        protected async Task<UsersUser> GetUserWithProfile(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return null;
+            }
+            var profile = _profileService.Get(user.UsersProfileId.GetValueOrDefault());
+            user.UsersProfile = profile;
+            return user;
+        }
         protected async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
         {
             var user = await _userManager.GetUserAsync(principle);
@@ -42,9 +57,9 @@ namespace Accelerate.Features.Onboarding.Services
             return user;
         }
 
-        public OnboardingBasePage CreateBasePage(UserProfile profile)
+        public async Task<OnboardingBasePage> CreateBasePage(UsersUser user)
         {
-            var basePage = _metaContentService.CreatePageBaseContent(profile);
+            var basePage = await _portalContentService.CreateAuthenticatedContent(user);
             var model = new OnboardingBasePage(basePage);
             model.Steps = this.CreateOnboardingSteps();
             return model;
@@ -79,9 +94,7 @@ namespace Accelerate.Features.Onboarding.Services
         public async Task<OnboardingBasePage> CreateSignUpPage(ClaimsPrincipal userClaim)
         {
             var user = await GetUserWithProfile(userClaim);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var viewModel = CreateBasePage(userProfile);
+            var viewModel = await CreateBasePage(user);
 
             var identityModel = new KycCheckIdentityEntity();
             viewModel.Form = this.CreateSignUpForm(user, identityModel);
@@ -91,9 +104,7 @@ namespace Accelerate.Features.Onboarding.Services
         public async Task<OnboardingBasePage> CreateConsumerSignUpPage(ClaimsPrincipal userClaim)
         {
             var user = await GetUserWithProfile(userClaim);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var viewModel = CreateBasePage(userProfile);
+            var viewModel = await CreateBasePage(user);
 
             var identityModel = new KycCheckIdentityEntity();
             viewModel.Form = this.CreateConsumerSignUpForm(user, identityModel);
@@ -103,9 +114,7 @@ namespace Accelerate.Features.Onboarding.Services
         public async Task<OnboardingBasePage> CreateBusinessSignUpPage(ClaimsPrincipal userClaim)
         {
             var user = await GetUserWithProfile(userClaim);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var viewModel = CreateBasePage(userProfile);
+            var viewModel = await CreateBasePage(user);
 
             var identityModel = new KycCheckIdentityEntity();
             viewModel.Form = this.CreateBusinessSignUpForm(user, identityModel);
@@ -114,9 +123,7 @@ namespace Accelerate.Features.Onboarding.Services
         public async Task<AuthenticateOtpPage> CreateAuthenticateOtpPage(ClaimsPrincipal userClaim, string provider)
         {
             var user = await GetUserWithProfile(userClaim);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var model = CreateBasePage(userProfile);
+            var model = await CreateBasePage(user);
             var viewModel = new AuthenticateOtpPage(model);
             viewModel.Steps.Selected = "Authenticate";
             var identityModel = new KycCheckIdentityEntity();
@@ -126,9 +133,8 @@ namespace Accelerate.Features.Onboarding.Services
         }
         public async Task<AuthenticateOtpPage> CreateAuthenticateOtpPage(Guid userId, string provider)
         {
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(null);
-
-            var model = CreateBasePage(userProfile);
+            var user = await GetUserWithProfile(userId);
+            var model = await CreateBasePage(user);
             var viewModel = new AuthenticateOtpPage(model);
             viewModel.Steps.Selected = "Authenticate";
             var identityModel = new KycCheckIdentityEntity();
@@ -232,9 +238,7 @@ namespace Accelerate.Features.Onboarding.Services
         public async Task<OnboardingBasePage> CreateIdentityCheckPage(ClaimsPrincipal userClaim)
         {
             var user = await GetUserWithProfile(userClaim);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var viewModel = CreateBasePage(userProfile);
+            var viewModel = await CreateBasePage(user);
 
             var identityModel = new KycCheckIdentityEntity();
             viewModel.Form = this.CreateIdentityCheckForm(user.Id, identityModel);
@@ -243,10 +247,8 @@ namespace Accelerate.Features.Onboarding.Services
         }
         public async Task<OnboardingBasePage> CreateIdentityCheckPage(Guid userId)
         {
-            var user = await GetUserWithProfile(null);
-            var userProfile = Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-
-            var viewModel = CreateBasePage(userProfile);
+            var user = await GetUserWithProfile(userId);
+            var viewModel = await CreateBasePage(user);
 
             var identityModel = new KycCheckIdentityEntity();
             viewModel.Form = this.CreateIdentityCheckForm(userId, identityModel);

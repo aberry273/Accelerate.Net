@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
+    <ProjectReference Include="..\Accelerate.Foundations.Portal\Accelerate.Foundations.Portal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

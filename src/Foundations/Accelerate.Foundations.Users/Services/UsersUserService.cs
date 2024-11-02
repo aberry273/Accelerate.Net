@@ -16,6 +16,9 @@ using Microsoft.Extensions.Logging;
 using Accelerate.Foundations.Common.Extensions;
 using static Accelerate.Foundations.Communication.Constants.Templates;
 using System.Security.Claims;
+using Twilio.Rest;
+using static Azure.Core.HttpHeader;
+using System.Data;
 
 namespace Accelerate.Foundations.Users.Services
 {
@@ -23,15 +26,18 @@ namespace Accelerate.Foundations.Users.Services
     {
         protected readonly ILogger _logger;
         UserManager<UsersUser> _userManager;
+        RoleManager<UsersRole> _roleManager;
         IEntityService<UsersProfile> _profileService;
         public UsersUserService(
             ILogger<UsersUserService> logger,
             IEntityService<UsersProfile> profileService,
-            UserManager<UsersUser> userManager
+            UserManager<UsersUser> userManager,
+            RoleManager<UsersRole> roleManager
         )
         {
             _logger = logger;
             _userManager = userManager;
+            _roleManager = roleManager;
             _profileService = profileService;
         }
 
@@ -221,6 +227,32 @@ namespace Accelerate.Foundations.Users.Services
                 await _userManager.UpdateAsync(user);
             }
             return result;
+        }
+
+        public async Task<bool> UserInRole(UsersUser user, string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+
+            if (role == null) throw new Exception($"Role: {roleName} not found");
+
+            return await _userManager.IsInRoleAsync(user, role.Name);
+        }
+        public async Task<IdentityResult> AddRole(string name, ICollection<UsersRoleClaim> roleClaims = null)
+        {
+            var role = new UsersRole { Name = name, RoleClaims = roleClaims };
+            return await _roleManager.CreateAsync(role);
+        }
+        public async Task<IdentityResult> AddUserToRole(UsersUser user, string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+
+            if (role == null) throw new Exception($"Role: {roleName} not found");
+
+            if (await _userManager.IsInRoleAsync(user, role.Name))
+            {
+                return await _userManager.AddToRoleAsync(user, roleName);
+            }
+            return new IdentityResult();
         }
         public async Task<int> Create(UsersUser entity)
         {

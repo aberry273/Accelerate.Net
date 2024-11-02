@@ -17,36 +17,39 @@ using Elastic.Clients.Elasticsearch;
 using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
+using Accelerate.Foundations.Portal.Services;
 
 namespace Accelerate.Features.Admin.Services
 {
     public class AdminBaseEntityViewService<T> : IAdminBaseEntityViewService<T> where T : IBaseEntity
     {
-        IMetaContentService _metaContentService; 
+        IMetaContentService _metaContentService;
+        IPortalContentService _portalContentService;
         protected string ItemUrl { get; set; } 
         protected string EntityName { get; set; }
         protected string ApiUrl { get; set; }
         protected string EventDelete { get { return $"on:{this.EntityName.ToLower()}:delete"; } }
         protected string EventEdit { get { return $"on:{this.EntityName.ToLower()}:edit"; } }
         public AdminBaseEntityViewService(
-            IMetaContentService metaContent  
+            IMetaContentService metaContentService,
+            IPortalContentService portalContentService
             )
         {
-            _metaContentService = metaContent; 
+            _metaContentService = metaContentService;
+            _portalContentService = portalContentService;
             this.ApiUrl = "/api/contentsearch/posts";
             //ItemUrl = this._metaContentService.GetActionUrl(nameof(FeedsController.Feed), ControllerHelper.NameOf<FeedsController>(), new { id = x.Id });
         }
 
-        private AdminBasePage CreateBaseAdminPage(UsersUser user)
+        private async Task<AdminBasePage> CreateBaseAdminPage(UsersUser user)
         {
-            var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
-            var baseModel = _metaContentService.CreatePageBaseContent(profile);
+            var baseModel = await _portalContentService.CreateAuthenticatedContent(user);
             var viewModel = new AdminBasePage(baseModel);
             return viewModel;
         }
-        public NotFoundPage CreateNotFoundPage(UsersUser user, string title = null, string description = null)
+        public async Task<NotFoundPage> CreateNotFoundPage(UsersUser user, string title = null, string description = null)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new NotFoundPage(model);
             viewModel.ReturnLink = GetReturnLink();
             viewModel.Title = title ?? "Page not found";
@@ -54,17 +57,17 @@ namespace Accelerate.Features.Admin.Services
             return viewModel;
         }
 
-        public AdminBasePage CreateAnonymousListingPage()
+        public async Task<AdminBasePage> CreateAnonymousListingPage()
         {
-            var model = CreateBaseAdminPage(null);
+            var model = await CreateBaseAdminPage(null);
             var viewModel = new AdminCreatePage(model);
 
             viewModel.UserId = null;
             return viewModel;
         }
-        public virtual AdminBasePage CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
@@ -83,9 +86,9 @@ namespace Accelerate.Features.Admin.Services
             //viewModel.FormCreatePost = user != null ? CreateForm(user) : null;
             return viewModel;
         }
-        public virtual AdminBasePage CreateIndexPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
             var pageName = "All";
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
@@ -110,7 +113,7 @@ namespace Accelerate.Features.Admin.Services
 
         public virtual async Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminIndexPage<T>(model);
             viewModel.Id = item.Id;
             var pageName = GetEntityName(item);
@@ -132,9 +135,9 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return viewModel;
         }
-        public virtual AdminCreatePage CreateAddPage(UsersUser user, IEnumerable<T> items)
+        public virtual async Task<AdminBasePage> CreateAddPage(UsersUser user, IEnumerable<T> items)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
             var pageName = $"Create {this.EntityName}";
             viewModel.RedirectRoute = $"/{this.EntityName}s";
@@ -156,9 +159,9 @@ namespace Accelerate.Features.Admin.Services
             return viewModel;
         } 
 
-        public virtual AdminCreatePage CreateEditPage(UsersUser user, IEnumerable<T> items, T item)
+        public virtual async Task<AdminBasePage> CreateEditPage(UsersUser user, IEnumerable<T> items, T item)
         {
-            var model = CreateBaseAdminPage(user);
+            var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
             var pageName = $"Edit {this.GetEntityName(item)}";
             viewModel.RedirectRoute = $"/{this.EntityName}s";

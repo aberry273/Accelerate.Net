@@ -60,8 +60,10 @@ var isProduction = builder.Environment.IsProduction();
 Accelerate.Foundations.Mediator.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Portal.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Media.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction); 
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Funding.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
@@ -153,6 +155,12 @@ app.MapControllerRoute(name: "default",
 */
 
 app.MapDefaultControllerRoute();
+
+// Map SignalR hubs, system accounts & global content
+#pragma warning disable ASP0014 // Suggest using top level route registrations
+Accelerate.Features.Authentication.Startup.ConfigureApp(app);
+Accelerate.Features.Accounts.Startup.ConfigureApp(app);
+#pragma warning restore ASP0014
 
 app.Run();
 
