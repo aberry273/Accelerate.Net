@@ -8,9 +8,7 @@
     Layout = "/Views/Shared/_OnboardingPageLayout.cshtml";
     var currentTab = "All";
 }
-<div class="w-full justify-center" x-data="{
-    init() {}"
-}">
+<div class="w-full justify-center" >
     <!-- Form -->
     <div class="w-96" x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
 </div>

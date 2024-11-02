@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Accelerate.Foundations.Common.Extensions;
+using static Accelerate.Foundations.Communication.Constants.Templates;
+using System.Security.Claims;
 
 namespace Accelerate.Foundations.Users.Services
 {
@@ -47,6 +49,12 @@ namespace Accelerate.Foundations.Users.Services
         {
             return await _userManager.FindByIdAsync(id);
         }
+
+        public async Task<UsersUser?> FindByClaimAsync(ClaimsPrincipal principle)
+        {
+            return await _userManager.GetUserAsync(principle);
+        }
+
 
         public async Task<UsersUser?> FindByNameAsync(string loginProvider, string providerKey)
         {
@@ -177,6 +185,42 @@ namespace Accelerate.Foundations.Users.Services
                 _logger.LogError(ex.ToString());
                 throw;
             }
+        }
+        public async Task<string> GenerateTwoFactorTokenAsync(UsersUser user, string tokenProvider = "Email")
+        {
+            return await _userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
+        }
+        public async Task<IdentityResult> CreateUser(string email, string domain)
+        {
+            var user = new UsersUser { UserName = email, Email = email, Domain = domain, Status = UsersUserStatus.Active };
+
+            var result = await _userManager.CreateAsync(user);
+            if (result.Succeeded)
+            {
+                // Create profile
+                var profileId = await _profileService.CreateWithGuid(new UsersProfile() { UserId = user.Id });
+                // Get user and update with profile id
+                user = await _userManager.FindByNameAsync(email);
+                user.UsersProfileId = profileId.GetValueOrDefault();
+                await _userManager.UpdateAsync(user);
+            }
+            return result;
+        }
+        public async Task<IdentityResult> CreateUser(string username, string email, string domain, string password)
+        {
+            var user = new UsersUser { UserName = username, Email = email, Domain = domain, Status = UsersUserStatus.Active };
+
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                // Create profile
+                var profileId = await _profileService.CreateWithGuid(new UsersProfile() { UserId = user.Id });
+                // Get user and update with profile id
+                user = await _userManager.FindByNameAsync(username);
+                user.UsersProfileId = profileId.GetValueOrDefault();
+                await _userManager.UpdateAsync(user);
+            }
+            return result;
         }
         public async Task<int> Create(UsersUser entity)
         {

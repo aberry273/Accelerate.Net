@@ -1,0 +1,58 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Profile.Models.Views.ProfileFormPage
+@{ }
+
+<div class="container justify-center items-center mx-auto my-auto">
+    <h4 class="w-full text-3xl font-bold">@Model.Title</h4>
+    <!-- Email Login -->
+    <section>
+        <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
+            <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
+        </div>
+    </section>
+    <!-- Social Logins -->
+    @if(Model.Providers != null) {
+        <section>
+            <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
+                <form action="@Model.ExternalLoginPostbackUrl" asp-action="@Model.ExternalLoginAction" method="post">
+                    <div class="relative my-2 inline-block items-center justify-center text-center h-full w-full p-1 text-gray-500 bg-gray-100 rounded-lg select-none">
+                        @foreach (var provider in Model.Providers)
+                        { 
+                            <button
+                                type="submit" 
+                                name="provider"
+                                value="'@provider.Name'"
+                                x-model="'@provider.Name'"
+                                x-data="aclButton({
+                                    override: true,
+                                    icon: '@provider.Name.ToLower()',
+                                    color: '@provider.Color',
+                                    class: 'cursor-pointer relative flex cursor-default select-none w-full px-5 py-4 text-lg font-medium text-center items-center justify-center text-white transition duration-200 rounded-lg hover:bg-blue-700 ease',
+                                    text: 'Continue with @provider.Name'
+                                })">
+                            </button>
+                        }
+                    </div>
+                </form> 
+            </div>
+        </section>
+    }
+    <!-- Other Links -->
+    <section>
+        <div class="w-full  dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
+            @foreach(var link in Model.Links)
+            {
+                <div
+                    x-data="aclButton({ 
+                        href: '@link.Href',
+                        type: 'button',
+                        text: '@link.Text', 
+                        class: 'inline-block w-full px-5 py-4 pt-2 mb-2 text-lg font-medium text-center text-white transition duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 ease'
+                })"></div>
+            } 
+        </div>
+    </section>
+</div>

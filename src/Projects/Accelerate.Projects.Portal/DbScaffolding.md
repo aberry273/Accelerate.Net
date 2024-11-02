@@ -1,22 +1,27 @@
 
 # Accounts
 Drop-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
-Add-Migration Accounts_Migration_2 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
+Add-Migration Accounts_Migration_5 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
 Update-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
+
+# Funding
+Drop-Database -context FundingDbContext -project "Accelerate.Foundations.Funding" 
+Add-Migration Funding_Migration_1 -context FundingDbContext -project "Accelerate.Foundations.Funding" 
+Update-Database -context FundingDbContext -project "Accelerate.Foundations.Funding" 
 
 # Orders
 Drop-Database -context OrdersDbContext -project "Accelerate.Foundations.Orders" 
 Add-Migration Orders_Migration_1 -context OrdersDbContext -project "Accelerate.Foundations.Orders" 
 Update-Database -context OrdersDbContext -project "Accelerate.Foundations.Orders" 
 
-# Transfers
-Drop-Database -context TransfersDbContext -project "Accelerate.Foundations.Transfers" 
-Add-Migration Transfers_Migration_2 -context TransfersDbContext -project "Accelerate.Foundations.Transfers" 
-Update-Database -context TransfersDbContext -project "Accelerate.Foundations.Transfers" 
+# Transactions
+Drop-Database -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
+Add-Migration Transactions_Migration_1 -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
+Update-Database -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
 
 # Rates
 Drop-Database -context RatesDbContext -project "Accelerate.Foundations.Rates" 
-Add-Migration Rates_Migration_1 -context RatesDbContext -project "Accelerate.Foundations.Rates" 
+Add-Migration Rates_Migration_3 -context RatesDbContext -project "Accelerate.Foundations.Rates" 
 Update-Database -context RatesDbContext -project "Accelerate.Foundations.Rates" 
 
 # KYC
@@ -28,6 +33,11 @@ Update-Database -context KycDbContext -project "Accelerate.Foundations.Kyc"
 Drop-Database -context UsersDbContext -project "Accelerate.Foundations.Users" 
 Add-Migration Users_Migration_1 -context UsersDbContext -project "Accelerate.Foundations.Users" 
 Update-Database -context UsersDbContext -project "Accelerate.Foundations.Users" 
+
+# Settlements
+Drop-Database -context SettlementsDbContext -project "Accelerate.Foundations.Settlements" 
+Add-Migration Settlements_Migration_1 -context SettlementsDbContext -project "Accelerate.Foundations.Settlements" 
+Update-Database -context SettlementsDbContext -project "Accelerate.Foundations.Settlements" 
 
 # Webhooks - TODO
 Drop-Database -context WebhooksDbContext -project "Accelerate.Foundations.Webhooks" 

@@ -53,6 +53,7 @@ Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builde
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Twilio.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
@@ -63,22 +64,27 @@ Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, buil
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction); 
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Transfers.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Funding.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Transactions.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Orders.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Operations.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Settlements.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
 // Add Feature references to the container 
 Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Profile.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration); Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Onboarding.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // enable MVC
-builder.Services.AddControllersWithViews().AddNewtonsoftJson();
+builder.Services.AddControllersWithViews();//.AddNewtonsoftJson();
 builder.Services.AddRazorPages();
 
 // enable sessionState
@@ -145,6 +151,7 @@ app.MapControllers();
 app.MapControllerRoute(name: "default",
                pattern: "{controller=Home}/{action=Index}/{id?}");
 */
+
 app.MapDefaultControllerRoute();
 
 app.Run();

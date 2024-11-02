@@ -1,0 +1,1 @@
+Read: https://stackoverflow.com/questions/59432964/relational-data-model-for-double-entry-accounting

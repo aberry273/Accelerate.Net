@@ -1,0 +1,15 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http 
+@model Accelerate.Features.Profile.Models.Views.ManagePage
+@{
+    Layout = "/Views/Profile/_ProfilePageLayout.cshtml";
+}
+<section>
+    <article class="fit-content" x-transition>
+        <div class="grids">
+            <div class="form" x-data="formAjax(@JsonSerializerHelper.SerializeObject(Model.ProfileForm))"></div>
+        </div>
+    </article>
+</section>

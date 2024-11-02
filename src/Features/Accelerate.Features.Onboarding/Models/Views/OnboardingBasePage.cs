@@ -14,6 +14,8 @@ namespace Accelerate.Features.Onboarding.Models.Views
         {
         }
         public Guid Id { get; set; }
+        public string Message { get; set; }
         public Form Form { get; set; }
+        public NavigationGroup Steps { get; set; }
     }
 }

@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\Api\**" />
-    <Content Remove="Controllers\Api\**" />
-    <EmbeddedResource Remove="Controllers\Api\**" />
-    <None Remove="Controllers\Api\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Kyc\Accelerate.Foundations.Kyc.csproj" />

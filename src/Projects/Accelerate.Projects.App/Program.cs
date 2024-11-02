@@ -53,6 +53,7 @@ Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builde
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Twilio.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
@@ -70,6 +71,7 @@ Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, bu
 
 // Add Feature references to the container
 Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Profile.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Content.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Media.Startup.ConfigureServices(builder.Services, builder.Configuration);

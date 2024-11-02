@@ -147,7 +147,8 @@ export default function (params) {
             this.selectOpen = false;
             this.$refs.selectButton.focus();
             this.mxField_value = item.value;
-            this._mxField_onChange()
+            this._mxField_onChange(this.mxField_value)
+            console.log(this.mxField_value);
         },
         itemSelected(item) {
             if (!this.selectedItem || !item) return;
@@ -161,11 +162,12 @@ export default function (params) {
         },
         render() {
             const html = `
-                <input   
+                <input
+                    :type="mxField_type"
                     class="peer"  
                     :id="mxField_id"
                     :name="mxField_name" 
-                    :disabled="true"
+                    :disabled="false"
                     :hidden="true"
                     :value="mxField_value"
                     x-model="mxField_value"  

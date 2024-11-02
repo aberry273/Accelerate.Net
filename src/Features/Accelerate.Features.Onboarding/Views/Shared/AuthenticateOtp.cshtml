@@ -1,0 +1,29 @@
+﻿ @using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Onboarding.Models.Views
+@using Accelerate.Foundations.Common.Helpers 
+@using Microsoft.AspNetCore.Http
+@using Accelerate.Foundations.Common.Models.Views
+@model AuthenticateOtpPage
+@{
+    Layout = "/Views/Shared/_OnboardingPageLayout.cshtml";
+    var currentTab = "All";
+}
+<div class="w-full flex justify-center" >
+    <div class="w-96 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
+        
+        @if(!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="text-md px-2 font-bold text-red-600">@Model.Message</div>
+        }
+        <!-- Form -->
+        <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"
+             class="" ></div>
+
+         
+        <!-- ResendForm -->
+        <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.ResendForm))"
+             class="" ></div>
+    </div>
+</div>
+ 

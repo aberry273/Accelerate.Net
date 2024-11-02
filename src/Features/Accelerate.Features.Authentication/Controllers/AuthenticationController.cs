@@ -33,6 +33,8 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Accelerate.Foundations.Content.Models.Entities;
 using static MassTransit.ValidationResultExtensions;
 using Accelerate.Foundations.Users.EventBus;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Accelerate.Foundations.Communication.Services;
 
 namespace Accelerate.Features.Authentication.Controllers
 {
@@ -45,6 +47,7 @@ namespace Accelerate.Features.Authentication.Controllers
         private UserManager<UsersUser> _userManager;
         private IAuthenticationViewService _accountViewService;
         private IEmailSender<UsersUser> _emailSender;
+        private IMessageService _messageService;
         private IMetaContentService _contentService;
         IEntityService<ContentPostActivityEntity> _postActivityEntityService;
         private IEntityService<UsersProfile> _profileService;
@@ -54,6 +57,7 @@ namespace Accelerate.Features.Authentication.Controllers
             UserManager<UsersUser> userManager,
             IEmailSender<UsersUser> emailSender,
             IAuthenticationViewService accountViewService,
+            IMessageService messageService,
             IEntityService<UsersProfile> profileService,
             Bind<IUsersBus, IPublishEndpoint> publishEndpoint,
             IElasticService<UsersUserDocument> searchService)
@@ -67,11 +71,10 @@ namespace Accelerate.Features.Authentication.Controllers
             _publishEndpoint = publishEndpoint;
             _searchService = searchService;
             _accountViewService = accountViewService;
+            _messageService = messageService;
             // Move to service
         }
-
-        private const string _authenticatedRedirectUrl = "/";
-        private const string _unauthenticatedRedirectUrl = "/Authentication/login";
+         
         private const string _accountFormRazorFile = "~/Views/Authentication/AccountFormPage.cshtml";
         
         private async Task<UsersUser> GetUserWithProfile(ClaimsPrincipal principle)
@@ -108,126 +111,6 @@ namespace Accelerate.Features.Authentication.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        /*
-        #region Manage
-        [HttpGet]
-        [AllowAnonymous]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Manage(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            var viewModel = _accountViewService.GetManagePage(user);
-            return View(viewModel);
-        }
-        #endregion
-        */
-        #region Profile
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Profile(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var viewModel = _accountViewService.GetManagePage(user);
-            return View(viewModel);
-        }
-        #endregion
-        /*
-        #region Posts
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Posts(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null)  return RedirectToAction(nameof(Login));
-
-            var viewModel = _accountViewService.GetManagePage(user);
-            viewModel.ActionUrl = "/api/contentpostactivity";
-            viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
-            return View(viewModel);
-        }
-        #endregion
-        #region Notifications
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Notifications(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var totalActivities = _postActivityEntityService.Count(x => x.UserId == user.Id);
-            var activities = _postActivityEntityService.Find(x => x.UserId == user.Id).ToList();
-
-            var viewModel = _accountViewService.GetNotificationsPage(user, activities, totalActivities);
-            viewModel.ActionUrl = "/api/contentpostactivity";
-            viewModel.SearchUrl = $"/api/contentsearch/posts/{user.Id}";
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
-            return View(viewModel);
-        }
-        #endregion
-        #region Mentions
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Mentions(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var viewModel = _accountViewService.GetMentionsPage(user);
-            viewModel.ActionUrl = "/api/contentpostmentions";
-            viewModel.SearchUrl = $"/api/contentsearch/mentions/{user.Id}";
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateUserPostQuery(user.Id));
-            viewModel.Filters = _accountViewService.CreatePostNavigationFilters(aggResponse);
-            return View(viewModel);
-        }
-        #endregion
-        #region Media
-        public RequestQuery<MediaBlobDocument> CreateMediasAggregateQuery()
-        {
-            var filters = new List<QueryFilter>()
-            {
-                //this.Filter(Foundations.Content.Constants.Fields.channelId, ElasticCondition.Filter, channelId)
-            };
-            var aggregates = new List<string>()
-            {
-                Foundations.Media.Constants.Fields.Type.ToCamelCase(),
-                Foundations.Media.Constants.Fields.Tags.ToCamelCase(),
-            };
-            return new RequestQuery<MediaBlobDocument>() { Filters = filters, Aggregates = aggregates };
-        }
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Media(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var viewModel = _accountViewService.GetManagePage(user);
-            viewModel.ActionUrl = "/api/mediablob";
-            viewModel.SearchUrl = "/api/mediasearch/blobs";
-            var aggResponse = await _mediaSearchService.GetAggregates(this.CreateMediasAggregateQuery());
-            viewModel.Filters = _accountViewService.CreateMediaNavigationFilters(aggResponse);
-            return View(viewModel);
-        }
-        #endregion
-        */
-        #region Settings
-        [HttpGet]
-        [RedirectUnauthenticatedRoute(url = _unauthenticatedRedirectUrl)]
-        public async Task<IActionResult> Settings(string returnUrl = null)
-        {
-            var user = await GetUserWithProfile(this.User);
-            if (user == null) return RedirectToAction(nameof(Login));
-
-            var viewModel = _accountViewService.GetManagePage(user);
-            return View(viewModel);
-        }
-        #endregion
-
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
@@ -271,7 +154,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region ForgotPassword
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ForgotPassword(string? username, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -317,7 +200,7 @@ namespace Accelerate.Features.Authentication.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ForgotPasswordConfirmation(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -391,7 +274,7 @@ namespace Accelerate.Features.Authentication.Controllers
             if(result.Succeeded)
             {
                 await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
-                return RedirectToAction(nameof(Profile));
+                return Redirect(Foundations.Common.Constants.Paths.ProfilePath);
             }
 
             viewModel.Form.Response = string.Join(",", result.Errors.Select(x => x.Description));
@@ -402,7 +285,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region Login
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> Login(string? username = null, string? response = null, string? message = null, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -416,7 +299,7 @@ namespace Accelerate.Features.Authentication.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginForm request, string returnUrl = null)
         {
@@ -440,7 +323,7 @@ namespace Accelerate.Features.Authentication.Controllers
             }
             if (result.Succeeded)
             {
-                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                return RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
             }
             if (result.RequiresTwoFactor)
             {
@@ -462,7 +345,7 @@ namespace Accelerate.Features.Authentication.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> LoginWith2FA(bool rememberMe, string returnUrl = null)
         {
             // Ensure that the user has gone through the username & password screen first
@@ -484,7 +367,7 @@ namespace Accelerate.Features.Authentication.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
@@ -496,7 +379,7 @@ namespace Accelerate.Features.Authentication.Controllers
       
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
@@ -533,7 +416,7 @@ namespace Accelerate.Features.Authentication.Controllers
                     if (user.Id == Guid.Empty || user?.UsersProfile?.Firstname != firstname || user?.UsersProfile?.Lastname != lastname)
                         await this.UpdateUserProfile(user, info);
                     var login = await _userManager.AddLoginAsync(user, info);
-                    RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                    RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
                 }
                 return RedirectToAction(nameof(ExternalLoginExistingUser), new { username = user.UserName, provider = info.LoginProvider });
             }
@@ -554,7 +437,7 @@ namespace Accelerate.Features.Authentication.Controllers
             if (result.Succeeded)
             {
                 var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                return RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
             }
             if (result.IsLockedOut)
             {
@@ -571,7 +454,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region ExternalLoginNewUser
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ExternalLoginNewUser(string? username = null, string? response = null, string? message = null, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process 
@@ -583,7 +466,7 @@ namespace Accelerate.Features.Authentication.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginNewUser(string username, string returnUrl = null)
         {
@@ -614,7 +497,7 @@ namespace Accelerate.Features.Authentication.Controllers
             if (result.Succeeded)
             {
                 //var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                return RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
             }
             if (result.IsLockedOut)
             {
@@ -635,7 +518,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region ExternalLoginExistingUser
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ExternalLoginExistingUser(string? username = null, string? provider = null, string? response = null, string? message = null, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -646,7 +529,7 @@ namespace Accelerate.Features.Authentication.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginExistingUser(string username, string returnUrl = null)
         {
@@ -667,7 +550,7 @@ namespace Accelerate.Features.Authentication.Controllers
             if (result.Succeeded)
             {
                 //var login = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
-                return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+                return RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
             }
             else if (result.IsLockedOut)
             {
@@ -688,7 +571,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region ExternalLoginDeactivatedUser
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ExternalLoginDeactivatedUser(string? username = null, string? response = null, string? message = null, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -700,7 +583,7 @@ namespace Accelerate.Features.Authentication.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> ExternalLoginDeactivatedUser(string provider, string returnUrl = null)
         {
@@ -784,7 +667,7 @@ namespace Accelerate.Features.Authentication.Controllers
        
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> ExternalLoginLinkConfirmation()
         {
             var code = HttpContext.Request.Query["code"];
@@ -825,7 +708,7 @@ namespace Accelerate.Features.Authentication.Controllers
         #region Register
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> Register(string? username, string? email, string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -837,9 +720,10 @@ namespace Accelerate.Features.Authentication.Controllers
 
             return View(_accountFormRazorFile, viewModel);
         }
+
         [HttpPost]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterForm request, string returnUrl = null)
         {
@@ -902,7 +786,7 @@ namespace Accelerate.Features.Authentication.Controllers
             await PostCreateSteps(user);
             StaticLoggingService.Log("User created a new account with password.");
 
-            return RedirectToLocal(returnUrl ?? _authenticatedRedirectUrl);
+            return RedirectToLocal(returnUrl ?? Foundations.Common.Constants.Paths.ProfilePath);
 
         }
         #endregion
@@ -924,6 +808,107 @@ namespace Accelerate.Features.Authentication.Controllers
                 await PostCreateSteps(user);
             }
             return result;
+        }
+        #endregion
+
+        #region
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult> SendCode(string returnUrl = null, bool rememberMe = false)
+        {
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
+            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
+            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
+        }
+
+        //
+        // POST: /Account/SendCode
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendCode(SendCodeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            // Generate the token and send it
+            var code = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                return View("Error");
+            }
+
+            var message = "Your security code is: " + code;
+            if (model.SelectedProvider == "Email")
+            {
+                await _messageService.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
+            }
+            else if (model.SelectedProvider == "Phone")
+            {
+                await _messageService.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
+            }
+
+            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+        }
+
+        //
+        // GET: /Account/VerifyCode
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyCode(string provider, bool rememberMe, string returnUrl = null)
+        {
+            // Require that the user has already logged in via username/password or external login
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+            if (user == null)
+            {
+                return View("Error");
+            }
+            return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
+        }
+
+        //
+        // POST: /Account/VerifyCode
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> VerifyCode(VerifyCodeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // The following code protects for brute force attacks against the two factor codes.
+            // If a user enters incorrect codes for a specified amount of time then the user account
+            // will be locked out for a specified amount of time.
+            var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
+            if (result.Succeeded)
+            {
+                return RedirectToLocal(model.ReturnUrl);
+            }
+            if (result.IsLockedOut)
+            {
+                Foundations.Common.Services.StaticLoggingService.Log("User account locked out.");
+                return View("Lockout");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid code.");
+                return View(model);
+            }
         }
         #endregion
 
@@ -965,7 +950,7 @@ namespace Accelerate.Features.Authentication.Controllers
         }
         [HttpGet]
         [AllowAnonymous]
-        [RedirectAuthenticatedRoute(url = _authenticatedRedirectUrl)]
+        [RedirectAuthenticatedRoute(url = Foundations.Common.Constants.Paths.ProfilePath)]
         public async Task<IActionResult> AccountEmailConfirmation(string returnUrl = null)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -999,7 +984,7 @@ namespace Accelerate.Features.Authentication.Controllers
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction(nameof(Profile));
+                return RedirectToAction(nameof(Index));
             }
 
             viewModel.Form.Response = string.Join(",", result.Errors.Select(x => x.Description));

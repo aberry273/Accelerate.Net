@@ -19,7 +19,7 @@ namespace Accelerate.Foundations.Rates.Models.Entities
     {
         #region Required 
         #endregion
-        public Guid? FundingSourceId { get; set; }
+        public Guid? AccountsAccountId { get; set; }
         public Guid? CustomerId { get; set; }
         public Guid UserId { get; set; }
     }

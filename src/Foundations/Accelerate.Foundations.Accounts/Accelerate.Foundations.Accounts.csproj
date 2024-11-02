@@ -7,11 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Entities\AccountsAccountBankAccountEntity.cs" />
+    <Compile Remove="Models\Entities\AccountsBankAccountEntity.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

@@ -7,10 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Extensions.Http;
+
 namespace Accelerate.Foundations.Common
 {
     public static class Startup
     {
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                                                                            retryAttempt)));
+        }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<SiteConfiguration>(configuration.GetSection(Constants.Settings.SiteConfiguration).Bind);
@@ -19,7 +30,16 @@ namespace Accelerate.Foundations.Common
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
 
             services.AddTransient<IMetaContentService, MetaContentService>();
+            services.AddTransient<ISharedContentService, SharedContentService>();
             services.AddTransient<IRssReaderService, RssReaderService>();
+            //services.AddTransient<IResilientHttpClient, ResilientHttpClient>();
+
+            //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-8.0
+
+            services.AddHttpClient<IResilientHttpClient, ResilientHttpClient>()
+                    .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                    .AddPolicyHandler(GetRetryPolicy());
+         
         }
     }
 }

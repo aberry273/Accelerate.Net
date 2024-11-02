@@ -8,6 +8,6 @@ namespace Accelerate.Foundations.Accounts.Models
 {
     public enum AccountsStatusEnum
     {
-        Active, Inactive
+        Active, Inactive, GPDRRequest
     }
 }

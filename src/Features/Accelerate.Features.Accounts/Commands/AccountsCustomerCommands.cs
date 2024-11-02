@@ -4,48 +4,36 @@ using Accelerate.Foundations.Mediator.Commands;
 using Accelerate.Foundations.Mediator.Queries;
 using AutoMapper;
 using MassTransit.Futures.Contracts;
+using MediatR;
 
 namespace Accelerate.Features.Accounts.Commands
 {
     public class AccountsCustomerCommands
     {
-        public class CreateAccountsCustomerCommand : CreateEntityCommand<AccountsCustomerEntity>;
-        public class UpdateAccountsCustomerCommand : UpdateEntityCommand<AccountsCustomerEntity>;
-        public class DeleteAccountsCustomerCommand : DeleteEntityCommand<AccountsCustomerEntity>;
-        public class CreateAccountsCustomerHandler : CreateEntityHandler<AccountsCustomerEntity>
+        public class CreateAccountsCustomerCommand : CreateEntityCommand<AccountsBusinessEntity>;
+        public class UpdateAccountsCustomerCommand : UpdateEntityCommand<AccountsBusinessEntity>;
+        public class DeleteAccountsCustomerCommand : DeleteEntityCommand<AccountsBusinessEntity>;
+      
+        public class CreateAccountsCustomerHandler : CreateEntityHandler<AccountsBusinessEntity>
         {
-            public CreateAccountsCustomerHandler(IEntityService<AccountsCustomerEntity> service, IMapper mapper) : base(service, mapper)
-            {
-
-            }
+            public CreateAccountsCustomerHandler(BaseContext<AccountsBusinessEntity> context, IMapper mapper, IMediator mediator) : base(context, mapper, mediator) { }
         }
-        public class UpdateAccountsCustomerHandler : UpdateEntityHandler<AccountsCustomerEntity>
+       
+        public class UpdateAccountsCustomerHandler : UpdateEntityHandler<AccountsBusinessEntity>
         {
-            public UpdateAccountsCustomerHandler(IEntityService<AccountsCustomerEntity> service, IMapper mapper) : base(service, mapper)
-            {
-
-            }
+            public UpdateAccountsCustomerHandler(BaseContext<AccountsBusinessEntity> context, IMapper mapper, IMediator mediator) : base(context, mapper, mediator) { }
         }
-        public class DeleteAccountsCustomerHandler : DeleteEntityHandler<AccountsCustomerEntity>
+        public class DeleteAccountsCustomerHandler : DeleteEntityHandler<AccountsBusinessEntity>
         {
-            public DeleteAccountsCustomerHandler(IEntityService<AccountsCustomerEntity> service, IMapper mapper) : base(service, mapper)
-            {
-
-            }
+            public DeleteAccountsCustomerHandler(BaseContext<AccountsBusinessEntity> context, IMapper mapper, IMediator mediator) : base(context, mapper, mediator) { }
         }
-        public class FindEntityAccountsCustomerHandler : FindEntityHandler<AccountsCustomerEntity>
+        public class FindEntityAccountsCustomerHandler : FindEntityHandler<AccountsBusinessEntity>
         {
-            public FindEntityAccountsCustomerHandler(IEntityService<AccountsCustomerEntity> service, IMapper mapper) : base(service, mapper)
-            {
-
-            }
+            public FindEntityAccountsCustomerHandler(IEntityService<AccountsBusinessEntity> service, IMapper mapper) : base(service, mapper) { }
         }
-        public class FindByIdAccountsCustomerHandler : GetByIdEntityHandler<AccountsCustomerEntity>
+        public class FindByIdAccountsCustomerHandler : GetByIdEntityHandler<AccountsBusinessEntity>
         {
-            public FindByIdAccountsCustomerHandler(IEntityService<AccountsCustomerEntity> service, IMapper mapper) : base(service, mapper)
-            {
-
-            }
+            public FindByIdAccountsCustomerHandler(IEntityService<AccountsBusinessEntity> service, IMapper mapper) : base(service, mapper) { }
         }
     }
 }

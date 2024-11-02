@@ -3,6 +3,7 @@
     public class SiteConfiguration
     {
         public string Name { get; set; }
+        public string Logo { get; set; }
         public string Domain { get; set; }
     }
 }

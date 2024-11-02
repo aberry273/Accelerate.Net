@@ -162,6 +162,12 @@ namespace Accelerate.Foundations.Common.Services
                         Text = Foundations.Common.Constants.AdminPaths.UsersLabel,
                         Href = Foundations.Common.Constants.AdminPaths.UsersPath
                     },
+                    new NavigationItem()
+                    {
+                        Icon = "userGroup",
+                        Text = Foundations.Common.Constants.AdminPaths.UsersLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.UsersPath
+                    },
                 }
             };
         }
@@ -172,6 +178,38 @@ namespace Accelerate.Foundations.Common.Services
             {
                 Items = new List<NavigationItem>()
                 {
+                    new NavigationItem()
+                    {
+                        Icon = "identification",
+                        Text = Foundations.Common.Constants.Paths.OnboardingLabel,
+                        Href = Foundations.Common.Constants.Paths.OnboardingPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "buildingLibrary",
+                        Text = Foundations.Common.Constants.Paths.AccountsLabel,
+                        Href = Foundations.Common.Constants.Paths.AccountsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "bankNotes",
+                        Text = Foundations.Common.Constants.Paths.TransactionsLabel,
+                        Href = Foundations.Common.Constants.Paths.TransactionsPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "currencyDollar",
+                        Text = Foundations.Common.Constants.Paths.FundingLabel,
+                        Href = Foundations.Common.Constants.Paths.FundingPath,
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "documentCurrency",
+                        Text = Foundations.Common.Constants.Paths.SettlementsLabel,
+                        Href = Foundations.Common.Constants.Paths.SettlementsPath,
+                    },
+
+                    /*
                     new NavigationItem()
                     {
                         Icon = "funnel",
@@ -190,6 +228,8 @@ namespace Accelerate.Foundations.Common.Services
                         Text = Foundations.Common.Constants.Paths.MediaLabel,
                         Href = Foundations.Common.Constants.Paths.MediaPath,
                     },
+                    */
+
                     /*
                     new NavigationItem()
                     {
@@ -256,7 +296,7 @@ namespace Accelerate.Foundations.Common.Services
         {
             return new NavigationBar()
             {
-                Logo = "/src/images/logo.png",
+                Logo = _siteConfig.Logo,
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
                 Subtitle = "Chat for familes and friends",
@@ -281,17 +321,12 @@ namespace Accelerate.Foundations.Common.Services
             return new NavigationBar()
             {
                 Authenticated = true,
-                Logo = "/src/images/logo.png",
+                Logo = _siteConfig.Logo,
                 Title = _siteConfig.Name,
                 Href = _siteConfig.Domain,
                 Subtitle = "Chat for familes and friends",
                 PrimaryItems = new List<NavigationItem>()
                 {
-                    new NavigationItem()
-                    {
-                        Href = Foundations.Common.Constants.Paths.FeedsPath,
-                        Text = Foundations.Common.Constants.Paths.ChatLabel,
-                    },
                     new NavigationItem()
                     {
                         Href = Foundations.Common.Constants.Paths.AboutPath,
@@ -318,21 +353,6 @@ namespace Accelerate.Foundations.Common.Services
                                 {
                                     Href = Foundations.Common.Constants.Paths.ProfilePath,
                                     Text = Foundations.Common.Constants.Paths.ProfileLabel,
-                                },
-                                new NavigationItem()
-                                {
-                                    Href = Foundations.Common.Constants.Paths.PostsPath,
-                                    Text = Foundations.Common.Constants.Paths.PostsLabel,
-                                },
-                                new NavigationItem()
-                                {
-                                    Href = Foundations.Common.Constants.Paths.MediaPath,
-                                    Text = Foundations.Common.Constants.Paths.MediaLabel,
-                                },
-                                new NavigationItem()
-                                {
-                                    Href = Foundations.Common.Constants.Paths.NotificationsPath,
-                                    Text = Foundations.Common.Constants.Paths.NotificationsLabel,
                                 },
                                 new NavigationItem()
                                 {

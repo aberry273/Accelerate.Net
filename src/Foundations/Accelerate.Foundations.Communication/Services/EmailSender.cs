@@ -144,8 +144,6 @@ namespace Accelerate.Foundations.Communication.Services
             }
             finally
             {
-                client.Disconnect(true);
-                client.Dispose();
             }
         }
     }

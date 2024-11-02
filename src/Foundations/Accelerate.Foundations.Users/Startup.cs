@@ -20,6 +20,7 @@ using Accelerate.Foundations.Common.Models;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
+using Accelerate.Foundations.Integrations.Twilio.Services;
 
 namespace Accelerate.Foundations.Users
 {
@@ -82,8 +83,10 @@ namespace Accelerate.Foundations.Users
             })
             .AddEntityFrameworkStores<UsersDbContext>()
             .AddDefaultTokenProviders();
+           
+            services.AddTransient<ITwilioSmsSender, TwilioSmsSender>();
+            services.AddTransient<IEmailSender<UsersUser>, UsersEmailSender>();
 
-            services.AddSingleton<Microsoft.AspNetCore.Identity.IEmailSender<UsersUser>, UsersEmailSender>();
             //services.AddSingleton<IEmailSender, EmailSender>();
 
             //services.AddScoped<IUserClaimsPrincipalFactory<UsersUser>, AdditionalUserClaimsPrincipalFactory>();

@@ -17,28 +17,104 @@ namespace Accelerate.Foundations.Accounts.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsBankAccountEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAccountAddressEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AccountNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("AccountsAccountId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AccountOwnerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("AccountsAddressId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("BankName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountsAccountAddress");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAccountChildEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountsAccountChildId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountsAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountsAccountId");
+
+                    b.ToTable("AccountsAccountChild");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAccountContactEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccountContactType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("AccountsAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountsContactId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Primary")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountsAccountId");
+
+                    b.ToTable("AccountsAccountContact");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAddressEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
@@ -49,21 +125,10 @@ namespace Accelerate.Foundations.Accounts.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MaskedPan")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Postcode")
                         .HasColumnType("int");
 
                     b.Property<string>("Region")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RoutingNumber")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -83,78 +148,44 @@ namespace Accelerate.Foundations.Accounts.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("AccountsBankAccount");
+                    b.ToTable("AccountsAddress");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsBusinessEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DateOfBirth")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("EmailSecondary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Firstname")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("KycIdentityId")
+                    b.Property<Guid?>("OperatingAddressId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Lastname")
+                    b.Property<Guid?>("PrimaryContactId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RegisteredAddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RegistrationAuthority")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NumberSecondary")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Postcode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Region")
+                    b.Property<string>("RegistrationId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SignedAgreementId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("StreetAddress1")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StreetAddress2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Suburb")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("TaxId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
@@ -166,48 +197,51 @@ namespace Accelerate.Foundations.Accounts.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Website")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("AccountsCustomer");
+                    b.ToTable("AccountsBusiness");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsFundingSourceEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsContactEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("BankAccountId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Postcode")
-                        .HasColumnType("int");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Region")
+                    b.Property<string>("Firstname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Lastname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("StreetAddress1")
+                    b.Property<string>("TaxId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StreetAddress2")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Suburb")
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedOn")
@@ -215,37 +249,106 @@ namespace Accelerate.Foundations.Accounts.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BankAccountId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("AccountsFundingSource");
+                    b.ToTable("AccountsContact");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsBankAccountEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsIndividualEntity", b =>
                 {
-                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Navigation("Customer");
+                    b.Property<Guid?>("AddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BillingAddressId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DateOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Firstname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("KycIdentityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Lastname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TaxId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("AccountsIndividual");
                 });
 
-            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsFundingSourceEntity", b =>
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAccountChildEntity", b =>
                 {
-                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsBankAccountEntity", "BankAccount")
-                        .WithMany()
-                        .HasForeignKey("BankAccountId");
-
-                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsCustomerEntity", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
+                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsBusinessEntity", "AccountsAccount")
+                        .WithMany("ChildAccounts")
+                        .HasForeignKey("AccountsAccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("BankAccount");
+                    b.Navigation("AccountsAccount");
+                });
 
-                    b.Navigation("Customer");
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsAccountContactEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsBusinessEntity", "AccountsAccount")
+                        .WithMany("Contacts")
+                        .HasForeignKey("AccountsAccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountsAccount");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsIndividualEntity", b =>
+                {
+                    b.HasOne("Accelerate.Foundations.Accounts.Models.Entities.AccountsAddressEntity", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId");
+
+                    b.Navigation("Address");
+                });
+
+            modelBuilder.Entity("Accelerate.Foundations.Accounts.Models.Entities.AccountsBusinessEntity", b =>
+                {
+                    b.Navigation("ChildAccounts");
+
+                    b.Navigation("Contacts");
                 });
 #pragma warning restore 612, 618
         }

@@ -37,9 +37,9 @@
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -55,6 +55,7 @@
     <ProjectReference Include="..\..\Features\Accelerate.Features.Authentication\Accelerate.Features.Authentication.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Content\Accelerate.Features.Content.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Media\Accelerate.Features.Media.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Profile\Accelerate.Features.Profile.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
@@ -67,7 +68,6 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Operations\Accelerate.Foundations.Operations.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Orders\Accelerate.Foundations.Orders.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Rates\Accelerate.Foundations.Rates.csproj" />
-    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transfers\Accelerate.Foundations.Transfers.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Websockets\Accelerate.Foundations.Websockets.csproj" />
   </ItemGroup>

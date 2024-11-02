@@ -8,23 +8,27 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Accounts.Models.Entities
 {
+    public enum BankAccountType
+    {
+        Savings, Debit
+    }
+    public enum AccountNumberType
+    {
+        IBAN, USLocal, Special
+    }
     [Table("AccountsBankAccount")]
     public class AccountsBankAccountEntity : AccountsBaseEntity
     {
+        public required BankAccountType AccountType { get; set; }
+        public required AccountNumberType AccountNumberType { get; set; }
         #region Required 
-        #endregion 
-        [Required]
-        public required string AccountOwnerName { get; set; }
-        [Required]
+        public required string AccountHolder { get; set; }
         public required string RoutingNumber { get; set; }
-        [Required]
         public required string AccountNumber { get; set; }
-        [Required]
         public required string BankName { get; set; }
-        [Required]
         public required string MaskedPan { get; set; }
-        public AccountsCustomerEntity? Customer { get; set; }
-        [ForeignKey("AccountsCustomer")]
-        public Guid? CustomerId { get; set; }
+        public required string Country { get; set; }
+        public required string Currency { get; set; }
+        #endregion 
     }
 }

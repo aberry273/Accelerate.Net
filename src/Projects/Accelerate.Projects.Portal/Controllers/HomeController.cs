@@ -36,6 +36,7 @@ namespace Accelerate.Projects.Portal.Controllers
 
         public IActionResult Index()
         {
+            
             return RedirectToAction(nameof(OnboardingController.Index), Foundations.Common.Helpers.ControllerHelper.NameOf<OnboardingController>());
         }
 

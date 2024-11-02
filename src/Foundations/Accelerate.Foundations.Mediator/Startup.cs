@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using Accelerate.Foundations.Mediator.Behaviours;
+using static MassTransit.Monitoring.Performance.BuiltInCounters;
 
 namespace Accelerate.Foundations.Mediator
 {
@@ -15,7 +16,7 @@ namespace Accelerate.Foundations.Mediator
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
+             
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
             services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));

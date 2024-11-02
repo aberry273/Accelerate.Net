@@ -36,13 +36,10 @@ export default function (params) {
             const html = `
                 <div :class="mxForm_class">
                     <template x-if="mxContent_title">
-                        <h4 :class="mxContent_titleClass" x-text="mxContent_title"></h4>
-                    </template>
-                    <template x-if="mxContent_subtitle">
-                        <p :class="mxContent_subtitleClass" x-text="mxContent_subtitle"></p>
+                        <h3 :class="mxForm_titleClass" x-text="mxContent_title"></h3>
                     </template>
                     <template x-if="mxContent_text">
-                        <p :class="mxContent_textClass" x-text="mxContent_text"></p>
+                        <p :class="mxForm_textClass" x-text="mxContent_text"></p>
                     </template>
                     <form novalidate :method="mxForm_method" :action="mxForm_action" class="group relative w-full space-y-8">
                         <!--Fields-->

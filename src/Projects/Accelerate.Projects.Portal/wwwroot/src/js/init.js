@@ -34,7 +34,7 @@ import * as mixins from './mixins/index.js';
 Object.keys(mixins).forEach(mixin => {
     alpinejs.data(mixin, mixins[mixin]);
 });
-
+/*
 // SERVICES
 import * as services from './services/index.js';
 Object.keys(services).forEach(svc => {
@@ -54,7 +54,7 @@ Object.keys(websockets).forEach(svc => {
         alpinejs.store(svc, data);
     }
 });
-
+*/
 // COMPONENTS
 import * as components from './components/index.js';
 Object.keys(components).forEach(component => {

@@ -10,6 +10,7 @@ namespace Accelerate.Foundations.Rates.Models.Entities
 {
     [Table("RatesConversionQuoteEntity")]
     public class RatesConversionQuoteEntity : RatesBaseEntity
-    { 
+    {
+        public DateTime ExpireDate { get; set; }
     }
 }

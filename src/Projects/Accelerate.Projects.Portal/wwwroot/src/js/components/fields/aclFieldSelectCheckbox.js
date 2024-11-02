@@ -59,7 +59,7 @@ export default function (params) {
                 values.splice(index, 1);
             }
             this.mxField_value = values;
-            this._mxField_onChange();
+            this._mxField_onChange(this.mxField_value)
         },
         getItemLabel(item, i) {
             return item.value+'_'+i;
@@ -78,8 +78,8 @@ export default function (params) {
             <input   
                 class="peer"  
                 :id="mxField_id"
-                :name="mxField_name" 
-                :disabled="true"
+                :name="mxField_name"
+                :disabled="false"
                 :hidden="true"
                 :value="mxField_value"
                 x-model="mxField_value"  

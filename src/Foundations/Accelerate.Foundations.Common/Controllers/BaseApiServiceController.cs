@@ -24,9 +24,9 @@ namespace Accelerate.Foundations.Common.Controllers
         {
             try
             {
-                int take = request.ItemsPerPage > 0 ? request.ItemsPerPage ?? 10 : 10;
+                int take = request.PageSize > 0 ? request.PageSize ?? 10 : 10;
                 if (take > 100) take = 100;
-                int skip = take * request.CurrentPage;
+                int skip = take * (request.Page ?? 0);
                 return Ok(_service.Find(x => true, skip, take));
             }
             catch (Exception ex)

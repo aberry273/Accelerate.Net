@@ -15,7 +15,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
     }
     public enum FormFieldComponents
     {
-        aclFieldInput, aclFieldTextarea, aclFieldContentEditable, aclFieldCodeEditor, aclFieldEditorJs, aclFieldSelect, aclFieldSwitch, aclFieldFile, aclFieldSelectCheckbox
+        aclFieldInput, aclFieldTextarea, aclFieldContentEditable, aclFieldCodeEditor, aclFieldOtpCode, aclFieldEditorJs, aclFieldSelect, aclFieldSwitch, aclFieldFile, aclFieldSelectCheckbox
     }
     public class FormField
     {

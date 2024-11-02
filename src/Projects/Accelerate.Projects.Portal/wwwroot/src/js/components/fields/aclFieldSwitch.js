@@ -19,8 +19,8 @@ export default function (params) {
    
         },
         toggle() {
-            this.mxField_value =! this.mxField_value;
-            this._mxField_onChange();
+            this.mxField_value = !this.mxField_value;
+            this._mxField_onChange(this.mxField_value)
         },
         render() {
             const html =  `
@@ -28,8 +28,8 @@ export default function (params) {
                     <input   
                         class="peer"  
                         :id="mxField_id"
-                        :name="mxField_name" 
-                        :disabled="true"
+                        :name="mxField_name"
+                        :disabled="false"
                         :hidden="true"
                         :value="mxField_value"
                         x-model="mxField_value"  

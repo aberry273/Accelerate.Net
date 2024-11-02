@@ -1,4 +1,8 @@
-﻿using Accelerate.Foundations.Mediator.Models;
+﻿using Accelerate.Foundations.Database.Models;
+using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.Mediator.Models;
+using AutoMapper;
+using MassTransit.Mediator;
 using MediatR;
 using System;
 using System.Collections.Generic;

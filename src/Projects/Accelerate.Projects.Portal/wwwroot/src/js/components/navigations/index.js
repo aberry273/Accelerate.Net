@@ -7,6 +7,7 @@ import aclNavigationBarAction from './aclNavigationBarAction.js'
 import aclNavigationFooter from './aclNavigationFooter.js'
 import aclNavigationBreadcrumbs from './aclNavigationBreadcrumbs.js'
 import aclNavigationFilter from './aclNavigationFilter.js'
+import aclNavigationStepper from './aclNavigationStepper.js'
 import aclNavigationSidebarSlide from './aclNavigationSidebarSlide.js'
 
 export {
@@ -19,5 +20,6 @@ export {
     aclNavigationFooter,
     aclNavigationBreadcrumbs,
     aclNavigationFilter,
+    aclNavigationStepper,
     aclNavigationSidebarSlide,
 }

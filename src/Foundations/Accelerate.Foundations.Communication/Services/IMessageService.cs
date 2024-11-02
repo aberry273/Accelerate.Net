@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Communication.Services
 {
-    public interface IMessageServices
+    public interface IMessageService
     {
         void SendEmail(string email, string subject, string message);
         Task SendEmailAsync(string email, string subject, string message);

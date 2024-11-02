@@ -17,7 +17,7 @@ namespace Accelerate.Foundations.Rates.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -28,15 +28,12 @@ namespace Accelerate.Foundations.Rates.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("BuyAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BuyCurrency")
+                    b.Property<string>("BuyAsset")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("BuyPrice")
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime>("ConversionDate")
                         .HasColumnType("datetime2");
@@ -50,6 +47,10 @@ namespace Accelerate.Foundations.Rates.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FixedSide")
                         .HasColumnType("int");
 
@@ -59,12 +60,15 @@ namespace Accelerate.Foundations.Rates.Migrations
                     b.Property<string>("OnBehalfOf")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("SellAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("SellCurrency")
+                    b.Property<string>("SellAsset")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SellPrice")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("TermsAgreement")
                         .HasColumnType("nvarchar(max)");
@@ -77,6 +81,9 @@ namespace Accelerate.Foundations.Rates.Migrations
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -91,12 +98,12 @@ namespace Accelerate.Foundations.Rates.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BuyCurrency")
+                    b.Property<string>("BuyAsset")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("BuyPrice")
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime>("ConversionDate")
                         .HasColumnType("datetime2");
@@ -110,21 +117,34 @@ namespace Accelerate.Foundations.Rates.Migrations
                     b.Property<Guid?>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("ExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FixedSide")
                         .HasColumnType("int");
 
                     b.Property<string>("OnBehalfOf")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SellCurrency")
+                    b.Property<string>("SellAsset")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SellPrice")
+                        .HasColumnType("decimal(18,4)");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Volume")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -139,13 +159,13 @@ namespace Accelerate.Foundations.Rates.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("AccountsAccountId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FundingSourceId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedOn")

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
+    <ProjectReference Include="..\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
+    <ProjectReference Include="..\Accelerate.Foundations.Mediator\Accelerate.Foundations.Mediator.csproj" />
+  </ItemGroup>
+
+</Project>

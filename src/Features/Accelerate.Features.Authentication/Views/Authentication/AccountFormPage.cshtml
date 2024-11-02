@@ -5,54 +5,72 @@
 @model Accelerate.Features.Authentication.Models.Views.AuthenticationFormPage
 @{ }
 
-<div class="container justify-center items-center mx-auto my-auto">
-    <h4 class="w-full text-3xl font-bold">@Model.Title</h4>
-    <!-- Email Login -->
-    <section>
-        <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
-            <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"></div>
-        </div>
-    </section>
-    <!-- Social Logins -->
-    @if(Model.Providers != null) {
-        <section>
-            <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
-                <form action="@Model.ExternalLoginPostbackUrl" asp-action="@Model.ExternalLoginAction" method="post">
-                    <div class="relative my-2 inline-block items-center justify-center text-center h-full w-full p-1 text-gray-500 bg-gray-100 rounded-lg select-none">
-                        @foreach (var provider in Model.Providers)
-                        { 
-                            <button
-                                type="submit" 
-                                name="provider"
-                                value="'@provider.Name'"
-                                x-model="'@provider.Name'"
-                                x-data="aclButton({
-                                    override: true,
-                                    icon: '@provider.Name.ToLower()',
-                                    color: '@provider.Color',
-                                    class: 'cursor-pointer relative flex cursor-default select-none w-full px-5 py-4 text-lg font-medium text-center items-center justify-center text-white transition duration-200 rounded-lg hover:bg-blue-700 ease',
-                                    text: 'Continue with @provider.Name'
-                                })">
-                            </button>
-                        }
-                    </div>
-                </form> 
+
+<div class="flex h-screen overflow-y-hidden">
+     
+    <!-- Dashboard -->
+    <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
+    
+        <!-- Page Content -->
+        <div class="w-full flex justify-center" >
+            <div class="w-96">
+              <h4 class="w-full my-4 text-3xl font-bold">@Model.Title</h4>
+
+               
+               @if(!string.IsNullOrEmpty(Model.Message))
+                {
+                    <div class="text-md px-2 font-bold text-red-600">@Model.Message</div>
+                }
+                 <!-- Email Login -->
+                <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"
+                    class="bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700"></div>
+
+                @if(Model.Providers != null && Model.Providers.Any()) {
+                    <section>
+                        <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
+                            <form action="@Model.ExternalLoginPostbackUrl" asp-action="@Model.ExternalLoginAction" method="post">
+                                <div class="relative my-2 inline-block items-center justify-center text-center h-full w-full p-1 text-gray-500 bg-gray-100 rounded-lg select-none">
+                                    @foreach (var provider in Model.Providers)
+                                    { 
+                                        <button
+                                            type="submit" 
+                                            name="provider"
+                                            value="'@provider.Name'"
+                                            x-model="'@provider.Name'"
+                                            x-data="aclButton({
+                                                override: true,
+                                                icon: '@provider.Name.ToLower()',
+                                                color: '@provider.Color',
+                                                class: 'cursor-pointer relative flex cursor-default select-none w-full px-5 py-4 text-lg font-medium text-center items-center justify-center text-white transition duration-200 rounded-lg hover:bg-blue-700 ease',
+                                                text: 'Continue with @provider.Name'
+                                            })">
+                                        </button>
+                                    }
+                                </div>
+                            </form> 
+                        </div>
+                    </section>
+                }
+                <!-- Other Links -->
+                @if(Model.Links != null && Model.Links.Any())
+                {
+                    <section class="my-4 mx-4">
+                        <div class="w-full dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
+                            @foreach(var link in Model.Links)
+                            {
+                                <div
+                                    x-data="aclButton({ 
+                                        href: '@link.Href',
+                                        type: 'button',
+                                        text: '@link.Text', 
+                                        class: 'inline-block w-full px-5 py-4 pt-2 mb-2 text-lg font-medium text-center text-white transition duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 ease'
+                                })"></div>
+                            } 
+                        </div>
+                    </section>
+                }
             </div>
-        </section>
-    }
-    <!-- Other Links -->
-    <section>
-        <div class="w-full  dark:bg-gray-800 lg:w-6/12 xl:w-5/12">
-            @foreach(var link in Model.Links)
-            {
-                <div
-                    x-data="aclButton({ 
-                        href: '@link.Href',
-                        type: 'button',
-                        text: '@link.Text', 
-                        class: 'inline-block w-full px-5 py-4 pt-2 mb-2 text-lg font-medium text-center text-white transition duration-200 bg-blue-600 rounded-lg hover:bg-blue-700 ease'
-                })"></div>
-            } 
         </div>
-    </section>
-</div>
+
+    </div>
+</div> 

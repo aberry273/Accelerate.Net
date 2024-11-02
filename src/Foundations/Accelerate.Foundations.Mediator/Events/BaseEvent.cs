@@ -9,5 +9,6 @@ namespace Accelerate.Foundations.Mediator.Events
 {
     public abstract class BaseEvent : INotification
     {
+        public string EventName { get; set; }
     }
 }

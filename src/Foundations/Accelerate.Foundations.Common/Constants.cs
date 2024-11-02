@@ -26,6 +26,12 @@ namespace Accelerate.Foundations.Common
         }
         public struct AdminPaths
         {
+            public const string AccountsPath = "/Admin/Accounts";
+            public const string AccountsLabel = "Accounts";
+            public const string TransactionsPath = "/Admin/Transactions";
+            public const string TransactionsLabel = "Transactions";
+            public const string RatesPath = "/Admin/Rates";
+            public const string RatesLabel = "Rates";
             public const string JobsPath = "/Admin/Jobs";
             public const string JobsLabel = "Jobs";
             public const string ActionsPath = "/Admin/Actions";
@@ -37,9 +43,10 @@ namespace Accelerate.Foundations.Common
         {
             public const string SearchPath = "/Search";
             public const string SearchLabel = "Search";
-            public const string ChatLabel = "Chat";
             public const string AboutPath = "/About";
             public const string AboutLabel = "About";
+            /*
+            public const string ChatLabel = "Chat";
             public const string FeedsPath = "/Feeds";
             public const string FeedsLabel = "Feeds";
             public const string PostsPath = "/Posts";
@@ -50,7 +57,25 @@ namespace Accelerate.Foundations.Common
             public const string ChannelsLabel = "Channels";
             public const string ListsPath = "/Lists";
             public const string ListsLabel = "Lists";
-            public const string ProfilePath = "/Account/Profile";
+            */
+            // Financial
+
+            public const string AccountsPath = "/Accounts";
+            public const string AccountsLabel = "Accounts";
+
+            public const string OnboardingPath = "/Onboarding";
+            public const string OnboardingLabel = "Onboarding";
+
+            public const string TransactionsPath = "/Transactions";
+            public const string TransactionsLabel = "Transactions";
+
+            public const string FundingPath = "/Funding";
+            public const string FundingLabel = "Funding";
+
+            public const string SettlementsPath = "/Settlements";
+            public const string SettlementsLabel = "Settlements";
+
+            public const string ProfilePath = "/Profile";
             public const string ProfileLabel = "Profile";
             public const string NotificationsPath = "/Account/Notifications";
             public const string NotificationsLabel = "Notifications";
@@ -60,6 +85,7 @@ namespace Accelerate.Foundations.Common
             public const string LogoutLabel = "Logout";
             public const string LoginPath = "/authentication/Login";
             public const string LoginLabel = "Login";
+            public const string LockedPath = "/authentication/lockout";
         }
         public struct ApiPaths
         {

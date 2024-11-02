@@ -19,14 +19,21 @@ namespace Accelerate.Foundations.Rates.Models.Entities
     }
     public class RatesBaseEntity : BaseEntity
     {
+        public required string ExternalId { get; set; }
         public RatesCustomerEntity? Customer { get; set; }
         [ForeignKey("RatesCustomer")]
         public Guid? CustomerId { get; set; }
         [Required]
         public required Guid UserId { get; set; }
-        public required string BuyCurrency { get; set; }
-        public required string SellCurrency { get; set; }
-        public decimal Amount { get; set; }
+        public required string BuyAsset { get; set; }
+
+        [Column(TypeName = "decimal(18,4)")]
+        public required decimal BuyPrice { get; set; }
+        public required string SellAsset { get; set; }
+
+        [Column(TypeName = "decimal(18,4)")]
+        public required decimal SellPrice { get; set; }
+        public decimal Volume { get; set; }
         public string? OnBehalfOf { get; set; }
         public RatesQuoteFixedSideEnum FixedSide { get; set; }
         public DateTime ConversionDate { get; set; }

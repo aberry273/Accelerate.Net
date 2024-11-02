@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Rates.Models.Entities
 {
+    public enum RatesOrderStatus
+    {
+        Open, Closed, Cancelled, Completed
+    }
     [Table("RatesConversionOrderEntity")]
     public class RatesConversionOrderEntity : RatesBaseEntity
     {
         #region Required 
         #endregion 
-        public decimal BuyAmount { get; set; }
-        public decimal SellAmount { get; set; }
+        public RatesOrderStatus Status { get; set; } 
         public string? Memo { get; set; }
         public string? UniqueId { get; set; }
         public string? TermsAgreement { get; set; }

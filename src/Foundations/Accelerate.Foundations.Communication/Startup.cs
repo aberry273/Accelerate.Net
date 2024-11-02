@@ -22,16 +22,8 @@ namespace Accelerate.Foundations.Communication
                 options.Username = configuration[Constants.AzureCommunicationServices.EmailCommunicationServiceName];
                 options.Password = configuration[Constants.AzureCommunicationServices.EmailCommunicationServiceSecret];
             });
-            services.Configure<TwilioConfiguration>(options =>
-            {
-                configuration.GetSection(Constants.Settings.SmsConfiguration).Bind(options);
-
-                options.AccountSID = configuration[Constants.Twilio.AccountSID];
-                options.AuthToken = configuration[Constants.Twilio.AuthToken];
-            });
             services.AddTransient<IEmailSender, EmailSender>();
-            services.AddTransient<IMessageServices, MessageServices>();
-            services.AddTransient<ISmsSender<MessageResource>, SmsSender>();
+            services.AddTransient<IMessageService, MessageService>();
         }
     }
 }

@@ -1,26 +1,31 @@
-﻿using Accelerate.Foundations.Database.Services;
+﻿using Accelerate.Foundations.Database.Models;
+using Accelerate.Foundations.Database.Services;
+using Accelerate.Foundations.Mediator.Events;
 using Accelerate.Foundations.Mediator.Models;
 using AutoMapper;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Mediator.Commands
 {
-    public class DeleteEntityHandler<T> : IRequestHandler<DeleteEntityCommand<T>, BaseResponse<bool>>
+    public class DeleteEntityHandler<T> : IRequestHandler<DeleteEntityCommand<T>, BaseResponse<bool>> where T : BaseEntity
     {
         //private readonly IUnitOfWork _unitOfWork;
-        //private readonly BaseContext<T> _context;
-        private readonly IEntityService<T> _service;
+        private readonly BaseContext<T> _context;
+        //private readonly IEntityService<T> _service;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
-        public DeleteEntityHandler(IEntityService<T> service, IMapper mapper)
+        public DeleteEntityHandler(BaseContext<T> context, IMapper mapper, IMediator mediator)
         {
-            _service = service ?? throw new ArgumentNullException(nameof(service));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<BaseResponse<bool>> Handle(DeleteEntityCommand<T> command, CancellationToken cancellationToken)
@@ -32,15 +37,25 @@ namespace Accelerate.Foundations.Mediator.Commands
                 {
                     response.Success = false;
                     response.Message = "No entity found";
+                    return response;
                 }
-                var entity = command.Entity ?? _service.Get(command.Id.GetValueOrDefault());
+                var entity = command.Entity ?? _context.Entities.First(x => x.Id == command.Id.GetValueOrDefault());
 
-                response.Data = await _service.Delete(entity) > 0;
+                if (entity == null)
+                {
+                    response.Success = false;
+                    response.Message = "No entity found";
+                    return response;
+                }
 
-                if (response.Data)
+                var deleteResult = _context.Remove(entity);
+                var result = await _context.SaveChangesAsync() > 0;
+
+                if (result)
                 {
                     response.Success = true;
                     response.Message = "Delete successful";
+                    await SendEvent(entity);
                 }
             }
             catch (Exception ex)
@@ -48,6 +63,16 @@ namespace Accelerate.Foundations.Mediator.Commands
                 response.Message = ex.Message;
             }
             return response;
+        }
+        private async Task SendEvent(T entity)
+        {
+            var name = typeof(T).Name;
+            var ev = new EntityCreatedEvent<T>()
+            {
+                Entity = entity,
+                EventName = $"{name}:deleted"
+            };
+            await _mediator.Publish(ev);
         }
     }
 }

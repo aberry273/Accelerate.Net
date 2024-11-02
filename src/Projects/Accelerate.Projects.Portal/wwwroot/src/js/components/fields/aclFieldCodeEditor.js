@@ -58,8 +58,8 @@ export default function (params) {
                     <input   
                         class="peer"  
                         :id="mxField_id"
-                        :name="mxField_name" 
-                        :disabled="true"
+                        :name="mxField_name"
+                        :disabled="false"
                         :hidden="true"
                         :pattern="mxField_inputJsonRegex"
                         :value="mxField_value"
