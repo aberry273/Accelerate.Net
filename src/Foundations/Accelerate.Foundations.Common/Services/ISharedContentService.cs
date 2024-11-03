@@ -11,5 +11,6 @@ namespace Accelerate.Foundations.Common.Services
         List<dynamic> GetCustomerTypes();
         List<dynamic> GetIndustries();
         List<dynamic> GetCountryCodes();
+        List<dynamic> GetBusinessAccountTypes();
     }
 }

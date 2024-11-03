@@ -1,6 +1,6 @@
 ﻿namespace Accelerate.Features.Onboarding.Models.Data
 {
-    public class SignUpFormDataConsumer
+    public class SignUpFormAccountRequest
     {
         public string Firstname { get; set; }
         public string Lastname { get; set; }

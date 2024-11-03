@@ -5,7 +5,8 @@ namespace Accelerate.Features.Content.Hydrators
 {
     public static class OnboardingHydrators
     {
-        public static void Hydrate(this SignUpFormDataConsumer formData, SignUpFormSessionData data)
+        /*
+        public static void Hydrate(this SignUpFormAccountRequest formData, SignUpFormSessionData data)
         {
             data.Firstname = formData.Firstname;
             data.Lastname = formData.Lastname;
@@ -23,5 +24,7 @@ namespace Accelerate.Features.Content.Hydrators
             data.Volume = formData.Volume;
             data.CompanyName = formData.CompanyName;
         }
+
+        */
     }
 }

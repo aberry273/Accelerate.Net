@@ -1,4 +1,7 @@
 ﻿
+using Accelerate.Features.Accounts.Services;
+using Accelerate.Features.Admin.Services;
+using Accelerate.Foundations.Accounts.Models.Entities;
 using Accelerate.Foundations.Users.Models.Entities;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication;
@@ -32,9 +35,10 @@ namespace Accelerate.Features.Accounts
         }
         public static async Task CreateAccountRoles(RoleManager<UsersRole> roleService)
         {
-            await CreateRole(roleService, Foundations.Accounts.Constants.Roles.UserAccountIndividualName, Foundations.Accounts.Constants.Roles.UserAccountIndividualDescription);
-            await CreateRole(roleService, Foundations.Accounts.Constants.Roles.UserAccountBusinessName, Foundations.Accounts.Constants.Roles.UserAccountBusinessDescription);
-            
+            await CreateRole(roleService, Foundations.Portal.Constants.Roles.AccountIndividual, "Internal portal role for individual customer access");
+            await CreateRole(roleService, Foundations.Portal.Constants.Roles.AccountBusiness, "Internal portal role for business customer access");
+            await CreateRole(roleService, Foundations.Portal.Constants.Roles.AccountCreated, "Internal portal role for users that have completed the account creation");
+
         }
         public static void ConfigureApp(WebApplication app)
         {
@@ -52,6 +56,7 @@ namespace Accelerate.Features.Accounts
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddTransient<IAccountsBaseEntityViewService<AccountsBusinessEntity>, AccountsBusinessAccountViewService>();
         }
     }
 }

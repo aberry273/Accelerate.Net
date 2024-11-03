@@ -9,6 +9,7 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
 {
     public class AccountsBaseEntity : BaseEntity
     {
+        public required string CountryCode { get; set; }
         public AccountsStatusEnum Status { get; set; }
     }
 }

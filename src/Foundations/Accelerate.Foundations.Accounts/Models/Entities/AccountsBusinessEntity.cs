@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Accelerate.Foundations.Accounts.Models.Entities
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
-    public enum AccountType
+    public enum BusinessAccountType
     {
         SoleTrader, Partnership, Undefined, 
         BV, CVN, CVOA, EEN, MTS, NV, SE, VOF, 
@@ -29,8 +29,9 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
     {
         #region Required 
         #endregion
-        public AccountType Type { get; set; }
+        public BusinessAccountType Type { get; set; }
         public required string Name { get; set; }
+        public string? Industry { get; set; }
         public string? RegistrationId { get; set; }
         public string? RegistrationAuthority { get; set; }
         public string? TaxId { get; set; }

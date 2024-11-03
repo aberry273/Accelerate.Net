@@ -70,7 +70,7 @@ namespace Accelerate.Features.Onboarding.Services
                 {
                     new NavigationItem()
                     {
-                        Text = "Details",
+                        Text = "Signup",
                         Href = "/Onboarding/SignUp"
                     },
                     new NavigationItem()
@@ -206,7 +206,7 @@ namespace Accelerate.Features.Onboarding.Services
                     _metaContentService.FormField("Firstname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Firstname"),
                     _metaContentService.FormField("Lastname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Lastname"),
                     _metaContentService.FormField("Email", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
-                    _metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
+                    
                 }
             };
             return model;
@@ -215,7 +215,7 @@ namespace Accelerate.Features.Onboarding.Services
         {
             var model = new Form()
             {
-                Title = "Merchant Sign up",
+                Title = "Business Sign up",
                 Label = "Submit",
                 Type = PostbackType.POST,
                 Fields = new List<FormField>()
@@ -224,65 +224,68 @@ namespace Accelerate.Features.Onboarding.Services
                     _metaContentService.FormField("Firstname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Firstname"),
                     _metaContentService.FormField("Lastname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Lastname"),
                     _metaContentService.FormField("Email", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
-                    _metaContentService.FormField("CompanyName", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Name"),
-                    _metaContentService.FormField("Website", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Website"),
-                    _metaContentService.FormField("Volume", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Estimated monthly volume (INR)"),
-                    _metaContentService.FormFieldItems("Industry", FormFieldComponents.aclFieldSelect, _sharedContentService.GetIndustries(), null, null, null, false, false, null, null, null, "Industry"),
-                    _metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
+                    //_metaContentService.FormField("CompanyName", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Name"),
+                   // _metaContentService.FormField("Website", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Website"),
+                   // _metaContentService.FormField("Volume", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Estimated monthly volume (INR)"),
+                    //_metaContentService.FormFieldItems("Industry", FormFieldComponents.aclFieldSelect, _sharedContentService.GetIndustries(), null, null, null, false, false, null, null, null, "Industry"),
+                    //_metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
                 }
             };
             return model;
         }
         #endregion
         #region Identity Check
-        public async Task<OnboardingBasePage> CreateIdentityCheckPage(ClaimsPrincipal userClaim)
+        public async Task<OnboardingBasePage> CreateFinalizeBusinessAccountPage(UsersUser user)
         {
-            var user = await GetUserWithProfile(userClaim);
             var viewModel = await CreateBasePage(user);
+            viewModel.Steps.Selected = "Finalize";
+            viewModel.Form = this.CreateBusinessAccountForm(user);
 
-            var identityModel = new KycCheckIdentityEntity();
-            viewModel.Form = this.CreateIdentityCheckForm(user.Id, identityModel);
 
             return viewModel;
         }
-        public async Task<OnboardingBasePage> CreateIdentityCheckPage(Guid userId)
+        public async Task<OnboardingBasePage> CreateFinalizeIndividualAccountPage(UsersUser user)
         {
-            var user = await GetUserWithProfile(userId);
             var viewModel = await CreateBasePage(user);
-
-            var identityModel = new KycCheckIdentityEntity();
-            viewModel.Form = this.CreateIdentityCheckForm(userId, identityModel);
+            viewModel.Steps.Selected = "Finalize";
+            viewModel.Form = this.CreateConsumerAccountForm(user);
 
             return viewModel;
         }
-        public AjaxForm CreateIdentityCheckForm(Guid userId, KycCheckIdentityEntity item)
+        public Form CreateConsumerAccountForm(UsersUser user)
         {
-            var model = new AjaxForm()
+            var model = new Form()
             {
-                Action = $"/api/onboarding/identity/{item.Id}",
-                Type = PostbackType.DELETE,
-                Event = $"onboarding:identity:modal",
-                Label = "Delete",
+                Title = "Finalize your account",
+                Label = "Submit",
+                Type = PostbackType.POST,
                 Fields = new List<FormField>()
                 {
-                    new FormField()
-                    {
-                        Name = "Id",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = item.Id,
-                    },
-                    new FormField()
-                    {
-                        Name = "UserId",
-                        FieldType = FormFieldTypes.input,
-                        Hidden = true,
-                        Disabled = true,
-                        AriaInvalid = false,
-                        Value = userId,
-                    }
+                    _metaContentService.FormField("UserId", FormFieldComponents.aclFieldInput, null, null, user.Id, true, true),
+                    _metaContentService.FormField("TaxId", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Tax Number"),
+                    _metaContentService.FormField("DateOfBirth", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Date Of Birth"),
+                    _metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
+                }
+            };
+            return model;
+        }
+        
+        public Form CreateBusinessAccountForm(UsersUser user)
+        {
+            var model = new Form()
+            {
+                Title = "Finalize your business account",
+                Label = "Submit",
+                Type = PostbackType.POST,
+                Fields = new List<FormField>()
+                {
+                    _metaContentService.FormField("UserId", FormFieldComponents.aclFieldInput, null, null, user.Id, true, true),
+                    _metaContentService.FormField("CompanyName", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Name"),
+                    _metaContentService.FormField("Website", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Website"),
+                    _metaContentService.FormField("TaxId", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Tax Number"),
+                    _metaContentService.FormFieldItems("AccountType", FormFieldComponents.aclFieldSelect, _sharedContentService.GetBusinessAccountTypes(), null,  _sharedContentService.GetBusinessAccountTypes().FirstOrDefault(), null, false, false, null, null, null, "Business Type"),
+                    _metaContentService.FormFieldItems("Industry", FormFieldComponents.aclFieldSelect, _sharedContentService.GetIndustries(), null, null, null, false, false, null, null, null, "Industry"),
+                    _metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
                 }
             };
             return model;

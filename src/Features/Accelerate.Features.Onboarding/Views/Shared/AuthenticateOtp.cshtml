@@ -10,20 +10,25 @@
     var currentTab = "All";
 }
 <div class="w-full flex justify-center" >
-    <div class="w-96 bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
+    <div class="w-96">
+    <!--Stepper-->
+    <div class="my-2 py-2" x-data="aclNavigationStepper(@JsonSerializerHelper.SerializeObject(Model.Steps))"></div>
+
+        <div class="bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700 ">
         
-        @if(!string.IsNullOrEmpty(Model.Message))
-        {
-            <div class="text-md px-2 font-bold text-red-600">@Model.Message</div>
-        }
-        <!-- Form -->
-        <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"
-             class="" ></div>
+            @if(!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="text-md px-2 font-bold text-red-600">@Model.Message</div>
+            }
+            <!-- Form -->
+            <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"
+                 class="" ></div>
 
          
-        <!-- ResendForm -->
-        <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.ResendForm))"
-             class="" ></div>
+            <!-- ResendForm -->
+            <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.ResendForm))"
+                 class="" ></div>
+        </div>
     </div>
 </div>
  

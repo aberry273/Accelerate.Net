@@ -11,5 +11,6 @@ namespace Accelerate.Foundations.Portal.Services
     public interface IPortalContentService
     {
         Task<BasePage> CreateAuthenticatedContent(UsersUser user);
+
     }
 }

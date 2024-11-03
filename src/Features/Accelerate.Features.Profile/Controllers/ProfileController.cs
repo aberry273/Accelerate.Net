@@ -78,7 +78,7 @@ namespace Accelerate.Features.Profile.Controllers
             var user = await GetUserWithProfile(this.User);
             if (user == null) return Redirect(Foundations.Common.Constants.Paths.LoginPath);
 
-            var viewModel = _accountViewService.GetManagePage(user);
+            var viewModel = await _accountViewService.GetManagePage(user);
             return View(viewModel);
         }
         #endregion
@@ -91,7 +91,7 @@ namespace Accelerate.Features.Profile.Controllers
             var user = await GetUserWithProfile(this.User);
             if (user == null) return Redirect(Foundations.Common.Constants.Paths.LoginPath);
 
-            var viewModel = _accountViewService.GetManagePage(user);
+            var viewModel = await _accountViewService.GetManagePage(user);
             return View(viewModel);
         }
         #endregion  

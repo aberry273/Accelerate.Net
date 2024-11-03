@@ -17,13 +17,18 @@ namespace Accelerate.Foundations.Users.Services
         Task<UsersUser?> FindByClaimAsync(ClaimsPrincipal principle);
         Task<UsersUser?> FindByIdAsync(string id);
         Task<UsersUser?> FindByNameAsync(string loginProvider, string providerKey);
+        Task<IdentityResult> ConfirmEmailAsync(UsersUser user);
         Task<int> Delete(UsersUser entity);
         Task<bool> UserInRole(UsersUser user, string roleName);
+        Task<bool> VerifyTwoFactorTokenAsync(UsersUser user, string tokenProvider, string token);
         Task<IdentityResult?> CreateAsync(UsersUser user);
         Task<IdentityResult?> CreateAsync(UsersUser user, string password);
         Task<IdentityResult> CreateUser(string email, string domain);
         Task<IdentityResult> CreateUser(string username, string email, string domain, string password);
         Task<IdentityResult> AddRole(string name, ICollection<UsersRoleClaim> roleClaims = null);
         Task<IdentityResult> AddUserToRole(UsersUser user, string roleName);
+
+        Task<bool> IsPhoneNumberConfirmedAsync(UsersUser user);
+        Task<bool> IsEmailConfirmedAsync(UsersUser user);
     }
 }

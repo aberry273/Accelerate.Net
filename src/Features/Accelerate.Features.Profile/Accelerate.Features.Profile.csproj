@@ -55,6 +55,7 @@
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.EventPipelines\Accelerate.Foundations.EventPipelines.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Media\Accelerate.Foundations.Media.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Portal\Accelerate.Foundations.Portal.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Users\Accelerate.Foundations.Users.csproj" />
   </ItemGroup>
 

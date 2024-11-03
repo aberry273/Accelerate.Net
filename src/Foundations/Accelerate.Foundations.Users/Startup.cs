@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using static Accelerate.Foundations.Database.Constants.Exceptions;
 using Accelerate.Foundations.Integrations.Twilio.Services;
+using Accelerate.Foundations.Users.Handlers;
 
 namespace Accelerate.Foundations.Users
 {
@@ -76,14 +77,16 @@ namespace Accelerate.Foundations.Users
             // CONFIGURATION
             services.AddIdentity<UsersUser, UsersRole>(options =>
             {
-                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedEmail = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
                 options.User.RequireUniqueEmail = true;
             })
             .AddEntityFrameworkStores<UsersDbContext>()
             .AddDefaultTokenProviders();
-           
+
+            services.AddScoped<IUserClaimsPrincipalFactory<UsersUser>, AdditionalUserClaimsPrincipalFactory>();
+
             services.AddTransient<ITwilioSmsSender, TwilioSmsSender>();
             services.AddTransient<IEmailSender<UsersUser>, UsersEmailSender>();
 
@@ -97,7 +100,22 @@ namespace Accelerate.Foundations.Users
             else {
                 SetAuthConfig(services, configuration);
             }
-            
+            // 2FA
+
+            // MFA
+
+            services.AddAuthorization(options =>
+                options.AddPolicy("TwoFactorEnabled", x => x.RequireClaim("amr", "mfa")));
+            // Force ASP.NET Core OpenID Connect client to require MFA
+            // [Authorize(Policy="RequireMfa")]
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("RequireMfa", policyIsAdminRequirement =>
+                {
+                    policyIsAdminRequirement.Requirements.Add(new RequireMfa());
+                });
+            });
+
             // Set email timeout to 7 days
 
             services.ConfigureApplicationCookie(o => {
@@ -148,7 +166,31 @@ namespace Accelerate.Foundations.Users
                    Console.WriteLine(context.Identity);
                    return Task.CompletedTask;
                };
-           });
+           })
+           /*
+           .AddOpenIdConnect(options =>
+            {
+                options.SignInScheme =
+                    CookieAuthenticationDefaults.AuthenticationScheme;
+                options.Authority = "<OpenID Connect server URL>";
+                options.RequireHttpsMetadata = true;
+                options.ClientId = "<OpenID Connect client ID>";
+                options.ClientSecret = "<>";
+                options.ResponseType = "code";
+                options.UsePkce = true;
+                options.Scope.Add("profile");
+                options.Scope.Add("offline_access");
+                options.SaveTokens = true;
+                options.Events = new OpenIdConnectEvents
+                {
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        context.ProtocolMessage.SetParameter("acr_values", "mfa");
+                        return Task.FromResult(0);
+                    }
+                };
+            })*/
+           ;
         }
         private static void SetAuthConfig(IServiceCollection services, IConfiguration configuration)
         {

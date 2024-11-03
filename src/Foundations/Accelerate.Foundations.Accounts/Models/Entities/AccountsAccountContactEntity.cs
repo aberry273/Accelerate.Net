@@ -12,7 +12,7 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
 {
     public enum AccountContactType
     {
-        Owner, Shareholder, Reference
+        Owner, Shareholder, Reference, Other
     }
     /// <summary>
     /// Join table for accounts to contacts

@@ -10,7 +10,7 @@ namespace Accelerate.Projects.Portal
     {
         public struct Routes
         {
-            public const string WebApiAuthentication = "account";
+            public const string WebApiAuthentication = "authentication";
         }
     }
 }

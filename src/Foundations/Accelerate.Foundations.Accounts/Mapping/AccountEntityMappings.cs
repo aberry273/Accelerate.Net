@@ -10,5 +10,7 @@ using System.Threading.Tasks;
 
 namespace Accelerate.Foundations.Mediator.Mappings
 {
-    public class AddressEntityMapping : EntityMapping<AccountsAddressEntity>{ }
+    public class AddressBusinessMapping : EntityMapping<AccountsBusinessEntity> { }
+    public class AddressIndividualMapping : EntityMapping<AccountsIndividualEntity> { }
+    public class AddressEntityMapping : EntityMapping<AccountsAddressEntity> { }
 }

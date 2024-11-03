@@ -19,8 +19,7 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
         public string? Email { get; set; }
         public string? Phone { get; set; }
         public string? Role { get; set; }
-        public string? PersonalId { get; set; }
-        public string? TaxId { get; set; }
+        public string? PersonalId { get; set; } 
         public string? Firstname { get; set; }
         public string? Lastname { get; set; }
         public string? DateOfBirth { get; set; }

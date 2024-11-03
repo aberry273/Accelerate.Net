@@ -1,7 +1,7 @@
 
 # Accounts
 Drop-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
-Add-Migration Accounts_Migration_5 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
+Add-Migration Accounts_Migration_6 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
 Update-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
 
 # Funding

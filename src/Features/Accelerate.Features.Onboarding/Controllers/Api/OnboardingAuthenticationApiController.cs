@@ -58,7 +58,7 @@ namespace Accelerate.Features.Content.Controllers.Api
                 // Find user
                 var user = await _userManager.FindByIdAsync(model.UserId.ToString());
 
-                if (user != null)
+                if (user == null)
                 {
                     response.Message = "Not found";
                     return NotFound(response);

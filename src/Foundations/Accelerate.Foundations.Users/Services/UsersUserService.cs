@@ -192,6 +192,23 @@ namespace Accelerate.Foundations.Users.Services
                 throw;
             }
         }
+        public async Task<IdentityResult> ConfirmEmailAsync(UsersUser user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return await _userManager.ConfirmEmailAsync(user, code);
+        }
+        public async Task<bool> IsPhoneNumberConfirmedAsync(UsersUser user)
+        {
+            return await _userManager.IsPhoneNumberConfirmedAsync(user);
+        }
+        public async Task<bool> IsEmailConfirmedAsync(UsersUser user)
+        {
+            return await _userManager.IsEmailConfirmedAsync(user);
+        }
+        public async Task<bool> VerifyTwoFactorTokenAsync(UsersUser user, string tokenProvider, string token)
+        {
+            return await _userManager.VerifyTwoFactorTokenAsync(user, tokenProvider, token);
+        }
         public async Task<string> GenerateTwoFactorTokenAsync(UsersUser user, string tokenProvider = "Email")
         {
             return await _userManager.GenerateTwoFactorTokenAsync(user, tokenProvider);
@@ -248,7 +265,7 @@ namespace Accelerate.Foundations.Users.Services
 
             if (role == null) throw new Exception($"Role: {roleName} not found");
 
-            if (await _userManager.IsInRoleAsync(user, role.Name))
+            if (!await _userManager.IsInRoleAsync(user, role.Name))
             {
                 return await _userManager.AddToRoleAsync(user, roleName);
             }

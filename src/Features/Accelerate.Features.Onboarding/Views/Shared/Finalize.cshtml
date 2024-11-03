@@ -1,0 +1,25 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Onboarding.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@model OnboardingBasePage
+@{
+    Layout = "/Views/Shared/_OnboardingPageLayout.cshtml";
+    var currentTab = "All";
+}
+<div class="w-full flex justify-center">
+    <div class="w-96">
+        <!--Stepper-->
+        <div class="my-2 py-2" x-data="aclNavigationStepper(@JsonSerializerHelper.SerializeObject(Model.Steps))"></div>
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="text-md px-2 font-bold text-red-600">@Model.Message</div>
+        }
+
+        <!-- Form -->
+        <div x-data="aclFormPostback(@JsonSerializerHelper.SerializeObject(Model.Form))"
+             class="bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700"></div>
+    </div>
+</div>

@@ -13,12 +13,15 @@ namespace Accelerate.Foundations.Portal.Services
 {
     public class PortalContentService : IPortalContentService
     {
+        public IPortalSessionService _portalSessionService { get; set; }
         public IMetaContentService _metaContentService { get; set; }
         public IUsersUserService _userService { get; set; }
         public PortalContentService(
+            IPortalSessionService portalSessionService,
             IMetaContentService metaContentService,
             IUsersUserService userService)
         {
+            _portalSessionService = portalSessionService;
             _metaContentService = metaContentService;
             _userService= userService;
         }
@@ -73,14 +76,21 @@ namespace Accelerate.Foundations.Portal.Services
 
         public async Task<NavigationGroup> CreateCustomerSideNavigation(UsersUser user)
         {
-            if (await _userService.UserInRole(user, Constants.Roles.UserAccountIndividualName))
+            try
             {
-                return await CreateCustomerBusinessSideNavigation(user);
-            };
-            if (await _userService.UserInRole(user, Constants.Roles.UserAccountBusinessName))
+                if (await _userService.UserInRole(user, Constants.Roles.AccountIndividual))
+                {
+                    return await CreateCustomerBusinessSideNavigation(user);
+                };
+                if (await _userService.UserInRole(user, Constants.Roles.AccountBusiness))
+                {
+                    return await CreateCustomerBusinessSideNavigation(user);
+                };
+            }
+            catch(Exception ex)
             {
-                return await CreateCustomerBusinessSideNavigation(user);
-            };
+                Foundations.Common.Services.StaticLoggingService.LogError(ex);
+            }
             return null; 
         }
 
@@ -93,7 +103,8 @@ namespace Accelerate.Foundations.Portal.Services
 
                 }
             };
-            if (!await _userService.UserInRole(user, Constants.Roles.UserIdentitedName))
+            if (string.IsNullOrEmpty(_portalSessionService.TryGetSelectedAccountId()) 
+                || !await _userService.UserInRole(user, Constants.Roles.AccountCreated))
             {
                 model.Items.Add(
                     new NavigationItem()

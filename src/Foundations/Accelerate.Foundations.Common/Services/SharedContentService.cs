@@ -30,5 +30,32 @@ namespace Accelerate.Foundations.Common.Services
                 "NZ"
             };
         }
+        public List<dynamic> GetBusinessAccountTypes()
+        {
+            return new List<dynamic>(){
+                "SoleTrader",
+                "Partnership",
+                "Undefined",
+                "BV",
+                "CVN",
+                "CVOA",
+                "EEN",
+                "MTS",
+                "NV",
+                "SE",
+                "VOF",
+                "CCORP",
+                "TrustEstate",
+                "SoleProprietorship",
+                "SingleMemberLimitedLiability",
+                "LimitedLiability",
+                "PublicallyListedCompany",
+                "PrivateCompany",
+                "NonForProfit",
+                "NRO",
+                "NRE",
+                "Individual",
+            };
+        }
     }
 }

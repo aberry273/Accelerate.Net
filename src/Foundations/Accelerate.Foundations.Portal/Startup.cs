@@ -19,7 +19,9 @@ namespace Accelerate.Foundations.Portal
         {
             //services.Configure<SiteConfiguration>(configuration.GetSection(Constants.Settings.SiteConfiguration).Bind);
             services.AddTransient<IPortalContentService, PortalContentService>();
-      
+            services.AddTransient<IPortalSessionService, PortalSessionService>();
+
+
         }
     }
 }

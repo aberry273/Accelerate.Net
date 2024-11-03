@@ -8,11 +8,19 @@ namespace Accelerate.Foundations.Portal
 {
     public struct Constants
     {
+        public struct Keys
+        {
+            public const string SessionAccountKey = "session:account:key";
+            public const string SessionAccountObject = "session:account:object";
+        }
         public struct Roles
         {
-            public const string UserIdentitedName = "Identified";
-            public const string UserAccountIndividualName = "Individual";
-            public const string UserAccountBusinessName = "Business";
+            public const string KYCAddressVerified = "KYC:Address:Verified";
+            public const string KYCIdentityVerified = "KYC:Identity:Verified";
+            public const string KYCFundingVerified = "KYC:Funding:Verified";
+            public const string AccountIndividual = "Account:Customer:Individual";
+            public const string AccountBusiness = "Account:Customer:Business";
+            public const string AccountCreated = "Account:Created";
         }
         public struct AdminPaths
         {

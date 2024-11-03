@@ -27,6 +27,7 @@ using Newtonsoft.Json.Linq;
 using System.Security.Policy;
 using System.Threading.Channels;
 using static System.Net.WebRequestMethods;
+using Accelerate.Foundations.Portal.Services;
 
 namespace Accelerate.Features.Profile.Services
 {
@@ -35,20 +36,23 @@ namespace Accelerate.Features.Profile.Services
         private readonly SignInManager<UsersUser> _signInManager;
         private OAuthConfiguration _OAuthConfig;
         private IMetaContentService _contentService;
+        private IPortalContentService _portalContentService;
         public ProfileViewService(
             SignInManager<UsersUser> signInManager,
             IMetaContentService contentService,
+            IPortalContentService portalContentService,
             IOptions<OAuthConfiguration> options)
         {
             _signInManager = signInManager;
             _contentService = contentService;
+            _portalContentService = portalContentService;
             _OAuthConfig = options.Value;
         }
         #region Notifications
 
-        public ManagePage GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activities, int totalActivities)
+        public async Task<ManagePage> GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activities, int totalActivities)
         {
-            var viewModel = new MentionPage(GetManagePage(user));
+            var viewModel = new MentionPage(await GetManagePage(user));
             viewModel.Table = this.GetMentionsTable();
             viewModel.Table.Pages =(totalActivities / activities.Count());
             viewModel.Table.ItemsPerPage = activities.Count();
@@ -70,9 +74,9 @@ namespace Accelerate.Features.Profile.Services
         #endregion
         #region Mentions
 
-        public ManagePage GetMentionsPage(UsersUser user)
+        public async Task<ManagePage> GetMentionsPage(UsersUser user)
         {
-            var viewModel = new MentionPage(GetManagePage(user));
+            var viewModel = new MentionPage(await GetManagePage(user));
             viewModel.Table = this.GetMentionsTable();
             return viewModel;
         }
@@ -108,11 +112,13 @@ namespace Accelerate.Features.Profile.Services
         #endregion
         #region Manage
 
-        public ManagePage GetManagePage(UsersUser user)
+        public async Task<ManagePage> GetManagePage(UsersUser user)
         {
             var profile = Accelerate.Foundations.Users.Helpers.UsersHelpers.CreateUserProfile(user);
 
-            var viewModel = new ManagePage(_contentService.CreatePageBaseContent(profile));
+            var model = await _portalContentService.CreateAuthenticatedContent(user);
+
+            var viewModel = new ManagePage(model);
             viewModel.UserId = user.Id;
             viewModel.UserStatus = user.Status;
             viewModel.ProfileImageForm = CreateProfileImageForm(user);

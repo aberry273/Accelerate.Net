@@ -14,7 +14,7 @@ namespace Accelerate.Features.Onboarding.Services
         Task<OnboardingBasePage> CreateBusinessSignUpPage(ClaimsPrincipal userClaim);
         Task<AuthenticateOtpPage> CreateAuthenticateOtpPage(ClaimsPrincipal userClaim, string provider);
         Task<AuthenticateOtpPage> CreateAuthenticateOtpPage(Guid userId, string provider);
-        Task<OnboardingBasePage> CreateIdentityCheckPage(ClaimsPrincipal userClaim);
-        Task<OnboardingBasePage> CreateIdentityCheckPage(Guid userId);
+        Task<OnboardingBasePage> CreateFinalizeBusinessAccountPage(UsersUser user);
+        Task<OnboardingBasePage> CreateFinalizeIndividualAccountPage(UsersUser user);
     }
 }

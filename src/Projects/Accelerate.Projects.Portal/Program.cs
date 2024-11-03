@@ -77,7 +77,7 @@ Accelerate.Foundations.Settlements.Startup.ConfigureServices(builder.Services, b
 // Add Feature references to the container 
 Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Profile.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration); Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Onboarding.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
@@ -146,8 +146,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapRazorPages();
+
+
 app.MapControllers();
 /*
 app.MapControllerRoute(name: "default",

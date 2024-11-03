@@ -10,9 +10,9 @@ namespace Accelerate.Features.Profile.Services
 {
     public interface IProfileViewService
     {
-        ManagePage GetMentionsPage(UsersUser user);
-        ManagePage GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activitiesResponse, int totalActivities);
-        ManagePage GetManagePage(UsersUser user);
+        Task<ManagePage> GetMentionsPage(UsersUser user);
+        Task<ManagePage> GetNotificationsPage(UsersUser user, IEnumerable<ContentPostActivityEntity> activitiesResponse, int totalActivities);
+        Task<ManagePage> GetManagePage(UsersUser user);
         NavigationFilter CreatePostNavigationFilters(SearchResponse<ContentPostDocument> aggregateResponse);
         NavigationFilter CreateMediaNavigationFilters(SearchResponse<MediaBlobDocument> aggregateResponse);
         
