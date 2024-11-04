@@ -11,6 +11,7 @@ using System.Threading.Channels;
 using Accelerate.Foundations.Portal.Services;
 using Accelerate.Features.Accounts.Services;
 using Accelerate.Features.Accounts.Models.Views;
+using Accelerate.Foundations.Accounts.Models.Entities;
 
 namespace Accelerate.Features.Admin.Services
 {
@@ -101,6 +102,7 @@ namespace Accelerate.Features.Admin.Services
             var viewModel = await CreateBaseAccountsPage(user);
             //var viewModel = new AdminIndexPage<T>(model);
             viewModel.Id = item.Id;
+            viewModel.Entity = item;
             var pageName = GetEntityName(item);
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
 
@@ -119,10 +121,10 @@ namespace Accelerate.Features.Admin.Services
             //viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
             return viewModel;
         }
-        public virtual async Task<AccountsCreatePage> CreateNewPage(UsersUser user)
+        public virtual async Task<AccountsFormPage> CreateNewPage(UsersUser user)
         {
             var model = await CreateBaseAccountsPage(user);
-            var viewModel = new AccountsCreatePage(model);
+            var viewModel = new AccountsFormPage(model);
             var pageName = $"Create {this.EntityName}";
             
             viewModel.SideNavigation.Selected = $"{this.EntityName}s";
@@ -142,9 +144,10 @@ namespace Accelerate.Features.Admin.Services
             return viewModel;
         } 
 
-        public virtual async Task<AccountsBasePage<T>> CreateUpdatePage(UsersUser user, T item)
+        public virtual async Task<AccountsFormPage> CreateUpdatePage(UsersUser user, T item)
         {
-            var viewModel = await CreateBaseAccountsPage(user);
+            var model = await CreateBaseAccountsPage(user);
+            var viewModel = new AccountsFormPage(model);
             //var viewModel = new AdminIndexPage<T>(model);
             var pageName = $"Edit {this.GetEntityName(item)}";
               viewModel.SideNavigation.Selected = $"{this.EntityName}s";
@@ -160,13 +163,62 @@ namespace Accelerate.Features.Admin.Services
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
 
             viewModel.UserId = user?.Id;
-            //viewModel.Form = CreateEntityForm(user, item, PostbackType.PUT);
+            viewModel.Form = CreateEntityForm(user, item);
             return viewModel;
+        }
+
+        public AjaxForm CreateAddressForm(UsersUser user, T item)
+        {
+            var model = this.CreateEntityForm(user, item, PostbackType.POST);
+            model.Label = $"Create Address";
+            model.Fields = CreateAddressFormFields(user);
+            return model;
+        }
+
+        public virtual AjaxForm CreateEntityForm(UsersUser user, T? item, PostbackType type = PostbackType.POST)
+        {
+            var model = new AjaxForm()
+            {
+                Action = item == null
+                    ? $"{Foundations.Common.Constants.ApiPaths.VersionPath}/Accounts/{this.EntityName.ToLower()}"
+                    : $"{Foundations.Common.Constants.ApiPaths.VersionPath}/Accounts/{this.EntityName.ToLower()}/{item.Id}",
+                Type = type,
+                Event = $"{this.EntityName.ToLower()}:create:modal",
+                Label = "Create",
+                Fields = new List<FormField>()
+            };
+            if (item != null)
+            {
+                model.Fields.Add(
+                    new FormField()
+                    {
+                        Name = "Id",
+                        FieldType = FormFieldTypes.input,
+                        AriaInvalid = false,
+                        Value = item.Id,
+                        Hidden = true,
+                        Disabled = true
+                    }
+                );
+            }
+            return model;
+        }
+        public List<FormField> CreateAddressFormFields(UsersUser user)
+        {
+            return new List<FormField>()
+            {
+                _metaContentService.FormField("StreetAddress1", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Firstname"),
+                _metaContentService.FormField("StreetAddress2", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Lastname"),
+                _metaContentService.FormField("Postcode", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+                _metaContentService.FormField("Suburb", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+                _metaContentService.FormField("City", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+                _metaContentService.FormField("Region", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+                _metaContentService.FormField("Country", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
+            };
         }
 
         private NavigationGroup CreatePageNavigationGroup(string entity, string selected)
         {
-            var plural = $"{entity}s";
             return new NavigationGroup()
             {
                 Title = "All",
@@ -176,13 +228,13 @@ namespace Accelerate.Features.Admin.Services
                     new NavigationItem()
                     {
                         Text = $"Create {entity}",
-                        Href = $"/Admin/{plural}/Create",
+                        Href = $"/Accounts/{entity}/Create",
                         Class = "relative flex cursor-pointer select-none items-center rounded px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                     },
                     new NavigationItem()
                     {
                         Text = "All",
-                        Href = $"/Admin/{plural}",
+                        Href = $"/Accounts/{entity}",
                     }
                 }
             };
@@ -199,8 +251,7 @@ namespace Accelerate.Features.Admin.Services
             };
         }
         private ButtonGroup CreatePageActionsGroup(string entity, string name, IBaseEntity item)
-        {
-            var plural = $"{entity}s";
+        { 
             return new ButtonGroup()
             {
                 Title = name,
@@ -209,7 +260,7 @@ namespace Accelerate.Features.Admin.Services
                     new ButtonItem()
                     {
                         Text = $"Edit",
-                        Href = $"/Admin/{plural}/{item.Id}/Edit",
+                        Href = $"/Accounts/{entity}/{item.Id}/Edit",
                         Class = "relative flex cursor-pointer select-none items-center rounded px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                         Icon = "edit"
                     },
@@ -223,7 +274,7 @@ namespace Accelerate.Features.Admin.Services
                     new ButtonItem()
                     {
                         Text = $"Search",
-                        Href = $"/Admin/{plural}/{item.Id}/Search",
+                        Href = $"/Accounts/{entity}/{item.Id}/Search",
                         Class = "relative flex cursor-pointer select-none items-center rounded px-2 py-1.5 text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                         Icon = "magnifyingGlass"
                     },
@@ -251,7 +302,7 @@ namespace Accelerate.Features.Admin.Services
         {
             var model = new AjaxForm()
             {
-                Action = $"/api/admin{this.EntityName.ToLower()}/{item.Id}",
+                Action = $"/api/accounts{this.EntityName.ToLower()}/{item.Id}",
                 Type = PostbackType.DELETE,
                 Event = $"{this.EntityName.ToLower()}:deleted:modal",
                 Label = "Delete",

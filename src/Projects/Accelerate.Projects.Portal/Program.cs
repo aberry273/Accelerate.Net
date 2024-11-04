@@ -54,6 +54,8 @@ Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(build
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Twilio.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.AlphaVantage.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Kindentpay.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
@@ -76,10 +78,13 @@ Accelerate.Foundations.Settlements.Startup.ConfigureServices(builder.Services, b
 
 // Add Feature references to the container 
 Accelerate.Features.Authentication.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Onboarding.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Profile.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Onboarding.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Features.Admin.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Funding.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Features.Transactions.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.

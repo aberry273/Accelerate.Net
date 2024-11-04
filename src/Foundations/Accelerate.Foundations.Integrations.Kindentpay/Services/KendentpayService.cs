@@ -1,4 +1,4 @@
-﻿using Accelerate.Foundations.Users.Models;
+﻿
 using Accelerate.Foundations.Common.Extensions;
 using Accelerate.Foundations.Common.Models;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Accelerate.Foundations.Common.Services;
 
-namespace Accelerate.Foundations.Integrations.Elastic.Services
+namespace Accelerate.Foundations.Integrations.Kindentpay.Services
 {
     public class KendentpayService : IKendentpayService
     {

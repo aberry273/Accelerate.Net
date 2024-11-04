@@ -13,7 +13,7 @@ namespace Accelerate.Foundations.Rates.Models.Entities
         Open, Closed, Cancelled, Completed
     }
     [Table("RatesConversionOrderEntity")]
-    public class RatesConversionOrderEntity : RatesBaseEntity
+    public class RatesConversionOrderEntity : RatesConversionBaseEntity
     {
         #region Required 
         #endregion 

@@ -1,4 +1,4 @@
-﻿namespace Accelerate.Foundations.Users.Models
+﻿namespace Accelerate.Foundations.Integrations.Kindentpay.Models
 {
     public class KindentpayConfiguration
     {

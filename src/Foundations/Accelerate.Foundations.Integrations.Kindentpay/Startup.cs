@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Accelerate.Foundations.Users.Models;
-using Accelerate.Foundations.Integrations.Elastic.Services;
+using Accelerate.Foundations.Integrations.Kindentpay.Services;
 
-namespace Accelerate.Foundations.Integrations.Elastic
+namespace Accelerate.Foundations.Integrations.Kindentpay
 {
     public static class Startup
     {

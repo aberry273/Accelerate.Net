@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Accelerate.Foundations.Integrations.Elastic
+namespace Accelerate.Foundations.Integrations.Kindentpay
 {
     public struct Constants
     {

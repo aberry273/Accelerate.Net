@@ -3,11 +3,60 @@
 @using Accelerate.Foundations.Common.Helpers
 @using Accelerate.Features.Accounts.Models.Views
 @using Microsoft.AspNetCore.Http
-@model AccountsBasePage
+@model AccountsBusinessAccountPage
 @{
     Layout = "/Views/Shared/_AccountsPageLayout.cshtml";
 }
 
-<div class="w-full h-full container overflow-y-scroll">
+<div class="w-full h-full overflow-y-none">
     
+    <!-- Grid wrapper -->
+    <div class="grid sm-grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        <!-- Columns -->
+        
+        <div class="relative flex flex-col bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700">
+            <div x-data="aclContentSection({
+                title: 'Account details',
+                text: 'Account details for this account'
+            })"></div>
+            <!--Account-->
+            <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.AccountForm))"></div>
+        </div>
+  
+        <div class="relative flex flex-col bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700">
+            <div x-data="aclContentSection({
+                title: 'Contact details',
+                text: 'Contact details for this account'
+            })"></div>
+            <!--Contact-->
+            <div>
+                Registered Address
+                <!--Account-->
+                <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.RegisteredAddressForm))"></div>
+            </div>
+            <div>
+                Operating Address
+                <!--Account-->
+                <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.OperatingAddressForm))"></div>
+            </div>
+        </div>
+        <div class="relative flex flex-col bg-white border border-gray-200 rounded-lg shadow  dark:bg-gray-800 dark:border-gray-700">
+            <div x-data="aclContentSection({
+                title: 'Funding details',
+                text: 'Funding details for this account'
+            })"></div>
+            <!--Funding-->
+            <div>
+                Primary Bank Account
+                <!--Account-->
+                <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.OperatingAddressForm))"></div>
+            </div>
+            <div>
+                Primary Wallet
+                <!--Account-->
+                <div x-data="aclFormAjax(@JsonSerializerHelper.SerializeObject(Model.OperatingAddressForm))"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Grid wrapper -->
 </div>

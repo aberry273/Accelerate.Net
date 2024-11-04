@@ -21,6 +21,15 @@ namespace Accelerate.Foundations.Portal
             public const string AccountIndividual = "Account:Customer:Individual";
             public const string AccountBusiness = "Account:Customer:Business";
             public const string AccountCreated = "Account:Created";
+
+            public const string KYCComplete = "KYC:Completed";
+
+            public const string RatesQuote = "Rates:Quote:Access";
+
+            public const string TransactionsTransaction = "Transactions:Transaction:Access";
+
+            public const string FundingBankAccount = "Funding:BankAccount:Access";
+            public const string FundingWallet = "Funding:Wallet:Access";
         }
         public struct AdminPaths
         {

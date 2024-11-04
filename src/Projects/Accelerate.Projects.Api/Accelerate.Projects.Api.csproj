@@ -24,14 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Features\Accelerate.Features.Accounts\Accelerate.Features.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Funding\Accelerate.Foundations.Funding.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AlphaVantage\Accelerate.Foundations.Integrations.AlphaVantage.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AzureSecrets\Accelerate.Foundations.Integrations.AzureSecrets.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AzureStorage\Accelerate.Foundations.Integrations.AzureStorage.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Elastic\Accelerate.Foundations.Integrations.Elastic.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Kindentpay\Accelerate.Foundations.Integrations.Kindentpay.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.MassTransit\Accelerate.Foundations.Integrations.MassTransit.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Quartz\Accelerate.Foundations.Integrations.Quartz.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Twilio\Accelerate.Foundations.Integrations.Twilio.csproj" />

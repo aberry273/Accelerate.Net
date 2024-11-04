@@ -27,12 +27,14 @@ namespace Accelerate.Foundations.Rates
             services.AddDbContext<BaseContext<RatesCustomerEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<RatesConversionQuoteEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
             services.AddDbContext<BaseContext<RatesConversionOrderEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
+            services.AddDbContext<BaseContext<RatesExchangeEntity>>(options => options.UseSqlServer(connString), ServiceLifetime.Transient);
 
             //Services
             // Core
             services.AddTransient<IEntityService<RatesCustomerEntity>, EntityService<RatesCustomerEntity>>();
             services.AddTransient<IEntityService<RatesConversionQuoteEntity>, EntityService<RatesConversionQuoteEntity>>();
             services.AddTransient<IEntityService<RatesConversionOrderEntity>, EntityService<RatesConversionOrderEntity>>();
+            services.AddTransient<IEntityService<RatesExchangeEntity>, EntityService<RatesExchangeEntity>>();
 
             // Logic
             //services.AddTransient<IContentPostService, ContentPostService>();

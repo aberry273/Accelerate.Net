@@ -12,9 +12,20 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
     // Add profile data for application users by adding properties to the ApplicationUser class
     public enum BusinessAccountType
     {
-        SoleTrader, Partnership, Undefined, 
-        BV, CVN, CVOA, EEN, MTS, NV, SE, VOF, 
-        CCORP, TrustEstate, SoleProprietorship,
+        SoleTrader, 
+        Partnership, 
+        Undefined, 
+        BV, 
+        CVN, 
+        CVOA, 
+        EEN, 
+        MTS, 
+        NV, 
+        SE, 
+        VOF, 
+        CCORP, 
+        TrustEstate, 
+        SoleProprietorship,
         SingleMemberLimitedLiability,
         LimitedLiability,
         PublicallyListedCompany,
@@ -22,14 +33,14 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
         NonForProfit,
         NRO,
         NRE,
-        Individual,
+        Individual
     }
     [Table("AccountsBusiness")]
     public class AccountsBusinessEntity : AccountsBaseEntity
     {
         #region Required 
         #endregion
-        public BusinessAccountType Type { get; set; }
+        public BusinessAccountType AccountType { get; set; }
         public required string Name { get; set; }
         public string? Industry { get; set; }
         public string? RegistrationId { get; set; }

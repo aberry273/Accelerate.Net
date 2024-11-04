@@ -141,8 +141,8 @@ namespace Accelerate.Foundations.Accounts.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Postcode")
-                        .HasColumnType("int");
+                    b.Property<string>("Postcode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
                         .HasColumnType("nvarchar(max)");
@@ -172,6 +172,9 @@ namespace Accelerate.Foundations.Accounts.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("AccountType")
+                        .HasColumnType("int");
 
                     b.Property<string>("CountryCode")
                         .IsRequired()
@@ -210,9 +213,6 @@ namespace Accelerate.Foundations.Accounts.Migrations
 
                     b.Property<string>("TaxId")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -294,6 +294,9 @@ namespace Accelerate.Foundations.Accounts.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DateOfBirth")
                         .HasColumnType("nvarchar(max)");

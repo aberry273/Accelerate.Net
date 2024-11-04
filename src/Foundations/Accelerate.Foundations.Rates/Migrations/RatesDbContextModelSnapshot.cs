@@ -179,6 +179,41 @@ namespace Accelerate.Foundations.Rates.Migrations
                     b.ToTable("RatesCustomer");
                 });
 
+            modelBuilder.Entity("Accelerate.Foundations.Rates.Models.Entities.RatesExchangeEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FromCurrency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("LastRefreshed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ToCurrency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RatesExchangeEntity");
+                });
+
             modelBuilder.Entity("Accelerate.Foundations.Rates.Models.Entities.RatesConversionOrderEntity", b =>
                 {
                     b.HasOne("Accelerate.Foundations.Rates.Models.Entities.RatesCustomerEntity", "Customer")

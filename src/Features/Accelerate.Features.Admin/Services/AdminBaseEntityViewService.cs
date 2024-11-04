@@ -65,7 +65,7 @@ namespace Accelerate.Features.Admin.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        public virtual async Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items)
         {
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
@@ -86,7 +86,7 @@ namespace Accelerate.Features.Admin.Services
             //viewModel.FormCreatePost = user != null ? CreateForm(user) : null;
             return viewModel;
         }
-        public virtual async Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> items)
         {
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
@@ -111,7 +111,7 @@ namespace Accelerate.Features.Admin.Services
             return item.Id.ToString();
         }
 
-        public virtual async Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public virtual async Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items)
         {
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminIndexPage<T>(model);

@@ -19,8 +19,7 @@ namespace Accelerate.Foundations.Common
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                                                                            retryAttempt)));
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
         public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
@@ -37,7 +36,7 @@ namespace Accelerate.Foundations.Common
             //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-8.0
 
             services.AddHttpClient<IResilientHttpClient, ResilientHttpClient>()
-                    .SetHandlerLifetime(TimeSpan.FromMinutes(5))  //Set lifetime to five minutes
+                    .SetHandlerLifetime(TimeSpan.FromMinutes(2))  //Set lifetime to two minutes
                     .AddPolicyHandler(GetRetryPolicy());
          
         }

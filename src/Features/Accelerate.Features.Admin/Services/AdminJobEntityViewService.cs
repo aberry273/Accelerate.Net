@@ -111,9 +111,9 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Form = EditJobForm(user, item);
             return viewModel;
         }
-        public override async Task<AdminIndexPage<OperationsJobEntity>> CreateEntityPage(UsersUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<OperationsJobEntity>> CreateEntityPage(UsersUser user, OperationsJobEntity item, IEnumerable<OperationsJobEntity> items)
         {
-            var viewModel = await base.CreateEntityPage(user, item, items, aggregateResponse);
+            var viewModel = await base.CreateEntityPage(user, item, items);
             viewModel.Form = EditJobForm(user, item);
             viewModel.Form.Disabled = true;
             viewModel.Table = this.GetJobActivitiesTable(user, item);

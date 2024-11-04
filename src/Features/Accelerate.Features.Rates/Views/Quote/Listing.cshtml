@@ -1,0 +1,26 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Rates.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@model RatesBasePage
+@{
+    Layout = "/Views/Shared/_RatesPageLayout.cshtml";
+}
+<div class="w-full h-full overflow-y-none">
+    <!-- Channels panel -->
+    <div x-data="aclTabsNavigation({
+        items: [
+            {
+                text: 'Live',
+                href: '/?t=tab1'
+            },
+            {
+                text: 'Sorted',
+                href: '/?t=tab2'
+            },
+        ],
+        selected: 'new URLSearchParams(window.location.search).get('t'),
+    })"></div>
+    <hr />
+</div>

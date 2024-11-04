@@ -71,6 +71,9 @@ namespace Accelerate.Foundations.Common
             public const string FundingPath = "/Funding";
             public const string FundingLabel = "Funding";
 
+            public const string RatesPath = "/Rates";
+            public const string RatesLabel = "Rates";
+
             public const string SettlementsPath = "/Settlements";
             public const string SettlementsLabel = "Settlements";
 

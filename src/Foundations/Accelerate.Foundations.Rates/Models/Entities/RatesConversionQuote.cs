@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Accelerate.Foundations.Rates.Models.Entities
 {
     [Table("RatesConversionQuoteEntity")]
-    public class RatesConversionQuoteEntity : RatesBaseEntity
+    public class RatesConversionQuoteEntity : RatesConversionBaseEntity
     {
         public DateTime ExpireDate { get; set; }
     }

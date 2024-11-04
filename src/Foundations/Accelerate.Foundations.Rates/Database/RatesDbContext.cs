@@ -11,16 +11,19 @@ namespace Accelerate.Foundations.Rates.Database
         public BaseContext<RatesCustomerEntity> Customers { get; set; }
         public BaseContext<RatesConversionQuoteEntity> Quote { get; set; }
         public BaseContext<RatesConversionOrderEntity> Orders { get; set; }
+        public BaseContext<RatesExchangeEntity> Exchange { get; set; }
         public RatesDbContext(DbContextOptions<RatesDbContext> options,
                 BaseContext<RatesCustomerEntity> customerContext,
                 BaseContext<RatesConversionQuoteEntity> quoteContext,
-                BaseContext<RatesConversionOrderEntity> orderContext
+                BaseContext<RatesConversionOrderEntity> orderContext,
+                BaseContext<RatesExchangeEntity> exchangeContext
             )
             : base(options)
         {
             Customers = customerContext;
             Quote = quoteContext;
             Orders = orderContext;
+            Exchange = exchangeContext;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -29,6 +32,7 @@ namespace Accelerate.Foundations.Rates.Database
             builder.Entity<RatesCustomerEntity>().HasKey(c => c.Id);
             builder.Entity<RatesConversionQuoteEntity>().HasKey(c => c.Id);
             builder.Entity<RatesConversionOrderEntity>().HasKey(c => c.Id);
+            builder.Entity<RatesExchangeEntity>().HasKey(c => c.Id);
         }
     }
 }

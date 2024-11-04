@@ -14,7 +14,6 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
     {
         #region Required 
         #endregion
-        public string? TaxId { get; set; }
 
         [NotMapped]
         public AccountsAddressEntity? BillingAddress { get; set; }

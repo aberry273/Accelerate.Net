@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Accelerate.Foundations.Common.Models;
 
-namespace Accelerate.Foundations.Integrations.Elastic.Services
+namespace Accelerate.Foundations.Integrations.Kindentpay.Services
 {
     public interface IKendentpayService
     {

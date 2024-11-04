@@ -23,11 +23,13 @@ namespace Accelerate.Foundations.Common.Services
             // using Microsoft.Net.Http.Headers;
             // The GitHub API requires two headers.
             _httpClient.DefaultRequestHeaders.Add(
-                HeaderNames.Accept, "application/vnd.github.v3+json");
+                HeaderNames.Accept, "application/json");
             _httpClient.DefaultRequestHeaders.Add(
                 HeaderNames.UserAgent, "HttpRequestsSample");
         }
         public async Task<IEnumerable<object>?> GetDocuments(string route) =>
         await _httpClient.GetFromJsonAsync<IEnumerable<object>>(route);
+        public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request) =>
+        await _httpClient.SendAsync(request);
     }
 }

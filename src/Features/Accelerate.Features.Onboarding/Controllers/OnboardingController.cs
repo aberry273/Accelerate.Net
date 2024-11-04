@@ -404,7 +404,7 @@ namespace Accelerate.Features.Content.Controllers
                 TaxId = formData.TaxId,
                 UserId = user.Id,
                 CountryCode = formData.Country,
-                Type = Enum.Parse<BusinessAccountType>(formData.AccountType),
+                AccountType = Enum.Parse<BusinessAccountType>(formData.AccountType),
             };
 
             var command = new CreateEntityCommand<AccountsBusinessEntity>() { Entity = entity };

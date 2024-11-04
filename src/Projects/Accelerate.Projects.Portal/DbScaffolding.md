@@ -1,7 +1,7 @@
 
 # Accounts
 Drop-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
-Add-Migration Accounts_Migration_6 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
+Add-Migration Accounts_Migration_7 -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
 Update-Database -context AccountsDbContext -project "Accelerate.Foundations.Accounts" 
 
 # Funding
@@ -16,12 +16,12 @@ Update-Database -context OrdersDbContext -project "Accelerate.Foundations.Orders
 
 # Transactions
 Drop-Database -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
-Add-Migration Transactions_Migration_1 -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
+Add-Migration Transactions_Migration_2 -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
 Update-Database -context TransactionsDbContext -project "Accelerate.Foundations.Transactions" 
 
 # Rates
 Drop-Database -context RatesDbContext -project "Accelerate.Foundations.Rates" 
-Add-Migration Rates_Migration_3 -context RatesDbContext -project "Accelerate.Foundations.Rates" 
+Add-Migration Rates_Migration_4 -context RatesDbContext -project "Accelerate.Foundations.Rates" 
 Update-Database -context RatesDbContext -project "Accelerate.Foundations.Rates" 
 
 # KYC

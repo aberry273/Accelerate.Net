@@ -35,10 +35,8 @@ namespace Accelerate.Features.Content.Controllers
             IEntityService<UsersProfile> profileService,
             IMetaContentService contentService,
             IEntityService<OperationsJobEntity> entityService,
-            IAdminBaseEntityViewService<OperationsJobEntity> contentViewService,
-            IElasticService<ContentPostDocument> postSearchService,
-            IContentPostElasticService contentElasticSearchService)
-            : base(channelName, signInManager, userManager, profileService, contentService, entityService, contentViewService, postSearchService, contentElasticSearchService)
+            IAdminBaseEntityViewService<OperationsJobEntity> contentViewService)
+            : base(channelName, signInManager, userManager, profileService, contentService, entityService, contentViewService)
         {
         }
 

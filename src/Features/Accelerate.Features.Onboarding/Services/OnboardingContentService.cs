@@ -224,11 +224,6 @@ namespace Accelerate.Features.Onboarding.Services
                     _metaContentService.FormField("Firstname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Firstname"),
                     _metaContentService.FormField("Lastname", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Lastname"),
                     _metaContentService.FormField("Email", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Email"),
-                    //_metaContentService.FormField("CompanyName", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Name"),
-                   // _metaContentService.FormField("Website", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Company Website"),
-                   // _metaContentService.FormField("Volume", FormFieldComponents.aclFieldInput, null, null, null, false, false, null, null, null, "Estimated monthly volume (INR)"),
-                    //_metaContentService.FormFieldItems("Industry", FormFieldComponents.aclFieldSelect, _sharedContentService.GetIndustries(), null, null, null, false, false, null, null, null, "Industry"),
-                    //_metaContentService.FormFieldItems("Country", FormFieldComponents.aclFieldSelect, _sharedContentService.GetCountryCodes(), null, null, null, false, false, null, null, null, "Country"),
                 }
             };
             return model;

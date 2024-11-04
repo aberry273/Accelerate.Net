@@ -37,8 +37,6 @@ namespace Accelerate.Features.Content.Controllers
         IMetaContentService _contentService;
         protected IEntityService<T> _entityService;
         protected IAdminBaseEntityViewService<T> _contentViewService;
-        protected IElasticService<ContentPostDocument> _postSearchService;
-        protected IContentPostElasticService _contentElasticSearchService; 
         protected string _entityName;
         protected string _razorPath;
         private const string _notFoundRazorFile = "~/Views/Shared/NotFound.cshtml";
@@ -49,9 +47,7 @@ namespace Accelerate.Features.Content.Controllers
             IEntityService<UsersProfile> profileService,
             IMetaContentService contentService,
             IEntityService<T> entityService,
-            IAdminBaseEntityViewService<T> contentViewService,
-            IElasticService<ContentPostDocument> postSearchService,
-            IContentPostElasticService contentElasticSearchService) : base(contentService)
+            IAdminBaseEntityViewService<T> contentViewService) : base(contentService)
         {
             _entityName = entityName;
             _razorPath = $"~/Views/{_entityName}";
@@ -61,8 +57,6 @@ namespace Accelerate.Features.Content.Controllers
             _profileService = profileService;
             _contentService = contentService;
             _contentViewService = contentViewService;
-            _postSearchService = postSearchService;
-            _contentElasticSearchService = contentElasticSearchService;
         }
 
         protected QueryDescriptor<T> GetUserItemsQuery(UsersUser user)
@@ -92,14 +86,11 @@ namespace Accelerate.Features.Content.Controllers
 
             var filters = new List<QueryFilter>()
             {
-                _postSearchService.Filter(Foundations.Content.Constants.Fields.PostType, "Post")
             }; ;
             var items = _entityService.Find(x => true);
             //var items = new SearchResponse<T>();
             //var items = await _searchService.Search(GetUserItemsQuery(user), 0, 100);
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateThreadAggregateQuery(filters));
-
-            var viewModel = await _contentViewService.CreateAllPage(user, items, aggResponse);
+            var viewModel = await _contentViewService.CreateAllPage(user, items);
 
             return View(viewModel);
         }
@@ -108,9 +99,9 @@ namespace Accelerate.Features.Content.Controllers
         {
             //var channels = await _searchService.Search(GetUserItemsQuery(user));
             var items = _entityService.Find(x => true);
-            var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
+            //var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
-            var viewModel = await _contentViewService.CreateEntityPage(user, item, items, aggResponse);
+            var viewModel = await _contentViewService.CreateEntityPage(user, item, items);
             viewModel.RouteName = "All";
             return viewModel;
         } 

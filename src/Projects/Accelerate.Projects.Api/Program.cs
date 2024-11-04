@@ -75,33 +75,35 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add Foundation references to the container
+
+// Add Foundation references to the container
 Accelerate.Foundations.Integrations.Elastic.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.MassTransit.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureStorage.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.AzureSecrets.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Quartz.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Integrations.Twilio.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.AlphaVantage.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Integrations.Kindentpay.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 // Force to equal true (isProduct = true) when deploying Schema Updates via EF scaffolding
 var isProduction = builder.Environment.IsProduction();
 Accelerate.Foundations.Mediator.Startup.ConfigureServices(builder.Services, builder.Configuration);
 
 Accelerate.Foundations.Common.Startup.ConfigureServices(builder.Services, builder.Configuration);
+Accelerate.Foundations.Portal.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Database.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Communication.Startup.ConfigureServices(builder.Services, builder.Configuration);
 Accelerate.Foundations.Users.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Websockets.Startup.ConfigureServices(builder.Services, builder.Configuration);
-Accelerate.Foundations.Funding.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-
 Accelerate.Foundations.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Funding.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Transactions.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 Accelerate.Foundations.Orders.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
-
+Accelerate.Foundations.Kyc.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Rates.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
+Accelerate.Foundations.Settlements.Startup.ConfigureServices(builder.Services, builder.Configuration, isProduction);
 
 // Add Feature references to the container
-Accelerate.Features.Accounts.Startup.ConfigureServices(builder.Services, builder.Configuration);
-
 
 // Add Database Exception filter
 // provides helpful error information in the development environment for EF migrations errors.

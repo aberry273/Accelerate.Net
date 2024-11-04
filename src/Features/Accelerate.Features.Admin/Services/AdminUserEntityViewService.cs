@@ -129,9 +129,9 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Form = EditUserForm(user, item);
             return viewModel;
         }
-        public override async Task<AdminIndexPage<UsersUser>> CreateEntityPage(UsersUser user, UsersUser item, IEnumerable<UsersUser> items, SearchResponse<ContentPostDocument> aggregateResponse)
+        public override async Task<AdminIndexPage<UsersUser>> CreateEntityPage(UsersUser user, UsersUser item, IEnumerable<UsersUser> items)
         {
-            var model = await base.CreateEntityPage(user, item, items, aggregateResponse);
+            var model = await base.CreateEntityPage(user, item, items);
             var viewModel = new AdminUserPage(model);
             viewModel.Form = EditUserForm(user, item);
             viewModel.Form.Disabled = true;

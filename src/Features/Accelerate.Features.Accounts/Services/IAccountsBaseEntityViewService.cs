@@ -16,7 +16,7 @@ namespace Accelerate.Features.Accounts.Services
         Task<AccountsBasePage<T>> CreateListPage(UsersUser user, IEnumerable<T> items);
         Task<AccountsBasePage<T>> CreateIndexPage(UsersUser user);
         Task<AccountsBasePage<T>> CreateEntityPage(UsersUser user, T item);
-        Task<AccountsCreatePage> CreateNewPage(UsersUser user);
-        Task<AccountsBasePage<T>> CreateUpdatePage(UsersUser user, T item);
+        Task<AccountsFormPage> CreateNewPage(UsersUser user);
+        Task<AccountsFormPage> CreateUpdatePage(UsersUser user, T item);
     }
 }

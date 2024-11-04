@@ -117,12 +117,22 @@ namespace Accelerate.Foundations.Common.Controllers
         public virtual async Task<IActionResult> Post(T entity)
         {
             if (entity is null) return BadRequest();
-
+            
+            Guid guid = Guid.NewGuid();
+            entity.Id = guid;
             var command = new CreateEntityCommand<T>() { Entity = entity };
             var response = await _mediator.Send(command);
 
             if (response.Success)
             {
+                var getResponse = await _mediator.Send(new GetIdEntityQuery<T>() { Id = guid });
+                
+                var item = getResponse.Success ?
+                    getResponse.Data
+                    : entity;
+
+                var data = new ActionResult<T>(item);
+
                 return Ok(response);
             }
 
@@ -153,7 +163,6 @@ namespace Accelerate.Foundations.Common.Controllers
         public virtual async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] T entity)
         {
             if (entity is null) return BadRequest();
-
             var command = new UpdateEntityCommand<T>() { Entity = entity };
 
             var response = await _mediator.Send(command);

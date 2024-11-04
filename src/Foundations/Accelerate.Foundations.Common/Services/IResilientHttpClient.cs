@@ -11,6 +11,7 @@ namespace Accelerate.Foundations.Common.Services
     public interface IResilientHttpClient
     {
         void InitializeClient(string url);
+        Task<HttpResponseMessage> SendAsync(HttpRequestMessage request);
         Task<IEnumerable<object>?> GetDocuments(string route);
     }
 }

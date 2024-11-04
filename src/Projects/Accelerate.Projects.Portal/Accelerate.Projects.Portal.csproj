@@ -28,11 +28,16 @@
     <ProjectReference Include="..\..\Features\Accelerate.Features.Accounts\Accelerate.Features.Accounts.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Admin\Accelerate.Features.Admin.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Authentication\Accelerate.Features.Authentication.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Funding\Accelerate.Features.Funding.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Onboarding\Accelerate.Features.Onboarding.csproj" />
     <ProjectReference Include="..\..\Features\Accelerate.Features.Profile\Accelerate.Features.Profile.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Rates\Accelerate.Features.Rates.csproj" />
+    <ProjectReference Include="..\..\Features\Accelerate.Features.Transactions\Accelerate.Features.Transactions.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Communication\Accelerate.Foundations.Communication.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Funding\Accelerate.Foundations.Funding.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.AlphaVantage\Accelerate.Foundations.Integrations.AlphaVantage.csproj" />
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Integrations.Kindentpay\Accelerate.Foundations.Integrations.Kindentpay.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Portal\Accelerate.Foundations.Portal.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Settlements\Accelerate.Foundations.Settlements.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Transactions\Accelerate.Foundations.Transactions.csproj" />

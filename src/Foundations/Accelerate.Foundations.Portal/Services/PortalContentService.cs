@@ -70,6 +70,12 @@ namespace Accelerate.Foundations.Portal.Services
                         Text = Foundations.Common.Constants.AdminPaths.UsersLabel,
                         Href = Foundations.Common.Constants.AdminPaths.UsersPath
                     },
+                    new NavigationItem()
+                    {
+                        Icon = "presentationChart",
+                        Text = Foundations.Common.Constants.AdminPaths.RatesLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.RatesPath
+                    },
                 }
             };
         }
@@ -139,11 +145,18 @@ namespace Accelerate.Foundations.Portal.Services
                     },
                     new NavigationItem()
                     {
+                        Icon = "presentationChart",
+                        Text = Foundations.Common.Constants.Paths.RatesLabel,
+                        Href = Foundations.Common.Constants.Paths.RatesPath,
+                    },
+                    /*
+                    new NavigationItem()
+                    {
                         Icon = "documentCurrency",
                         Text = Foundations.Common.Constants.Paths.SettlementsLabel,
                         Href = Foundations.Common.Constants.Paths.SettlementsPath,
                     },
-
+                    */
                 };
                 model.Items.AddRange(nav);
             }

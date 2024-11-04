@@ -10,6 +10,8 @@ namespace Accelerate.Foundations.Accounts.Models.Entities
 {
     public class AccountsBaseCustomerEntity : AccountsContactEntity
     {
+        public string? TaxId { get; set; }
+        public string? CustomerId { get; set; }
         public AccountsAddressEntity? Address { get; set; }
         public Guid? AddressId { get; set; }
         public Guid? KycIdentityId { get; set; }

@@ -6,9 +6,10 @@ namespace Accelerate.Features.Accounts.Models.Views
 {
     public class AccountsBasePage<T> : AccountsBasePage where T : IBaseEntity
     {
-        public AccountsBasePage(AccountsBasePage model) : base(model)
+        public AccountsBasePage(AccountsBasePage<T> model) : base(model)
         {
             Id = model.Id;
+            Entity = model.Entity;
             ModalDelete = model.ModalDelete;
             PageActions = model.PageActions;
             PageLinks = model.PageLinks;
