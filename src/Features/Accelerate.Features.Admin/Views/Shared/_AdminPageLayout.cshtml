@@ -26,7 +26,7 @@
     <div class="hidden lg:block md:block" x-data="aclNavigationSidebarFixed(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
 
     <!--Sidebar - Desktop only -->
-    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar({ groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks) }"></div>
+    <div class="hidden lg:block md:block" x-data="aclNavigationSidebar({ groups: @JsonSerializerHelper.SerializeObject(Model.PageLinks) })"></div>
 
     <!--Sidepanel-->
     <div x-data="aclNavigationSidebarSlide({
@@ -36,9 +36,13 @@
 
     <!-- Dashboard -->
     <div class="flex flex-col flex-1 h-full w-full overflow-hidden bg-gray-100 lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 h-full">
+        @if (Model.Breadcrumbs != null)
+        {
+            <div class="inline-flex items-center">
+                <div x-data="aclNavigationBreadcrumbs(@JsonSerializerHelper.SerializeObject(Model.Breadcrumbs))"></div>
+            </div>
+        }
 
-        <!-- Tabs - Mobile only -->
-        <div class="lg:hidden md:hidden sm:block xs:block" x-data="aclTabsNavigation(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
         <!--Mobile-->
         <div class="lg:hidden md:hidden sm:flex xs:flex">
             <div class="flex-none w-10 align-middle">
@@ -60,6 +64,9 @@
         @RenderBody()
     </div>
 </div>
+<!-- Mobile Only -- Bottom Bar-->
+<div class="lg:hidden md:hidden sm:block xs:block" x-data="aclNavigationBottomBar(@JsonSerializerHelper.SerializeObject(Model.SideNavigation))"></div>
+
 <!-- Modals post -->
 @if (Model.ModalDelete != null)
 {

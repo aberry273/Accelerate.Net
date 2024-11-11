@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using Accelerate.Foundations.Accounts.Models.Entities;
 
 namespace Accelerate.Features.Admin
 {
@@ -28,6 +29,8 @@ namespace Accelerate.Features.Admin
             services.AddTransient<IAdminBaseEntityViewService<OperationsJobEntity>, AdminJobEntityViewService>();
             services.AddTransient<IAdminBaseEntityViewService<OperationsActionEntity>, AdminActionEntityViewService>();
             services.AddTransient<IAdminBaseEntityViewService<UsersUser>, AdminUserEntityViewService>();
+            services.AddTransient<IAdminBaseEntityViewService<AccountsIndividualEntity>, AdminIndividualEntityViewService>();
+            services.AddTransient<IAdminBaseEntityViewService<AccountsBusinessEntity>, AdminBusinessEntityViewService>();
 
         }
     }

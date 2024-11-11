@@ -11,6 +11,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <Compile Remove="Models\**" />
+    <Content Remove="Controllers\**" />
+    <Content Remove="Models\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Controllers\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Accelerate.Projects.Api.http" />
   </ItemGroup>
 
@@ -24,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Features\Accelerate.Features.API\Accelerate.Features.Api.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Database\Accelerate.Foundations.Database.csproj" />

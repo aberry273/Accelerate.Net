@@ -15,6 +15,8 @@ using Azure.Core;
 using System.Security.Principal;
 using System.Security.Claims;
 using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Extensions;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 
 namespace Accelerate.Foundations.Common.Services
 {
@@ -281,7 +283,36 @@ namespace Accelerate.Foundations.Common.Services
                 }
             };
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="headers">Dictionary of key/value pairs where the key represents the name and value represents the css class</param>
+        /// <returns></returns>
+        public List<AclTableHeader> CreateTableHeaders(IDictionary<string, string> headers)
+        {
+            return headers.Select(x =>
+            {
+                return new AclTableHeader()
+                {
+                    Data = x.Key,
+                    Text = x.Key,
+                    Class = x.Value,
+                    Value = (x.Key?.ToCamelCase().Replace(" ", string.Empty))
+                };
+            }).ToList();
+        }
+        public List<AclTableHeader> CreateTableHeaders(List<string> headers)
+        {
+            return headers.Select(x =>
+            {
+                return new AclTableHeader()
+                {
+                    Data = x,
+                    Text = x,
+                    Value = (x?.ToCamelCase().Replace(" ", string.Empty))
+                };
+            }).ToList();
+        }
         public NavigationBar CreateAuthenticatedTopNavigation(UserProfile? profile)
         {
             return new NavigationBar()

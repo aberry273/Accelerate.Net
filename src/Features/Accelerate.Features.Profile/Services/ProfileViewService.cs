@@ -57,18 +57,21 @@ namespace Accelerate.Features.Profile.Services
             viewModel.Table.Pages =(totalActivities / activities.Count());
             viewModel.Table.ItemsPerPage = activities.Count();
             viewModel.Table.Items = activities.Select(CreateRow).ToList();
-            viewModel.Table.PostbackUrl = "/api/ContentPostActivity/query";
+            viewModel.Table.Url = "/api/ContentPostActivity/query";
             return viewModel;
         }
 
-        List<string> CreateRow(ContentPostActivityEntity activity)
+        object CreateRow(ContentPostActivityEntity activity)
         {
-            return new List<string>()
+            return activity;
+            /*
+            return new List<object>()
             {
                 activity.CreatedOn.ToLongDateString(),
                 activity.SourceId.ToString(),
                 activity.UserId.ToString()
             };
+            */
         }
 
         #endregion
@@ -81,26 +84,26 @@ namespace Accelerate.Features.Profile.Services
             return viewModel;
         }
 
-        private AjaxAclTable<string> GetMentionsTable()
+        private AclAjaxTable<object> GetMentionsTable()
         {
-            var model = new AjaxAclTable<string>();
+            var model = new AclAjaxTable<object>();
             var headers = new List<AclTableHeader>()
             {
                 new AclTableHeader()
                 {
-                    Text = "createdOn",
-                    Label = "Date",
+                    Value = "createdOn",
+                    Text = "Date",
                     Type = AclTableHeaderType.Date
                 },
                 new AclTableHeader()
                 {
-                    Text = "message",
-                    Label = "Message",
+                    Value = "message",
+                    Text = "Message",
                 },
                 new AclTableHeader()
                 {
-                    Text = "url",
-                    Label = "Url",
+                    Value = "url",
+                    Text = "Url",
                     Data = new { Type = "Icon", Icon = "home" },
                     Type = AclTableHeaderType.Link
                 }

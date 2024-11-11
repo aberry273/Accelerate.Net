@@ -50,7 +50,7 @@ namespace Accelerate.Features.Content.Controllers
             IAdminBaseEntityViewService<T> contentViewService) : base(contentService)
         {
             _entityName = entityName;
-            _razorPath = $"~/Views/{_entityName}";
+            _razorPath = $"~/Views/Admin/{_entityName}";
             _signInManager = signInManager;
             _userManager = userManager;
             _entityService = entityService;
@@ -79,7 +79,7 @@ namespace Accelerate.Features.Content.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> Listing()
         {
             var user = await GetUserWithProfile(this.User);
             if (user == null) return RedirectToAction("Index", "Account");
@@ -90,9 +90,9 @@ namespace Accelerate.Features.Content.Controllers
             var items = _entityService.Find(x => true);
             //var items = new SearchResponse<T>();
             //var items = await _searchService.Search(GetUserItemsQuery(user), 0, 100);
-            var viewModel = await _contentViewService.CreateAllPage(user, items);
+            var viewModel = await _contentViewService.CreateListingPage(user, items);
 
-            return View(viewModel);
+            return View($"{_razorPath}/Listing.cshtml", viewModel);
         }
 
         protected async Task<AdminIndexPage<T>> CreateIndexPage(UsersUser user, T item)
@@ -102,7 +102,7 @@ namespace Accelerate.Features.Content.Controllers
             //var aggResponse = await _postSearchService.GetAggregates(_contentElasticSearchService.CreateChannelAggregateQuery(item.Id));
 
             var viewModel = await _contentViewService.CreateEntityPage(user, item, items);
-            viewModel.RouteName = "All";
+            viewModel.RouteName = "Listing";
             return viewModel;
         } 
         [HttpGet]
@@ -122,7 +122,7 @@ namespace Accelerate.Features.Content.Controllers
             }
 
             var viewModel = await this.CreateIndexPage(user, item);
-            return View($"{_razorPath}s/Index.cshtml", viewModel);
+            return View($"{_razorPath}/Index.cshtml", viewModel);
         }
         /*
         [HttpGet]
@@ -158,7 +158,7 @@ namespace Accelerate.Features.Content.Controllers
             }
             var items = _entityService.Find(x => true);
             var viewModel = await _contentViewService.CreateEditPage(user, items, item);
-            return View($"{_razorPath}s/Create.cshtml", viewModel);
+            return View($"{_razorPath}/Create.cshtml", viewModel);
         }
         [Route("Create")]
         [HttpGet]
@@ -169,7 +169,7 @@ namespace Accelerate.Features.Content.Controllers
             //var channels = await _searchService.Search(GetUserItemsQuery(user));
 
             var viewModel = await _contentViewService.CreateAddPage(user, items);
-            return View($"{_razorPath}s/Create.cshtml", viewModel);
+            return View($"{_razorPath}/Create.cshtml", viewModel);
         }
 
         private string GetChannelView(string routeName)

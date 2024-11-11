@@ -24,6 +24,6 @@ namespace Accelerate.Features.Profile.Models.Views
             this.Filters = model.Filters;
         }
 
-        public AjaxAclTable<string> Table { get; set; }
+        public AclAjaxTable<object> Table { get; set; }
     }
 }

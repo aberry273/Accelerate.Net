@@ -8,7 +8,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components.Table
 {
     public class AclTableRow
     {
-        public List<string> Values { get; set; }
+        public List<List<string>> Values { get; set; }
     }
     public class AclTableRow<T>
     {
@@ -29,20 +29,26 @@ namespace Accelerate.Foundations.Common.Models.UI.Components.Table
         }
         public AclTableHeaderType Type { get; set; }
         public dynamic Data { get; set; }
-        public string Label { get; set; }
+        public string Class { get; set; }
+        public string Value { get; set; }
         public string Text { get; set; }
+    }
+    public class AclTable
+    {
+        public List<AclTableHeader> Headers { get; set; }
+        public List<AclTableRow> Items { get; set; }
     }
     public class AclTable<T>
     {
         public List<AclTableHeader> Headers { get; set; }
-        public List<List<T>> Items { get; set; }
+        public List<T> Items { get; set; }
     }
 
-    public class AjaxAclTable<T> : AclTable<T>
+    public class AclAjaxTable<T> : AclTable<T>
     {
         public int CurrentPage { get; set; }
         public int ItemsPerPage { get; set; }
         public int Pages { get; set; }
-        public string PostbackUrl { get; set; }
+        public string Url { get; set; }
     }
 }

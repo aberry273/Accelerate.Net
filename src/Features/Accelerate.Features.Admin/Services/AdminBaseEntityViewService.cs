@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Channels;
 using Accelerate.Foundations.Portal.Services;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 
 namespace Accelerate.Features.Admin.Services
 {
@@ -37,7 +38,7 @@ namespace Accelerate.Features.Admin.Services
         {
             _metaContentService = metaContentService;
             _portalContentService = portalContentService;
-            this.ApiUrl = "/api/contentsearch/posts";
+            this.ApiUrl = $"/{Foundations.Common.Constants.ApiPaths.VersionPath}/admin";
             //ItemUrl = this._metaContentService.GetActionUrl(nameof(FeedsController.Feed), ControllerHelper.NameOf<FeedsController>(), new { id = x.Id });
         }
 
@@ -45,6 +46,20 @@ namespace Accelerate.Features.Admin.Services
         {
             var baseModel = await _portalContentService.CreateAuthenticatedContent(user);
             var viewModel = new AdminBasePage(baseModel);
+            viewModel.Breadcrumbs = new NavigationGroup()
+            {
+                Items = new List<NavigationItem>()
+                {
+                    new NavigationItem()
+                    {
+                        Text = "Admin",
+                    },
+                    new NavigationItem()
+                    {
+                        Text = this.EntityName,
+                    }
+                }
+            };
             return viewModel;
         }
         public async Task<NotFoundPage> CreateNotFoundPage(UsersUser user, string title = null, string description = null)
@@ -65,12 +80,12 @@ namespace Accelerate.Features.Admin.Services
             viewModel.UserId = null;
             return viewModel;
         }
-        public virtual async Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items)
+        public virtual async Task<AdminBasePage> CreateListingPage(UsersUser user, IEnumerable<T> items)
         {
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
             var pageName = "All";
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            viewModel.SideNavigation.Selected = $"{this.EntityName}";
 
 
             var links = CreatePageNavigationGroup(this.EntityName, pageName);
@@ -79,19 +94,55 @@ namespace Accelerate.Features.Admin.Services
             {
                 links
             };
-
+            viewModel.Table = CreateTable(items);
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName);
              
             viewModel.UserId = user != null ? user.Id : null;
             //viewModel.FormCreatePost = user != null ? CreateForm(user) : null;
             return viewModel;
         }
+        public virtual List<object> CreateTableRows(IEnumerable<T> items)
+        {
+            return items.Select(x => x as object).ToList();
+        }
+        public virtual List<string> CreateTableHeaders()
+        {
+            return new List<string>()
+            {
+                "Name", "Type", "State", "Created",
+            };
+        }
+        public List<AclTableHeader> GetActionsTableHeader()
+        {
+            var headers = _metaContentService.CreateTableHeaders(this.CreateTableHeaders());
+            for(var i = 0; i < headers.Count; i++)
+            {
+                switch (headers[i].Text)
+                {
+                    case "Name":
+                        headers[i].Type = AclTableHeaderType.Link;
+                        headers[i].Class = "px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white";
+                        break;
+                }
+            }
+            return headers;
+        }
+        public AclAjaxTable<object> CreateTable(IEnumerable<T> items)
+        {
+            return new AclAjaxTable<object>()
+            {
+                CurrentPage = 0,
+                Items = CreateTableRows(items),
+                Headers = GetActionsTableHeader(),
+                Url = $"{this.ApiUrl}/Query"
+            };
+        }
         public virtual async Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> items)
         {
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
             var pageName = "All";
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            viewModel.SideNavigation.Selected = $"{this.EntityName}";
 
             var links = CreatePageNavigationGroup(this.EntityName, pageName);
             links.Items.AddRange(GetLinks(items));
@@ -117,7 +168,7 @@ namespace Accelerate.Features.Admin.Services
             var viewModel = new AdminIndexPage<T>(model);
             viewModel.Id = item.Id;
             var pageName = GetEntityName(item);
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            viewModel.SideNavigation.Selected = $"{this.EntityName}";
 
             var links = CreatePageNavigationGroup(this.EntityName, pageName);
             links.Items.AddRange(GetLinks(items));
@@ -126,8 +177,10 @@ namespace Accelerate.Features.Admin.Services
                 links
             };
 
+            viewModel.Breadcrumbs.Items.Add( new NavigationItem() { Text = GetEntityName(item), });
+
             viewModel.PageActions = CreatePageActionsGroup(this.EntityName, pageName, item); 
-            viewModel.ParentUrl = $"/Admin/{this.EntityName}s";
+            viewModel.ParentUrl = $"/Admin/{this.EntityName}";
             viewModel.PostsApiUrl = this.ApiUrl;
             viewModel.ModalDelete = CreateModalDeleteForm(user, item);
             
@@ -140,10 +193,11 @@ namespace Accelerate.Features.Admin.Services
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model); 
             var pageName = $"Create {this.EntityName}";
-            viewModel.RedirectRoute = $"/{this.EntityName}s";
+            viewModel.RedirectRoute = $"/{this.EntityName}";
 
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            viewModel.SideNavigation.Selected = $"{this.EntityName}";
 
+            viewModel.Breadcrumbs.Items.Add(new NavigationItem() { Text = "Create" });
 
             var links = CreatePageNavigationGroup(this.EntityName, pageName);
             links.Items.AddRange(GetLinks(items));
@@ -164,8 +218,10 @@ namespace Accelerate.Features.Admin.Services
             var model = await CreateBaseAdminPage(user);
             var viewModel = new AdminCreatePage(model);
             var pageName = $"Edit {this.GetEntityName(item)}";
-            viewModel.RedirectRoute = $"/{this.EntityName}s";
-            viewModel.SideNavigation.Selected = $"{this.EntityName}s";
+            viewModel.RedirectRoute = $"/{this.EntityName}";
+            viewModel.SideNavigation.Selected = $"{this.EntityName}";
+            viewModel.Breadcrumbs.Items.Add(new NavigationItem() { Text = GetEntityName(item), });
+            viewModel.Breadcrumbs.Items.Add(new NavigationItem() { Text = "Edit" });
 
             var links = CreatePageNavigationGroup(this.EntityName, pageName);
             links.Items.AddRange(GetLinks(items));
@@ -184,7 +240,7 @@ namespace Accelerate.Features.Admin.Services
 
         private NavigationGroup CreatePageNavigationGroup(string entity, string selected)
         {
-            var plural = $"{entity}s";
+            var plural = $"{entity}";
             return new NavigationGroup()
             {
                 Title = "All",
@@ -207,7 +263,7 @@ namespace Accelerate.Features.Admin.Services
         }
         private ButtonGroup CreatePageActionsGroup(string entity, string name)
         {
-            var plural = $"{entity}s";
+            var plural = $"{entity}";
             return new ButtonGroup()
             {
                 Title = name,
@@ -218,7 +274,7 @@ namespace Accelerate.Features.Admin.Services
         }
         private ButtonGroup CreatePageActionsGroup(string entity, string name, IBaseEntity item)
         {
-            var plural = $"{entity}s";
+            var plural = $"{entity}";
             return new ButtonGroup()
             {
                 Title = name,
@@ -899,7 +955,7 @@ namespace Accelerate.Features.Admin.Services
             return new NavigationItem()
             {
                 Text = $"{this.GetEntityName(x)}",
-                Href = $"/Admin/{this.EntityName}s/{x.Id}",
+                Href = $"/Admin/{this.EntityName}/{x.Id}",
             };
         }
     }

@@ -28,7 +28,7 @@ import {
 // TOASTS
 import { aclToastNotification } from './toasts/index.js'
 // TABLES
-import { aclTableSimple } from './tables/index.js'
+import { aclTableSimple, aclTableAjax } from './tables/index.js'
 // GRID
 import { aclGridMedia, aclGridCard } from './grid/index.js'
 // FORMS
@@ -107,6 +107,7 @@ export {
     aclTabsNavigation,
     // TABLES
     aclTableSimple,
+    aclTableAjax,
     // TOASTS,
     aclToastNotification,
     // GRID

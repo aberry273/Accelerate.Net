@@ -40,6 +40,5 @@ namespace Accelerate.Features.Content.Controllers
             : base(channelName, signInManager, userManager, profileService, contentService, entityService, contentViewService)
         {
         }
-
     }
 }

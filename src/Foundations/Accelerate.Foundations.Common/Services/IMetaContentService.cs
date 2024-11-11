@@ -1,5 +1,6 @@
 ﻿using Accelerate.Foundations.Common.Models;
 using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Models.Views;
 using System;
 using System.Collections.Generic;
@@ -18,5 +19,7 @@ namespace Accelerate.Foundations.Common.Services
         FormField FormField(string name, FormFieldComponents component, string cssClass, string placeholder, object? value, bool disabled = false, bool hidden = false, int? min = null, int? max = null, bool? multiple = false, string? label = null);
         FormField FormFieldItems(string name, FormFieldComponents component, List<dynamic> items, string cssClass, string placeholder, object? value, bool disabled = false, bool hidden = false, int? min = null, int? max = null, bool? multiple = false, string? label = null);
         BasePage CreatePageBaseContent(UserProfile? profile = null);
+        List<AclTableHeader> CreateTableHeaders(List<string> headers);
+        List<AclTableHeader> CreateTableHeaders(IDictionary<string, string> headers);
     }
 }

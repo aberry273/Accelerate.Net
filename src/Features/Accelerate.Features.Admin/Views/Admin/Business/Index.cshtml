@@ -1,0 +1,30 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Foundations.Accounts.Models.Entities
+@using Accelerate.Foundations.Users.Models.Entities
+@using Accelerate.Foundations.Common.Helpers
+@using Accelerate.Features.Admin.Models.Views
+@using Microsoft.AspNetCore.Http
+@model AdminIndexPage<AccountsBusinessEntity>
+@{
+    Layout = "/Views/Shared/_AdminPageLayout.cshtml";
+    var currentTab = "All";
+}
+
+<div class="w-full h-full container overflow-y-scroll">
+    <!-- Channels panel -->
+    <!--
+    <nav>
+        <ul>
+            if (Model.ModalCreateChannel != null)
+            {
+                <button class="material-icon flat primary" @@click="$events.emit('Model.ModalCreateChannel.Target', { target: 'Model.ModalCreateChannel.Target' })">Add</button>
+            }
+        </ul>
+    </nav>
+    -->
+</div>
+
+
+
+ 

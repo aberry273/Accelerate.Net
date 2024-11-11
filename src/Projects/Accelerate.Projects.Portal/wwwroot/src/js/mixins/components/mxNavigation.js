@@ -19,8 +19,8 @@ export default function (data) {
         init() {
         },
         // GETTERS
-        get mxNavigation_getSectionClass() { return 'z-50 w-full lg:px-8 md:px-4 sm:px-2 xs:px-2  py-2 text-gray-700 ' },
-        get mxNavigation_getContainerClass() { return 'container flex flex-row items-center justify-between mx-auto md:flex-row max-w-7xl' },
+        get mxNavigation_getSectionClass() { return 'z-50 w-full lg:px-8 md:px-4 sm:px-2 xs:px-2 py-2 text-gray-700 ' },
+        get mxNavigation_getContainerClass() { return 'flex flex-row items-center justify-between md:flex-row full-w' },
         get mxNavigation_getContainerLeftClass() { return 'relative flex md:flex-row' },
         get mxNavigation_getContainerRightClass() { return 'inline-flex items-center ml-5 space-x-6 lg:justify-end' },
 

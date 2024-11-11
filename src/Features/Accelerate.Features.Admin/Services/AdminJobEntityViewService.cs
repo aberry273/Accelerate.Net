@@ -119,9 +119,9 @@ namespace Accelerate.Features.Admin.Services
             viewModel.Table = this.GetJobActivitiesTable(user, item);
             return viewModel;
         }
-        private AclTable<string> GetJobActivitiesTable(UsersUser user, OperationsJobEntity item)
+        private AclAjaxTable<object> GetJobActivitiesTable(UsersUser user, OperationsJobEntity item)
         {
-            var model = new AclTable<string>();
+            var model = new AclAjaxTable<object>();
             var jobActivities = GetJobActivities(user, item);
             if(jobActivities != null)
             {
@@ -131,18 +131,21 @@ namespace Accelerate.Features.Admin.Services
             else
             {
                 model.Headers = new List<AclTableHeader>();
-                model.Items = new List<List<string>>();
+                model.Items = new List<object>();
             }
             return model;
         }
-        private List<string> CreateJobActivityRowNew(OperationsActivityEntity item)
+        private object CreateJobActivityRowNew(OperationsActivityEntity item)
         {
+            return item;
+            /*
             return new List<string>()
             {
                 item.CreatedOn.ToLongDateString(),
                 item.Success.ToString(),
                 item.Result.ToString()
             };
+            */
         }
         private AclTableRow<string> CreateJobActivityRow(OperationsActivityEntity item)
         {

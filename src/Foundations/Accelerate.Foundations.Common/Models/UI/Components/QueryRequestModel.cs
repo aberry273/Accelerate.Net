@@ -11,7 +11,7 @@ namespace Accelerate.Foundations.Common.Models.UI.Components
     public class QueryRequestModel<T>
     {
         [Required]
-        public required T Query { get; set; }
+        public T Query { get; set; }
         [DefaultValue(0)]
         public int? Page { get; set; }
         [DefaultValue(10)]

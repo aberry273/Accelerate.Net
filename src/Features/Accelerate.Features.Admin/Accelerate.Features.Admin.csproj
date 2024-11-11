@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Accounts\Accelerate.Foundations.Accounts.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Common\Accelerate.Foundations.Common.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Communication\Accelerate.Foundations.Communication.csproj" />
     <ProjectReference Include="..\..\Foundations\Accelerate.Foundations.Content\Accelerate.Foundations.Content.csproj" />

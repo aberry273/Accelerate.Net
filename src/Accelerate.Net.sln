@@ -174,7 +174,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Foundations.Port
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations.Fireblocks", "Integrations.Fireblocks", "{5F117AB6-85FF-47A9-889E-484CECD99A35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accelerate.Foundations.Integrations.Fireblocks", "Foundations\Accelerate.Foundations.Integrations.Fireblocks\Accelerate.Foundations.Integrations.Fireblocks.csproj", "{4CD22C7D-C8D3-4EB8-9801-C60C1A1AEBDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Foundations.Integrations.Fireblocks", "Foundations\Accelerate.Foundations.Integrations.Fireblocks\Accelerate.Foundations.Integrations.Fireblocks.csproj", "{4CD22C7D-C8D3-4EB8-9801-C60C1A1AEBDD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Rates", "Rates", "{6D87D8C6-EF83-4A89-B8D3-3882DBD15B51}"
 EndProject
@@ -182,7 +182,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations.AlphaVantage",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Foundations.Integrations.AlphaVantage", "Foundations\Accelerate.Foundations.Integrations.AlphaVantage\Accelerate.Foundations.Integrations.AlphaVantage.csproj", "{BE77EA33-09B3-4638-9E0F-8184971BE450}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Accelerate.Features.Rates", "Features\Accelerate.Features.Rates\Accelerate.Features.Rates.csproj", "{1C8EEDC9-7C5D-4982-9818-A9B59C34C141}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Features.Rates", "Features\Accelerate.Features.Rates\Accelerate.Features.Rates.csproj", "{1C8EEDC9-7C5D-4982-9818-A9B59C34C141}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Funding", "Funding", "{78A8CD31-46FD-4B2A-9A6D-4AA401120279}"
 EndProject
@@ -191,6 +191,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Transactions", "Transactions", "{38866666-7A68-4BDB-ADC7-D6952497D728}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Features.Transactions", "Features\Accelerate.Features.Transactions\Accelerate.Features.Transactions.csproj", "{5FC677E3-BEEA-4ACF-92C4-0206B4DDAD22}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{00D33F9B-C08C-4C64-B13E-1045E83C87DC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Accelerate.Features.Api", "Features\Accelerate.Features.API\Accelerate.Features.Api.csproj", "{355673A5-08B1-4825-B83E-28C353E607CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -451,6 +455,12 @@ Global
 		{5FC677E3-BEEA-4ACF-92C4-0206B4DDAD22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FC677E3-BEEA-4ACF-92C4-0206B4DDAD22}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FC677E3-BEEA-4ACF-92C4-0206B4DDAD22}.Staging|Any CPU.Build.0 = Debug|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Staging|Any CPU.ActiveCfg = Debug|Any CPU
+		{355673A5-08B1-4825-B83E-28C353E607CB}.Staging|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -539,6 +549,8 @@ Global
 		{67A23C77-081F-4E3A-B832-B5A36D12D3C0} = {78A8CD31-46FD-4B2A-9A6D-4AA401120279}
 		{38866666-7A68-4BDB-ADC7-D6952497D728} = {A3D2B537-0213-45E5-906B-A3774496BB79}
 		{5FC677E3-BEEA-4ACF-92C4-0206B4DDAD22} = {38866666-7A68-4BDB-ADC7-D6952497D728}
+		{00D33F9B-C08C-4C64-B13E-1045E83C87DC} = {A3D2B537-0213-45E5-906B-A3774496BB79}
+		{355673A5-08B1-4825-B83E-28C353E607CB} = {00D33F9B-C08C-4C64-B13E-1045E83C87DC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3584F311-FD8B-4D8A-9984-BE84EB37D3EE}

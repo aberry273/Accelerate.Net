@@ -86,7 +86,7 @@ namespace Accelerate.Projects.Api.Controllers
         public virtual required FundingSourceWalletPOCO Source { get; set; }
         public virtual required FundingSourceFIATPOCO Destination { get; set; }
         public virtual required RatesConversionPOCO Transaction { get; set; }
-        public virtual required AccountCustomerPOCO Customer { get; set; }
+        //public virtual required AccountCustomerPOCO Customer { get; set; }
         [JsonIgnore]
         public virtual Guid Id { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

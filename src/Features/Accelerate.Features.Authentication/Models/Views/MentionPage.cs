@@ -24,6 +24,6 @@ namespace Accelerate.Features.Authentication.Models.Views
             this.Filters = model.Filters;
         }
 
-        public AjaxAclTable<string> Table { get; set; }
+        public AclAjaxTable<string> Table { get; set; }
     }
 }

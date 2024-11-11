@@ -26,8 +26,10 @@ namespace Accelerate.Foundations.Common
         }
         public struct AdminPaths
         {
-            public const string AccountsPath = "/Admin/Accounts";
-            public const string AccountsLabel = "Accounts";
+            public const string BusinessPath = "/Admin/Business";
+            public const string BusinessLabel = "Business";
+            public const string IndividualsPath = "/Admin/Individuals";
+            public const string IndividualsLabel = "Individuals";
             public const string TransactionsPath = "/Admin/Transactions";
             public const string TransactionsLabel = "Transactions";
             public const string RatesPath = "/Admin/Rates";

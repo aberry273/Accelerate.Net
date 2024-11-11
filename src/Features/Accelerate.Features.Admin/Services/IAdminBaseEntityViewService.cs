@@ -10,6 +10,7 @@ using Accelerate.Foundations.Content.Models.View;
 using Accelerate.Foundations.Database.Models;
 using Accelerate.Foundations.Integrations.Elastic.Models;
 using Elastic.Clients.Elasticsearch;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 
 namespace Accelerate.Features.Admin.Services
 {
@@ -17,11 +18,15 @@ namespace Accelerate.Features.Admin.Services
     {
         Task<NotFoundPage> CreateNotFoundPage(UsersUser user, string title = null, string description = null);
         Task<AdminBasePage> CreateAnonymousListingPage();
-        Task<AdminBasePage> CreateAllPage(UsersUser user, IEnumerable<T> items);
+        Task<AdminBasePage> CreateListingPage(UsersUser user, IEnumerable<T> items);
         Task<AdminBasePage> CreateIndexPage(UsersUser user, IEnumerable<T> channels);
         Task<AdminIndexPage<T>> CreateEntityPage(UsersUser user, T item, IEnumerable<T> items);
         Task<AdminBasePage> CreateAddPage(UsersUser user, IEnumerable<T> items);
         Task<AdminBasePage> CreateEditPage(UsersUser user, IEnumerable<T> items, T item);
         AjaxForm CreateEntityForm(UsersUser user, T? item, PostbackType type = PostbackType.POST);
+
+        List<object> CreateTableRows(IEnumerable<T> items);
+        List<string> CreateTableHeaders();
+        AclAjaxTable<object> CreateTable(IEnumerable<T> items);
     }
 }

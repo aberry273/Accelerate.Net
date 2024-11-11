@@ -48,21 +48,15 @@ namespace Accelerate.Foundations.Portal.Services
                 {
                     new NavigationItem()
                     {
-                        Icon = "queueList",
-                        Text = Foundations.Common.Constants.AdminPaths.JobsLabel,
-                        Href = Foundations.Common.Constants.AdminPaths.JobsPath
+                        Icon = "buildingLibrary",
+                        Text = Foundations.Common.Constants.AdminPaths.BusinessLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.BusinessPath
                     },
                     new NavigationItem()
                     {
-                        Icon = "cog",
-                        Text = Foundations.Common.Constants.AdminPaths.ActionsLabel,
-                        Href = Foundations.Common.Constants.AdminPaths.ActionsPath
-                    },
-                    new NavigationItem()
-                    {
-                        Icon = "userGroup",
-                        Text = Foundations.Common.Constants.AdminPaths.UsersLabel,
-                        Href = Foundations.Common.Constants.AdminPaths.UsersPath
+                        Icon = "userCircle",
+                        Text = Foundations.Common.Constants.AdminPaths.IndividualsLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.IndividualsPath
                     },
                     new NavigationItem()
                     {
@@ -75,6 +69,18 @@ namespace Accelerate.Foundations.Portal.Services
                         Icon = "presentationChart",
                         Text = Foundations.Common.Constants.AdminPaths.RatesLabel,
                         Href = Foundations.Common.Constants.AdminPaths.RatesPath
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "queueList",
+                        Text = Foundations.Common.Constants.AdminPaths.JobsLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.JobsPath
+                    },
+                    new NavigationItem()
+                    {
+                        Icon = "cog",
+                        Text = Foundations.Common.Constants.AdminPaths.ActionsLabel,
+                        Href = Foundations.Common.Constants.AdminPaths.ActionsPath
                     },
                 }
             };

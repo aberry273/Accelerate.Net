@@ -1,4 +1,5 @@
 ﻿using Accelerate.Foundations.Common.Models.UI.Components;
+using Accelerate.Foundations.Common.Models.UI.Components.Table;
 using Accelerate.Foundations.Common.Models.Views;
 
 namespace Accelerate.Features.Admin.Models.Views
@@ -42,5 +43,6 @@ namespace Accelerate.Features.Admin.Models.Views
         public ModalForm ModalEditChannel { get; set; }
         public ModalForm ModalDeleteChannel { get; set; }
         public NavigationFilter Filters { get; set; }
+        public AclAjaxTable<object> Table { get; set; }
     }
 }

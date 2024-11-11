@@ -8,6 +8,7 @@ export default function (params) {
         heightClass: '',
         // INIT
         init() {
+            this.mxContent_img = params.logo;
             this.mxContent_title = params.title;
             this.mxNavigation_primaryItems = params.primaryItems;
             this.mxNavigation_secondaryItems = params.secondaryItems;
@@ -27,6 +28,7 @@ export default function (params) {
                 <div :class="mxNavigation_getContainerClass + heightClass">
                     <div :class="mxNavigation_getContainerLeftClass">
                         <a href="#_" :class="mxNavigation_getLinkClass">
+                            <img x-show="mxContent_img" :src="mxContent_img" :alt="mxContent_title" class="h-8 pr-2" />
                             <span :class="mxNavigation_getTitleClass" x-text="mxContent_title"></span>
                         </a>
                         <!--Desktop-->

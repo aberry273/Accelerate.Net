@@ -10,8 +10,7 @@ namespace Accelerate.Features.Admin.Models.Views
     public class AdminIndexPage<T> : AdminBasePage
     {
         public string RedirectRoute { get; set; }
-        public AjaxForm Form { get; set; }
-        public AclTable<string> Table { get; set; }
+        public AjaxForm Form { get; set; } 
         public T Item { get; set; }
         public AdminIndexPage(AdminBasePage model) : base(model)
         {

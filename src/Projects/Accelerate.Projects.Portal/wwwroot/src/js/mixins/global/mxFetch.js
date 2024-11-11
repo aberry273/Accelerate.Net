@@ -3,6 +3,7 @@ export default function (data) {
         // PROPERTIES
         mxFetch_url: '',
         mxFetch_params: {},
+        mxFetch_loading: false,
         // GET, POST, PUT, DELETE
         mxFetch_type: 'POST',
         init() {

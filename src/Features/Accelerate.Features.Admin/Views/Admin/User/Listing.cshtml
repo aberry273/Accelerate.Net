@@ -1,0 +1,27 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Accelerate.Features.Admin.Models.Views
+@using Accelerate.Foundations.Common.Helpers
+@using Microsoft.AspNetCore.Http
+@model AdminBasePage
+@{
+    Layout = "/Views/Shared/_AdminPageLayout.cshtml";
+}
+<div class="w-full h-full container overflow-y-scroll">
+    <!-- Channels panel -->
+    <div x-data="aclTabsNavigation({
+        items: [
+            {
+                text: 'Live',
+                href: '/?t=tab1'
+            },
+            {
+                text: 'Sorted',
+                href: '/?t=tab2'
+            },
+        ],
+        selected: 'new URLSearchParams(window.location.search).get('t'),'
+    })"></div>
+
+    <hr />
+</div>
